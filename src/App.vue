@@ -14,7 +14,7 @@ import { Icon } from '@iconify/vue'
             <label
               for="drawer"
               aria-label="open sidebar"
-              class="btn btn-square btn-ghost text-white"
+              class="btn btn-square btn-ghost text-white lg:hidden"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +31,7 @@ import { Icon } from '@iconify/vue'
               </svg>
             </label>
             <div class="flex-1">
-              <RouterLink to="/" class="btn btn-ghost text-xl text-white">
+              <RouterLink to="/" class="btn btn-ghost px-0 text-xl text-white">
                 <img
                   class="w-8 lg:w-10"
                   src="https://intranet-pre.garageclub.es/static/images/brand/favicon-blanco-xs.png"
