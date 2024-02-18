@@ -33,7 +33,7 @@ import { Icon } from '@iconify/vue'
             <div class="flex-1">
               <RouterLink to="/" class="btn btn-ghost px-0 text-xl text-white">
                 <img
-                  class="w-8 lg:w-10"
+                  class="ml-2 w-8"
                   src="https://intranet-pre.garageclub.es/static/images/brand/favicon-blanco-xs.png"
                   alt="logo"
                 />
@@ -76,7 +76,7 @@ import { Icon } from '@iconify/vue'
               <div tabindex="0" role="button" class="avatar btn btn-circle btn-ghost">
                 <div class="w-10 rounded-full">
                   <img
-                    alt="Tailwind CSS Navbar component"
+                    alt="Avatar"
                     src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                   />
                 </div>
@@ -105,7 +105,7 @@ import { Icon } from '@iconify/vue'
             <div class="dropdown dropdown-end">
               <div tabindex="0" role="button" class="btn btn-circle btn-ghost">
                 <div class="w-10 rounded-full">
-                  <Icon icon="mdi:settings" color="white" width="50" />
+                  <Icon icon="mdi:settings" color="white" width="30" />
                 </div>
               </div>
               <ul
@@ -179,6 +179,8 @@ import { Icon } from '@iconify/vue'
 
 <script>
 export default {
+  name: 'App',
+  components: {},
   data() {
     return {
       drawer: false
