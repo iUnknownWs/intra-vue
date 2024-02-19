@@ -40,7 +40,7 @@ import { Icon } from '@iconify/vue'
               <li><a>Registro Manual</a></li>
             </ul>
           </div>
-          <label for="filterDrawer" class="btn btn-outline hidden text-black lg:flex">
+          <label for="filterDrawer" class="btn btn-outline hidden text-black">
             <Icon icon="mdi:filter" />
             Filtros
           </label>
@@ -60,142 +60,340 @@ import { Icon } from '@iconify/vue'
           </div>
         </div>
       </header>
-      <div class="w-full pt-8">
-        <div role="tablist" class="tabs-boxed tabs hidden lg:grid">
-          <a role="tab" class="tab tab-active">Tab 1</a>
-          <a role="tab" class="tab">Tab 2</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
-          <a role="tab" class="tab">Tab 3</a>
+      <div class="flex flex-row items-start">
+        <div class="my-4 min-h-full w-80 bg-white text-base-content">
+          <div class="menu-title flex flex-row justify-between">
+            Filtros
+            <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
+              <Icon icon="mdi:close" width="20" />
+            </button>
+          </div>
+          <div class="divider m-0"></div>
+          <label class="form-control mb-4 w-full max-w-xs">
+            <div class="label">
+              <span class="label-text font-medium">Categoría</span>
+            </div>
+            <select class="select select-bordered">
+              <option disabled selected>Pick one</option>
+              <option>Star Wars</option>
+              <option>Harry Potter</option>
+              <option>Lord of the Rings</option>
+              <option>Planet of the Apes</option>
+              <option>Star Trek</option>
+            </select>
+          </label>
+          <label class="form-control mb-4 w-full max-w-xs">
+            <div class="label">
+              <span class="label-text font-medium">Categoría</span>
+            </div>
+            <select class="select select-bordered">
+              <option disabled selected>Pick one</option>
+              <option>Star Wars</option>
+              <option>Harry Potter</option>
+              <option>Lord of the Rings</option>
+              <option>Planet of the Apes</option>
+              <option>Star Trek</option>
+            </select>
+          </label>
+          <label class="form-control mb-4 w-full max-w-xs">
+            <div class="label">
+              <span class="label-text font-medium">Categoría</span>
+            </div>
+            <select class="select select-bordered">
+              <option disabled selected>Pick one</option>
+              <option>Star Wars</option>
+              <option>Harry Potter</option>
+              <option>Lord of the Rings</option>
+              <option>Planet of the Apes</option>
+              <option>Star Trek</option>
+            </select>
+          </label>
+          <label class="form-control mb-4 w-full max-w-xs">
+            <div class="label">
+              <span class="label-text font-medium">Categoría</span>
+            </div>
+            <select class="select select-bordered">
+              <option disabled selected>Pick one</option>
+              <option>Star Wars</option>
+              <option>Harry Potter</option>
+              <option>Lord of the Rings</option>
+              <option>Planet of the Apes</option>
+              <option>Star Trek</option>
+            </select>
+          </label>
+          <label class="form-control mb-4 w-full max-w-xs">
+            <div class="label">
+              <span class="label-text font-medium">Categoría</span>
+            </div>
+            <select class="select select-bordered">
+              <option disabled selected>Pick one</option>
+              <option>Star Wars</option>
+              <option>Harry Potter</option>
+              <option>Lord of the Rings</option>
+              <option>Planet of the Apes</option>
+              <option>Star Trek</option>
+            </select>
+          </label>
+          <label class="form-control mb-4 w-full max-w-xs">
+            <div class="label">
+              <span class="label-text font-medium">Categoría</span>
+            </div>
+            <select class="select select-bordered">
+              <option disabled selected>Pick one</option>
+              <option>Star Wars</option>
+              <option>Harry Potter</option>
+              <option>Lord of the Rings</option>
+              <option>Planet of the Apes</option>
+              <option>Star Trek</option>
+            </select>
+          </label>
+          <li class="flex flex-row justify-around">
+            <button @click="toggleFilterDrawer" class="btn btn-primary w-28 text-white">
+              <Icon icon="mdi:arrow-u-left-top" />
+              Reset
+            </button>
+            <button @click="toggleFilterDrawer" class="btn btn-outline w-24 text-black">
+              <Icon icon="mdi:check" />
+              Filtrar
+            </button>
+          </li>
         </div>
-        <section class="hidden flex-col lg:flex">
-          <div class="overflow-x-auto">
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body flex-row items-center">
-                <img
-                  src="https://intranet-pre.garageclub.es/static/images/brand/favicon.png"
-                  alt="pic"
-                  width="90"
-                />
-                <div>
-                  <span class="font-medium">3445LTR </span>
-                  <span class="mb-2 capitalize">land rover range rover</span> <br />
-                  <span>"{ vin }"</span> <br />
-                  <span class="badge mr-2 mt-2">coches.net</span>
-                  <span class="badge mr-2">wallapop</span>
-                  <span class="badge mr-2">sumauto</span>
+        <div
+          role="tablist"
+          class="tabs tabs-bordered ml-20 mt-8 hidden justify-items-start bg-white font-medium lg:grid"
+        >
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Todos" checked />
+          <div role="tabpanel" class="tab-content pt-2">
+            <div class="flex max-w-[1280px] flex-row flex-wrap justify-between">
+              <div class="card mt-4 w-[560px] bg-base-100 text-xs">
+                <div class="card-body flex-row items-center p-4">
+                  <img
+                    src="https://intranet-pre.garageclub.es/static/images/brand/favicon.png"
+                    alt="pic"
+                    width="150"
+                  />
+                  <div class="flex-col">
+                    <span class="font-medium">3445LTR </span>
+                    <span class="m-3 capitalize">land rover range rover</span>
+                    <span class="badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+                      >En venta</span
+                    >
+                    <div class="mt-3 flex flex-row gap-2">
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >wallapop</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                    </div>
+                    <div class="mt-3 flex flex-row justify-between">
+                      <div class="flex flex-col items-start p-0">
+                        <span>Contado</span>
+                        <span>10.000€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Financiado</span>
+                        <span>9.000€</span>
+                        <span>Desde 340€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Dias Stock</span>
+                        <span>58 Dias</span>
+                      </div>
+                    </div>
+                    <div class="divider m-0"></div>
+                    <div class="flex flex-row justify-between">
+                      <span>2019</span>
+                      <span>125.000k</span>
+                      <span>Automático</span>
+                      <span>Gasolina</span>
+                      <span>120cv</span>
+                      <span>5P</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card mt-4 w-[560px] bg-base-100 text-xs">
+                <div class="card-body flex-row items-center p-4">
+                  <img
+                    src="https://intranet-pre.garageclub.es/static/images/brand/favicon.png"
+                    alt="pic"
+                    width="150"
+                  />
+                  <div class="flex-col">
+                    <span class="font-medium">3445LTR </span>
+                    <span class="m-3 capitalize">land rover range rover</span>
+                    <span class="badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+                      >En venta</span
+                    >
+                    <div class="mt-3 flex flex-row gap-2">
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >wallapop</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                    </div>
+                    <div class="mt-3 flex flex-row justify-between">
+                      <div class="flex flex-col items-start p-0">
+                        <span>Contado</span>
+                        <span>10.000€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Financiado</span>
+                        <span>9.000€</span>
+                        <span>Desde 340€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Dias Stock</span>
+                        <span>58 Dias</span>
+                      </div>
+                    </div>
+                    <div class="divider m-0"></div>
+                    <div class="flex flex-row justify-between">
+                      <span>2019</span>
+                      <span>125.000k</span>
+                      <span>Automático</span>
+                      <span>Gasolina</span>
+                      <span>120cv</span>
+                      <span>5P</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card mt-4 w-[560px] bg-base-100 text-xs">
+                <div class="card-body flex-row items-center p-4">
+                  <img
+                    src="https://intranet-pre.garageclub.es/static/images/brand/favicon.png"
+                    alt="pic"
+                    width="150"
+                  />
+                  <div class="flex-col">
+                    <span class="font-medium">3445LTR </span>
+                    <span class="m-3 capitalize">land rover range rover</span>
+                    <span class="badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+                      >En venta</span
+                    >
+                    <div class="mt-3 flex flex-row gap-2">
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >wallapop</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                    </div>
+                    <div class="mt-3 flex flex-row justify-between">
+                      <div class="flex flex-col items-start p-0">
+                        <span>Contado</span>
+                        <span>10.000€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Financiado</span>
+                        <span>9.000€</span>
+                        <span>Desde 340€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Dias Stock</span>
+                        <span>58 Dias</span>
+                      </div>
+                    </div>
+                    <div class="divider m-0"></div>
+                    <div class="flex flex-row justify-between">
+                      <span>2019</span>
+                      <span>125.000k</span>
+                      <span>Automático</span>
+                      <span>Gasolina</span>
+                      <span>120cv</span>
+                      <span>5P</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card mt-4 w-[560px] bg-base-100 text-xs">
+                <div class="card-body flex-row items-center p-4">
+                  <img
+                    src="https://intranet-pre.garageclub.es/static/images/brand/favicon.png"
+                    alt="pic"
+                    width="150"
+                  />
+                  <div class="flex-col">
+                    <span class="font-medium">3445LTR </span>
+                    <span class="m-3 capitalize">land rover range rover</span>
+                    <span class="badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+                      >En venta</span
+                    >
+                    <div class="mt-3 flex flex-row gap-2">
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >wallapop</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                      <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white"
+                        >sumauto</span
+                      >
+                    </div>
+                    <div class="mt-3 flex flex-row justify-between">
+                      <div class="flex flex-col items-start p-0">
+                        <span>Contado</span>
+                        <span>10.000€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Financiado</span>
+                        <span>9.000€</span>
+                        <span>Desde 340€</span>
+                      </div>
+                      <div class="flex flex-col items-start p-0">
+                        <span>Dias Stock</span>
+                        <span>58 Dias</span>
+                      </div>
+                    </div>
+                    <div class="divider m-0"></div>
+                    <div class="flex flex-row justify-between">
+                      <span>2019</span>
+                      <span>125.000k</span>
+                      <span>Automático</span>
+                      <span>Gasolina</span>
+                      <span>120cv</span>
+                      <span>5P</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Recepción" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 2</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Publicación" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="En venta" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 4</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Reservados" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 5</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Pte. de PT" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 6</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Validar PT" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="No web" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="Entrega inmediata" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
+          <input type="radio" name="class" role="tab" class="tab" aria-label="No disponible" />
+          <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
+        </div>
       </div>
     </div>
     <div class="drawer-side">
       <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul class="menu min-h-full w-80 bg-white p-4 text-base-content">
-        <!-- Sidebar content here -->
-        <li class="menu-title flex flex-row justify-between">
-          Filtros
-          <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
-            <Icon icon="mdi:close" width="20" />
-          </button>
-        </li>
-        <div class="divider m-0"></div>
-        <label class="form-control mb-4 w-full max-w-xs">
-          <div class="label">
-            <span class="label-text font-medium">Categoría</span>
-          </div>
-          <select class="select select-bordered">
-            <option disabled selected>Pick one</option>
-            <option>Star Wars</option>
-            <option>Harry Potter</option>
-            <option>Lord of the Rings</option>
-            <option>Planet of the Apes</option>
-            <option>Star Trek</option>
-          </select>
-        </label>
-        <label class="form-control mb-4 w-full max-w-xs">
-          <div class="label">
-            <span class="label-text font-medium">Categoría</span>
-          </div>
-          <select class="select select-bordered">
-            <option disabled selected>Pick one</option>
-            <option>Star Wars</option>
-            <option>Harry Potter</option>
-            <option>Lord of the Rings</option>
-            <option>Planet of the Apes</option>
-            <option>Star Trek</option>
-          </select>
-        </label>
-        <label class="form-control mb-4 w-full max-w-xs">
-          <div class="label">
-            <span class="label-text font-medium">Categoría</span>
-          </div>
-          <select class="select select-bordered">
-            <option disabled selected>Pick one</option>
-            <option>Star Wars</option>
-            <option>Harry Potter</option>
-            <option>Lord of the Rings</option>
-            <option>Planet of the Apes</option>
-            <option>Star Trek</option>
-          </select>
-        </label>
-        <label class="form-control mb-4 w-full max-w-xs">
-          <div class="label">
-            <span class="label-text font-medium">Categoría</span>
-          </div>
-          <select class="select select-bordered">
-            <option disabled selected>Pick one</option>
-            <option>Star Wars</option>
-            <option>Harry Potter</option>
-            <option>Lord of the Rings</option>
-            <option>Planet of the Apes</option>
-            <option>Star Trek</option>
-          </select>
-        </label>
-        <label class="form-control mb-4 w-full max-w-xs">
-          <div class="label">
-            <span class="label-text font-medium">Categoría</span>
-          </div>
-          <select class="select select-bordered">
-            <option disabled selected>Pick one</option>
-            <option>Star Wars</option>
-            <option>Harry Potter</option>
-            <option>Lord of the Rings</option>
-            <option>Planet of the Apes</option>
-            <option>Star Trek</option>
-          </select>
-        </label>
-        <label class="form-control mb-4 w-full max-w-xs">
-          <div class="label">
-            <span class="label-text font-medium">Categoría</span>
-          </div>
-          <select class="select select-bordered">
-            <option disabled selected>Pick one</option>
-            <option>Star Wars</option>
-            <option>Harry Potter</option>
-            <option>Lord of the Rings</option>
-            <option>Planet of the Apes</option>
-            <option>Star Trek</option>
-          </select>
-        </label>
-        <li class="flex flex-row justify-around">
-          <button @click="toggleFilterDrawer" class="btn btn-primary w-28 text-white">
-            <Icon icon="mdi:arrow-u-left-top" />
-            Reset
-          </button>
-          <button @click="toggleFilterDrawer" class="btn btn-outline w-24 text-black">
-            <Icon icon="mdi:check" />
-            Filtrar
-          </button>
-        </li>
-      </ul>
     </div>
   </div>
 </template>
@@ -217,55 +415,8 @@ export default {
 }
 </script>
 
-<!-- <div
-      role="tablist"
-      class="tabs-boxed tabs tabs-xs justify-center bg-white font-medium lg:tabs-lg"
-    >
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Todos" checked />
-      <div role="tabpanel" class="tab-content pt-2">
-        <section class="flex flex-row items-center gap-2">
-          <input type="checkbox" checked="checked" class="checkbox" />
-          <p class="p-2">Foto</p>
-          <p class="p-2">Matricula</p>
-          <p class="p-2">Bastidor</p>
-          <p class="p-2">Marca</p>
-          <p class="p-2">Modelo / Version</p>
-          <p class="p-2">Matriculación</p>
-          <p class="p-2">Combustible</p>
-          <p class="p-2">Cambio</p>
-          <p class="p-2">Precio</p>
-          <p class="p-2">Kms</p>
-          <p class="p-2">Kms</p>
-          <p class="p-2">Publicación</p>
-          <p class="p-2">Dias stock</p>
-          <p class="p-2">Estado</p>
-        </section>
-      </div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Recepción" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 2</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Publicación" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="En venta" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Reservados" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Pte. de PT" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Validar PT" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="No web" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="Entrega inmediata" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-
-      <input type="radio" name="class" role="tab" class="tab" aria-label="No disponible" />
-      <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-    </div> -->
+<style>
+.test {
+  display: flex;
+}
+</style>

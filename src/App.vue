@@ -30,7 +30,7 @@ import { Icon } from '@iconify/vue'
                 ></path>
               </svg>
             </label>
-            <div class="flex-1">
+            <div>
               <RouterLink to="/" class="btn btn-ghost px-0 text-xl text-white">
                 <img
                   class="ml-2 w-8"
@@ -39,15 +39,12 @@ import { Icon } from '@iconify/vue'
                 />
               </RouterLink>
             </div>
-          </div>
-          <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal gap-2 px-1 text-white">
+            <ul class="menu menu-horizontal gap-2 text-white">
               <li>
                 <RouterLink
                   to="/"
                   class="border-b-2 border-black font-medium hover:bg-white hover:text-black focus:border-white focus:text-white hover:focus:text-black"
                 >
-                  <Icon icon="mdi:car" />
                   Vehículos
                 </RouterLink>
               </li>
@@ -56,7 +53,6 @@ import { Icon } from '@iconify/vue'
                   to="/about"
                   class="border-b-2 border-black font-medium hover:bg-white hover:text-black focus:border-white focus:text-white hover:focus:text-black"
                 >
-                  <Icon icon="mdi:book" />
                   Reservas
                 </RouterLink>
               </li>
@@ -65,12 +61,12 @@ import { Icon } from '@iconify/vue'
                   to="/"
                   class="border-b-2 border-black font-medium hover:bg-white hover:text-black focus:border-white focus:text-white hover:focus:text-black"
                 >
-                  <Icon icon="mdi:attach-money" />
                   Tasaciones
                 </RouterLink>
               </li>
             </ul>
           </div>
+
           <div class="navbar-end">
             <div class="dropdown dropdown-end">
               <div tabindex="0" role="button" class="avatar btn btn-circle btn-ghost">
