@@ -39,7 +39,7 @@ import { Icon } from '@iconify/vue'
                 />
               </RouterLink>
             </div>
-            <ul class="menu menu-horizontal gap-2 text-white">
+            <ul class="menu menu-horizontal hidden gap-2 text-white lg:flex">
               <li>
                 <RouterLink
                   to="/"

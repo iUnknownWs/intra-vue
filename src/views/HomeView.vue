@@ -60,11 +60,11 @@ import { Icon } from '@iconify/vue'
           </div>
         </div>
       </header>
-      <div class="flex flex-row items-start">
-        <div class="my-4 min-h-full w-80 bg-white text-base-content">
+      <div class="hidden flex-row items-start lg:flex">
+        <div class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
           <div class="menu-title flex flex-row justify-between">
             Filtros
-            <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
+            <button class="btn btn-square btn-xs">
               <Icon icon="mdi:close" width="20" />
             </button>
           </div>
@@ -148,11 +148,11 @@ import { Icon } from '@iconify/vue'
             </select>
           </label>
           <li class="flex flex-row justify-around">
-            <button @click="toggleFilterDrawer" class="btn btn-primary w-28 text-white">
+            <button class="btn btn-primary w-28 text-white">
               <Icon icon="mdi:arrow-u-left-top" />
               Reset
             </button>
-            <button @click="toggleFilterDrawer" class="btn btn-outline w-24 text-black">
+            <button class="btn btn-outline w-24 text-black">
               <Icon icon="mdi:check" />
               Filtrar
             </button>
@@ -394,6 +394,104 @@ import { Icon } from '@iconify/vue'
     </div>
     <div class="drawer-side">
       <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
+      <ul class="menu min-h-full w-80 bg-white p-4 text-base-content">
+        <!-- Sidebar content here -->
+        <li class="menu-title flex flex-row justify-between">
+          Filtros
+          <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
+            <Icon icon="mdi:close" width="20" />
+          </button>
+        </li>
+        <div class="divider m-0"></div>
+        <label class="form-control mb-4 w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Categoría</span>
+          </div>
+          <select class="select select-bordered">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+        <label class="form-control mb-4 w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Categoría</span>
+          </div>
+          <select class="select select-bordered">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+        <label class="form-control mb-4 w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Categoría</span>
+          </div>
+          <select class="select select-bordered">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+        <label class="form-control mb-4 w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Categoría</span>
+          </div>
+          <select class="select select-bordered">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+        <label class="form-control mb-4 w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Categoría</span>
+          </div>
+          <select class="select select-bordered">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+        <label class="form-control mb-4 w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Categoría</span>
+          </div>
+          <select class="select select-bordered">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+        <li class="flex flex-row justify-around">
+          <button @click="toggleFilterDrawer" class="btn btn-primary w-28 text-white">
+            <Icon icon="mdi:arrow-u-left-top" />
+            Reset
+          </button>
+          <button @click="toggleFilterDrawer" class="btn btn-outline w-24 text-black">
+            <Icon icon="mdi:check" />
+            Filtrar
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
