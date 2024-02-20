@@ -273,10 +273,10 @@ import { Icon } from '@iconify/vue'
         </div>
       </div>
       <div class="mt-4 flex flex-col items-center justify-center lg:hidden">
-        <div class="card card-compact mt-3 w-64 bg-base-100 text-xs shadow-xl">
+        <div class="card card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
           <figure class="bg-cover">
             <div
-              class="cover relative z-0 aspect-video w-64 bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
+              class="cover relative z-0 aspect-video w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
             >
               <div class="absolute bottom-2 right-2">
                 <span class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
@@ -326,10 +326,10 @@ import { Icon } from '@iconify/vue'
             </div>
           </div>
         </div>
-        <div class="card card-compact mt-3 w-64 bg-base-100 text-xs shadow-xl">
+        <div class="card card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
           <figure class="bg-cover">
             <div
-              class="cover relative z-0 aspect-video w-64 bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
+              class="cover relative z-0 aspect-video w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
             >
               <div class="absolute bottom-2 right-2">
                 <span class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
@@ -383,7 +383,10 @@ import { Icon } from '@iconify/vue'
     </div>
     <div class="drawer-side">
       <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul v-if="drawer === 'filter'" class="menu min-h-full w-80 bg-white p-4 text-base-content">
+      <ul
+        v-if="drawer === 'filter'"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+      >
         <!-- Sidebar content here -->
         <li class="menu-title flex flex-row justify-between">
           Filtros
@@ -479,7 +482,7 @@ import { Icon } from '@iconify/vue'
       </ul>
       <ul
         v-if="drawer === 'auto'"
-        class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
       >
         <!-- Sidebar content here -->
         <div>
@@ -510,7 +513,7 @@ import { Icon } from '@iconify/vue'
       </ul>
       <ul
         v-if="drawer === 'semi'"
-        class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
       >
         <!-- Sidebar content here -->
         <div>
@@ -579,7 +582,7 @@ import { Icon } from '@iconify/vue'
       </ul>
       <ul
         v-if="drawer === 'manual'"
-        class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
       >
         <!-- Sidebar content here -->
         <div>
