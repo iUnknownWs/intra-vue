@@ -39,11 +39,11 @@ import { Icon } from '@iconify/vue'
               tabindex="0"
               class="menu dropdown-content z-[1] mt-2 w-52 rounded-box bg-base-100 p-2 text-xs shadow-lg"
             >
-              <li><label for="autoDrawer" @click="autoDrawer">Registro Automático</label></li>
+              <li><label for="filterDrawer" @click="autoDrawer">Registro Automático</label></li>
               <li>
-                <label for="autoDrawer" @click="semiDrawer">Registro Semi-Automático</label>
+                <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
               </li>
-              <li><label for="autoDrawer" @click="manualDrawer">Registro Manual</label></li>
+              <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
             </ul>
           </div>
           <label for="filterDrawer" class="btn btn-outline hidden text-black">
@@ -59,15 +59,30 @@ import { Icon } from '@iconify/vue'
               tabindex="0"
               class="menu dropdown-content z-[1] mt-2 w-52 rounded-box bg-base-100 p-2 text-xs shadow-lg"
             >
-              <li><label for="autoDrawer" @click="autoDrawer">Registro Automático</label></li>
+              <li><label for="filterDrawer" @click="autoDrawer">Registro Automático</label></li>
               <li>
-                <label for="autoDrawer" @click="semiDrawer">Registro Semi-Automático</label>
+                <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
               </li>
-              <li><label for="autoDrawer" @click="manualDrawer">Registro Manual</label></li>
+              <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
             </ul>
           </div>
         </div>
       </header>
+      <div class="lg:hidden">
+        <label class="form-control w-full max-w-xs">
+          <div class="label">
+            <span class="label-text font-medium">Pestañas:</span>
+          </div>
+          <select class="select select-primary">
+            <option disabled selected>Pick one</option>
+            <option>Star Wars</option>
+            <option>Harry Potter</option>
+            <option>Lord of the Rings</option>
+            <option>Planet of the Apes</option>
+            <option>Star Trek</option>
+          </select>
+        </label>
+      </div>
       <div class="hidden flex-row items-start lg:flex">
         <div class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
           <div class="menu-title flex flex-row justify-between">Filtros</div>
@@ -170,22 +185,8 @@ import { Icon } from '@iconify/vue'
             <div class="card mt-4 w-full bg-base-100 text-xs font-normal">
               <div class="card-body flex-row p-4">
                 <div
-                  class="cover relative z-10 aspect-video h-52 bg-[url('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')] bg-cover bg-center"
+                  class="cover relative z-10 aspect-video h-32 bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
                 >
-                  <div class="dropdown dropdown-end menu-xs absolute right-2 top-2">
-                    <div tabindex="0" role="button" class="btn btn-circle btn-ghost text-white">
-                      <Icon icon="mdi:dots-vertical" width="30" />
-                    </div>
-                    <ul
-                      tabindex="0"
-                      class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
-                    >
-                      <li><a>Ver/Editar</a></li>
-                      <li><a>Ejecutar PT</a></li>
-                      <li><a>Imprimir</a></li>
-                      <li><a>Eliminar</a></li>
-                    </ul>
-                  </div>
                   <div class="absolute bottom-2 right-2">
                     <span class="badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
                       >En venta</span
@@ -199,17 +200,8 @@ import { Icon } from '@iconify/vue'
                       <span class="mr-2 font-semibold">3445LTR</span>
                       <span class="font-semibold capitalize">Land rover range rover</span>
                     </div>
-                    <div class="flex flex-col items-start p-0">
-                      <span>Dias Stock</span>
-                      <span class="font-bold">58 Dias</span>
-                    </div>
                   </div>
                   <span class="font-medium text-gray-500">Version del Vehículo</span>
-                  <div class="mt-3 flex flex-row gap-2">
-                    <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white">wallapop</span>
-                    <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white">sumauto</span>
-                    <span class="badge-neutral mr-2 rounded-md px-3 pb-1 text-white">sumauto</span>
-                  </div>
                   <div class="mt-3 flex flex-row justify-between gap-3">
                     <div class="flex flex-col items-start p-0">
                       <span>Contado</span>
@@ -220,16 +212,42 @@ import { Icon } from '@iconify/vue'
                       <span class="font-bold">9.000€</span>
                       <span>Desde 340€</span>
                     </div>
+                    <div class="flex flex-col items-start p-0">
+                      <span>Dias Stock</span>
+                      <span class="font-bold">58 Dias</span>
+                    </div>
+                  </div>
+                  <div class="divider m-0"></div>
+                  <div class="flex flex-row gap-3">
                     <span>2019</span>
                     <span>125.000k</span>
                     <span>Automático</span>
                     <span>Gasolina</span>
-                  </div>
-                  <div class="divider m-0"></div>
-                  <div class="flex flex-row gap-3">
                     <span>120cv</span>
                     <span>5P</span>
                   </div>
+                </div>
+                <div class="divider divider-horizontal"></div>
+                <div class="flex flex-col justify-around">
+                  <span class="badge badge-neutral mr-2 rounded-md pb-1 text-white">wallapop</span>
+                  <span class="badge badge-neutral mr-2 rounded-md pb-1 text-white">sumauto</span>
+                  <span class="badge badge-neutral mr-2 rounded-md pb-1 text-white"
+                    >coches.net</span
+                  >
+                </div>
+                <div class="dropdown dropdown-end menu-xs">
+                  <div tabindex="0" role="button" class="btn btn-square btn-ghost">
+                    <Icon icon="mdi:dots-vertical" width="30" />
+                  </div>
+                  <ul
+                    tabindex="0"
+                    class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
+                  >
+                    <li><a>Ver/Editar</a></li>
+                    <li><a>Ejecutar PT</a></li>
+                    <li><a>Imprimir</a></li>
+                    <li><a>Eliminar</a></li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -254,13 +272,121 @@ import { Icon } from '@iconify/vue'
           <div role="tabpanel" class="tab-content pt-2">Tab content 10</div>
         </div>
       </div>
+      <div class="mt-4 flex flex-col items-center justify-center lg:hidden">
+        <div class="card card-compact mt-3 w-64 bg-base-100 text-xs shadow-xl">
+          <figure class="bg-cover">
+            <div
+              class="cover relative z-0 aspect-video w-64 bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
+            >
+              <div class="absolute bottom-2 right-2">
+                <span class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+                  >En venta</span
+                >
+                <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">12</span>
+              </div>
+            </div>
+          </figure>
+          <div class="card-body relative flex">
+            <div class="textcard flex gap-1 font-bold">
+              <span>3445LTR</span>
+              <span>Land Rover</span>
+              <span>Range Rover</span>
+            </div>
+            <div class="textcard flex flex-row justify-between">
+              <div class="flex flex-col">
+                <span>Contado</span>
+                <span class="font-bold">10.000€</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Financiado</span>
+                <span class="font-bold">9.000€</span>
+                <span>Desde 340€</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Dias stock</span>
+                <span class="font-bold">58 días</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Kms</span>
+                <span>125.000KMs</span>
+              </div>
+            </div>
+            <div class="divider m-0"></div>
+            <div class="textcard flex flex-row justify-between">
+              <span>2019</span>
+              <span>Automático</span>
+              <span>Gasolina</span>
+              <span>120cv</span>
+              <span>5P</span>
+            </div>
+            <div class="mt-2 flex gap-1 [&>span]:text-xs">
+              <span class="badge badge-primary rounded-md pb-1">coches.net</span>
+              <span class="badge badge-primary rounded-md pb-1">wallapop</span>
+              <span class="badge badge-primary rounded-md pb-1">sumauto</span>
+            </div>
+          </div>
+        </div>
+        <div class="card card-compact mt-3 w-64 bg-base-100 text-xs shadow-xl">
+          <figure class="bg-cover">
+            <div
+              class="cover relative z-0 aspect-video w-64 bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
+            >
+              <div class="absolute bottom-2 right-2">
+                <span class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+                  >En venta</span
+                >
+                <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">12</span>
+              </div>
+            </div>
+          </figure>
+          <div class="card-body relative flex">
+            <div class="textcard flex gap-1 font-bold">
+              <span>3445LTR</span>
+              <span>Land Rover</span>
+              <span>Range Rover</span>
+            </div>
+            <div class="textcard flex flex-row justify-between">
+              <div class="flex flex-col">
+                <span>Contado</span>
+                <span class="font-bold">10.000€</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Financiado</span>
+                <span class="font-bold">9.000€</span>
+                <span>Desde 340€</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Dias stock</span>
+                <span class="font-bold">58 días</span>
+              </div>
+              <div class="flex flex-col">
+                <span>Kms</span>
+                <span>125.000KMs</span>
+              </div>
+            </div>
+            <div class="divider m-0"></div>
+            <div class="textcard flex flex-row justify-between">
+              <span>2019</span>
+              <span>Automático</span>
+              <span>Gasolina</span>
+              <span>120cv</span>
+              <span>5P</span>
+            </div>
+            <div class="mt-2 flex gap-1 [&>span]:text-xs">
+              <span class="badge badge-primary rounded-md pb-1">coches.net</span>
+              <span class="badge badge-primary rounded-md pb-1">wallapop</span>
+              <span class="badge badge-primary rounded-md pb-1">sumauto</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="drawer-side">
       <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul v-if="drawer === 'filter'" class="menu min-h-full w-80 bg-white p-4 text-base-content">
         <!-- Sidebar content here -->
         <li class="menu-title flex flex-row justify-between">
-          Filtros {{ toggleDrawer }}
+          Filtros
           <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
             <Icon icon="mdi:close" width="20" />
           </button>
@@ -345,41 +471,141 @@ import { Icon } from '@iconify/vue'
           </select>
         </label>
         <li class="flex flex-row justify-around">
-          <button @click="toggleFilterDrawer" class="btn btn-primary w-28 text-white">
-            <Icon icon="mdi:arrow-u-left-top" />
-            Reset
-          </button>
-          <button @click="toggleFilterDrawer" class="btn btn-outline w-24 text-black">
-            <Icon icon="mdi:check" />
+          <button @click="toggleFilterDrawer" class="btn btn-outline w-28">Cancelar</button>
+          <button @click="toggleFilterDrawer" class="btn btn-primary w-24 text-white">
             Filtrar
           </button>
         </li>
       </ul>
-      <ul v-if="drawer === 'auto'" class="menu min-h-full w-80 bg-white p-4 text-base-content">
+      <ul
+        v-if="drawer === 'auto'"
+        class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content"
+      >
         <!-- Sidebar content here -->
-        <li>
-          <a>{{ drawer }}</a>
-        </li>
-        <li>
-          <a>sexo</a>
+        <div>
+          <li class="menu-title flex flex-row justify-between">
+            Nuevo Vehículo Automático
+            <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
+              <Icon icon="mdi:close" width="20" />
+            </button>
+          </li>
+          <div class="divider m-0"></div>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">VIN:</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Placeholder"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+        </div>
+        <li class="flex flex-row justify-around">
+          <button @click="toggleFilterDrawer" class="btn btn-outline w-28">Cancelar</button>
+          <button @click="toggleFilterDrawer" class="btn btn-primary w-24 text-white">
+            Añadir
+          </button>
         </li>
       </ul>
-      <ul v-if="drawer === 'semi'" class="menu min-h-full w-80 bg-white p-4 text-base-content">
+      <ul
+        v-if="drawer === 'semi'"
+        class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content"
+      >
         <!-- Sidebar content here -->
-        <li>
-          <a>{{ drawer }}</a>
-        </li>
-        <li>
-          <a>puto</a>
+        <div>
+          <li class="menu-title flex flex-row justify-between">
+            Nuevo Vehículo Semi-Automático
+            <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
+              <Icon icon="mdi:close" width="20" />
+            </button>
+          </li>
+          <div class="divider m-0"></div>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">Marca:</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Placeholder"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">Carrocería:</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Placeholder"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+          <div class="mt-3 flex flex-row justify-end">
+            <button class="btn btn-primary text-white">Buscar</button>
+          </div>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">Modelo:</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Placeholder"
+              class="input input-bordered w-full max-w-xs"
+              disabled
+            />
+          </label>
+          <div class="mt-3 flex flex-row justify-end">
+            <button class="btn btn-primary text-white">Buscar</button>
+          </div>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">Versión:</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Placeholder"
+              class="input input-bordered w-full max-w-xs"
+              disabled
+            />
+          </label>
+        </div>
+        <li class="flex flex-row justify-around">
+          <button @click="toggleFilterDrawer" class="btn btn-outline w-28">Cancelar</button>
+          <button @click="toggleFilterDrawer" class="btn btn-primary w-24 text-white">
+            Añadir
+          </button>
         </li>
       </ul>
-      <ul v-if="drawer === 'manual'" class="menu min-h-full w-80 bg-white p-4 text-base-content">
+      <ul
+        v-if="drawer === 'manual'"
+        class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content"
+      >
         <!-- Sidebar content here -->
-        <li>
-          <a>{{ drawer }}</a>
-        </li>
-        <li>
-          <a>voy pa esa</a>
+        <div>
+          <li class="menu-title flex flex-row justify-between">
+            Nuevo Vehículo Automático
+            <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
+              <Icon icon="mdi:close" width="20" />
+            </button>
+          </li>
+          <div class="divider m-0"></div>
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">VIN:</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Placeholder"
+              class="input input-bordered w-full max-w-xs"
+            />
+          </label>
+        </div>
+        <li class="flex flex-row justify-around">
+          <button @click="toggleFilterDrawer" class="btn btn-outline w-28">Cancelar</button>
+          <button @click="toggleFilterDrawer" class="btn btn-primary w-24 text-white">
+            Añadir
+          </button>
         </li>
       </ul>
     </div>
@@ -420,13 +646,12 @@ export default {
 .test {
   display: flex;
 }
-.badge-neutral {
+.badge {
   font-weight: 600;
+  color: #fff;
 }
-.badge-info {
-  font-weight: 600;
-}
-.badge-error {
-  font-weight: 600;
+.textcard {
+  font-size: 0.65rem;
+  line-height: 0.75rem;
 }
 </style>
