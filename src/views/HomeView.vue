@@ -69,7 +69,7 @@ import { Icon } from '@iconify/vue'
         </div>
       </header>
       <div class="lg:hidden">
-        <label class="form-control w-full max-w-xs">
+        <label class="form-control w-full">
           <div class="label">
             <span class="label-text font-medium">Pestañas:</span>
           </div>
@@ -87,7 +87,7 @@ import { Icon } from '@iconify/vue'
         <div class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
           <div class="menu-title flex flex-row justify-between">Filtros</div>
           <div class="divider m-0"></div>
-          <label class="form-control mb-4 w-full max-w-xs">
+          <label class="form-control mb-4 w-full">
             <div class="label">
               <span class="label-text font-medium">Categoría</span>
             </div>
@@ -100,7 +100,7 @@ import { Icon } from '@iconify/vue'
               <option>Star Trek</option>
             </select>
           </label>
-          <label class="form-control mb-4 w-full max-w-xs">
+          <label class="form-control mb-4 w-full">
             <div class="label">
               <span class="label-text font-medium">Categoría</span>
             </div>
@@ -113,7 +113,7 @@ import { Icon } from '@iconify/vue'
               <option>Star Trek</option>
             </select>
           </label>
-          <label class="form-control mb-4 w-full max-w-xs">
+          <label class="form-control mb-4 w-full">
             <div class="label">
               <span class="label-text font-medium">Categoría</span>
             </div>
@@ -126,7 +126,7 @@ import { Icon } from '@iconify/vue'
               <option>Star Trek</option>
             </select>
           </label>
-          <label class="form-control mb-4 w-full max-w-xs">
+          <label class="form-control mb-4 w-full">
             <div class="label">
               <span class="label-text font-medium">Categoría</span>
             </div>
@@ -139,7 +139,7 @@ import { Icon } from '@iconify/vue'
               <option>Star Trek</option>
             </select>
           </label>
-          <label class="form-control mb-4 w-full max-w-xs">
+          <label class="form-control mb-4 w-full">
             <div class="label">
               <span class="label-text font-medium">Categoría</span>
             </div>
@@ -152,7 +152,7 @@ import { Icon } from '@iconify/vue'
               <option>Star Trek</option>
             </select>
           </label>
-          <label class="form-control mb-4 w-full max-w-xs">
+          <label class="form-control mb-4 w-full">
             <div class="label">
               <span class="label-text font-medium">Categoría</span>
             </div>
@@ -395,7 +395,7 @@ import { Icon } from '@iconify/vue'
           </button>
         </li>
         <div class="divider m-0"></div>
-        <label class="form-control mb-4 w-full max-w-xs">
+        <label class="form-control mb-4 w-full">
           <div class="label">
             <span class="label-text font-medium">Categoría</span>
           </div>
@@ -408,7 +408,7 @@ import { Icon } from '@iconify/vue'
             <option>Star Trek</option>
           </select>
         </label>
-        <label class="form-control mb-4 w-full max-w-xs">
+        <label class="form-control mb-4 w-full">
           <div class="label">
             <span class="label-text font-medium">Categoría</span>
           </div>
@@ -421,7 +421,7 @@ import { Icon } from '@iconify/vue'
             <option>Star Trek</option>
           </select>
         </label>
-        <label class="form-control mb-4 w-full max-w-xs">
+        <label class="form-control mb-4 w-full">
           <div class="label">
             <span class="label-text font-medium">Categoría</span>
           </div>
@@ -434,7 +434,7 @@ import { Icon } from '@iconify/vue'
             <option>Star Trek</option>
           </select>
         </label>
-        <label class="form-control mb-4 w-full max-w-xs">
+        <label class="form-control mb-4 w-full">
           <div class="label">
             <span class="label-text font-medium">Categoría</span>
           </div>
@@ -447,7 +447,7 @@ import { Icon } from '@iconify/vue'
             <option>Star Trek</option>
           </select>
         </label>
-        <label class="form-control mb-4 w-full max-w-xs">
+        <label class="form-control mb-4 w-full">
           <div class="label">
             <span class="label-text font-medium">Categoría</span>
           </div>
@@ -460,7 +460,7 @@ import { Icon } from '@iconify/vue'
             <option>Star Trek</option>
           </select>
         </label>
-        <label class="form-control mb-4 w-full max-w-xs">
+        <label class="form-control mb-4 w-full">
           <div class="label">
             <span class="label-text font-medium">Categoría</span>
           </div>
@@ -493,15 +493,11 @@ import { Icon } from '@iconify/vue'
             </button>
           </li>
           <div class="divider m-0"></div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text">VIN:</span>
             </div>
-            <input
-              type="text"
-              placeholder="Placeholder"
-              class="input input-bordered w-full max-w-xs"
-            />
+            <input type="text" placeholder="Placeholder" class="input input-bordered w-full" />
           </label>
         </div>
         <li class="flex flex-row justify-around">
@@ -516,7 +512,7 @@ import { Icon } from '@iconify/vue'
         class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
       >
         <!-- Sidebar content here -->
-        <div>
+        <div class="flex flex-col">
           <li class="menu-title flex flex-row justify-between">
             Nuevo Vehículo Semi-Automático
             <button @click="toggleFilterDrawer" class="btn btn-square btn-xs">
@@ -524,51 +520,43 @@ import { Icon } from '@iconify/vue'
             </button>
           </li>
           <div class="divider m-0"></div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text">Marca:</span>
             </div>
-            <input
-              type="text"
-              placeholder="Placeholder"
-              class="input input-bordered w-full max-w-xs"
-            />
+            <input type="text" placeholder="Placeholder" class="input input-bordered w-full" />
           </label>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text">Carrocería:</span>
             </div>
-            <input
-              type="text"
-              placeholder="Placeholder"
-              class="input input-bordered w-full max-w-xs"
-            />
+            <input type="text" placeholder="Placeholder" class="input input-bordered w-full" />
           </label>
           <div class="mt-3 flex flex-row justify-end">
             <button class="btn btn-primary text-white">Buscar</button>
           </div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text">Modelo:</span>
             </div>
             <input
               type="text"
               placeholder="Placeholder"
-              class="input input-bordered w-full max-w-xs"
+              class="input input-bordered w-full"
               disabled
             />
           </label>
           <div class="mt-3 flex flex-row justify-end">
             <button class="btn btn-primary text-white">Buscar</button>
           </div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text">Versión:</span>
             </div>
             <input
               type="text"
               placeholder="Placeholder"
-              class="input input-bordered w-full max-w-xs"
+              class="input input-bordered w-full"
               disabled
             />
           </label>
@@ -593,15 +581,11 @@ import { Icon } from '@iconify/vue'
             </button>
           </li>
           <div class="divider m-0"></div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text">VIN:</span>
             </div>
-            <input
-              type="text"
-              placeholder="Placeholder"
-              class="input input-bordered w-full max-w-xs"
-            />
+            <input type="text" placeholder="Placeholder" class="input input-bordered w-full" />
           </label>
         </div>
         <li class="flex flex-row justify-around">
