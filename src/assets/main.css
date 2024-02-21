@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+.slider-connect {
+  background: #000000 !important;
+}
+
+.slider-tooltip {
+  background: #000000 !important;
+  border: #000000 !important;
+  color: white;
+}
+
 body {
   background-color: #d1d5db;
   height: 100vh;
