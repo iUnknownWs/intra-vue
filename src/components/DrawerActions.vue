@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-  toggleFilterDrawer: Function,
+  toggleDrawer: Function,
   primary: { type: String, required: true },
   secondary: { type: String, required: true }
 })
@@ -8,8 +8,8 @@ defineProps({
 
 <template>
   <li class="mt-8 flex flex-row justify-around">
-    <button @click="toggleFilterDrawer" class="btn btn-outline w-28">{{ secondary }}</button>
-    <button @click="toggleFilterDrawer" class="btn btn-primary w-24 text-white">
+    <button @click="toggleDrawer" class="btn btn-outline w-28">{{ secondary }}</button>
+    <button @click="toggleDrawer" class="btn btn-primary w-24 text-white">
       {{ primary }}
     </button>
   </li>

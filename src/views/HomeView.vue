@@ -5,12 +5,13 @@ import DrawerTitle from '@/components/DrawerTitle.vue'
 import DropdownBtn from '@/components/DropdownBtn.vue'
 import SelectTab from '@/components/SelectTab.vue'
 import SelectInput from '@/components/SelectInput.vue'
-import RangeInput from '@/components/RangeInput.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
 import TextInput from '@/components/TextInput.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
+import RangeSelect from '@/components/RangeSelect.vue'
+import RangeInputN from '@/components/RangeInputN.vue'
 </script>
 
 <template>
@@ -70,6 +71,9 @@ import DrawerActions from '@/components/DrawerActions.vue'
         <div class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
           <div class="menu-title flex flex-row justify-between">Filtros</div>
           <div class="divider m-0"></div>
+          <RangeSelect label="Año:" :from="reverseYears" :to="years" />
+          <RangeInputN label="Precio:" :max="200000" />
+          <RangeInputN label="KMs:" :max="200000" />
           <SelectInput label="Combustible:" />
           <SelectInput label="Tipo de Cambio:" />
           <SelectInput label="Tipo de Vehículo:" />
@@ -79,15 +83,8 @@ import DrawerActions from '@/components/DrawerActions.vue'
           <SelectInput label="Procedencia:" />
           <SelectInput label="Etiquetas:" />
           <SelectInput label="Compradores:" />
-          <RangeInput label="Año:" :min="1970" :max="2024" />
-          <RangeInput label="Precio:" :min="0" :max="200000" />
-          <RangeInput label="Kilómetros:" :min="0" :max="2000000" />
           <CheckInput label="ITV Vigente:" />
           <CheckInput label="Pendiente ITV:" />
-          <CheckInput label="Pendiente PT:" />
-          <CheckInput label="Validación de PT:" />
-          <CheckInput label="No web:" />
-          <CheckInput label="Entrega Inmediata:" />
           <CheckInput label="Pendiente Video:" />
           <li class="mt-8 flex flex-row justify-around">
             <button class="btn btn-outline w-28">
@@ -193,7 +190,10 @@ import DrawerActions from '@/components/DrawerActions.vue'
         class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
         <!-- Sidebar content here -->
-        <DrawerTitle title="Filtros" :toggleFilterDrawer="toggleFilterDrawer" />
+        <DrawerTitle title="Filtros" :toggleDrawer="toggleFilterDrawer" />
+        <RangeSelect label="Año:" :from="reverseYears" :to="years" />
+        <RangeInputN label="Precio:" :max="200000" />
+        <RangeInputN label="KMs:" :max="200000" />
         <SelectInput label="Combustible:" />
         <SelectInput label="Tipo de Cambio:" />
         <SelectInput label="Tipo de Vehículo:" />
@@ -203,18 +203,11 @@ import DrawerActions from '@/components/DrawerActions.vue'
         <SelectInput label="Procedencia:" />
         <SelectInput label="Etiquetas:" />
         <SelectInput label="Compradores:" />
-        <RangeInput label="Año:" :min="1970" :max="2024" />
-        <RangeInput label="Precio:" :min="0" :max="200000" />
-        <RangeInput label="Kilómetros:" :min="0" :max="2000000" />
         <CheckInput label="ITV Vigente:" />
         <CheckInput label="Pendiente ITV:" />
-        <CheckInput label="Pendiente PT:" />
-        <CheckInput label="Validación de PT:" />
-        <CheckInput label="No web:" />
-        <CheckInput label="Entrega Inmediata:" />
         <CheckInput label="Pendiente Video:" />
         <DrawerActions
-          :toggleFilterDrawer="toggleFilterDrawer"
+          :toggleDrawer="toggleFilterDrawer"
           secondary="Reset"
           primary="Filtrar"
         />
@@ -225,11 +218,11 @@ import DrawerActions from '@/components/DrawerActions.vue'
       >
         <!-- Sidebar content here -->
         <div>
-          <DrawerTitle title="Nuevo Vehículo Automático" :toggleFilterDrawer="toggleFilterDrawer" />
+          <DrawerTitle title="Nuevo Vehículo Automático" :toggleDrawer="toggleFilterDrawer" />
           <TextInput label="VIN:" placeholder="Introducir VIN" />
         </div>
         <DrawerActions
-          :toggleFilterDrawer="toggleFilterDrawer"
+          :toggleDrawer="toggleFilterDrawer"
           secondary="Cancelar"
           primary="Añadir"
         />
@@ -242,7 +235,7 @@ import DrawerActions from '@/components/DrawerActions.vue'
         <div class="flex flex-col">
           <DrawerTitle
             title="Nuevo Vehículo Semi-Automático"
-            :toggleFilterDrawer="toggleFilterDrawer"
+            :toggleDrawer="toggleFilterDrawer"
           />
           <TextInput label="Marca:" placeholder="Introducir Marca" />
           <TextInput label="Carrocería:" placeholder="Introducir Carrocería" />
@@ -256,7 +249,7 @@ import DrawerActions from '@/components/DrawerActions.vue'
           <TextInput label="Version:" placeholder="Introducir" disabled="true" />
         </div>
         <DrawerActions
-          :toggleFilterDrawer="toggleFilterDrawer"
+          :toggleDrawer="toggleFilterDrawer"
           secondary="Cancelar"
           primary="Añadir"
         />
@@ -267,7 +260,7 @@ import DrawerActions from '@/components/DrawerActions.vue'
       >
         <!-- Sidebar content here -->
         <div>
-          <DrawerTitle title="Nuevo Vehículo Manual" :toggleFilterDrawer="toggleFilterDrawer" />
+          <DrawerTitle title="Nuevo Vehículo Manual" :toggleDrawer="toggleFilterDrawer" />
           <TextInput label="Bastidor:" placeholder="Introducir" />
           <TextInput label="Matricula:" placeholder="Introducir" />
           <TextInput label="Fabricación:" placeholder="Introducir" />
@@ -279,7 +272,7 @@ import DrawerActions from '@/components/DrawerActions.vue'
           <TextInput label="Combustible:" placeholder="Introducir" />
         </div>
         <DrawerActions
-          :toggleFilterDrawer="toggleFilterDrawer"
+          :toggleDrawer="toggleFilterDrawer"
           secondary="Cancelar"
           primary="Añadir"
         />
@@ -289,6 +282,9 @@ import DrawerActions from '@/components/DrawerActions.vue'
 </template>
 
 <script>
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
+const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
 export default {
   name: 'HomeView',
   components: {},

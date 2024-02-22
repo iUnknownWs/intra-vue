@@ -1,0 +1,50 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import DrawerActions from '@/components/DrawerActions.vue'
+import DrawerTitle from '@/components/DrawerTitle.vue'
+
+defineProps({
+  title: { type: String, required: true },
+  add: { type: Boolean, required: true },
+  drawerTitle: { type: String, required: true }
+})
+
+let drawer = ref(false)
+const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
+</script>
+<template>
+  <div class="drawer drawer-end">
+    <input id="rightDrawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
+    <div class="drawer-content">
+      <!-- Page content here -->
+      <div class="flex flex-col">
+        <div class="flex flex-row justify-between">
+          <span class="text-2xl font-semibold">{{ title }}</span>
+          <label
+            v-if="add"
+            for="rightDrawer"
+            class="btn btn-primary drawer-button mb-2 self-end text-white"
+          >
+            <Icon icon="mdi:plus" width="25" />
+            Nuevo
+          </label>
+        </div>
+        <slot name="content" />
+      </div>
+    </div>
+    <div class="drawer-side z-10">
+      <label for="rightDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
+      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-80">
+        <!-- Sidebar content here -->
+        <div>
+          <DrawerTitle :title="drawerTitle" :toggleDrawer="toggleDrawer" />
+          <slot name="drawer" />
+        </div>
+        <DrawerActions :toggleDrawer="toggleDrawer" secondary="Cancelar" primary="Guardar" />
+      </ul>
+    </div>
+  </div>
+</template>

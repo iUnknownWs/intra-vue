@@ -11,10 +11,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@bhplugin/vue3-datatable": "^1.1.4",
     "@vueform/slider": "^2.1.10",
     "tailwind": "^4.0.0",
     "vue": "^3.4.15",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue3-easy-data-table": "^1.5.47"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",

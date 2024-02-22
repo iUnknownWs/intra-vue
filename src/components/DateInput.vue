@@ -5,12 +5,12 @@ defineProps({
 </script>
 
 <template>
-  <div class="form-control">
-    <label class="label cursor-pointer">
+  <label class="form-control mb-4 w-full">
+    <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
-      <input type="checkbox" class="checkbox" />
-    </label>
-  </div>
+    </div>
+    <input type="date" class="input input-bordered w-full" />
+  </label>
 </template>
 
 <style scoped></style>
