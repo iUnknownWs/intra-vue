@@ -1,4 +1,5 @@
 <script setup>
+import axios from 'axios'
 import { Icon } from '@iconify/vue'
 import { ref } from 'vue'
 import NavLink from './NavLink.vue'
@@ -8,11 +9,21 @@ import MenuLink from './MenuLink.vue'
 import DrawerTitle from './DrawerTitle.vue'
 import DrawerActions from './DrawerActions.vue'
 import SelectInput from './SelectInput.vue'
+axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 let drawer = ref(false)
 const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
+const logout = () => {
+  localStorage.removeItem('token')
+  window.location.href = '/'
+}
+const url = `${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}`
+const data = ref([])
+axios.get(url).then((response) => {
+  data.value = response.data
+})
 </script>
 
 <template>
@@ -30,7 +41,7 @@ const toggleDrawer = () => {
             <Icon icon="mdi:menu" width="30" />
           </label>
           <div>
-            <RouterLink to="/" class="btn btn-ghost px-0 text-xl text-white">
+            <RouterLink to="/vehiculos" class="btn btn-ghost px-0 text-xl text-white">
               <img
                 class="ml-2 w-8"
                 src="https://intranet-pre.garageclub.es/static/images/brand/favicon-blanco-xs.png"
@@ -39,8 +50,8 @@ const toggleDrawer = () => {
             </RouterLink>
           </div>
           <ul class="menu menu-horizontal hidden gap-2 text-white lg:flex">
-            <NavLink label="Vehículos" href="/" />
-            <NavLink label="Reservas" href="/about" />
+            <NavLink label="Vehículos" href="/vehiculos" />
+            <NavLink label="Reservas" href="/reservas" />
             <NavLink label="Tasaciones" href="/tasaciones" />
           </ul>
         </div>
@@ -62,14 +73,14 @@ const toggleDrawer = () => {
                     src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                   />
                 </div>
-                <p class="pl-2 text-center text-xs text-gray-500">willders.carvajal@gmail.com</p>
+                <p class="pl-2 text-center text-xs text-gray-500">{{ data.email }}</p>
               </div>
               <div class="divider m-0 p-0"></div>
               <li>
                 <a> <Icon icon="mdi:user" /> Mi Perfil </a>
               </li>
               <li>
-                <a> <Icon icon="mdi:logout" /> Cerrar Sesión </a>
+                <a @click="logout"> <Icon icon="mdi:logout" /> Cerrar sesión </a>
               </li>
             </template>
           </DropdownAvatar>

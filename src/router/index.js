@@ -1,13 +1,34 @@
+import LoginViewVue from '@/views/LoginView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeViewVue from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
+      name: 'login',
+      component: LoginViewVue,
+    },
+    {
+      path: '/vehiculos',
       name: 'home',
-      component: HomeView
+      component: HomeViewVue,
+    },
+    {
+      path: '/reservas',
+      name: 'reserve',
+      component: () => import('../views/ReserveView.vue')
+    },
+    {
+      path: '/tasaciones',
+      name: 'valuation',
+      component: () => import('../views/ValuationView.vue')
+    },
+    {
+      path: '/recuperar',
+      name: 'recovery',
+      component: () => import('../views/RecoveryView.vue')
     },
     {
       path: '/usuarios',
