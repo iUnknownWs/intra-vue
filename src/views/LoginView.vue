@@ -2,6 +2,7 @@
 import axios from 'axios'
 import TextInput from '@/components/TextInput.vue'
 import { ref } from 'vue'
+import router from '@/router';
 const email = ref('')
 const updateEmail = (value) => {
   email.value = value
@@ -18,7 +19,7 @@ const login = () => {
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('userid', response.data.user.id)
     if (response.status === 200) {
-      window.location.href = '/vehiculos'
+      router.push('/vehiculos')
     }
   })
 }

@@ -5,6 +5,7 @@ import TextInput from '@/components/TextInput.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import SettingTable from '@/components/SettingTable.vue'
 import axios from 'axios'
+import router from '@/router'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -38,7 +39,8 @@ const fetchUsers = () => {
     try {
       const params = {
         limit: serverOptions.value.rowsPerPage,
-        offset: serverOptions.value.rowsPerPage * (serverOptions.value.page - 1)
+        pager: 'number',
+        page: serverOptions.value.page
       }
       const API_URL = `${url}/?${new URLSearchParams(params)}`
       const response = await axios.get(API_URL)
@@ -85,7 +87,7 @@ const addUser = () => {
     })
     .then((response) => {
       if (response.status === 201) {
-        window.location.reload()
+        router.push('/users')
       }
     })
 }

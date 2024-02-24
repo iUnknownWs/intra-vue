@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { Icon } from '@iconify/vue'
-import { ref } from 'vue'
+import { pushScopeId, ref } from 'vue'
 import NavLink from './NavLink.vue'
 import DropdownAvatar from './DropdownAvatar.vue'
 import DropdownBtn from './DropdownBtn.vue'
@@ -9,6 +9,7 @@ import MenuLink from './MenuLink.vue'
 import DrawerTitle from './DrawerTitle.vue'
 import DrawerActions from './DrawerActions.vue'
 import SelectInput from './SelectInput.vue'
+import router from '@/router'
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 let drawer = ref(false)
@@ -17,7 +18,7 @@ const toggleDrawer = () => {
 }
 const logout = () => {
   localStorage.removeItem('token')
-  window.location.href = '/'
+  router.push('/')
 }
 const url = `${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}`
 const data = ref([])
