@@ -23,6 +23,9 @@ const login = () => {
     }
   })
 }
+if (localStorage.getItem('token')) {
+  router.push('/vehiculos')
+}
 </script>
 
 <template>
