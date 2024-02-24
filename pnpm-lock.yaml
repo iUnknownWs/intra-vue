@@ -14,6 +14,9 @@ dependencies:
   axios:
     specifier: ^1.6.7
     version: 1.6.7
+  gridjs-vue:
+    specifier: ^5.0.4
+    version: 5.0.4
   tailwind:
     specifier: ^4.0.0
     version: 4.0.0
@@ -1922,6 +1925,10 @@ packages:
   /graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
+
+  /gridjs-vue@5.0.4:
+    resolution: {integrity: sha512-g1XS7uaUcgKzezgyEAn2GvGCd3Pi8x9SHoSrbSV9M5FP46udAzVR97Qs7eH9duuAoRDCNrILiJ3uJS+sTNeN8Q==}
+    dev: false
 
   /has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}

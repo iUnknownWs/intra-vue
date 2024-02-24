@@ -1,11 +1,13 @@
 <script setup>
 import { ref } from 'vue'
+
 defineProps({
   label: { type: String, required: true },
   placeholder: { type: String, required: true },
   disabled: { type: Boolean },
   type: { type: String, default: 'text' }
 })
+
 const value = ref('')
 
 </script>

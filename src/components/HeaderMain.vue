@@ -3,6 +3,8 @@ import { Icon } from '@iconify/vue'
 import NavBar from '@/components/NavBar.vue'
 import DrawerLink from '@/components/DrawerLink.vue'
 import DrawerLogo from '@/components/DrawerLogo.vue'
+import axios from 'axios'
+axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 </script>
 
 <template>
