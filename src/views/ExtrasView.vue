@@ -182,7 +182,7 @@ const headers = [
       <template #content>
         <EasyDataTable
           class="table-dark table-striped"
-          cell
+          border-cell
           buttons-pagination
           :headers="headers"
           :items="items"

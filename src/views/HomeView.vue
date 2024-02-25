@@ -15,9 +15,88 @@ import DrawerActions from '@/components/DrawerActions.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
 import axios from 'axios'
+
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
 const url = `${import.meta.env.VITE_VEHICLES}/`
 const vehicles = ref([])
+const vehiclesFilter = ref([])
+
+const params = ref('')
+const urlParams = ref('')
+
+const pr = () => {
+  params.value = 'status=0'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const ppt = () => {
+  params.value = 'ppt=true'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const vpt = () => {
+  params.value = 'vpt=true'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const pp = () => {
+  params.value = 'status=3'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const venta = () => {
+  params.value = 'status=4'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const reserva = () => {
+  params.value = 'status=5'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const web = () => {
+  params.value = 'no_web=true'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const entrega = () => {
+  params.value = 'inmediate_delivery=true'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const na = () => {
+  params.value = 'status=10'
+  urlParams.value = url + '?' + params.value
+  axios.get(urlParams.value).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
 axios.get(url).then((response) => {
   vehicles.value = response.data.results
 })
@@ -133,30 +212,268 @@ axios.get(url).then((response) => {
                 :leads="vehicle.key_locator"
               />
             </div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="Recepción" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 2</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="Publicación" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 3</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="En venta" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 4</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="Reservados" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 5</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="Pte. de PT" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 6</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="Validar PT" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 7</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="No web" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 8</div>
+            <input
+              ref="pr"
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="Recepción"
+              @change="pr"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="Publicación"
+              @change="pp"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="En venta"
+              @change="venta"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="Reservados"
+              @change="reserva"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="Pte. de PT"
+              @change="ppt"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="Validar PT"
+              @change="vpt"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="No web"
+              @change="web"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
             <input
               type="radio"
               name="class"
               role="tab"
               class="tab"
               aria-label="Entrega inmediata"
+              @change="entrega"
             />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 9</div>
-            <input type="radio" name="class" role="tab" class="tab" aria-label="No disponible" />
-            <div role="tabpanel" class="tab-content pt-2">Tab content 10</div>
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
+            <input
+              type="radio"
+              name="class"
+              role="tab"
+              class="tab"
+              aria-label="No disponible"
+              @change="na"
+            />
+            <div role="tabpanel" class="tab-content pt-2">
+              <CardDesktop
+                v-for="(vehicle, index) in vehiclesFilter"
+                :key="index"
+                :placa="vehicle.license_plate"
+                :modelo="vehicle.model.title"
+                :marca="vehicle.model.brand.title"
+                :version="vehicle.version.title"
+                :contado="vehicle.price?.price_with_discounts"
+                :financiado="vehicle.price?.financed_price"
+                :quotes="vehicle.price?.financing_fee"
+                :estado="vehicle.status"
+                :stock="vehicle.days_in_stock"
+                :img="vehicle.image"
+                :combustible="vehicle.fuel.description"
+                :cambios="vehicle.gear_box?.description"
+                :año="vehicle.year"
+                :kms="vehicle.kms"
+                :leads="vehicle.key_locator"
+              />
+            </div>
           </div>
         </div>
         <div class="mt-4 flex flex-col items-center justify-center lg:hidden">
