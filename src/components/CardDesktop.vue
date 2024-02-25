@@ -17,7 +17,7 @@ const props = defineProps({
   },
   combustible: { type: String, required: true },
   año: { type: Number, required: true },
-  cambios: { type: String, required: true },
+  cambios: { type: [String, null], required: true, default: '-' },
   leads: { type: [Number, null], required: true },
   kms: { type: [Number, null], required: true }
 })
@@ -64,9 +64,13 @@ const integrations = [true, true, true]
           >
             Reservado
           </span>
-          <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{
-            lead
-          }}</span>
+          <span
+            v-if="estado == 10"
+            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            No Disponible
+          </span>
+          <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{ lead }}</span>
         </div>
       </div>
       <div class="flex-col pl-4">
