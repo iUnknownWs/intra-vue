@@ -6,13 +6,11 @@ const props = defineProps({
   placeholder: { type: String, required: true },
   disabled: { type: Boolean },
   type: { type: String, default: 'text' },
-  read: { type: String }
+  modelValue: { type: String }
 })
+defineEmits(['update:modelValue'])
 
-const value = ref('')
-if (props.read) {
-  value.value = props.read
-}
+
 </script>
 
 <template>
@@ -25,8 +23,8 @@ if (props.read) {
       :placeholder="placeholder"
       class="input input-bordered w-full"
       :disabled="disabled"
-      v-model="value"
-      @change="$emit('input', value)"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     />
   </label>
 </template>

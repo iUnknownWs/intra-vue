@@ -3,10 +3,11 @@ import { ref } from 'vue'
 
 defineProps({
   label: { type: String, required: true },
-  max: { type: Number, required: true }
+  max: { type: Number, required: true },
+  modelValue: {type:String, required:true}
 })
+defineEmits(["update:modelValue"])
 
-const from = ref(0)
 </script>
 
 <template>
@@ -19,10 +20,10 @@ const from = ref(0)
       class="input input-bordered w-full"
       :max="max"
       min="0"
-      v-model="from"
-      @input="$emit('input', from)"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     />
-    <p>{{ from }}</p>
+    
   </label>
 </template>
 
