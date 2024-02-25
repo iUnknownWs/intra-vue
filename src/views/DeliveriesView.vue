@@ -67,7 +67,7 @@ const remove = (id) => {
 const headers = [
   { text: 'TÍTULO', value: 'title' },
   { text: 'DESCRIPCIÓN', value: 'description' },
-  { text: 'ENTREGA A DOMICILIO', value: 'is_home_delivery', },
+  { text: 'ENTREGA A DOMICILIO', value: 'is_home_delivery' },
   { text: 'PRECIO', value: 'price' },
   { text: 'ACCIONES', value: 'id', width: 60 }
 ]
@@ -94,7 +94,7 @@ const headers = [
           >
             <template v-slot:item-id="{ id }">
               <div class="w-20">
-                <button class="btn btn-square btn-xs mr-2" @click="remove(id)">
+                <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
                   <Icon icon="mdi:pencil" />
                 </button>
                 <button class="btn btn-square btn-error btn-xs" @click="remove(id)">

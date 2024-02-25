@@ -83,7 +83,7 @@ const addUser = () => {
     })
     .then((response) => {
       if (response.status === 201) {
-        router.push('/usuarios')
+        router.go(0)
       }
     })
 }

@@ -75,7 +75,7 @@ const addDiscount = () => {
     description: description.value,
     auto_add_vehicle: auto.value,
     without_warranty: garantia.value
-  })
+  }).then(() => router.go(0))
 }
 
 const title = ref('')

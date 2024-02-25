@@ -71,7 +71,7 @@ const addDocs = () => {
     title: title.value,
     description: description.value,
     price: price.value
-  })
+  }).then(() => router.go(0))
 }
 
 const title = ref('')

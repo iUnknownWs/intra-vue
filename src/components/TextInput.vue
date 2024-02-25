@@ -9,7 +9,7 @@ const props = defineProps({
   read: { type: String }
 })
 
-const value = ref('a')
+const value = ref('')
 if (props.read) {
   value.value = props.read
   console.log(value.value)
