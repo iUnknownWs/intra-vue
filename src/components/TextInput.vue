@@ -12,7 +12,6 @@ const props = defineProps({
 const value = ref('')
 if (props.read) {
   value.value = props.read
-  console.log(value.value)
 }
 </script>
 

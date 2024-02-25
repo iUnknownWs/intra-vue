@@ -118,6 +118,7 @@ const updateAdmin = (value) => {
       <template #content>
         <EasyDataTable
           class="table-dark table-striped"
+          border-cell
           buttons-pagination
           :headers="headers"
           :items="items"

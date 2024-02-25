@@ -1,10 +1,12 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
-import HeaderMain from '@/components/HeaderMain.vue'
-import SettingTable from '@/components/SettingTable.vue'
 import router from '@/router'
 import axios from 'axios'
+import HeaderMain from '@/components/HeaderMain.vue'
+import SettingTable from '@/components/SettingTable.vue'
+import TextInput from '@/components/TextInput.vue'
+import CheckInput from '@/components/CheckInput.vue'
 
 const url = `${import.meta.env.VITE_SALES}/delivery-types/`
 const items = ref([])
@@ -64,6 +66,64 @@ const remove = (id) => {
   axios.delete(`${url}/${id}/`).then(() => router.go(0))
 }
 
+const edit = ref(null)
+const data = ref({})
+const refresh = ref(0)
+
+const refreshComponent = () => {
+  refresh.value++
+}
+const editModal = (id) => {
+  axios
+    .get(`${url}${id}/`)
+    .then((response) => {
+      data.value = response.data
+    })
+    .then(() => {
+      title.value = data.value.title
+      price.value = data.value.price
+      description.value = data.value.description
+      auto.value = data.value.auto_add_vehicle
+      delivery.value = data.value.is_home_delivery
+      refreshComponent()
+      edit.value.showModal()
+    })
+}
+
+const title = ref('')
+const price = ref(0)
+const description = ref('')
+const delivery = ref(false)
+const auto = ref(false)
+
+const updateTitle = (value) => {
+  title.value = value
+}
+const updatePrice = (value) => {
+  price.value = value
+}
+const updateDescription = (value) => {
+  description.value = value
+}
+const updateDelivery = (value) => {
+  delivery.value = value
+}
+const updateAuto = (value) => {
+  auto.value = value
+}
+
+const editData = () => {
+  axios
+    .put(`${url}${data.value.id}/`, {
+      title: title.value,
+      price: price.value,
+      description: description.value,
+      auto_add_vehicle: auto.value,
+      is_home_delivery: delivery.value
+    })
+    .then(() => router.go(0))
+}
+
 const headers = [
   { text: 'TÍTULO', value: 'title' },
   { text: 'DESCRIPCIÓN', value: 'description' },
@@ -73,6 +133,53 @@ const headers = [
 ]
 </script>
 <template>
+  <dialog ref="edit" id="edit" class="modal">
+    <div class="modal-box flex flex-col">
+      <form method="dialog flex flex-col">
+        <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="text-lg font-bold">Editar Tipo de Entrega</h3>
+      <div class="divider m-0"></div>
+      <form @submit.prevent="editData" class="flex flex-col">
+        <TextInput
+          label="Título"
+          placeholder="Introducir"
+          @input="updateTitle"
+          :key="refresh"
+          :read="data.title"
+        />
+        <TextInput
+          label="Descripción"
+          placeholder="Introducir"
+          @input="updateDescription"
+          :key="refresh"
+          :read="data.description"
+        />
+        <TextInput
+          label="Precio"
+          placeholder="Introducir"
+          @input="updatePrice"
+          :key="refresh"
+          :read="data.price"
+        />
+        <div class="mt-3 font-medium">
+          <CheckInput
+            label="Entrega a domicilio"
+            @input="updateDelivery"
+            :read="data.is_home_delivery"
+            :key="refresh"
+          />
+          <CheckInput
+            label="¿Agregar al vehículo automáticamente?"
+            @input="updateAuto"
+            :read="data.auto_add_vehicle"
+            :key="refresh"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+      </form>
+    </div>
+  </dialog>
   <HeaderMain>
     <SettingTable
       title="Lista de tipos de entregas"
@@ -83,7 +190,7 @@ const headers = [
         <div class="mt-3">
           <EasyDataTable
             class="table-dark table-striped"
-            cell
+            border-cell
             buttons-pagination
             :headers="headers"
             :items="items"

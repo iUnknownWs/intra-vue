@@ -66,12 +66,48 @@ const remove = (id) => {
   axios.delete(`${url}/${id}/`).then(() => router.go(0))
 }
 
+const edit = ref(null)
+const data = ref({})
+const refresh = ref(0)
+
+const refreshComponent = () => {
+  refresh.value++
+}
+const editModal = (id) => {
+  axios
+    .get(`${url}${id}/`)
+    .then((response) => {
+      data.value = response.data
+    })
+    .then(() => {
+      title.value = data.value.title
+      price.value = data.value.price
+      description.value = data.value.description
+      auto.value = data.value.auto_add_vehicle
+      refreshComponent()
+      edit.value.showModal()
+    })
+}
+
+const editData = () => {
+  axios
+    .put(`${url}${data.value.id}/`, {
+      title: title.value,
+      price: price.value,
+      description: description.value,
+      auto_add_vehicle: auto.value
+    })
+    .then(() => router.go(0))
+}
+
 const addExtra = () => {
-  axios.post(url, {
-    title: title.value,
-    description: description.value,
-    price: price.value
-  }).then(() => router.go(0))
+  axios
+    .post(url, {
+      title: title.value,
+      description: description.value,
+      price: price.value
+    })
+    .then(() => router.go(0))
 }
 
 const title = ref('')
@@ -97,8 +133,52 @@ const headers = [
 ]
 </script>
 <template>
+  <dialog ref="edit" id="edit" class="modal">
+    <div class="modal-box flex flex-col">
+      <form method="dialog flex flex-col">
+        <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="text-lg font-bold">Editar Tipo de Entrega</h3>
+      <div class="divider m-0"></div>
+      <form @submit.prevent="editData" class="flex flex-col">
+        <TextInput
+          label="Título"
+          placeholder="Introducir"
+          @input="updateTitle"
+          :key="refresh"
+          :read="data.title"
+        />
+        <TextInput
+          label="Descripción"
+          placeholder="Introducir"
+          @input="updateDescription"
+          :key="refresh"
+          :read="data.description"
+        />
+        <label class="form-control w-full">
+          <div class="label">
+            <span class="label-text font-medium">Precio</span>
+          </div>
+          <input type="number" class="input input-bordered w-full" v-model="price" />
+        </label>
+        <CheckInput
+          label="¿Agregar al vehículo automáticamente?"
+          class="mt-3"
+          @input="updateAuto"
+          :key="refresh"
+          :read="data.auto_add_vehicle"
+        />
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+      </form>
+    </div>
+  </dialog>
   <HeaderMain>
-    <SettingTable title="Lista de Extras" :add="true" drawerTitle="Añadir Nuevo Extra" @toggle="addExtra">
+    <SettingTable
+      title="Lista de Extras"
+      :add="true"
+      drawerTitle="Añadir Nuevo Extra"
+      @toggle="addExtra"
+    >
       <template #content>
         <EasyDataTable
           class="table-dark table-striped"
@@ -113,17 +193,13 @@ const headers = [
         >
           <template v-slot:item-id="{ id }">
             <div class="w-20">
-              <button class="btn btn-square btn-xs mr-2" @click="remove(id)">
+              <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
                 <Icon icon="mdi:pencil" />
               </button>
               <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
                 <Icon icon="mdi:trash-can-outline" />
               </button>
             </div>
-          </template>
-          <template v-slot:item-is_home_delivery="{ is_home_delivery }">
-            <Icon icon="mdi:check" v-if="is_home_delivery" color="green" width="30" />
-            <Icon icon="mdi:close" v-if="!is_home_delivery" color="red" width="30" />
           </template>
         </EasyDataTable>
       </template>

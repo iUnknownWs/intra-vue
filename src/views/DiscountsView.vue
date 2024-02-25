@@ -92,17 +92,44 @@ const addDiscount = () => {
 }
 
 const edit = ref(null)
-const user = ref({})
+const data = ref({})
+const refresh = ref(0)
+
+const refreshComponent = () => {
+  refresh.value++
+}
 const editModal = (id) => {
-  axios.get(`${url}${id}/`).then((response) => {
-    user.value = response.data
-  }).then(() => edit.value.showModal())
+  axios
+    .get(`${url}${id}/`)
+    .then((response) => {
+      data.value = response.data
+    })
+    .then(() => {
+      refreshComponent()
+      title.value = data.value.title
+      startDate.value = data.value.from_date
+      endDate.value = data.value.to_date
+      amount.value = data.value.amount_percent
+      amountFix.value = data.value.amount_fix
+      edit.value.showModal()
+    })
+}
+
+const editDiscount = () => {
+  axios
+    .put(`${url}${data.value.id}/`, {
+      title: title.value,
+      from_date: startDate.value,
+      to_date: endDate.value,
+      amount_percent: amount.value,
+      amount_fix: amountFix.value
+    })
+    .then(() => router.go(0))
 }
 
 const title = ref('')
 const updateTitle = (value) => {
   title.value = value
-  console.log(value)
 }
 
 const startDate = ref('')
@@ -116,33 +143,51 @@ const updateEndDate = (value) => {
 }
 
 const amount = ref(0)
-
 const amountFix = ref(0)
 </script>
 
 <template>
   <dialog ref="edit" id="edit" class="modal">
-    <div class="modal-box">
-      <form method="dialog">
+    <div class="modal-box flex flex-col">
+      <form method="dialog flex flex-col">
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Descuento</h3>
       <div class="divider m-0"></div>
-      <TextInput label="Título" placeholder="Introducir" @input="updateTitle" :read="user.title" />
-      <DateInput label="Inicio" @input="updateStartDate" />
-      <DateInput label="Fin" @input="updateEndDate" />
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text font-medium">Valor (%)</span>
-        </div>
-        <input type="number" class="input input-bordered w-full" max="100" v-model="amount" />
-      </label>
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text font-medium">Valor (%)</span>
-        </div>
-        <input type="number" class="input input-bordered w-full" max="200000" v-model="amountFix" />
-      </label>
+      <form @submit.prevent="editDiscount" class="flex flex-col">
+        <TextInput
+          label="Título"
+          placeholder="Introducir"
+          @input="updateTitle"
+          :read="data.title"
+          :key="refresh"
+        />
+        <DateInput
+          label="Inicio"
+          @input="updateStartDate"
+          :key="refresh"
+          :read="data.from_date"
+        />
+        <DateInput label="Fin" @input="updateEndDate" :key="refresh" :read="data.to_date" />
+        <label class="form-control w-full">
+          <div class="label">
+            <span class="label-text font-medium">Valor (%)</span>
+          </div>
+          <input type="number" class="input input-bordered w-full" max="100" v-model="amount" />
+        </label>
+        <label class="form-control w-full">
+          <div class="label">
+            <span class="label-text font-medium">Valor (%)</span>
+          </div>
+          <input
+            type="number"
+            class="input input-bordered w-full"
+            max="200000"
+            v-model="amountFix"
+          />
+        </label>
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+      </form>
     </div>
   </dialog>
   <HeaderMain>
@@ -155,6 +200,7 @@ const amountFix = ref(0)
       <template #content>
         <EasyDataTable
           class="table-dark table-striped"
+          border-cell
           buttons-pagination
           :headers="headers"
           :items="items"
@@ -176,7 +222,7 @@ const amountFix = ref(0)
         </EasyDataTable>
       </template>
       <template #drawer>
-        <TextInput label="Título" placeholder="Introducir" @input="updateTitle" />
+        <TextInput label="Título" placeholder="Introducir" @submit="updateTitle" />
         <DateInput label="Inicio" @input="updateStartDate" />
         <DateInput label="Fin" @input="updateEndDate" />
         <label class="form-control w-full">

@@ -1,11 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
-  label: { type: String, required: true }
+const props = defineProps({
+  label: { type: String, required: true },
+  read: { type: String }
 })
 
 const date = ref('')
+if (props.read) {
+  date.value = props.read
+}
 </script>
 
 <template>

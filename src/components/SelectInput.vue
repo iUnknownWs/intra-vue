@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   label: { type: String, required: true },
-  options: { type: Object, required: true }
+  options: { type: Object, required: true },
+  read: { type: Number}
 })
 
 // const options = [
@@ -14,6 +15,9 @@ defineProps({
 // ]
 
 const value = ref(0)
+if (props.read) {
+  value.value = props.read
+}
 </script>
 
 <template>
