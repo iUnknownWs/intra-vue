@@ -1,15 +1,19 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   label: { type: String, required: true },
   placeholder: { type: String, required: true },
   disabled: { type: Boolean },
-  type: { type: String, default: 'text' }
+  type: { type: String, default: 'text' },
+  read: { type: String }
 })
 
-const value = ref('')
-
+const value = ref('a')
+if (props.read) {
+  value.value = props.read
+  console.log(value.value)
+}
 </script>
 
 <template>

@@ -91,6 +91,14 @@ const addDiscount = () => {
     })
 }
 
+const edit = ref(null)
+const user = ref({})
+const editModal = (id) => {
+  axios.get(`${url}${id}/`).then((response) => {
+    user.value = response.data
+  }).then(() => edit.value.showModal())
+}
+
 const title = ref('')
 const updateTitle = (value) => {
   title.value = value
@@ -111,7 +119,32 @@ const amount = ref(0)
 
 const amountFix = ref(0)
 </script>
+
 <template>
+  <dialog ref="edit" id="edit" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="text-lg font-bold">Editar Descuento</h3>
+      <div class="divider m-0"></div>
+      <TextInput label="Título" placeholder="Introducir" @input="updateTitle" :read="user.title" />
+      <DateInput label="Inicio" @input="updateStartDate" />
+      <DateInput label="Fin" @input="updateEndDate" />
+      <label class="form-control w-full">
+        <div class="label">
+          <span class="label-text font-medium">Valor (%)</span>
+        </div>
+        <input type="number" class="input input-bordered w-full" max="100" v-model="amount" />
+      </label>
+      <label class="form-control w-full">
+        <div class="label">
+          <span class="label-text font-medium">Valor (%)</span>
+        </div>
+        <input type="number" class="input input-bordered w-full" max="200000" v-model="amountFix" />
+      </label>
+    </div>
+  </dialog>
   <HeaderMain>
     <SettingTable
       title="Lista de Descuentos"
@@ -132,7 +165,7 @@ const amountFix = ref(0)
         >
           <template v-slot:item-id="{ id }">
             <div class="w-20">
-              <button class="btn btn-square btn-xs mr-2" @click="remove(id)">
+              <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
                 <Icon icon="mdi:pencil" />
               </button>
               <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
