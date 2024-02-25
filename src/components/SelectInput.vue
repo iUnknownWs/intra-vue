@@ -1,23 +1,19 @@
 <script setup>
+import { ref } from 'vue'
+
 defineProps({
-  label: { type: String, required: true }
-  // options: { type: Object, required: true }
+  label: { type: String, required: true },
+  options: { type: Object, required: true }
 })
 
-const options = [
-  {
-    id: 1,
-    name: 'Option 1'
-  },
-  {
-    id: 2,
-    name: 'Option 2'
-  },
-  {
-    id: 3,
-    name: 'Option 3'
-  }
-]
+// const options = [
+//   {
+//     value: 1,
+//     name: '0 Meses'
+//   },
+// ]
+
+const value = ref(0)
 </script>
 
 <template>
@@ -25,9 +21,9 @@ const options = [
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <select class="select select-bordered">
+    <select class="select select-bordered" v-model="value" @change="$emit('input', value)">
       <option disabled selected>Pick one</option>
-      <option v-for="option in options" :key="option.id">{{ option.name }}</option>
+      <option v-for="(option, index) in options" :key="index" :value="option.value">{{ option.name }}</option>
     </select>
   </label>
 </template>

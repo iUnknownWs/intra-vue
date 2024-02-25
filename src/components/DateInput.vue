@@ -1,7 +1,11 @@
 <script setup>
+import { ref } from 'vue'
+
 defineProps({
   label: { type: String, required: true }
 })
+
+const date = ref('')
 </script>
 
 <template>
@@ -9,7 +13,7 @@ defineProps({
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <input type="date" class="input input-bordered w-full" />
+    <input v-model="date" type="date" class="input input-bordered w-full" @change="$emit('input', date)" />
   </label>
 </template>
 

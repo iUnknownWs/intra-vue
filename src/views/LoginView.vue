@@ -2,26 +2,36 @@
 import axios from 'axios'
 import TextInput from '@/components/TextInput.vue'
 import { ref } from 'vue'
-import router from '@/router';
+import router from '@/router'
+
 const email = ref('')
 const updateEmail = (value) => {
   email.value = value
 }
+
 const password = ref('')
 const updatePassword = (value) => {
   password.value = value
 }
+
+const validation = ref(null)
+
 const login = () => {
-  axios.post(import.meta.env.VITE_LOGIN, {
-    email: email.value,
-    password: password.value
-  }).then((response) => {
-    localStorage.setItem('token', response.data.token)
-    localStorage.setItem('userid', response.data.user.id)
-    if (response.status === 200) {
-      router.push('/vehiculos')
-    }
-  })
+  axios
+    .post(import.meta.env.VITE_LOGIN, {
+      email: email.value,
+      password: password.value
+    })
+    .then((response) => {
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('userid', response.data.user.id)
+      if (response.status === 200) {
+        router.push('/vehiculos')
+      }
+    })
+    .catch(() => {
+      validation.value.showModal()
+    })
 }
 if (localStorage.getItem('token')) {
   router.push('/vehiculos')
@@ -29,6 +39,20 @@ if (localStorage.getItem('token')) {
 </script>
 
 <template>
+  <dialog ref="validation" id="validation" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">No se ha podido iniciar la sesión</h3>
+      <p class="py-4">El email o contraseña son incorrectos</p>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn">Cerrar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
   <div
     class="flex h-screen w-screen items-center justify-center bg-black bg-[url('/src/assets/img/bg2.png')] bg-cover bg-center"
   >
@@ -43,19 +67,21 @@ if (localStorage.getItem('token')) {
       <div class="card-body items-center text-center">
         <h2 class="card-title text-xl">Iniciar Sesión</h2>
         <h3 class="text-sm text-gray-500">Intranet</h3>
-        <TextInput label="Email" placeholder="Introducir Email" @input="updateEmail" />
-        <TextInput
-          label="Contraseña"
-          placeholder="Introducir Contraseña"
-          type="password"
-          @input="updatePassword"
-        />
-        <span class="text-xs font-medium"
-          ><RouterLink to="/recuperar">¿Olvidaste tu contraseña?</RouterLink></span
-        >
-        <div class="card-actions w-full">
-          <button class="btn btn-primary mt-2 w-full text-white" @click="login">Acceder</button>
-        </div>
+        <form class="w-full" @submit.prevent="login">
+          <TextInput label="Email" placeholder="Introducir Email" @input="updateEmail" />
+          <TextInput
+            label="Contraseña"
+            placeholder="Introducir Contraseña"
+            type="password"
+            @input="updatePassword"
+          />
+          <span class="text-xs font-medium"
+            ><RouterLink to="/recuperar">¿Olvidaste tu contraseña?</RouterLink></span
+          >
+          <div class="card-actions w-full">
+            <button class="btn btn-primary mt-2 w-full text-white" type="submit">Acceder</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

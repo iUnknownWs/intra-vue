@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+
 defineProps({
   label: { type: String, required: true },
   max: { type: Number, required: true }
 })
+
 const from = ref(0)
 </script>
 
@@ -14,13 +16,13 @@ const from = ref(0)
     </div>
     <input
       type="number"
-      name="from"
-      id="from"
       class="input input-bordered w-full"
       :max="max"
       min="0"
-      :value="from"
+      v-model="from"
+      @input="$emit('input', from)"
     />
+    <p>{{ from }}</p>
   </label>
 </template>
 

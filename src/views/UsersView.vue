@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
+import { Icon } from '@iconify/vue'
 import HeaderMain from '@/components/HeaderMain.vue'
 import TextInput from '@/components/TextInput.vue'
 import CheckInput from '@/components/CheckInput.vue'
@@ -8,14 +9,6 @@ import axios from 'axios'
 import router from '@/router'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
-
-const headers = [
-  { text: 'EMAIL', value: 'email' },
-  { text: 'NOMBRE', value: 'first_name' },
-  { text: 'APELLIDO', value: 'last_name' },
-  { text: 'ADMIN', value: 'is_admin', width: 30 },
-  { text: 'ELIMINAR', value: 'id' }
-]
 
 const items = ref([])
 const serverItemsLength = ref(0)
@@ -27,7 +20,7 @@ const serverOptions = ref({
   rowsPerPage: 20
 })
 
-const fetchUsers = () => {
+const fetching = () => {
   if (isFetching.value) {
     return
   }
@@ -59,23 +52,26 @@ const fetchUsers = () => {
 }
 
 onMounted(() => {
-  fetchUsers()
+  fetching()
 })
 
 watch(
   serverOptions,
   () => {
-    fetchUsers()
+    fetching()
   },
   { deep: true }
 )
 
+const headers = [
+  { text: 'EMAIL', value: 'email' },
+  { text: 'NOMBRE', value: 'first_name' },
+  { text: 'APELLIDO', value: 'last_name' },
+  { text: 'ADMIN', value: 'is_admin', width: 30 },
+  { text: 'ELIMINAR', value: 'id', width: 30 }
+]
+
 const url = `${import.meta.env.VITE_USER}/`
-let data = ref([])
-axios.get(url).then((response) => {
-  data.value = response.data.results
-  return data
-})
 
 const addUser = () => {
   axios
@@ -87,7 +83,7 @@ const addUser = () => {
     })
     .then((response) => {
       if (response.status === 201) {
-        router.push('/users')
+        router.push('/usuarios')
       }
     })
 }
@@ -110,6 +106,7 @@ const updateAdmin = (value) => {
   admin.value = value
 }
 </script>
+
 <template>
   <HeaderMain>
     <SettingTable
@@ -129,6 +126,18 @@ const updateAdmin = (value) => {
           :loading="loading"
           rows-per-page-message="Filas por pestaña"
         >
+          <template v-slot:item-is_admin="{ is_admin }">
+            <Icon icon="mdi:check" v-if="is_admin" color="green" width="30" />
+            <Icon icon="mdi:close" v-if="!is_admin" color="red" width="30" />
+          </template>
+          <template v-slot:item-id="{ id }">
+            <button
+              class="btn btn-error btn-xs text-white"
+              @click="axios.delete(`${url}/${id}/`).then(() => router.go(0))"
+            >
+              Eliminar
+            </button>
+          </template>
         </EasyDataTable>
       </template>
       <template #drawer>

@@ -16,7 +16,7 @@ import RangeSelect from '@/components/RangeSelect.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
 import axios from 'axios'
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
-const url = `${import.meta.env.VITE_VEHICLES}`
+const url = `${import.meta.env.VITE_VEHICLES}/`
 const vehicles = ref([])
 axios.get(url).then((response) => {
   vehicles.value = response.data.results
