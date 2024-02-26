@@ -11,21 +11,16 @@ const props = defineProps({
   quotes: { type: [String, null], required: true },
   stock: { type: Number, required: true },
   img: {
-    type: String,
-    default:
-      'https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg'
+    type: [String, null],
+    default: 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
   },
   combustible: { type: String, required: true },
   año: { type: Number, required: true },
-  cambios: { type: String, required: true },
+  cambios: { type: [String, null], required: true, default: '-' },
   leads: { type: [Number, null], required: true },
   kms: { type: [Number, null], required: true }
 })
-let image = 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
 let lead = 0
-if (props.img) {
-  image = props.img
-}
 if (props.leads) {
   lead = props.leads
 }
@@ -37,7 +32,7 @@ const integrations = [true, true, true]
     <figure class="bg-cover">
       <div
         class="cover relative z-0 aspect-video w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
-        :style="{ 'background-image': 'url(' + image + ')' }"
+        :style="{ 'background-image': 'url(' + img + ')' }"
       >
         <div class="dropdown dropdown-end menu-xs absolute right-2 top-2">
           <div tabindex="0" role="button" class="btn btn-square btn-ghost">
