@@ -153,19 +153,19 @@ const headers = [
 const options = [
   {
     value: 0,
-    name: '0 Meses'
+    label: '0 Meses'
   },
   {
     value: 12,
-    name: '12 Meses'
+    label: '12 Meses'
   },
   {
     value: 24,
-    name: '24 Meses'
+    label: '24 Meses'
   },
   {
     value: 36,
-    name: '36 Meses'
+    label: '36 Meses'
   }
 ]
 </script>

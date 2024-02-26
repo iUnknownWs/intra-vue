@@ -1,34 +1,30 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 const props = defineProps({
-  placa: { type: [String, null], required: true },
+  placa: { type: String, required: true },
   modelo: { type: String, required: true },
   marca: { type: String, required: true },
   version: { type: String, required: true },
   estado: { type: Number, required: true },
-  contado: { type: [Number, null], required: true },
-  financiado: { type: [String, null], required: true },
-  quotes: { type: [String, null], required: true },
+  contado: { type: Number, required: true },
+  financiado: { type: String, required: true },
+  quotes: { type: String, required: true },
   stock: { type: Number, required: true },
   img: {
     type: String,
-    default:
-      'https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg'
+    default: 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
   },
   combustible: { type: String, required: true },
   año: { type: Number, required: true },
-  cambios: { type: [String, null], required: true, default: '-' },
-  leads: { type: [Number, null], required: true },
-  kms: { type: [Number, null], required: true }
+  cambios: { type: String, required: true, default: '-' },
+  leads: { type: Number, required: true },
+  kms: { type: Number, required: true }
 })
-let image = 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
 let lead = 0
-if (props.img) {
-  image = props.img
-}
 if (props.leads) {
   lead = props.leads
 }
+
 const integrations = [true, true, true]
 </script>
 
@@ -37,7 +33,9 @@ const integrations = [true, true, true]
     <div class="card-body flex-row p-4">
       <div
         class="cover relative z-0 aspect-video h-32 bg-cover bg-center"
-        :style="{ 'background-image': 'url(' + image + ')' }"
+        :style="{
+          'background-image': 'url(' + img + ')'
+        }"
       >
         <div class="absolute bottom-2 right-2">
           <span
@@ -45,6 +43,12 @@ const integrations = [true, true, true]
             class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
           >
             Pte. de Recepción
+          </span>
+          <span
+            v-if="estado == 2"
+            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Sin Clasificar
           </span>
           <span
             v-if="estado == 3"
