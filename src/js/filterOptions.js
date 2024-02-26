@@ -1,64 +1,60 @@
 const combustible = [
     {
-        value: '0',
+        value: '1',
         label: 'Diesel'
     },
     {
-        value: '1',
+        value: '2',
         label: 'Eléctrico'
     },
     {
-        value: '2',
+        value: '3',
         label: 'Gasolina'
     },
     {
-        value: '3',
+        value: '4',
         label: 'Hidrógeno'
     },
     {
-        value: '4',
+        value: '5',
         label: 'Gasolina/gas'
     },
     {
-        value: '5',
+        value: '6',
         label: 'Híbrido'
     }
 ]
 
 const cambio = [
     {
-        value: '0',
+        value: '1',
         label: 'Manual'
     },
     {
-        value: '1',
+        value: '3',
         label: 'Automático'
     }
 ]
 
 const vehiculo = [
     {
-        value: '0',
+        value: '1',
         label: 'Turismo'
     },
     {
-        value: '1',
+        value: '2',
         label: 'Todo terreno'
     },
     {
-        value: '2',
+        value: '3',
         label: 'Vehículo industrial'
     }
 ]
 
 const categoria = [
     {
-        value: '0',
-        label: 'Aventura'
-    },
-    {
         value: '1',
-        label: 'Clásico'
+        label: 'Urbano'
     },
     {
         value: '2',
@@ -66,57 +62,35 @@ const categoria = [
     },
     {
         value: '3',
-        label: 'Urbano'
-    }
+        label: 'Aventura'
+    },
+    {
+        value: '4',
+        label: 'Clásico'
+    },
+    
 ]
 
 const medioambiental = [
     {
-        value: '0',
+        value: '1',
         label: '0'
     },
     {
-        value: '1',
+        value: 'ECO',
         label: 'ECO'
     },
     {
-        value: '2',
+        value: 'B',
         label: 'B'
     },
     {
-        value: '3',
+        value: 'C',
         label: 'C'
     },
     {
-        value: '4',
+        value: 'ND',
         label: 'ND'
-    }
-]
-
-const estado = [
-    {
-        value: '0',
-        label: 'Pendiente de recepción'
-    },
-    {
-        value: '1',
-        label: 'Pendiente de publicación'
-    },
-    {
-        value: '2',
-        label: 'En venta'
-    },
-    {
-        value: '3',
-        label: 'Reservado'
-    },
-    {
-        value: '4',
-        label: 'Entregado'
-    },
-    {
-        value: '5',
-        label: 'No disponible'
     }
 ]
 
@@ -149,7 +123,7 @@ const options = {
     vehiculo,
     categoria,
     medioambiental,
-    estado,
-    etiqueta}
+    etiqueta
+}
 
 export default options

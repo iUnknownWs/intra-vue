@@ -2,31 +2,117 @@
 import { Icon } from '@iconify/vue'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import options from '@/js/HomeJs.js'
-import TextIcon from '@/components/TextIcon.vue'
-import DrawerTitle from '@/components/DrawerTitle.vue'
-import DropdownBtn from '@/components/DropdownBtn.vue'
-import SelectTab from '@/components/SelectTab.vue'
-import SelectInput from '@/components/SelectInput.vue'
-import HeaderMain from '@/components/HeaderMain.vue'
-import CheckInput from '@/components/CheckInput.vue'
+import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
-import TextInput from '@/components/TextInput.vue'
-import DrawerActions from '@/components/DrawerActions.vue'
-import RangeSelect from '@/components/RangeSelect.vue'
-import RangeInputN from '@/components/RangeInputN.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 const url = `${import.meta.env.VITE_VEHICLES}/`
-const vehicles = ref([])
 const vehiclesFilter = ref([])
-
 const params = ref('')
+const filterParams = {}
 const urlParams = ref('')
 const refresh = ref(0)
 const tab = ref('0')
+const yearGte = ref('1970')
+const yearLte = ref('2024')
+const priceGte = ref(0)
+const priceLte = ref(200000)
+const kmsGte = ref(0)
+const kmsLte = ref(200000)
+const combustible = ref('0')
+const cambio = ref('0')
+const vehiculo = ref('0')
+const medioambiental = ref('0')
+const categoria = ref('0')
+const itv = ref(false)
+const pitv = ref(false)
+const pVideo = ref(false)
+const searchValue = ref('')
+
+const yearFilter = () => {
+  filterParams.year__gte = yearGte.value
+  filterParams.year__lte = yearLte.value
+}
+
+const kmsFilter = () => {
+  filterParams.kms__gte = kmsGte.value
+  filterParams.kms__lte = kmsLte.value
+}
+
+const priceFilter = () => {
+  filterParams.price__sale_price__gte = priceGte.value
+  filterParams.price__sale_price__lte = priceLte.value
+}
+
+const combustibleFilter = () => {
+  filterParams.fuel = combustible.value
+}
+
+const cambioFilter = () => {
+  filterParams.gear_box = cambio.value
+}
+
+const vehiculoFilter = () => {
+  filterParams.body_type = vehiculo.value
+}
+
+const medioambientalFilter = () => {
+  if (medioambiental.value === '1') {
+    filterParams.maintenance__distinctive = '0'
+    return
+  }
+  filterParams.maintenance__distinctive = medioambiental.value
+}
+
+const categoriaFilter = () => {
+  filterParams.web_categories = categoria.value
+}
+
+const filter = () => {
+  if (itv.value) {
+    filterParams.maintenance__itv_expiration__gte = '2024-02-26'
+  }
+  if (pitv.value) {
+    filterParams.maintenance__itv_expiration__lt = '2024-02-26'
+  }
+  if (pVideo.value) {
+    filterParams.pvideo = 'true'
+  }
+  const filterUrl = `${url}?${new URLSearchParams(filterParams)}`
+  axios.get(filterUrl).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
+
+const reset = () => {
+  yearGte.value = '1970'
+  yearLte.value = '2024'
+  priceGte.value = 0
+  priceLte.value = 200000
+  kmsGte.value = 0
+  kmsLte.value = 200000
+  combustible.value = '0'
+  cambio.value = '0'
+  vehiculo.value = '0'
+  medioambiental.value = '0'
+  categoria.value = '0'
+  itv.value = false
+  pitv.value = false
+  pVideo.value = false
+  all()
+}
+
+const search = () => {
+  const searchParams = {
+    search: searchValue.value
+  }
+  const searchUrl = `${url}?${new URLSearchParams(searchParams)}`
+  axios.get(searchUrl).then((response) => {
+    vehiclesFilter.value = response.data.results
+  })
+}
 
 const selected = () => {
   if (tab.value === '0') {
@@ -61,10 +147,6 @@ const selected = () => {
   }
   refresh.value++
 }
-
-onMounted(() => {
-  selected()
-})
 
 const all = () => {
   axios.get(url).then((response) => {
@@ -144,8 +226,8 @@ const na = () => {
   })
 }
 
-axios.get(url).then((response) => {
-  vehicles.value = response.data.results
+onMounted(() => {
+  selected()
 })
 </script>
 
@@ -156,9 +238,16 @@ axios.get(url).then((response) => {
       <div class="drawer-content">
         <!-- Page content here -->
         <header class="flex flex-row items-center justify-between">
-          <TextIcon class="max-w-xs lg:ml-4" placeholder="Buscar">
-            <Icon icon="mdi:magnify" />
-          </TextIcon>
+          <div class="hidden flex-row gap-2 lg:flex">
+            <TextIcon
+              class="max-w-[410px] lg:ml-4"
+              placeholder="Buscar"
+              v-model="searchValue"
+              @click="search"
+            >
+              <Icon icon="mdi:magnify" width="25" />
+            </TextIcon>
+          </div>
           <div class="ml-2 flex gap-1">
             <label for="filterDrawer" @click="filterDrawer" class="text-black lg:hidden">
               <div tabindex="0" role="button" class="btn btn-primary text-white lg:hidden">
@@ -207,25 +296,70 @@ axios.get(url).then((response) => {
           <div class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
             <div class="menu-title flex flex-row justify-between">Filtros</div>
             <div class="divider m-0"></div>
-            <RangeSelect label="Año:" :from="reverseYears" :to="years" />
-            <RangeInputN label="Precio:" :max="200000" />
-            <RangeInputN label="KMs:" :max="200000" />
-            <SelectInput label="Combustible:" :options="options.combustible" />
-            <SelectInput label="Tipo de Cambio:" :options="options.cambio" />
-            <SelectInput label="Tipo de Vehículo:" :options="options.vehiculo" />
-            <SelectInput label="Categoría web:" :options="options.categoria" />
-            <SelectInput label="Etiqueta medioambiental:" :options="options.medioambiental" />
-            <SelectInput label="Estado:" :options="options.estado" />
-            <SelectInput label="Etiquetas:" :options="options.etiqueta" />
-            <CheckInput label="ITV Vigente:" />
-            <CheckInput label="Pendiente ITV:" />
-            <CheckInput label="Pendiente Video:" />
+            <RangeSelect
+              label="Año:"
+              :from="reverseYears"
+              :to="years"
+              v-model:gte="yearGte"
+              v-model:lte="yearLte"
+              @change-gte="yearFilter"
+              @change-lte="yearFilter"
+            />
+            <RangeInputN
+              label="Precio:"
+              :max="200000"
+              v-model:gte="priceGte"
+              v-model:lte="priceLte"
+              @change-gte="priceFilter"
+              @change-lte="priceFilter"
+            />
+            <RangeInputN
+              label="KMs:"
+              :max="200000"
+              v-model:gte="kmsGte"
+              v-model:lte="kmsLte"
+              @change-gte="kmsFilter"
+              @change-lte="kmsFilter"
+            />
+            <SelectInput
+              label="Combustible:"
+              :options="options.combustible"
+              v-model="combustible"
+              @selected="combustibleFilter"
+            />
+            <SelectInput
+              label="Tipo de Cambio:"
+              :options="options.cambio"
+              v-model="cambio"
+              @selected="cambioFilter"
+            />
+            <SelectInput
+              label="Tipo de Vehículo:"
+              :options="options.vehiculo"
+              v-model="vehiculo"
+              @selected="vehiculoFilter"
+            />
+            <SelectInput
+              label="Categoría web:"
+              :options="options.categoria"
+              v-model="categoria"
+              @selected="categoriaFilter"
+            />
+            <SelectInput
+              label="Etiqueta medioambiental:"
+              :options="options.medioambiental"
+              v-model="medioambiental"
+              @selected="medioambientalFilter"
+            />
+            <CheckInput label="ITV Vigente:" v-model="itv" />
+            <CheckInput label="Pendiente ITV:" v-model="pitv" />
+            <CheckInput label="Pendiente Video:" v-model="pVideo" />
             <li class="mt-8 flex flex-row justify-around">
-              <button class="btn btn-outline w-28">
+              <button class="btn btn-outline w-28" @click="reset">
                 <Icon icon="mdi:arrow-u-left-top" />
                 Reset
               </button>
-              <button class="btn btn-primary w-24 text-white">
+              <button class="btn btn-primary w-24 text-white" @click="filter">
                 <Icon icon="mdi:check" />
                 Filtrar
               </button>
@@ -349,21 +483,23 @@ axios.get(url).then((response) => {
           <CardMobile
             v-for="(vehicle, index) in vehiclesFilter"
             :key="index"
-            :placa="vehicle.license_plate"
-            :modelo="vehicle.model.title"
-            :marca="vehicle.model.brand.title"
-            :version="vehicle.version.title"
-            :contado="vehicle.price?.price_with_discounts"
-            :financiado="vehicle.price?.financed_price"
-            :quotes="vehicle.price?.financing_fee"
+            :placa="vehicle.license_plate || 'No disponible'"
+            :modelo="vehicle.model.title || 'No disponible'"
+            :marca="vehicle.model.brand.title || 'No disponible'"
+            :version="vehicle.version.title || 'No disponible'"
             :estado="vehicle.status"
-            :stock="vehicle.days_in_stock"
-            :img="vehicle?.image"
-            :combustible="vehicle.fuel.description"
-            :año="vehicle.year"
-            :cambios="vehicle.gear_box?.description"
-            :kms="vehicle.kms"
-            :leads="vehicle.key_locator"
+            :contado="vehicle.price?.price_with_discounts || 0"
+            :financiado="vehicle.price?.financed_price || '0'"
+            :quotes="vehicle.price?.financing_fee || '0'"
+            :stock="vehicle.days_in_stock || 0"
+            :img="
+              vehicle.image || 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
+            "
+            :combustible="vehicle.fuel.description || 'No disponible'"
+            :año="vehicle.year || 0"
+            :cambios="vehicle.gear_box?.description || 'No disponible'"
+            :leads="vehicle.key_locator || 0"
+            :kms="vehicle.kms || 0"
           />
         </div>
       </div>
@@ -496,3 +632,4 @@ export default {
   line-height: 0.75rem;
 }
 </style>
+@/js/filterOptions.js

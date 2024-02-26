@@ -73,6 +73,18 @@ const integrations = [true, true, true]
           >
             Reservado
           </span>
+          <span
+            v-if="estado == 8"
+            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Entregado
+          </span>
+          <span
+            v-if="estado == 10"
+            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            No disponible
+          </span>
           <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{ lead }}</span>
         </div>
       </div>
@@ -104,12 +116,12 @@ const integrations = [true, true, true]
         </div>
       </div>
       <div class="divider m-0"></div>
-      <div class="textcard flex flex-row justify-between">
+      <div class="textcard flex flex-row justify-around">
         <span>{{ año }}</span>
         <span>{{ cambios }}</span>
         <span>{{ combustible }}</span>
       </div>
-      <div class="mt-2 flex gap-1 [&>span]:text-xs">
+      <div class="mt-2 flex justify-around gap-1 [&>span]:text-xs">
         <span v-if="integrations[0]" class="badge badge-primary rounded-md pb-1"
           ><a href="">coches.net</a></span
         >

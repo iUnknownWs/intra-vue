@@ -4,6 +4,8 @@ defineProps({
   from: { type: Array, required: true },
   to: { type: Array, required: true }
 })
+const gte = defineModel('gte')
+const lte = defineModel('lte')
 </script>
 
 <template>
@@ -12,11 +14,11 @@ defineProps({
       <span class="label-text font-medium">{{ label }}</span>
     </div>
     <div class="flex flex-row justify-between">
-      <select class="select select-bordered w-32">
+      <select class="select select-bordered w-32" v-model="gte" @change="$emit('change-gte')">
         <option disabled selected>Desde</option>
         <option v-for="option in from" :key="option">{{ option }}</option>
       </select>
-      <select class="select select-bordered w-32">
+      <select class="select select-bordered w-32" v-model="lte" @change="$emit('change-lte')">
         <option disabled selected>Hasta</option>
         <option v-for="option in to" :key="option">{{ option }}</option>
       </select>

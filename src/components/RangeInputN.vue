@@ -1,11 +1,10 @@
 <script setup>
-import { ref } from 'vue'
 defineProps({
   label: { type: String, required: true },
   max: { type: Number, required: true }
 })
-const from = ref(0)
-const to = ref(200000)
+const gte = defineModel('gte')
+const lte = defineModel('lte')
 </script>
 
 <template>
@@ -21,7 +20,8 @@ const to = ref(200000)
         class="input input-bordered w-32"
         :max="max"
         min="0"
-        :value="from"
+        v-model="gte"
+        @change="$emit('change-gte')"
       />
       <input
         type="number"
@@ -30,7 +30,8 @@ const to = ref(200000)
         class="input input-bordered w-32"
         :max="max"
         min="0"
-        :value="to"
+        v-model="lte"
+        @change="$emit('change-lte')"
       />
     </div>
   </label>

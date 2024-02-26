@@ -1,13 +1,10 @@
 <script setup>
-import { ref } from 'vue'
-
-const props = defineProps({
+defineProps({
   label: { type: String, required: true },
-  options: { type: Object, required: true },
-  modelValue: { type: String }
+  options: { type: Object, required: true }
 })
 
-
+const value = defineModel()
 </script>
 
 <template>
@@ -15,8 +12,8 @@ const props = defineProps({
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <select class="select select-bordered" :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
-      <option disabled selected>Pick one</option>
+    <select class="select select-bordered" v-model="value" @change="$emit('selected')">
+      <option disabled selected value="0">Seleccione una opción</option>
       <option v-for="(option, index) in options" :key="index" :value="option.value">
         {{ option.label }}
       </option>
