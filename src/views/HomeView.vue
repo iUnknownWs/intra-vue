@@ -471,7 +471,7 @@ onMounted(() => {
                 :combustible="vehicle.fuel.description || 'No disponible'"
                 :año="vehicle.year || 0"
                 :cambios="vehicle.gear_box?.description || 'No disponible'"
-                :leads="vehicle.key_locator || 0"
+                :keys="vehicle.key_locator"
                 :kms="vehicle.kms || 0"
               />
             </div>
@@ -496,7 +496,7 @@ onMounted(() => {
             :combustible="vehicle.fuel.description || 'No disponible'"
             :año="vehicle.year || 0"
             :cambios="vehicle.gear_box?.description || 'No disponible'"
-            :leads="vehicle.key_locator || 0"
+            :keys="vehicle.key_locator || 0"
             :kms="vehicle.kms || 0"
           />
         </div>
