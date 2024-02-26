@@ -44,12 +44,7 @@ const integrations = [true, true, true]
           >
             Pte. de Recepción
           </span>
-          <span
-            v-if="estado == 2"
-            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Sin Clasificar
-          </span>
+          
           <span
             v-if="estado == 3"
             class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
@@ -67,6 +62,12 @@ const integrations = [true, true, true]
             class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
           >
             Reservado
+          </span>
+          <span
+            v-if="estado == 8"
+            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Entregado
           </span>
           <span
             v-if="estado == 10"

@@ -1,6 +1,8 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import options from '@/js/HomeJs.js'
 import TextIcon from '@/components/TextIcon.vue'
 import DrawerTitle from '@/components/DrawerTitle.vue'
 import DropdownBtn from '@/components/DropdownBtn.vue'
@@ -14,7 +16,6 @@ import TextInput from '@/components/TextInput.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
-import axios from 'axios'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -146,151 +147,6 @@ const na = () => {
 axios.get(url).then((response) => {
   vehicles.value = response.data.results
 })
-
-const combustible = [
-  {
-    value: '0',
-    label: 'Diesel'
-  },
-  {
-    value: '1',
-    label: 'Eléctrico'
-  },
-  {
-    value: '2',
-    label: 'Gasolina'
-  },
-  {
-    value: '3',
-    label: 'Hidrógeno'
-  },
-  {
-    value: '4',
-    label: 'Gasolina/gas'
-  },
-  {
-    value: '5',
-    label: 'Híbrido'
-  }
-]
-
-const cambio = [
-  {
-    value: '0',
-    label: 'Manual'
-  },
-  {
-    value: '1',
-    label: 'Automático'
-  }
-]
-
-const vehiculo = [
-  {
-    value: '0',
-    label: 'Turismo'
-  },
-  {
-    value: '1',
-    label: 'Todo terreno'
-  },
-  {
-    value: '2',
-    label: 'Vehículo industrial'
-  }
-]
-
-const categoria = [
-  {
-    value: '0',
-    label: 'Aventura'
-  },
-  {
-    value: '1',
-    label: 'Clásico'
-  },
-  {
-    value: '2',
-    label: 'Sport'
-  },
-  {
-    value: '3',
-    label: 'Urbano'
-  }
-]
-
-const medioambiental = [
-  {
-    value: '0',
-    label: '0'
-  },
-  {
-    value: '1',
-    label: 'ECO'
-  },
-  {
-    value: '2',
-    label: 'B'
-  },
-  {
-    value: '3',
-    label: 'C'
-  },
-  {
-    value: '4',
-    label: 'ND'
-  }
-]
-
-const estado = [
-  {
-    value: '0',
-    label: 'Pendiente de recepción'
-  },
-  {
-    value: '1',
-    label: 'Pendiente de publicación'
-  },
-  {
-    value: '2',
-    label: 'En venta'
-  },
-  {
-    value: '3',
-    label: 'Reservado'
-  },
-  {
-    value: '4',
-    label: 'Entregado'
-  },
-  {
-    value: '5',
-    label: 'No disponible'
-  }
-]
-
-const etiqueta = [
-  {
-    value: '0',
-    label: 'Cabrio'
-  },
-  {
-    value: '1',
-    label: 'Furgoneta'
-  },
-  {
-    value: '2',
-    label: 'Deportivo'
-  },
-  {
-    value: '3',
-    label: 'No web'
-  },
-  {
-    value: '4',
-    label: 'Weekly news'
-  }
-]
 </script>
 
 <template>
@@ -354,13 +210,13 @@ const etiqueta = [
             <RangeSelect label="Año:" :from="reverseYears" :to="years" />
             <RangeInputN label="Precio:" :max="200000" />
             <RangeInputN label="KMs:" :max="200000" />
-            <SelectInput label="Combustible:" :options="combustible" />
-            <SelectInput label="Tipo de Cambio:" :options="cambio" />
-            <SelectInput label="Tipo de Vehículo:" :options="vehiculo" />
-            <SelectInput label="Categoría web:" :options="categoria" />
-            <SelectInput label="Etiqueta medioambiental:" :options="medioambiental" />
-            <SelectInput label="Estado:" :options="estado" />
-            <SelectInput label="Etiquetas:" :options="etiqueta" />
+            <SelectInput label="Combustible:" :options="options.combustible" />
+            <SelectInput label="Tipo de Cambio:" :options="options.cambio" />
+            <SelectInput label="Tipo de Vehículo:" :options="options.vehiculo" />
+            <SelectInput label="Categoría web:" :options="options.categoria" />
+            <SelectInput label="Etiqueta medioambiental:" :options="options.medioambiental" />
+            <SelectInput label="Estado:" :options="options.estado" />
+            <SelectInput label="Etiquetas:" :options="options.etiqueta" />
             <CheckInput label="ITV Vigente:" />
             <CheckInput label="Pendiente ITV:" />
             <CheckInput label="Pendiente Video:" />
@@ -471,7 +327,7 @@ const etiqueta = [
                 :modelo="vehicle.model.title || 'No disponible'"
                 :marca="vehicle.model.brand.title || 'No disponible'"
                 :version="vehicle.version.title || 'No disponible'"
-                :estado="vehicle.status || 2"
+                :estado="vehicle.status"
                 :contado="vehicle.price?.price_with_discounts || 0"
                 :financiado="vehicle.price?.financed_price || '0'"
                 :quotes="vehicle.price?.financing_fee || '0'"
@@ -482,7 +338,7 @@ const etiqueta = [
                 "
                 :combustible="vehicle.fuel.description || 'No disponible'"
                 :año="vehicle.year || 0"
-                :cambios="vehicle.gear_box.description || 'No disponible'"
+                :cambios="vehicle.gear_box?.description || 'No disponible'"
                 :leads="vehicle.key_locator || 0"
                 :kms="vehicle.kms || 0"
               />
