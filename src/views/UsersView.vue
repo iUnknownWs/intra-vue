@@ -83,23 +83,18 @@ const addUser = () => {
     })
     .then((response) => {
       if (response.status === 201) {
-        router.go(0)
+        fetching()
+        
       }
     })
 }
 
 const name = ref('')
-const updateName = (value) => {
-  name.value = value
-}
+
 const lastName = ref('')
-const updateLastName = (value) => {
-  lastName.value = value
-}
+
 const email = ref('')
-const updateEmail = (value) => {
-  email.value = value
-}
+
 
 const admin = ref(false)
 const updateAdmin = (value) => {
@@ -142,9 +137,9 @@ const updateAdmin = (value) => {
         </EasyDataTable>
       </template>
       <template #drawer>
-        <TextInput label="Nombre" placeholder="Introducir" @input="updateName" />
-        <TextInput label="Apellidos" placeholder="Introducir" @input="updateLastName" />
-        <TextInput label="Email" placeholder="Introducir" @input="updateEmail" />
+        <TextInput label="Nombre" placeholder="Introducir" v-model="name" />
+        <TextInput label="Apellidos" placeholder="Introducir" v-model="lastName" />
+        <TextInput label="Email" placeholder="Introducir" v-model="email" />
         <div class="mt-3"><span class="label-text font-bold">Permisos:</span></div>
         <div class="m-0 grid grid-cols-2 justify-between gap-1 p-0 font-semibold">
           <CheckInput label="Vehículos" />

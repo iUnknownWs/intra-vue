@@ -5,15 +5,7 @@ import { ref } from 'vue'
 import router from '@/router'
 
 const email = ref('')
-const updateEmail = (value) => {
-  email.value = value
-}
-
 const password = ref('')
-const updatePassword = (value) => {
-  password.value = value
-}
-
 const validation = ref(null)
 
 const login = () => {
@@ -68,12 +60,12 @@ if (localStorage.getItem('token')) {
         <h2 class="card-title text-xl">Iniciar Sesión</h2>
         <h3 class="text-sm text-gray-500">Intranet</h3>
         <form class="w-full" @submit.prevent="login">
-          <TextInput label="Email" placeholder="Introducir Email" @input="updateEmail" />
+          <TextInput label="Email" placeholder="Introducir Email" v-model="email" />
           <TextInput
             label="Contraseña"
             placeholder="Introducir Contraseña"
             type="password"
-            @input="updatePassword"
+            v-model="password"
           />
           <span class="text-xs font-medium"
             ><RouterLink to="/recuperar">¿Olvidaste tu contraseña?</RouterLink></span
