@@ -5,6 +5,7 @@ import HeaderMain from '@/components/HeaderMain.vue'
 import SettingTable from '@/components/SettingTable.vue'
 import TextInput from '@/components/TextInput.vue'
 import DateInput from '@/components/DateInput.vue'
+import NumberInput from '@/components/NumberInput.vue'
 import axios from 'axios'
 import router from '@/router'
 
@@ -78,11 +79,11 @@ const headers = [
 const addDiscount = () => {
   axios
     .post(url, {
-      title: title.value,
-      from_date: startDate.value,
-      to_date: endDate.value,
-      amount_percent: amount.value,
-      amount_fix: amountFix.value
+      title: data.value.title,
+      from_date: data.value.from_date,
+      to_date: data.value.to_date,
+      amount_percent: parseInt(data.value.amount_percent) || 0,
+      amount_fix: parseInt(data.value.amount_fix) || 0
     })
     .then((response) => {
       if (response.status === 201) {
@@ -106,44 +107,32 @@ const editModal = (id) => {
     })
     .then(() => {
       refreshComponent()
-      title.value = data.value.title
-      startDate.value = data.value.from_date
-      endDate.value = data.value.to_date
-      amount.value = data.value.amount_percent
-      amountFix.value = data.value.amount_fix
+      
       edit.value.showModal()
     })
 }
 
 const editDiscount = () => {
+  
   axios
     .put(`${url}${data.value.id}/`, {
-      title: title.value,
-      from_date: startDate.value,
-      to_date: endDate.value,
-      amount_percent: amount.value,
-      amount_fix: amountFix.value
+      title: data.value.title,
+      from_date: data.value.from_date,
+      to_date: data.value.to_date,
+      amount_percent: parseInt(data.value.amount_percent) || 0,
+      amount_fix: parseInt(data.value.amount_fix) || 0
     })
-    .then(() => router.go(0))
+    .then(() => {
+      edit.value.close()
+      fetching()
+    })
 }
 
-const title = ref('')
-const updateTitle = (value) => {
-  title.value = value
-}
 
-const startDate = ref('')
-const updateStartDate = (value) => {
-  startDate.value = value
-}
 
-const endDate = ref('')
-const updateEndDate = (value) => {
-  endDate.value = value
-}
 
-const amount = ref(0)
-const amountFix = ref(0)
+
+
 </script>
 
 <template>
@@ -155,36 +144,35 @@ const amountFix = ref(0)
       <h3 class="text-lg font-bold">Editar Descuento</h3>
       <div class="divider m-0"></div>
       <form @submit.prevent="editDiscount" class="flex flex-col">
+        
         <TextInput
           label="Título"
           placeholder="Introducir"
-          @input="updateTitle"
-          :read="data.title"
-          :key="refresh"
+          v-model="data.title"
         />
         <DateInput
           label="Inicio"
-          @input="updateStartDate"
-          :key="refresh"
-          :read="data.from_date"
+          v-model="data.from_date"
         />
-        <DateInput label="Fin" @input="updateEndDate" :key="refresh" :read="data.to_date" />
+        <DateInput label="Fin" 
+        v-model="data.to_date" 
+        />
         <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text font-medium">Valor (%)</span>
-          </div>
-          <input type="number" class="input input-bordered w-full" max="100" v-model="amount" />
+          <NumberInput
+          :label="'Valor Fijo'"
+          :max="200000"
+          v-model="data.amount_fix"
+          />
         </label>
         <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text font-medium">Valor (%)</span>
-          </div>
-          <input
-            type="number"
-            class="input input-bordered w-full"
-            max="200000"
-            v-model="amountFix"
+          
+          <NumberInput
+          :label="'Valor (%)'"
+          :max="100"
+          v-model="data.amount_percent"
           />
+          
+          
         </label>
         <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
       </form>
@@ -222,24 +210,22 @@ const amountFix = ref(0)
         </EasyDataTable>
       </template>
       <template #drawer>
-        <TextInput label="Título" placeholder="Introducir" @submit="updateTitle" />
-        <DateInput label="Inicio" @input="updateStartDate" />
-        <DateInput label="Fin" @input="updateEndDate" />
+        
+        <TextInput label="Título" placeholder="Introducir" v-model="data.title" />
+        <DateInput label="Inicio" v-model="data.from_date" />
+        <DateInput label="Fin" v-model="data.to_date" />
         <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text font-medium">Valor (%)</span>
-          </div>
-          <input type="number" class="input input-bordered w-full" max="100" v-model="amount" />
+          <NumberInput
+          :label="'Valor Fijo'"
+          :max="200000"
+          v-model="data.amount_fix"
+          />
         </label>
         <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text font-medium">Valor (%)</span>
-          </div>
-          <input
-            type="number"
-            class="input input-bordered w-full"
-            max="200000"
-            v-model="amountFix"
+          <NumberInput
+          :label="'Valor (%)'"
+          :max="100"
+          v-model="data.amount_percent"
           />
         </label>
       </template>

@@ -3,13 +3,10 @@ import { ref } from 'vue'
 
 const props = defineProps({
   label: { type: String, required: true },
-  read: { type: String }
+  modelValue: { type: String }
 })
+defineEmits(["update:modelValue"])
 
-const date = ref('')
-if (props.read) {
-  date.value = props.read
-}
 </script>
 
 <template>
@@ -17,7 +14,10 @@ if (props.read) {
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <input v-model="date" type="date" class="input input-bordered w-full" @change="$emit('input', date)" />
+    <input :value="modelValue" 
+    type="date" 
+    class="input input-bordered w-full" 
+    @input="$emit('update:modelValue', $event.target.value)" />
   </label>
 </template>
 
