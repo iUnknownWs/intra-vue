@@ -8,6 +8,7 @@ import SettingTable from '@/components/SettingTable.vue'
 import TextInput from '@/components/TextInput.vue'
 import router from '@/router'
 import axios from 'axios'
+import NumberInput from '@/components/NumberInput.vue'
 
 const url = `${import.meta.env.VITE_SALES}/warranty-types/`
 const items = ref([])
@@ -182,30 +183,22 @@ const options = [
         <TextInput
           label="Título"
           placeholder="Introducir"
-          @input="updateTitle"
-          :key="refresh"
-          :read="data.title"
+          v-model="data.title"
         />
         <SelectInput
           label="Duración"
           :options="options"
-          @input="updateDuration"
-          :key="refresh"
-          :read="data.warranty_period"
+          v-model="data.warranty_period"
         />
-        <TextInput
+        <NumberInput
           label="Precio"
           placeholder="Introducir"
-          @input="updatePrice"
-          :key="refresh"
-          :read="data.price"
+          v-model="data.price"
         />
         <TextInput
           label="Descripción"
           placeholder="Introducir"
-          @input="updateDescription"
-          :key="refresh"
-          :read="data.description"
+          v-model="data.description"
         />
         <div class="mt-3 font-medium">
           <CheckInput
@@ -257,10 +250,10 @@ const options = [
         </EasyDataTable>
       </template>
       <template #drawer>
-        <TextInput label="Título" placeholder="Introducir" @input="updateTitle" />
-        <SelectInput label="Duración" :options="options" @input="updateDuration" />
-        <TextInput label="Precio" placeholder="Introducir" @input="updatePrice" />
-        <TextInput label="Descripción" placeholder="Introducir" @input="updateDescription" />
+       <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <SelectInput label="Duración" :options="options" v-model="duration" />
+        <NumberInput label="Precio" placeholder="Introducir" v-model="price" />
+        <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
         <div class="mt-3 font-medium">
           <CheckInput label="Sin Garantía" @input="updateGarantia" />
           <CheckInput label="¿Agregar al vehículo automáticamente?" @input="updateAuto" />

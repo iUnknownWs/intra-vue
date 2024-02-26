@@ -4,13 +4,10 @@ import { ref } from 'vue'
 const props = defineProps({
   label: { type: String, required: true },
   options: { type: Object, required: true },
-  read: { type: Number }
+  modelValue: { type: String }
 })
 
-const value = ref(0)
-if (props.read) {
-  value.value = props.read
-}
+
 </script>
 
 <template>
@@ -18,7 +15,7 @@ if (props.read) {
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <select class="select select-bordered" v-model="value" @change="$emit('input', value)">
+    <select class="select select-bordered" :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
       <option disabled selected>Pick one</option>
       <option v-for="(option, index) in options" :key="index" :value="option.value">
         {{ option.label }}
