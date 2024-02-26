@@ -360,9 +360,7 @@ const etiqueta = [
             <SelectInput label="Categoría web:" :options="categoria" />
             <SelectInput label="Etiqueta medioambiental:" :options="medioambiental" />
             <SelectInput label="Estado:" :options="estado" />
-            <SelectInput label="Procedencia:" :options="procedencia" />
             <SelectInput label="Etiquetas:" :options="etiqueta" />
-            <SelectInput label="Compradores:" :options="compradores" />
             <CheckInput label="ITV Vigente:" />
             <CheckInput label="Pendiente ITV:" />
             <CheckInput label="Pendiente Video:" />
