@@ -21,6 +21,7 @@ import SelectTab from '@/components/SelectTab.vue'
 import SettingTable from '@/components/SettingTable.vue'
 import TextInput from '@/components/TextInput.vue'
 import TextIcon from '@/components/TextIcon.vue'
+import TextBtn from '@/components/TextBtn.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
@@ -46,6 +47,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('SelectInput', SelectInput)
     .component('SelectTab', SelectTab)
     .component('SettingTable', SettingTable)
+    .component('TextBtn', TextBtn)
     .component('TextIcon', TextIcon)
     .component('TextInput', TextInput)
 
