@@ -30,6 +30,24 @@ const itv = ref(false)
 const pitv = ref(false)
 const pVideo = ref(false)
 const searchValue = ref('')
+const drawer = ref('')
+const toggleDrawer = ref(false)
+
+const filterDrawer = () => {
+  drawer.value = 'filter'
+}
+
+const autoDrawer = () => {
+  drawer.value = 'auto'
+}
+
+const semiDrawer = () => {
+  drawer.value = 'semi'
+}
+
+const manualDrawer = () => {
+  drawer.value = 'manual'
+}
 
 const yearFilter = () => {
   filterParams.year__gte = yearGte.value
@@ -84,6 +102,7 @@ const filter = () => {
   axios.get(filterUrl).then((response) => {
     vehiclesFilter.value = response.data.results
   })
+  toggleDrawer.value = ref(false)
 }
 
 const reset = () => {
@@ -102,6 +121,7 @@ const reset = () => {
   pitv.value = false
   pVideo.value = false
   all()
+  toggleDrawer.value = ref(false)
 }
 
 const search = () => {
@@ -296,8 +316,8 @@ onMounted(() => {
             <div class="divider m-0"></div>
             <RangeSelect
               label="Año:"
-              :from="reverseYears"
-              :to="years"
+              :from="options.reverseYears"
+              :to="options.years"
               v-model:gte="yearGte"
               v-model:lte="yearLte"
               @change-gte="yearFilter"
@@ -509,22 +529,71 @@ onMounted(() => {
         >
           <!-- Sidebar content here -->
           <DrawerTitle title="Filtros" :toggleDrawer="toggleFilterDrawer" />
-          <RangeSelect label="Año:" :from="reverseYears" :to="years" />
-          <RangeInputN label="Precio:" :max="200000" />
-          <RangeInputN label="KMs:" :max="200000" />
-          <SelectInput label="Combustible:" />
-          <SelectInput label="Tipo de Cambio:" />
-          <SelectInput label="Tipo de Vehículo:" />
-          <SelectInput label="Categoría web:" />
-          <SelectInput label="Etiqueta medioambiental:" />
-          <SelectInput label="Estado:" />
-          <SelectInput label="Procedencia:" />
-          <SelectInput label="Etiquetas:" />
-          <SelectInput label="Compradores:" />
-          <CheckInput label="ITV Vigente:" />
-          <CheckInput label="Pendiente ITV:" />
-          <CheckInput label="Pendiente Video:" />
-          <DrawerActions :toggleDrawer="toggleFilterDrawer" secondary="Reset" primary="Filtrar" />
+          <RangeSelect
+            label="Año:"
+            :from="options.reverseYears"
+            :to="options.years"
+            v-model:gte="yearGte"
+            v-model:lte="yearLte"
+            @change-gte="yearFilter"
+            @change-lte="yearFilter"
+          />
+          <RangeInputN
+            label="Precio:"
+            :max="200000"
+            v-model:gte="priceGte"
+            v-model:lte="priceLte"
+            @change-gte="priceFilter"
+            @change-lte="priceFilter"
+          />
+          <RangeInputN
+            label="KMs:"
+            :max="200000"
+            v-model:gte="kmsGte"
+            v-model:lte="kmsLte"
+            @change-gte="kmsFilter"
+            @change-lte="kmsFilter"
+          />
+          <SelectInput
+            label="Combustible:"
+            :options="options.combustible"
+            v-model="combustible"
+            @selected="combustibleFilter"
+          />
+          <SelectInput
+            label="Tipo de Cambio:"
+            :options="options.cambio"
+            v-model="cambio"
+            @selected="cambioFilter"
+          />
+          <SelectInput
+            label="Tipo de Vehículo:"
+            :options="options.vehiculo"
+            v-model="vehiculo"
+            @selected="vehiculoFilter"
+          />
+          <SelectInput
+            label="Categoría web:"
+            :options="options.categoria"
+            v-model="categoria"
+            @selected="categoriaFilter"
+          />
+          <SelectInput
+            label="Etiqueta medioambiental:"
+            :options="options.medioambiental"
+            v-model="medioambiental"
+            @selected="medioambientalFilter"
+          />
+          <CheckInput label="ITV Vigente:" v-model="itv" />
+          <CheckInput label="Pendiente ITV:" v-model="pitv" />
+          <CheckInput label="Pendiente Video:" v-model="pVideo" />
+          <DrawerActions
+            :toggleDrawer="toggleFilterDrawer"
+            secondary="Reset"
+            primary="Filtrar"
+            @click-secondary="reset"
+            @click-primary="filter"
+          />
         </ul>
         <ul
           v-if="drawer === 'auto'"
@@ -584,43 +653,7 @@ onMounted(() => {
   </HeaderMain>
 </template>
 
-<script>
-const currentYear = new Date().getFullYear()
-const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
-const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
-export default {
-  name: 'HomeView',
-  components: {},
-  data() {
-    return {
-      drawer: '',
-      toggleDrawer: false
-    }
-  },
-  methods: {
-    toggleFilterDrawer() {
-      this.toggleDrawer = !this.toggleDrawer
-    },
-    filterDrawer() {
-      this.drawer = 'filter'
-    },
-    autoDrawer() {
-      this.drawer = 'auto'
-    },
-    semiDrawer() {
-      this.drawer = 'semi'
-    },
-    manualDrawer() {
-      this.drawer = 'manual'
-    }
-  }
-}
-</script>
-
 <style>
-.test {
-  display: flex;
-}
 .badge {
   font-weight: 600;
   color: #fff;
@@ -630,4 +663,3 @@ export default {
   line-height: 0.75rem;
 }
 </style>
-@/js/filterOptions.js

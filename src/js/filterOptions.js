@@ -117,13 +117,19 @@ const etiqueta = [
     }
 ]
 
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
+const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
+
 const options = {
     combustible,
     cambio,
     vehiculo,
     categoria,
     medioambiental,
-    etiqueta
+    etiqueta,
+    years,
+    reverseYears
 }
 
 export default options
