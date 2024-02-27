@@ -1,6 +1,6 @@
 <script setup>
 import { Icon } from '@iconify/vue'
-const props = defineProps({
+defineProps({
   placa: { type: [String, null], required: true },
   modelo: { type: String, required: true },
   marca: { type: String, required: true },
@@ -17,13 +17,9 @@ const props = defineProps({
   combustible: { type: String, required: true },
   año: { type: Number, required: true },
   cambios: { type: [String, null], required: true, default: '-' },
-  leads: { type: [Number, null], required: true },
+  keys: { type: [Number, null], required: true },
   kms: { type: [Number, null], required: true }
 })
-let lead = 0
-if (props.leads) {
-  lead = props.leads
-}
 const integrations = [true, true, true]
 </script>
 
@@ -85,7 +81,7 @@ const integrations = [true, true, true]
           >
             No disponible
           </span>
-          <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{ lead }}</span>
+          <span v-if="keys" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{ keys }}</span>
         </div>
       </div>
     </figure>

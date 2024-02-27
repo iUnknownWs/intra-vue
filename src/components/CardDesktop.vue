@@ -1,6 +1,6 @@
 <script setup>
 import { Icon } from '@iconify/vue'
-const props = defineProps({
+defineProps({
   placa: { type: String, required: true },
   modelo: { type: String, required: true },
   marca: { type: String, required: true },
@@ -66,11 +66,9 @@ const integrations = [true, true, true]
         >
           No Disponible
         </span>
-        <span
-          v-if="props.keys"
-          class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >{{ props.keys }}</span
-        >
+        <span v-if="keys" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{
+          keys
+        }}</span>
       </div>
     </div>
     <div class="card-body flex-row justify-between p-4">
