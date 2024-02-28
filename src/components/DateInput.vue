@@ -1,12 +1,9 @@
 <script setup>
-import { ref } from 'vue'
-
-const props = defineProps({
-  label: { type: String, required: true },
-  modelValue: { type: String }
+defineProps({
+  label: { type: String, required: true }
 })
-defineEmits(["update:modelValue"])
 
+const value = defineModel()
 </script>
 
 <template>
@@ -14,11 +11,6 @@ defineEmits(["update:modelValue"])
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <input :value="modelValue" 
-    type="date" 
-    class="input input-bordered w-full" 
-    @input="$emit('update:modelValue', $event.target.value)" />
+    <input type="date" class="input input-bordered w-full" v-model="value" />
   </label>
 </template>
-
-<style scoped></style>

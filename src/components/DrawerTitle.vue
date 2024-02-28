@@ -16,5 +16,3 @@ defineEmits(['toggle'])
   </li>
   <div class="divider m-0"></div>
 </template>
-
-<style scoped></style>

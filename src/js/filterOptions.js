@@ -117,6 +117,20 @@ const etiqueta = [
     }
 ]
 
+export const interes = [
+    {
+        value: '1',
+        label: '1'
+    }
+]
+
+export const ajuste = [
+    {
+        value: '1',
+        label: '1'
+    }
+]
+
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
 const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
@@ -129,7 +143,7 @@ const options = {
     medioambiental,
     etiqueta,
     years,
-    reverseYears
+    reverseYears,
 }
 
 export default options

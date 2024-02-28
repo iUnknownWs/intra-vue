@@ -14,5 +14,3 @@ const value = defineModel()
     </label>
   </div>
 </template>
-
-<style scoped></style>

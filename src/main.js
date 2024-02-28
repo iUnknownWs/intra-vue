@@ -2,7 +2,6 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import BtnPrimary from '@/components/BtnPrimary.vue'
 import DateInput from '@/components/DateInput.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
 import DrawerLink from '@/components/DrawerLink.vue'
@@ -14,7 +13,6 @@ import HeaderMain from '@/components/HeaderMain.vue'
 import MenuLink from '@/components/MenuLink.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import NavLink from '@/components/NavLink.vue'
-import RangeInput from '@/components/RangeInput.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
 import SelectInput from '@/components/SelectInput.vue'
@@ -29,21 +27,18 @@ import 'vue3-easy-data-table/dist/style.css';
 
 const app = createApp(App)
 app.component('EasyDataTable', Vue3EasyDataTable)
-    .component('BtnPrimary', BtnPrimary)
     .component('CheckInput', CheckInput)
     .component('DateInput', DateInput)
     .component('DrawerActions', DrawerActions)
     .component('DrawerLink', DrawerLink)
     .component('DrawerLogo', DrawerLogo)
     .component('DrawerTitle', DrawerTitle)
-    .component('DropdownBtn', DropdownBtn)
     .component('DropdownAvatar', DropdownAvatar)
     .component('DropdownBtn', DropdownBtn)
     .component('HeaderMain', HeaderMain)
     .component('MenuLink', MenuLink)
     .component('ModalDialog', ModalDialog)
     .component('NavLink', NavLink)
-    .component('RangeInput', RangeInput)
     .component('RangeInputN', RangeInputN)
     .component('RangeSelect', RangeSelect)
     .component('SelectInput', SelectInput)

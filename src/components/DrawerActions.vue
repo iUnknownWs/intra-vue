@@ -1,9 +1,10 @@
 <script setup>
 defineProps({
-  toggleDrawer: Function,
   primary: { type: String, required: true },
   secondary: { type: String, required: true }
 })
+
+defineEmits(['click-primary', 'click-secondary'])
 </script>
 
 <template>
@@ -14,5 +15,3 @@ defineProps({
     </button>
   </li>
 </template>
-
-<style scoped></style>

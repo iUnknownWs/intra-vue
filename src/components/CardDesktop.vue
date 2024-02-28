@@ -19,7 +19,7 @@ defineProps({
   combustible: { type: String, required: true },
   año: { type: Number, required: true },
   cambios: { type: String, required: true, default: '-' },
-  keys: { type: Number, required: true },
+  keys: { type: Number },
   kms: { type: Number, required: true },
   leads: { type: Number, default: 0 }
 })

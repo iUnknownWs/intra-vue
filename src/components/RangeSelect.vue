@@ -4,6 +4,8 @@ defineProps({
   from: { type: Array, required: true },
   to: { type: Array, required: true }
 })
+defineEmits(['change-gte', 'change-lte'])
+
 const gte = defineModel('gte')
 const lte = defineModel('lte')
 </script>

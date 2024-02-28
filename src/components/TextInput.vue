@@ -1,16 +1,13 @@
 <script setup>
-import { ref } from 'vue'
-
-const props = defineProps({
+defineProps({
   label: { type: String, required: true },
   placeholder: { type: String, required: true },
   disabled: { type: Boolean },
   type: { type: String, default: 'text' },
   modelValue: { type: String }
 })
-defineEmits(['update:modelValue'])
 
-
+const value = defineModel()
 </script>
 
 <template>
@@ -23,8 +20,7 @@ defineEmits(['update:modelValue'])
       :placeholder="placeholder"
       class="input input-bordered w-full"
       :disabled="disabled"
-      :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
+      v-model="value"
     />
   </label>
 </template>

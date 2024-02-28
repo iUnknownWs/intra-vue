@@ -1,6 +1,4 @@
 <script setup>
-// eslint-disable-next-line no-unused-vars
-import { Icon } from '@iconify/vue'
 defineProps({
   label: { type: String, required: true },
   href: { type: String, required: true }
@@ -15,5 +13,3 @@ defineProps({
     </RouterLink>
   </li>
 </template>
-
-<style scoped></style>

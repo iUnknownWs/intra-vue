@@ -1,18 +1,13 @@
 <script setup>
 import axios from 'axios'
 import { Icon } from '@iconify/vue'
-import { pushScopeId, ref } from 'vue'
-import NavLink from './NavLink.vue'
-import DropdownAvatar from './DropdownAvatar.vue'
-import DropdownBtn from './DropdownBtn.vue'
-import MenuLink from './MenuLink.vue'
-import DrawerTitle from './DrawerTitle.vue'
-import DrawerActions from './DrawerActions.vue'
-import SelectInput from './SelectInput.vue'
+import { ref } from 'vue'
 import router from '@/router'
+import { interes, ajuste } from '@/js/filterOptions.js'
+
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
-let drawer = ref(false)
+const drawer = ref(false)
 const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
@@ -121,9 +116,9 @@ axios.get(url).then((response) => {
       <ul class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content">
         <!-- Sidebar content here -->
         <div>
-          <DrawerTitle title="Añadir Ajuste Financiero" :toggleDrawer="toggleDrawer" />
-          <SelectInput label="Interés:" />
-          <SelectInput label="Tipo de Ajuste:" />
+          <DrawerTitle title="Añadir Ajuste Financiero" @toggle="toggleDrawer" />
+          <SelectInput label="Interés:" :options="interes" />
+          <SelectInput label="Tipo de Ajuste:" :options="ajuste" />
         </div>
         <DrawerActions :toggleDrawer="toggleDrawer" primary="Guardar" secondary="Cancelar" />
       </ul>

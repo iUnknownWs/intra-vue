@@ -6,7 +6,7 @@ import IntegrationCard from '@/components/IntegrationCard.vue'
 <template>
   <HeaderMain>
     <span class="text-3xl font-bold">Portales Web</span>
-    <div class="mt-6 flex flex-col gap-4 lg:flex-row">
+    <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
       <IntegrationCard
         img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
       />

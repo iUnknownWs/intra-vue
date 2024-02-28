@@ -1,10 +1,15 @@
 <script setup>
 import { Icon } from '@iconify/vue'
+import { ref } from 'vue'
 import NavBar from '@/components/NavBar.vue'
-import DrawerLink from '@/components/DrawerLink.vue'
-import DrawerLogo from '@/components/DrawerLogo.vue'
 import axios from 'axios'
+
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
+const drawer = ref(false)
+const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
 </script>
 
 <template>
@@ -44,18 +49,3 @@ axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      drawer: false
-    }
-  },
-  methods: {
-    toggleDrawer() {
-      this.drawer = !this.drawer
-    }
-  }
-}
-</script>

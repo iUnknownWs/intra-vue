@@ -1,10 +1,9 @@
 <script setup>
 defineProps({
-  label: { type: String, required: true },
-  modelValue: { type: String, required: true }
+  label: { type: String, required: true }
 })
-defineEmits(['update:modelValue'])
 
+const value = defineModel()
 </script>
 
 <template>
@@ -12,7 +11,7 @@ defineEmits(['update:modelValue'])
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <select class="select select-primary" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
+    <select class="select select-primary" v-model="value">
       <option value="0">Todos</option>
       <option value="1">Recepción</option>
       <option value="2">Publicación</option>

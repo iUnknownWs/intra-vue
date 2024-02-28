@@ -3,6 +3,7 @@ defineProps({
   label: { type: String, required: true },
   options: { type: Object, required: true }
 })
+defineEmits(['selected'])
 
 const value = defineModel()
 </script>
