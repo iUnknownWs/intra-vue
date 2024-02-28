@@ -3,6 +3,7 @@ import axios from 'axios'
 import TextInput from '@/components/TextInput.vue'
 import { ref } from 'vue'
 import router from '@/router'
+import ModalDialog from '@/components/ModalDialog.vue'
 
 const email = ref('')
 const password = ref('')
@@ -22,7 +23,7 @@ const login = () => {
       }
     })
     .catch(() => {
-      validation.value.showModal()
+      validation.value.modal.showModal()
     })
 }
 if (localStorage.getItem('token')) {
@@ -31,20 +32,15 @@ if (localStorage.getItem('token')) {
 </script>
 
 <template>
-  <dialog ref="validation" id="validation" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box">
-      <h3 class="text-lg font-bold">No se ha podido iniciar la sesión</h3>
-      <p class="py-4">El email o contraseña son incorrectos</p>
-      <div class="modal-action">
-        <form method="dialog">
-          <button class="btn">Cerrar</button>
-        </form>
-      </div>
+  <ModalDialog ref="validation">
+    <h3 class="text-lg font-bold">No se ha podido iniciar la sesión</h3>
+    <p class="py-4">El email o contraseña son incorrectos</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cerrar</button>
+      </form>
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+  </ModalDialog>
   <div
     class="flex h-screen w-screen items-center justify-center bg-black bg-[url('/src/assets/img/bg2.png')] bg-cover bg-center"
   >

@@ -2,7 +2,7 @@
 defineProps({
   placeholder: { type: String, default: 'Introducir' }
 })
-
+defineEmits(['btn-click'])
 const value = defineModel()
 </script>
 
@@ -13,7 +13,7 @@ const value = defineModel()
       :placeholder="placeholder"
       v-model="value"
     />
-    <button class="btn btn-primary join-item text-white" @click="$emit('click')">
+    <button class="btn btn-primary join-item text-white" @click="$emit('btn-click')">
       <slot />
     </button>
   </div>

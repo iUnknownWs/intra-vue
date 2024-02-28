@@ -1,6 +1,8 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 defineProps({
+  id: { type: Number, required: true },
+  slug: { type: String, required: true },
   placa: { type: [String, null], required: true },
   modelo: { type: String, required: true },
   marca: { type: String, required: true },
@@ -18,9 +20,13 @@ defineProps({
   año: { type: Number, required: true },
   cambios: { type: [String, null], required: true, default: '-' },
   keys: { type: [Number, null], required: true },
-  kms: { type: [Number, null], required: true }
+  kms: { type: [Number, null], required: true },
+  leads: { type: Number, default: 0 }
 })
+
 const integrations = [true, true, true]
+
+defineEmits(['btn-click'])
 </script>
 
 <template>
@@ -30,20 +36,13 @@ const integrations = [true, true, true]
         class="cover relative z-0 aspect-video w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
         :style="{ 'background-image': 'url(' + img + ')' }"
       >
-        <div class="dropdown dropdown-end menu-xs absolute right-2 top-2">
-          <div tabindex="0" role="button" class="btn btn-square btn-ghost">
-            <Icon icon="mdi:dots-vertical" width="30" />
-          </div>
-          <ul
-            tabindex="0"
-            class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
-          >
-            <li><a>Ver/Editar</a></li>
-            <li><a>Ejecutar PT</a></li>
-            <li><a>Imprimir</a></li>
-            <li><a>Eliminar</a></li>
-          </ul>
+        <div
+          v-if="keys"
+          class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+        >
+          <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
         </div>
+
         <div class="absolute bottom-2 right-2">
           <span
             v-if="estado == 0"
@@ -81,7 +80,6 @@ const integrations = [true, true, true]
           >
             No disponible
           </span>
-          <span v-if="keys" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{ keys }}</span>
         </div>
       </div>
     </figure>
@@ -90,6 +88,11 @@ const integrations = [true, true, true]
         <span>{{ placa }}</span>
         <span>{{ marca }}</span>
         <span>{{ modelo }}</span>
+      </div>
+      <div class="absolute right-2 top-2">
+        <button class="btn btn-square btn-xs btn-ghost" @click="$emit('menu', id, slug)">
+          <Icon icon="mdi:dots-vertical" width="30" />
+        </button>
       </div>
       <span class="textcard text-xs text-gray-500">{{ version }}</span>
       <div class="textcard flex flex-row justify-between">
@@ -108,7 +111,11 @@ const integrations = [true, true, true]
         </div>
         <div class="flex flex-col">
           <span>Kms</span>
-          <span>{{ kms }} KMs</span>
+          <span class="font-bold">{{ kms }}</span>
+        </div>
+        <div class="flex flex-col">
+          <span>Leads</span>
+          <span class="font-bold">{{ leads }}</span>
         </div>
       </div>
       <div class="divider m-0"></div>

@@ -5,14 +5,15 @@ import axios from 'axios'
 import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
+import ModalDialog from '@/components/ModalDialog.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
-const url = `${import.meta.env.VITE_VEHICLES}/`
+const url = `${import.meta.env.VITE_VEHICLES}/?`
 const vehiclesFilter = ref([])
 const params = ref('')
 const filterParams = {}
-const urlParams = ref('')
+const urlParams = ref(url)
 const refresh = ref(0)
 const tab = ref('0')
 const yearGte = ref('1970')
@@ -32,6 +33,13 @@ const pVideo = ref(false)
 const searchValue = ref('')
 const drawer = ref('')
 const toggleDrawer = ref(false)
+const menu = ref(null)
+const id = ref(0)
+const slug = ref('')
+
+const toggle = () => {
+  toggleDrawer.value = !toggleDrawer.value
+}
 
 const filterDrawer = () => {
   drawer.value = 'filter'
@@ -98,7 +106,7 @@ const filter = () => {
   if (pVideo.value) {
     filterParams.pvideo = 'true'
   }
-  const filterUrl = `${url}?${new URLSearchParams(filterParams)}`
+  const filterUrl = `${urlParams.value}${new URLSearchParams(filterParams)}`
   axios.get(filterUrl).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -128,7 +136,7 @@ const search = () => {
   const searchParams = {
     search: searchValue.value
   }
-  const searchUrl = `${url}?${new URLSearchParams(searchParams)}`
+  const searchUrl = `${urlParams.value}${new URLSearchParams(searchParams)}`
   axios.get(searchUrl).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -176,7 +184,7 @@ const all = () => {
 
 const pr = () => {
   params.value = 'status=0'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -184,7 +192,7 @@ const pr = () => {
 
 const ppt = () => {
   params.value = 'ppt=true'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -192,7 +200,7 @@ const ppt = () => {
 
 const vpt = () => {
   params.value = 'vpt=true'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -200,7 +208,7 @@ const vpt = () => {
 
 const pp = () => {
   params.value = 'status=3'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -208,7 +216,7 @@ const pp = () => {
 
 const venta = () => {
   params.value = 'status=4'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -216,7 +224,7 @@ const venta = () => {
 
 const reserva = () => {
   params.value = 'status=5'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -224,7 +232,7 @@ const reserva = () => {
 
 const web = () => {
   params.value = 'no_web=true'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -232,7 +240,7 @@ const web = () => {
 
 const entrega = () => {
   params.value = 'inmediate_delivery=true'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
@@ -240,10 +248,38 @@ const entrega = () => {
 
 const na = () => {
   params.value = 'status=10'
-  urlParams.value = url + '?' + params.value
+  urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
   })
+}
+
+const vehicleMenu = (vehicleId, vehicleSlug) => {
+  menu.value.modal.showModal()
+  id.value = vehicleId
+  slug.value = vehicleSlug
+}
+
+const deleteVehicle = (vehicleId) => {
+  if (vehicleId) {
+    id.value = vehicleId
+  }
+  axios
+    .delete(`${import.meta.env.VITE_VEHICLES}/${id.value}`)
+    .then(() => all())
+    .then(() => {
+      menu.value.modal.close()
+    })
+  menu.value.modal.focus()
+}
+
+const vehicleWeb = (slugWeb) => {
+  if (slugWeb) {
+    slug.value = slugWeb
+  }
+  window.open(`${import.meta.env.VITE_WEB}${slug.value}`, '_blank')
+  slug.value = ''
+  menu.value.modal.close()
 }
 
 onMounted(() => {
@@ -252,6 +288,19 @@ onMounted(() => {
 </script>
 
 <template>
+  <ModalDialog ref="menu">
+    <ul class="menu w-full p-0 [&_li>*]:rounded-none">
+      <li><a>Ver/Editar</a></li>
+      <div class="divider m-0"></div>
+      <li><a @click="vehicleWeb">Ver anuncio</a></li>
+      <div class="divider m-0"></div>
+      <li><a>Ejecutar PT</a></li>
+      <div class="divider m-0"></div>
+      <li><a>Imprimir</a></li>
+      <div class="divider m-0"></div>
+      <li><a @click="deleteVehicle">Eliminar</a></li>
+    </ul>
+  </ModalDialog>
   <HeaderMain>
     <div class="drawer drawer-end">
       <input v-model="toggleDrawer" id="filterDrawer" type="checkbox" class="drawer-toggle" />
@@ -262,7 +311,7 @@ onMounted(() => {
             class="max-w-[400px] lg:ml-4"
             placeholder="Buscar"
             v-model="searchValue"
-            @click="search"
+            @btn-click="search"
           >
             <Icon icon="mdi:magnify" width="25" />
           </TextBtn>
@@ -372,7 +421,7 @@ onMounted(() => {
             <CheckInput label="ITV Vigente:" v-model="itv" />
             <CheckInput label="Pendiente ITV:" v-model="pitv" />
             <CheckInput label="Pendiente Video:" v-model="pVideo" />
-            <li class="mt-8 flex flex-row justify-around">
+            <li class="mt-8 flex flex-row justify-between">
               <button class="btn btn-outline w-28" @click="reset">
                 <Icon icon="mdi:arrow-u-left-top" />
                 Reset
@@ -475,6 +524,10 @@ onMounted(() => {
               <CardDesktop
                 v-for="(vehicle, index) in vehiclesFilter"
                 :key="index"
+                @menu-btn2="vehicleWeb"
+                @menu-btn5="deleteVehicle"
+                :id="vehicle.id"
+                :slug="vehicle.slug || 'No disponible'"
                 :placa="vehicle.license_plate || 'No disponible'"
                 :modelo="vehicle.model.title || 'No disponible'"
                 :marca="vehicle.model.brand.title || 'No disponible'"
@@ -500,7 +553,10 @@ onMounted(() => {
         <div class="mt-4 flex flex-col items-center justify-center lg:hidden" :key="refresh">
           <CardMobile
             v-for="(vehicle, index) in vehiclesFilter"
+            @menu="vehicleMenu"
             :key="index"
+            :id="vehicle.id"
+            :slug="vehicle.slug || 'No disponible'"
             :placa="vehicle.license_plate || 'No disponible'"
             :modelo="vehicle.model.title || 'No disponible'"
             :marca="vehicle.model.brand.title || 'No disponible'"
@@ -528,7 +584,7 @@ onMounted(() => {
           class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
         >
           <!-- Sidebar content here -->
-          <DrawerTitle title="Filtros" :toggleDrawer="toggleFilterDrawer" />
+          <DrawerTitle title="Filtros" @toggle="toggle" />
           <RangeSelect
             label="Año:"
             :from="options.reverseYears"
@@ -588,7 +644,6 @@ onMounted(() => {
           <CheckInput label="Pendiente ITV:" v-model="pitv" />
           <CheckInput label="Pendiente Video:" v-model="pVideo" />
           <DrawerActions
-            :toggleDrawer="toggleFilterDrawer"
             secondary="Reset"
             primary="Filtrar"
             @click-secondary="reset"
@@ -601,10 +656,10 @@ onMounted(() => {
         >
           <!-- Sidebar content here -->
           <div>
-            <DrawerTitle title="Nuevo Vehículo Automático" :toggleDrawer="toggleFilterDrawer" />
+            <DrawerTitle title="Nuevo Vehículo Automático" @toggle="toggle" />
             <TextInput label="VIN:" placeholder="Introducir VIN" />
           </div>
-          <DrawerActions :toggleDrawer="toggleFilterDrawer" secondary="Cancelar" primary="Añadir" />
+          <DrawerActions secondary="Cancelar" primary="Añadir" />
         </ul>
         <ul
           v-if="drawer === 'semi'"
@@ -612,10 +667,7 @@ onMounted(() => {
         >
           <!-- Sidebar content here -->
           <div class="flex flex-col">
-            <DrawerTitle
-              title="Nuevo Vehículo Semi-Automático"
-              :toggleDrawer="toggleFilterDrawer"
-            />
+            <DrawerTitle title="Nuevo Vehículo Semi-Automático" @toggle="toggle" />
             <TextInput label="Marca:" placeholder="Introducir Marca" />
             <TextInput label="Carrocería:" placeholder="Introducir Carrocería" />
             <div class="mt-3 flex flex-row justify-end">
@@ -627,7 +679,7 @@ onMounted(() => {
             </div>
             <TextInput label="Version:" placeholder="Introducir" disabled="true" />
           </div>
-          <DrawerActions :toggleDrawer="toggleFilterDrawer" secondary="Cancelar" primary="Añadir" />
+          <DrawerActions secondary="Cancelar" primary="Añadir" />
         </ul>
         <ul
           v-if="drawer === 'manual'"
@@ -635,7 +687,7 @@ onMounted(() => {
         >
           <!-- Sidebar content here -->
           <div>
-            <DrawerTitle title="Nuevo Vehículo Manual" :toggleDrawer="toggleFilterDrawer" />
+            <DrawerTitle title="Nuevo Vehículo Manual" @toggle="toggle" />
             <TextInput label="Bastidor:" placeholder="Introducir" />
             <TextInput label="Matricula:" placeholder="Introducir" />
             <TextInput label="Fabricación:" placeholder="Introducir" />
@@ -646,7 +698,7 @@ onMounted(() => {
             <TextInput label="Tipo de cambio:" placeholder="Introducir" />
             <TextInput label="Combustible:" placeholder="Introducir" />
           </div>
-          <DrawerActions :toggleDrawer="toggleFilterDrawer" secondary="Cancelar" primary="Añadir" />
+          <DrawerActions secondary="Cancelar" primary="Añadir" />
         </ul>
       </div>
     </div>

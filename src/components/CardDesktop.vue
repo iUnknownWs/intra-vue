@@ -1,6 +1,8 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 defineProps({
+  id: { type: Number, required: true },
+  slug: { type: String, required: true },
   placa: { type: String, required: true },
   modelo: { type: String, required: true },
   marca: { type: String, required: true },
@@ -18,20 +20,29 @@ defineProps({
   año: { type: Number, required: true },
   cambios: { type: String, required: true, default: '-' },
   keys: { type: Number, required: true },
-  kms: { type: Number, required: true }
+  kms: { type: Number, required: true },
+  leads: { type: Number, default: 0 }
 })
+
+defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
 
 const integrations = [true, true, true]
 </script>
 
 <template>
-  <div class="card card-side mt-4 w-full bg-base-100 text-xs font-normal">
+  <div class="card card-side mt-4 h-[225px] w-full bg-base-100 text-xs font-normal">
     <div
-      class="cover relative z-0 w-[280px] rounded-s-2xl bg-cover bg-center shadow-xl"
+      class="cover relative z-0 w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
       :style="{
         'background-image': 'url(' + img + ')'
       }"
     >
+      <div
+        v-if="keys"
+        class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+      >
+        <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
+      </div>
       <div class="absolute bottom-2 right-2">
         <span
           v-if="estado == 0"
@@ -66,9 +77,6 @@ const integrations = [true, true, true]
         >
           No Disponible
         </span>
-        <span v-if="keys" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">{{
-          keys
-        }}</span>
       </div>
     </div>
     <div class="card-body flex-row justify-between p-4">
@@ -95,6 +103,10 @@ const integrations = [true, true, true]
             <div class="flex flex-col items-start p-0">
               <span>Dias Stock</span>
               <span class="font-bold">{{ stock }} Dias</span>
+            </div>
+            <div class="flex flex-col items-start p-0">
+              <span>Leads</span>
+              <span class="font-bold">{{ leads }}</span>
             </div>
           </div>
           <div class="divider m-0"></div>
@@ -127,13 +139,24 @@ const integrations = [true, true, true]
             tabindex="0"
             class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
           >
-            <li><a>Ver/Editar</a></li>
-            <li><a>Ejecutar PT</a></li>
-            <li><a>Imprimir</a></li>
-            <li><a>Eliminar</a></li>
+            <li><a @click="$emit('menu-btn1', id)">Ver/Editar</a></li>
+            <li><a @click="$emit('menu-btn2', slug)">Ver anuncio</a></li>
+            <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
+            <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
+            <li><a @click="$emit('menu-btn5', id)">Eliminar</a></li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style>
+/* HTML: <div class="triangle"></div> */
+.triangle {
+  width: 4rem;
+  aspect-ratio: 1;
+  border-top-left-radius: 16px;
+  clip-path: polygon(0 100%, 100% 0, 0 0);
+}
+</style>
