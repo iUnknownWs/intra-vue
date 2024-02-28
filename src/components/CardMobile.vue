@@ -85,13 +85,19 @@ defineEmits(['btn-click'])
       </div>
     </figure>
     <div class="card-body relative flex">
-      <div class="textcard flex gap-1 font-bold">
+      <div class="textcard mr-5 flex gap-1 font-bold">
         <span>{{ placa }}</span>
         <span>{{ marca }}</span>
         <span>{{ modelo }}</span>
       </div>
-      <div class="absolute right-2 top-2">
-        <button class="btn btn-square btn-xs btn-ghost" @click="$emit('menu', id, slug)">
+      <div class="absolute right-0 top-2 flex flex-row items-center">
+        <div class="mt-1 w-5">
+          <img v-if="distinctive == 0" src="/src/assets/img/etiqueta_0.png" alt="distinctive" />
+          <img v-if="distinctive == 1" src="/src/assets/img/etiqueta_B.png" alt="distinctive" />
+          <img v-if="distinctive == 2" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
+          <img v-if="distinctive == 3" src="/src/assets/img/etiqueta_ECO.png" alt="distinctive" />
+        </div>
+        <button class="btn btn-square btn-ghost btn-xs" @click="$emit('menu', id, slug)">
           <Icon icon="mdi:dots-vertical" width="30" />
         </button>
       </div>
