@@ -90,19 +90,13 @@ defineEmits(['btn-click'])
         <span>{{ marca }}</span>
         <span>{{ modelo }}</span>
       </div>
-      <div class="absolute right-0 top-2 flex flex-row items-center">
-        <div class="mt-1 w-5">
-          <img v-if="distinctive == 0" src="/src/assets/img/etiqueta_0.png" alt="distinctive" />
-          <img v-if="distinctive == 1" src="/src/assets/img/etiqueta_B.png" alt="distinctive" />
-          <img v-if="distinctive == 2" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
-          <img v-if="distinctive == 3" src="/src/assets/img/etiqueta_ECO.png" alt="distinctive" />
-        </div>
+      <div class="absolute right-0 top-2 flex flex-col items-center">
         <button class="btn btn-square btn-ghost btn-xs" @click="$emit('menu', id, slug)">
           <Icon icon="mdi:dots-vertical" width="30" />
         </button>
       </div>
       <span class="textcard text-xs text-gray-500">{{ version }}</span>
-      <div class="textcard flex flex-row justify-between">
+      <div class="textcard mt-4 flex flex-row justify-between">
         <div class="flex flex-col">
           <span>Contado</span>
           <span class="font-bold">{{ contado }}€</span>
@@ -117,21 +111,24 @@ defineEmits(['btn-click'])
           <span class="font-bold">{{ stock }} días</span>
         </div>
         <div class="flex flex-col">
-          <span>Kms</span>
-          <span class="font-bold">{{ kms }}</span>
-        </div>
-        <div class="flex flex-col">
           <span>Leads</span>
           <span class="font-bold">{{ leads }}</span>
         </div>
       </div>
       <div class="divider m-0"></div>
-      <div class="textcard flex flex-row justify-around">
+      <div class="textcard flex flex-row items-center justify-around">
+        <span>{{ kms }} Kms</span>
         <span>{{ año }}</span>
         <span>{{ cambios }}</span>
         <span>{{ combustible }}</span>
+        <div class="w-7">
+          <img v-if="distinctive == 0" src="/src/assets/img/etiqueta_0.png" alt="distinctive" />
+          <img v-if="distinctive == 1" src="/src/assets/img/etiqueta_ECO.png" alt="distinctive" />
+          <img v-if="distinctive == 2" src="/src/assets/img/etiqueta_B.png" alt="distinctive" />
+          <img v-if="distinctive == 3" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
+        </div>
       </div>
-      <div class="mt-2 flex justify-around gap-1 [&>span]:text-xs">
+      <div class="flex justify-around gap-1 [&>span]:text-xs">
         <span v-if="integrations[0]" class="badge badge-primary rounded-md pb-1"
           ><a href="">coches.net</a></span
         >
