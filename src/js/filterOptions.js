@@ -77,19 +77,19 @@ const medioambiental = [
         label: '0'
     },
     {
-        value: 'ECO',
+        value: '1',
         label: 'ECO'
     },
     {
-        value: 'B',
+        value: '2',
         label: 'B'
     },
     {
-        value: 'C',
+        value: '3',
         label: 'C'
     },
     {
-        value: 'ND',
+        value: '4',
         label: 'ND'
     }
 ]

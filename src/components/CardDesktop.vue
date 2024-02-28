@@ -21,6 +21,7 @@ defineProps({
   cambios: { type: String, required: true, default: '-' },
   keys: { type: Number },
   kms: { type: Number, required: true },
+  distinctive: { type: Number, required: true },
   leads: { type: Number, default: 0 }
 })
 
@@ -80,13 +81,23 @@ const integrations = [true, true, true]
       </div>
     </div>
     <div class="card-body flex-row justify-between p-4">
-      <div class="flex flex-row">
-        <div class="flex-col pl-4">
-          <div class="test flex flex-row justify-between">
-            <div class="flex gap-2">
+      <div class="relative flex w-full flex-row">
+        <div class="w-full flex-col pl-4">
+          <div class="flex w-full flex-row justify-between">
+            <div class="flex gap-2 pr-10">
               <span class="font-semibold">{{ placa }}</span>
               <span class="font-semibold capitalize">{{ marca }}</span>
               <span class="font-semibold capitalize">{{ modelo }}</span>
+            </div>
+            <div class="absolute right-0 top-0 flex w-8 self-end">
+              <img v-if="distinctive == 0" src="/src/assets/img/etiqueta_0.png" alt="distinctive" />
+              <img v-if="distinctive == 1" src="/src/assets/img/etiqueta_B.png" alt="distinctive" />
+              <img v-if="distinctive == 2" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
+              <img
+                v-if="distinctive == 3"
+                src="/src/assets/img/etiqueta_ECO.png"
+                alt="distinctive"
+              />
             </div>
           </div>
           <span class="font-medium text-gray-500">{{ version }}</span>

@@ -546,6 +546,7 @@ onMounted(() => {
                 :cambios="vehicle.gear_box?.description || 'No disponible'"
                 :keys="vehicle.key_locator"
                 :kms="vehicle.kms || 0"
+                :distinctive="vehicle.maintenance.distinctive || 0"
               />
             </div>
           </div>
@@ -574,6 +575,7 @@ onMounted(() => {
             :cambios="vehicle.gear_box?.description || 'No disponible'"
             :keys="vehicle.key_locator || 0"
             :kms="vehicle.kms || 0"
+            :distinctive="vehicle.maintenance.distinctive || 0"
           />
         </div>
       </div>
