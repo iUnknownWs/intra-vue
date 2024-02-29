@@ -1,133 +1,133 @@
 const combustible = [
     {
-        value: '1',
-        label: 'Diesel'
+        id: '1',
+        title: 'Diesel'
     },
     {
-        value: '2',
-        label: 'Eléctrico'
+        id: '2',
+        title: 'Eléctrico'
     },
     {
-        value: '3',
-        label: 'Gasolina'
+        id: '3',
+        title: 'Gasolina'
     },
     {
-        value: '4',
-        label: 'Hidrógeno'
+        id: '4',
+        title: 'Hidrógeno'
     },
     {
-        value: '5',
-        label: 'Gasolina/gas'
+        id: '5',
+        title: 'Gasolina/gas'
     },
     {
-        value: '6',
-        label: 'Híbrido'
+        id: '6',
+        title: 'Híbrido'
     }
 ]
 
 const cambio = [
     {
-        value: '1',
-        label: 'Manual'
+        id: '1',
+        title: 'Manual'
     },
     {
-        value: '3',
-        label: 'Automático'
+        id: '3',
+        title: 'Automático'
     }
 ]
 
 const vehiculo = [
     {
-        value: '1',
-        label: 'Turismo'
+        id: '1',
+        title: 'Turismo'
     },
     {
-        value: '2',
-        label: 'Todo terreno'
+        id: '2',
+        title: 'Todo terreno'
     },
     {
-        value: '3',
-        label: 'Vehículo industrial'
+        id: '3',
+        title: 'Vehículo industrial'
     }
 ]
 
 const categoria = [
     {
-        value: '1',
-        label: 'Urbano'
+        id: '1',
+        title: 'Urbano'
     },
     {
-        value: '2',
-        label: 'Sport'
+        id: '2',
+        title: 'Sport'
     },
     {
-        value: '3',
-        label: 'Aventura'
+        id: '3',
+        title: 'Aventura'
     },
     {
-        value: '4',
-        label: 'Clásico'
+        id: '4',
+        title: 'Clásico'
     },
     
 ]
 
 const medioambiental = [
     {
-        value: '1',
-        label: '0'
+        id: '1',
+        title: '0'
     },
     {
-        value: '1',
-        label: 'ECO'
+        id: '1',
+        title: 'ECO'
     },
     {
-        value: '2',
-        label: 'B'
+        id: '2',
+        title: 'B'
     },
     {
-        value: '3',
-        label: 'C'
+        id: '3',
+        title: 'C'
     },
     {
-        value: '4',
-        label: 'ND'
+        id: '4',
+        title: 'ND'
     }
 ]
 
 const etiqueta = [
     {
-        value: '0',
-        label: 'Cabrio'
+        id: '0',
+        title: 'Cabrio'
     },
     {
-        value: '1',
-        label: 'Furgoneta'
+        id: '1',
+        title: 'Furgoneta'
     },
     {
-        value: '2',
-        label: 'Deportivo'
+        id: '2',
+        title: 'Deportivo'
     },
     {
-        value: '3',
-        label: 'No web'
+        id: '3',
+        title: 'No web'
     },
     {
-        value: '4',
-        label: 'Weekly news'
+        id: '4',
+        title: 'Weekly news'
     }
 ]
 
 export const interes = [
     {
-        value: '1',
-        label: '1'
+        id: '1',
+        title: '1'
     }
 ]
 
 export const ajuste = [
     {
-        value: '1',
-        label: '1'
+        id: '1',
+        title: '1'
     }
 ]
 

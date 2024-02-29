@@ -56,18 +56,15 @@ axios.get(url).then((response) => {
           <DropdownAvatar>
             <template #btn>
               <div class="w-10 rounded-full">
-                <img
-                  alt="Avatar"
-                  src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                />
+                <img v-if="data.img" :src="data.img" />
+                <img v-else alt="Avatar" src="/src/assets/img/R.png" />
               </div>
             </template>
             <template #content>
               <div class="avatar flex items-center">
                 <div class="w-10 rounded-full">
-                  <img
-                    src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                  />
+                  <img v-if="data.img" alt="Avatar" :src="data.img" />
+                  <img v-else alt="Avatar" src="/src/assets/img/R.png" />
                 </div>
                 <p class="pl-2 text-center text-xs text-gray-500">{{ data.email }}</p>
               </div>

@@ -7,7 +7,7 @@ defineExpose({ modal })
 </script>
 
 <template>
-  <dialog ref="modal" id="validation" class="modal modal-bottom sm:modal-middle">
+  <dialog ref="modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <slot />
     </div>

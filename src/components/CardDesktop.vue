@@ -89,7 +89,6 @@ const integrations = [true, true, true]
               <span class="font-semibold capitalize">{{ marca }}</span>
               <span class="font-semibold capitalize">{{ modelo }}</span>
             </div>
-            
           </div>
           <span class="font-medium text-gray-500">{{ version }}</span>
           <div class="mt-3 flex flex-row justify-between gap-3">
@@ -112,11 +111,21 @@ const integrations = [true, true, true]
             </div>
           </div>
           <div class="divider m-0"></div>
-          <div class="flex flex-row gap-3">
+          <div class="flex flex-row items-center gap-3">
             <span>{{ kms }} Kms</span>
             <span>{{ año }}</span>
             <span>{{ cambios }}</span>
             <span>{{ combustible }}</span>
+            <div class="flex w-8 self-end">
+              <img v-if="distinctive == 0" src="/src/assets/img/etiqueta_0.png" alt="distinctive" />
+              <img
+                v-if="distinctive == 1"
+                src="/src/assets/img/etiqueta_ECO.png"
+                alt="distinctive"
+              />
+              <img v-if="distinctive == 2" src="/src/assets/img/etiqueta_B.png" alt="distinctive" />
+              <img v-if="distinctive == 3" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
+            </div>
           </div>
         </div>
       </div>

@@ -34,8 +34,27 @@ const searchValue = ref('')
 const drawer = ref('')
 const toggleDrawer = ref(false)
 const menu = ref(null)
+const info = ref(null)
 const id = ref(0)
 const slug = ref('')
+const vin = ref('')
+const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
+const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
+const brandOptions = ref([])
+const bodyOptions = ref([])
+const brand = ref('')
+const body = ref('')
+const typeList = ref([])
+const versionList = ref([])
+const typeOptions = []
+const disModel = ref(true)
+const disVersion = ref(true)
+const model = ref('')
+const versionOptions = []
+const version = ref('')
+const eurotax = ref([])
+const modalTitle = ref('')
+const modalMessage = ref('')
 
 const toggle = () => {
   toggleDrawer.value = !toggleDrawer.value
@@ -51,6 +70,12 @@ const autoDrawer = () => {
 
 const semiDrawer = () => {
   drawer.value = 'semi'
+  axios.get(brandUrl).then((response) => {
+    brandOptions.value = response.data.results
+  })
+  axios.get(bodyUrl).then((response) => {
+    bodyOptions.value = response.data.results
+  })
 }
 
 const manualDrawer = () => {
@@ -282,6 +307,161 @@ const vehicleWeb = (slugWeb) => {
   menu.value.modal.close()
 }
 
+const addAuto = () => {
+  axios
+    .post(`${import.meta.env.VITE_VEHICLES}/from-chassis-number/`, {
+      chassis_number: vin.value
+    })
+    .then((response) => {
+      if (response.status === 201 || response.status === 200) {
+        modalTitle.value = 'Auto añadido'
+        modalMessage.value = 'El vehículo ha sido añadido con éxito'
+        info.value.modal.showModal()
+      } else if (response.status === 400) {
+        modalTitle.value = 'Error'
+        modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
+        info.value.modal.showModal()
+      } else if (response.status === 409) {
+        alert('Auto ya existente')
+        modalTitle.value = 'Error'
+        modalMessage.value = 'Puede que el vehiculo que intentas añadir ya existe'
+        info.value.modal.showModal()
+      } else {
+        modalTitle.value = 'Error'
+        modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
+        info.value.modal.showModal()
+      }
+    })
+  toggleDrawer.value = false
+}
+
+const addSemi = () => {
+  const value = version.value.split('<')
+  axios
+    .post(`${import.meta.env.VITE_VEHICLES}/from-national-code/`, {
+      national_vehicle_code: value[0],
+      registration_date_month: value[1],
+      registration_date_year: value[2],
+      version: value[3],
+      model: eurotax.value[1]
+    })
+    .then((response) => {
+      if (response.status === 201 || response.status === 200) {
+        modalTitle.value = 'Auto añadido'
+        modalMessage.value = 'El vehículo ha sido añadido con éxito'
+        info.value.modal.showModal()
+      } else if (response.status === 400) {
+        modalTitle.value = 'Error'
+        modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
+        info.value.modal.showModal()
+      } else if (response.status === 409) {
+        alert('Auto ya existente')
+        modalTitle.value = 'Error'
+        modalMessage.value = 'Puede que el vehiculo que intentas añadir ya existe'
+        info.value.modal.showModal()
+      } else {
+        modalTitle.value = 'Error'
+        modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
+        info.value.modal.showModal()
+      }
+    })
+  toggleDrawer.value = false
+}
+
+const step2 = () => {
+  axios
+    .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-models/`, {
+      brand: brand.value,
+      vehicle_type: body.value
+    })
+    .then((response) => {
+      typeList.value = response.data
+      for (const types of typeList.value) {
+        types.codes.map((code) => {
+          let id = makeValue(code)
+          let title = makeType(code.data)
+          typeOptions.push({
+            id: id,
+            title: title
+          })
+        })
+      }
+    })
+    .then(() => {
+      refresh.value++
+      disModel.value = false
+    })
+}
+
+const step3 = () => {
+  eurotax.value = model.value.split('-')
+  axios
+    .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-types/`, {
+      model_code: eurotax.value[0],
+      vehicle_model: eurotax.value[1]
+    })
+    .then((response) => {
+      versionList.value = response.data.types
+      for (const types of versionList.value) {
+        let id = makeVersion(types)
+        let title = makeType(types)
+        versionOptions.push({
+          id: id,
+          title: title
+        })
+      }
+    })
+    .then(() => {
+      refresh.value++
+      disVersion.value = false
+    })
+}
+
+const makeValue = (code) => {
+  let value = code.id + '-' + code.vehicle_model
+  return value
+}
+
+const makeVersion = (code) => {
+  const divider = '<'
+  let value = code.national_vehicle_code
+  if (code.production_end_date_month) {
+    value = value + divider + code.production_end_date_month
+  } else {
+    value = value + divider + code.production_start_date_month
+  }
+  if (code.production_end_date_year) {
+    value = value + divider + code.production_end_date_year
+  } else {
+    value = value + divider + code.production_start_date_year
+  }
+  value = value + divider + code.name
+  return value
+}
+
+const makeType = (code) => {
+  const space = ' | '
+  const script = ' - '
+  let name = code.name
+  if (code.production_start_date_month) {
+    const psdm = code.production_start_date_month
+    name = name + space + psdm
+    if (code.production_start_date_year) {
+      const psdy = code.production_start_date_year
+      name = name + script + psdy
+    }
+    if (code.production_end_date_month) {
+      const pedm = code.production_end_date_month
+      name = name + space + pedm
+      if (code.production_end_date_year) {
+        const pedy = code.production_end_date_year
+        name = name + script + pedy
+      }
+    }
+  }
+  return name
+}
+
 onMounted(() => {
   selected()
 })
@@ -301,6 +481,7 @@ onMounted(() => {
       <li><a @click="deleteVehicle">Eliminar</a></li>
     </ul>
   </ModalDialog>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <HeaderMain>
     <div class="drawer drawer-end">
       <input v-model="toggleDrawer" id="filterDrawer" type="checkbox" class="drawer-toggle" />
@@ -529,7 +710,7 @@ onMounted(() => {
                 :id="vehicle.id"
                 :slug="vehicle.slug || 'No disponible'"
                 :placa="vehicle.license_plate || 'No disponible'"
-                :modelo="vehicle.model.title || 'No disponible'"
+                :modelo="vehicle.model.model_web.title || 'No disponible'"
                 :marca="vehicle.model.brand.title || 'No disponible'"
                 :version="vehicle.version.title || 'No disponible'"
                 :estado="vehicle.status"
@@ -659,9 +840,14 @@ onMounted(() => {
           <!-- Sidebar content here -->
           <div>
             <DrawerTitle title="Nuevo Vehículo Automático" @toggle="toggle" />
-            <TextInput label="VIN:" placeholder="Introducir VIN" />
+            <TextInput label="VIN:" placeholder="Introducir VIN" v-model="vin" />
           </div>
-          <DrawerActions secondary="Cancelar" primary="Añadir" />
+          <DrawerActions
+            secondary="Cancelar"
+            primary="Añadir"
+            @click-primary="addAuto"
+            @click-secondary="toggle"
+          />
         </ul>
         <ul
           v-if="drawer === 'semi'"
@@ -670,18 +856,35 @@ onMounted(() => {
           <!-- Sidebar content here -->
           <div class="flex flex-col">
             <DrawerTitle title="Nuevo Vehículo Semi-Automático" @toggle="toggle" />
-            <TextInput label="Marca:" placeholder="Introducir Marca" />
-            <TextInput label="Carrocería:" placeholder="Introducir Carrocería" />
+            <SelectInput label="Marca:" v-model="brand" :options="brandOptions" />
+            <SelectInput label="Carrocería:" v-model="body" :options="bodyOptions" />
             <div class="mt-3 flex flex-row justify-end">
-              <button class="btn btn-primary text-white">Buscar</button>
+              <button class="btn btn-primary text-white" @click="step2">Buscar</button>
             </div>
-            <TextInput label="Modelo:" placeholder="Introducir" disabled="true" />
+            <SelectInput
+              label="Modelo:"
+              v-model="model"
+              :options="typeOptions"
+              key="refresh"
+              :disabled="disModel"
+            />
             <div class="mt-3 flex flex-row justify-end">
-              <button class="btn btn-primary text-white">Buscar</button>
+              <button class="btn btn-primary text-white" @click="step3">Buscar</button>
             </div>
-            <TextInput label="Version:" placeholder="Introducir" disabled="true" />
+            <SelectInput
+              label="Version:"
+              v-model="version"
+              :options="versionOptions"
+              key="refresh"
+              :disabled="disVersion"
+            />
           </div>
-          <DrawerActions secondary="Cancelar" primary="Añadir" />
+          <DrawerActions
+            secondary="Cancelar"
+            primary="Añadir"
+            @click-primary="addSemi"
+            @click-secondary="toggle"
+          />
         </ul>
         <ul
           v-if="drawer === 'manual'"

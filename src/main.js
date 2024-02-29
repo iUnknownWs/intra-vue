@@ -12,6 +12,7 @@ import DropdownAvatar from '@/components/DropdownAvatar.vue'
 import HeaderMain from '@/components/HeaderMain.vue'
 import MenuLink from '@/components/MenuLink.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
+import ModalInfo from './components/icons/ModalInfo.vue'
 import NavLink from '@/components/NavLink.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
@@ -38,6 +39,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('HeaderMain', HeaderMain)
     .component('MenuLink', MenuLink)
     .component('ModalDialog', ModalDialog)
+    .component('ModalInfo', ModalInfo)
     .component('NavLink', NavLink)
     .component('RangeInputN', RangeInputN)
     .component('RangeSelect', RangeSelect)
