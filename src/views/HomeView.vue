@@ -41,17 +41,18 @@ const vin = ref('')
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const brandOptions = ref([])
+const newOptions = ref([])
 const bodyOptions = ref([])
-const brand = ref('')
+const brand = ref({})
 const body = ref('')
 const typeList = ref([])
 const versionList = ref([])
 const typeOptions = []
 const disModel = ref(true)
 const disVersion = ref(true)
-const model = ref('')
+const model = ref({})
 const versionOptions = []
-const version = ref('')
+const version = ref({})
 const eurotax = ref([])
 const modalTitle = ref('')
 const modalMessage = ref('')
@@ -72,6 +73,12 @@ const semiDrawer = () => {
   drawer.value = 'semi'
   axios.get(brandUrl).then((response) => {
     brandOptions.value = response.data.results
+    for (let option of brandOptions.value) {
+      newOptions.value.push({
+        id: option.id,
+        label: option.title
+      })
+    }
   })
   axios.get(bodyUrl).then((response) => {
     bodyOptions.value = response.data.results
@@ -198,7 +205,6 @@ const selected = () => {
   if (tab.value === '9') {
     na()
   }
-  refresh.value++
 }
 
 const all = () => {
@@ -336,7 +342,7 @@ const addAuto = () => {
 }
 
 const addSemi = () => {
-  const value = version.value.split('<')
+  const value = version.value.value.split('<')
   axios
     .post(`${import.meta.env.VITE_VEHICLES}/from-national-code/`, {
       national_vehicle_code: value[0],
@@ -347,6 +353,7 @@ const addSemi = () => {
     })
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
+        selected()
         modalTitle.value = 'Auto añadido'
         modalMessage.value = 'El vehículo ha sido añadido con éxito'
         info.value.modal.showModal()
@@ -371,7 +378,7 @@ const addSemi = () => {
 const step2 = () => {
   axios
     .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-models/`, {
-      brand: brand.value,
+      brand: brand.value.id,
       vehicle_type: body.value
     })
     .then((response) => {
@@ -381,8 +388,8 @@ const step2 = () => {
           let id = makeValue(code)
           let title = makeType(code.data)
           typeOptions.push({
-            id: id,
-            title: title
+            value: id,
+            label: title
           })
         })
       }
@@ -394,7 +401,7 @@ const step2 = () => {
 }
 
 const step3 = () => {
-  eurotax.value = model.value.split('-')
+  eurotax.value = model.value.value.split('-')
   axios
     .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-types/`, {
       model_code: eurotax.value[0],
@@ -406,8 +413,8 @@ const step3 = () => {
         let id = makeVersion(types)
         let title = makeType(types)
         versionOptions.push({
-          id: id,
-          title: title
+          value: id,
+          label: title
         })
       }
     })
@@ -856,28 +863,41 @@ onMounted(() => {
           <!-- Sidebar content here -->
           <div class="flex flex-col">
             <DrawerTitle title="Nuevo Vehículo Semi-Automático" @toggle="toggle" />
-            <SelectInput label="Marca:" v-model="brand" :options="brandOptions" />
+            <label class="form-control mb-4 w-full">
+              <div class="label">
+                <span class="label-text font-medium">Marca:</span>
+              </div>
+              <VueSelect v-model="brand" :options="newOptions" />
+            </label>
             <SelectInput label="Carrocería:" v-model="body" :options="bodyOptions" />
             <div class="mt-3 flex flex-row justify-end">
               <button class="btn btn-primary text-white" @click="step2">Buscar</button>
             </div>
-            <SelectInput
-              label="Modelo:"
-              v-model="model"
-              :options="typeOptions"
-              key="refresh"
-              :disabled="disModel"
-            />
+            <label class="form-control mb-4 w-full">
+              <div class="label">
+                <span class="label-text font-medium">Modelo:</span>
+              </div>
+              <VueSelect
+                v-model="model"
+                :options="typeOptions"
+                :key="refresh"
+                :disabled="disModel"
+              />
+            </label>
             <div class="mt-3 flex flex-row justify-end">
               <button class="btn btn-primary text-white" @click="step3">Buscar</button>
             </div>
-            <SelectInput
-              label="Version:"
-              v-model="version"
-              :options="versionOptions"
-              key="refresh"
-              :disabled="disVersion"
-            />
+            <label class="form-control mb-4 w-full">
+              <div class="label">
+                <span class="label-text font-medium">Version:</span>
+              </div>
+              <VueSelect
+                v-model="version"
+                :options="versionOptions"
+                :key="refresh"
+                :disabled="disVersion"
+              />
+            </label>
           </div>
           <DrawerActions
             secondary="Cancelar"
@@ -918,5 +938,11 @@ onMounted(() => {
 .textcard {
   font-size: 0.65rem;
   line-height: 0.75rem;
+}
+.v-select, .vs__dropdown-toggle  {
+  height: 3rem;
+  background-color: #f3f4f6;
+  background: #f3f4f6;
+  border-radius: 10px!important;
 }
 </style>

@@ -1,14 +1,8 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
-import CheckInput from '@/components/CheckInput.vue'
-import SelectInput from '@/components/SelectInput.vue'
-import HeaderMain from '@/components/HeaderMain.vue'
-import SettingTable from '@/components/SettingTable.vue'
-import TextInput from '@/components/TextInput.vue'
 import router from '@/router'
 import axios from 'axios'
-import NumberInput from '@/components/NumberInput.vue'
 
 const url = `${import.meta.env.VITE_SALES}/warranty-types/`
 const items = ref([])
@@ -16,6 +10,38 @@ const serverItemsLength = ref(0)
 const loading = ref(false)
 const users = ref([])
 const isFetching = ref(false)
+const title = ref('')
+const duration = ref(0)
+const price = ref(0)
+const description = ref('')
+const garantia = ref(false)
+const auto = ref(false)
+const edit = ref(null)
+const data = ref({})
+const headers = [
+  { text: 'TÍTULO', value: 'title' },
+  { text: 'DESCRIPCIÓN', value: 'description' },
+  { text: 'PRECIO', value: 'price' },
+  { text: 'ACCIONES', value: 'id', width: 60 }
+]
+const options = [
+  {
+    id: 0,
+    title: '0 Meses'
+  },
+  {
+    id: 12,
+    title: '12 Meses'
+  },
+  {
+    id: 24,
+    title: '24 Meses'
+  },
+  {
+    id: 36,
+    title: '36 Meses'
+  }
+]
 const serverOptions = ref({
   page: 1,
   rowsPerPage: 20
@@ -68,27 +94,28 @@ const remove = (id) => {
   axios.delete(`${url}${id}/`).then(() => router.go(0))
 }
 
-const edit = ref(null)
-const data = ref({})
-const refresh = ref(0)
-
-const refreshComponent = () => {
-  refresh.value++
+const reset = () => {
+  title.value = ''
+  duration.value = 0
+  price.value = 0
+  description.value = ''
+  auto.value = false
+  garantia.value = false
 }
+
 const editModal = (id) => {
   axios
     .get(`${url}${id}/`)
     .then((response) => {
       data.value = response.data
+      title.value = data.value.title
+      duration.value = data.value.warranty_period
+      price.value = data.value.price
+      description.value = data.value.description
+      auto.value = data.value.auto_add_vehicle
+      garantia.value = data.value.without_warranty
     })
     .then(() => {
-      refreshComponent()
-      ;(title.value = data.value.title),
-        (options.value = data.value.warranty_period),
-        (price.value = data.value.price),
-        (description.value = data.value.description),
-        (auto.value = data.value.auto_add_vehicle),
-        (garantia.value = data.value.without_warranty)
       edit.value.showModal()
     })
 }
@@ -97,121 +124,55 @@ const editData = () => {
   axios
     .put(`${url}${data.value.id}/`, {
       title: title.value,
-      warranty_period: options.value,
+      warranty_period: duration.value,
       price: price.value,
       description: description.value,
       auto_add_vehicle: auto.value,
       without_warranty: garantia.value
     })
-    .then(() => router.go(0))
+    .then(() => {
+      reset()
+      edit.value.close()
+      fetching()
+    })
 }
 
 const addDiscount = () => {
   axios
     .post(url, {
       title: title.value,
-      warranty_period: options.value,
+      warranty_period: duration.value,
       price: price.value,
       description: description.value,
       auto_add_vehicle: auto.value,
       without_warranty: garantia.value
     })
-    .then(() => router.go(0))
+    .then(() => {
+      reset()
+      fetching()
+    })
 }
-
-const title = ref('')
-const updateTitle = (value) => {
-  title.value = value
-}
-const duration = ref(0)
-const updateDuration = (value) => {
-  duration.value = value
-}
-const price = ref(0)
-const updatePrice = (value) => {
-  price.value = value
-}
-const description = ref('')
-const updateDescription = (value) => {
-  description.value = value
-}
-const garantia = ref(false)
-const updateGarantia = (value) => {
-  garantia.value = value
-}
-const auto = ref(false)
-const updateAuto = (value) => {
-  auto.value = value
-}
-
-const headers = [
-  { text: 'TÍTULO', value: 'title' },
-  { text: 'DESCRIPCIÓN', value: 'description' },
-  { text: 'PRECIO', value: 'price' },
-  { text: 'ACCIONES', value: 'id', width: 60 }
-]
-
-const options = [
-  {
-    value: 0,
-    label: '0 Meses'
-  },
-  {
-    value: 12,
-    label: '12 Meses'
-  },
-  {
-    value: 24,
-    label: '24 Meses'
-  },
-  {
-    value: 36,
-    label: '36 Meses'
-  }
-]
 </script>
 
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form method="dialog flex flex-col">
+      <form method="dialog flex flex-col" @submit.prevent="edit.close(); reset()">
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Descuento</h3>
       <div class="divider m-0"></div>
       <form @submit.prevent="editData" class="flex flex-col">
-        <TextInput
-          label="Título"
-          placeholder="Introducir"
-          v-model="data.title"
-        />
-        <SelectInput
-          label="Duración"
-          :options="options"
-          v-model="data.warranty_period"
-        />
-        <NumberInput
-          label="Precio"
-          placeholder="Introducir"
-          v-model="data.price"
-        />
-        <TextInput
-          label="Descripción"
-          placeholder="Introducir"
-          v-model="data.description"
-        />
+        <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <SelectInput label="Duración" :options="options" v-model="duration" />
+        <NumberInput label="Precio" placeholder="Introducir" v-model="price" :max="200000" />
+        <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
         <div class="mt-3 font-medium">
-          <CheckInput
-            label="Sin Garantía"
-            @input="updateGarantia"
-            :read="data.without_warranty"
-            :key="refresh"
-          />
+          <CheckInput label="Sin Garantía" :read="data.without_warranty" v-model="garantia" />
           <CheckInput
             label="¿Agregar al vehículo automáticamente?"
-            @input="updateAuto"
             :read="data.auto_add_vehicle"
-            :key="refresh"
+            v-model="auto"
           />
         </div>
         <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
@@ -250,13 +211,13 @@ const options = [
         </EasyDataTable>
       </template>
       <template #drawer>
-       <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <TextInput label="Título" placeholder="Introducir" v-model="title" />
         <SelectInput label="Duración" :options="options" v-model="duration" />
-        <NumberInput label="Precio" placeholder="Introducir" v-model="price" />
+        <NumberInput label="Precio" placeholder="Introducir" v-model="price" :max="200000" />
         <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
         <div class="mt-3 font-medium">
-          <CheckInput label="Sin Garantía" @input="updateGarantia" />
-          <CheckInput label="¿Agregar al vehículo automáticamente?" @input="updateAuto" />
+          <CheckInput label="Sin Garantía" @input="updateGarantia" v-model="garantia" />
+          <CheckInput label="¿Agregar al vehículo automáticamente?" v-model="auto" />
         </div>
       </template>
     </SettingTable>

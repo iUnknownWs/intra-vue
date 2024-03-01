@@ -10,6 +10,10 @@ import router from '@/router'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
+axios.get(`${import.meta.env.VITE_API}/permissions/`).then((response) => {
+  permissions.value = response.data.results
+})
+
 const items = ref([])
 const serverItemsLength = ref(0)
 const loading = ref(false)
@@ -19,6 +23,20 @@ const serverOptions = ref({
   page: 1,
   rowsPerPage: 20
 })
+const permissions = ref([])
+const perms = ref([])
+const url = `${import.meta.env.VITE_USER}/`
+const name = ref('')
+const lastName = ref('')
+const email = ref('')
+const admin = ref(false)
+const headers = [
+  { text: 'EMAIL', value: 'email' },
+  { text: 'NOMBRE', value: 'first_name' },
+  { text: 'APELLIDO', value: 'last_name' },
+  { text: 'ADMIN', value: 'is_admin', width: 30 },
+  { text: 'ELIMINAR', value: 'id', width: 30 }
+]
 
 const fetching = () => {
   if (isFetching.value) {
@@ -63,42 +81,29 @@ watch(
   { deep: true }
 )
 
-const headers = [
-  { text: 'EMAIL', value: 'email' },
-  { text: 'NOMBRE', value: 'first_name' },
-  { text: 'APELLIDO', value: 'last_name' },
-  { text: 'ADMIN', value: 'is_admin', width: 30 },
-  { text: 'ELIMINAR', value: 'id', width: 30 }
-]
-
-const url = `${import.meta.env.VITE_USER}/`
-
 const addUser = () => {
   axios
     .post(url, {
       first_name: name.value,
       last_name: lastName.value,
       email: email.value,
-      is_admin: admin.value
+      is_admin: admin.value,
+      permissions: perms.value
     })
     .then((response) => {
       if (response.status === 201) {
         fetching()
-        
+        reset()
       }
     })
 }
 
-const name = ref('')
-
-const lastName = ref('')
-
-const email = ref('')
-
-
-const admin = ref(false)
-const updateAdmin = (value) => {
-  admin.value = value
+const reset = () => {
+  name.value = ''
+  lastName.value = ''
+  email.value = ''
+  admin.value = false
+  perms.value = []
 }
 </script>
 
@@ -142,15 +147,14 @@ const updateAdmin = (value) => {
         <TextInput label="Email" placeholder="Introducir" v-model="email" />
         <div class="mt-3"><span class="label-text font-bold">Permisos:</span></div>
         <div class="m-0 grid grid-cols-2 justify-between gap-1 p-0 font-semibold">
-          <CheckInput label="Vehículos" />
-          <CheckInput label="Reservas" />
-          <CheckInput label="Tasaciones" />
-          <CheckInput label="Ajustes Generales" />
-          <CheckInput label="Extras" />
-          <CheckInput label="Estatus de Vehículos" />
-          <CheckInput label="Coches.net" />
-          <CheckInput label="Wallapop" />
-          <CheckInput label="Administrador" @input="updateAdmin" />
+          <CheckInput
+            v-for="(permission, index) in permissions"
+            :key="index"
+            :label="permission.name"
+            :value="permission.id"
+            v-model="perms"
+          />
+          <CheckInput label="Administrador" v-model="admin" />
           <span class="text-center text-xs text-gray-600"
             >(Dispone de acceso total a la plataforma)</span
           >

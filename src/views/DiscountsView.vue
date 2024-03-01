@@ -1,11 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
-import HeaderMain from '@/components/HeaderMain.vue'
-import SettingTable from '@/components/SettingTable.vue'
-import TextInput from '@/components/TextInput.vue'
-import DateInput from '@/components/DateInput.vue'
-import NumberInput from '@/components/NumberInput.vue'
 import axios from 'axios'
 import router from '@/router'
 
@@ -15,6 +10,13 @@ const serverItemsLength = ref(0)
 const loading = ref(false)
 const users = ref([])
 const isFetching = ref(false)
+const edit = ref(null)
+const data = ref({})
+const title = ref('')
+const from_date = ref('')
+const to_date = ref('')
+const amount_fix = ref(0)
+const amount_percent = ref(0)
 const serverOptions = ref({
   page: 1,
   rowsPerPage: 20
@@ -79,100 +81,84 @@ const headers = [
 const addDiscount = () => {
   axios
     .post(url, {
-      title: data.value.title,
-      from_date: data.value.from_date,
-      to_date: data.value.to_date,
-      amount_percent: parseInt(data.value.amount_percent) || 0,
-      amount_fix: parseInt(data.value.amount_fix) || 0
+      title: title.value,
+      from_date: from_date.value,
+      to_date: to_date.value,
+      amount_percent: parseInt(amount_percent.value) || 0,
+      amount_fix: parseInt(amount_fix.value) || 0
     })
     .then((response) => {
       if (response.status === 201) {
-        router.go(0)
+        reset()
+        fetching()
       }
     })
 }
 
-const edit = ref(null)
-const data = ref({})
-const refresh = ref(0)
-
-const refreshComponent = () => {
-  refresh.value++
-}
 const editModal = (id) => {
   axios
     .get(`${url}${id}/`)
     .then((response) => {
       data.value = response.data
+      title.value = data.value.title
+      from_date.value = data.value.from_date
+      to_date.value = data.value.to_date
+      amount_fix.value = data.value.amount_fix
+      amount_percent.value = data.value.amount_percent
     })
     .then(() => {
-      refreshComponent()
-      
       edit.value.showModal()
     })
 }
 
 const editDiscount = () => {
-  
   axios
     .put(`${url}${data.value.id}/`, {
-      title: data.value.title,
-      from_date: data.value.from_date,
-      to_date: data.value.to_date,
-      amount_percent: parseInt(data.value.amount_percent) || 0,
-      amount_fix: parseInt(data.value.amount_fix) || 0
+      title: title.value,
+      from_date: from_date.value,
+      to_date: to_date.value,
+      amount_percent: parseInt(amount_percent.value) || 0,
+      amount_fix: parseInt(amount_fix.value) || 0
     })
     .then(() => {
-      edit.value.close()
+      reset()
       fetching()
+      edit.value.close()
     })
 }
 
-
-
-
-
-
+const reset = () => {
+  title.value = ''
+  from_date.value = ''
+  to_date.value = ''
+  amount_fix.value = 0
+  amount_percent.value = 0
+}
 </script>
 
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form method="dialog flex flex-col">
+      <form
+        method="dialog flex flex-col"
+        @submit.prevent="
+          edit.close()
+          reset()
+        "
+      >
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Descuento</h3>
       <div class="divider m-0"></div>
       <form @submit.prevent="editDiscount" class="flex flex-col">
-        
-        <TextInput
-          label="Título"
-          placeholder="Introducir"
-          v-model="data.title"
-        />
-        <DateInput
-          label="Inicio"
-          v-model="data.from_date"
-        />
-        <DateInput label="Fin" 
-        v-model="data.to_date" 
-        />
+        <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <DateInput label="Inicio" v-model="from_date" />
+        <DateInput label="Fin" v-model="to_date" />
         <label class="form-control w-full">
-          <NumberInput
-          :label="'Valor Fijo'"
-          :max="200000"
-          v-model="data.amount_fix"
-          />
+          <NumberInput :label="'Valor Fijo'" :max="200000" v-model="amount_fix" />
         </label>
         <label class="form-control w-full">
-          
-          <NumberInput
-          :label="'Valor (%)'"
-          :max="100"
-          v-model="data.amount_percent"
-          />
-          
-          
+          <NumberInput :label="'Valor (%)'" :max="100" v-model="amount_percent" />
         </label>
         <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
       </form>
@@ -210,23 +196,14 @@ const editDiscount = () => {
         </EasyDataTable>
       </template>
       <template #drawer>
-        
-        <TextInput label="Título" placeholder="Introducir" v-model="data.title" />
-        <DateInput label="Inicio" v-model="data.from_date" />
-        <DateInput label="Fin" v-model="data.to_date" />
+        <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <DateInput label="Inicio" v-model="from_date" />
+        <DateInput label="Fin" v-model="to_date" />
         <label class="form-control w-full">
-          <NumberInput
-          :label="'Valor Fijo'"
-          :max="200000"
-          v-model="data.amount_fix"
-          />
+          <NumberInput :label="'Valor Fijo'" :max="200000" v-model="amount_fix" />
         </label>
         <label class="form-control w-full">
-          <NumberInput
-          :label="'Valor (%)'"
-          :max="100"
-          v-model="data.amount_percent"
-          />
+          <NumberInput :label="'Valor (%)'" :max="100" v-model="amount_percent" />
         </label>
       </template>
     </SettingTable>

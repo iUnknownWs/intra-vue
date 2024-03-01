@@ -14,6 +14,7 @@ import MenuLink from '@/components/MenuLink.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import ModalInfo from './components/icons/ModalInfo.vue'
 import NavLink from '@/components/NavLink.vue'
+import NumberInput from './components/NumberInput.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
 import SelectInput from '@/components/SelectInput.vue'
@@ -23,11 +24,15 @@ import TextInput from '@/components/TextInput.vue'
 import TextIcon from '@/components/TextIcon.vue'
 import TextBtn from '@/components/TextBtn.vue'
 import CheckInput from '@/components/CheckInput.vue'
-import Vue3EasyDataTable from 'vue3-easy-data-table';
-import 'vue3-easy-data-table/dist/style.css';
+import Vue3EasyDataTable from 'vue3-easy-data-table'
+import 'vue3-easy-data-table/dist/style.css'
+import VueSelect from "vue-select";
+import 'vue-select/dist/vue-select.css'
+
 
 const app = createApp(App)
 app.component('EasyDataTable', Vue3EasyDataTable)
+    .component('v-select', VueSelect)
     .component('CheckInput', CheckInput)
     .component('DateInput', DateInput)
     .component('DrawerActions', DrawerActions)
@@ -41,6 +46,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('ModalDialog', ModalDialog)
     .component('ModalInfo', ModalInfo)
     .component('NavLink', NavLink)
+    .component('NumberInput', NumberInput)
     .component('RangeInputN', RangeInputN)
     .component('RangeSelect', RangeSelect)
     .component('SelectInput', SelectInput)
@@ -49,6 +55,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('TextBtn', TextBtn)
     .component('TextIcon', TextIcon)
     .component('TextInput', TextInput)
+    .component('VueSelect', VueSelect)
 
 app.use(router)
 

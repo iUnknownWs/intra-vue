@@ -1,10 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
-import SettingTable from '@/components/SettingTable.vue'
-import TextInput from '@/components/TextInput.vue'
-import HeaderMain from '@/components/HeaderMain.vue'
-import CheckInput from '@/components/CheckInput.vue'
 import router from '@/router'
 import axios from 'axios'
 
@@ -14,6 +10,18 @@ const serverItemsLength = ref(0)
 const loading = ref(false)
 const users = ref([])
 const isFetching = ref(false)
+const title = ref('')
+const description = ref('')
+const price = ref(0)
+const auto = ref(false)
+const edit = ref(null)
+const data = ref({})
+const headers = [
+  { text: 'TÍTULO', value: 'title' },
+  { text: 'DESCRIPCIÓN', value: 'description' },
+  { text: 'PRECIO', value: 'price' },
+  { text: 'ACCIONES', value: 'id', width: 60 }
+]
 const serverOptions = ref({
   page: 1,
   rowsPerPage: 20
@@ -66,25 +74,24 @@ const remove = (id) => {
   axios.delete(`${url}/${id}/`).then(() => router.go(0))
 }
 
-const edit = ref(null)
-const data = ref({})
-const refresh = ref(0)
-
-const refreshComponent = () => {
-  refresh.value++
+const reset = () => {
+  title.value = ''
+  price.value = 0
+  description.value = ''
+  auto.value = false
 }
+
 const editModal = (id) => {
   axios
     .get(`${url}${id}/`)
     .then((response) => {
       data.value = response.data
-    })
-    .then(() => {
       title.value = data.value.title
       price.value = data.value.price
       description.value = data.value.description
       auto.value = data.value.auto_add_vehicle
-      refreshComponent()
+    })
+    .then(() => {
       edit.value.showModal()
     })
 }
@@ -97,7 +104,11 @@ const editData = () => {
       description: description.value,
       auto_add_vehicle: auto.value
     })
-    .then(() => router.go(0))
+    .then(() => {
+      fetching()
+      reset()
+      edit.value.close()
+    })
 }
 
 const addExtra = () => {
@@ -105,69 +116,34 @@ const addExtra = () => {
     .post(url, {
       title: title.value,
       description: description.value,
-      price: price.value
+      price: price.value,
+      auto_add_vehicle: auto.value
     })
-    .then(() => router.go(0))
+    .then(() => {
+      reset()
+      fetching()
+    })
 }
-
-const title = ref('')
-const description = ref('')
-const price = ref(0)
-const auto = ref(false)
-
-const updateTitle = (value) => {
-  title.value = value
-}
-const updateDescription = (value) => {
-  description.value = value
-}
-const updateAuto = (value) => {
-  auto.value = value
-}
-
-const headers = [
-  { text: 'TÍTULO', value: 'title' },
-  { text: 'DESCRIPCIÓN', value: 'description' },
-  { text: 'PRECIO', value: 'price' },
-  { text: 'ACCIONES', value: 'id', width: 60 }
-]
 </script>
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form method="dialog flex flex-col">
+      <form
+        method="dialog flex flex-col"
+        @submit.prevent="
+          edit.close()
+          reset()
+        "
+      >
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Tipo de Entrega</h3>
       <div class="divider m-0"></div>
       <form @submit.prevent="editData" class="flex flex-col">
-        <TextInput
-          label="Título"
-          placeholder="Introducir"
-          @input="updateTitle"
-          :key="refresh"
-          :read="data.title"
-        />
-        <TextInput
-          label="Descripción"
-          placeholder="Introducir"
-          @input="updateDescription"
-          :key="refresh"
-          :read="data.description"
-        />
-        <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text font-medium">Precio</span>
-          </div>
-          <input type="number" class="input input-bordered w-full" v-model="price" />
-        </label>
-        <CheckInput
-          label="¿Agregar al vehículo automáticamente?"
-          class="mt-3"
-          @input="updateAuto"
-          :key="refresh"
-          :read="data.auto_add_vehicle"
-        />
+        <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
+        <NumberInput label="Precio" :max="200000" v-model="price" />
+        <CheckInput label="¿Agregar al vehículo automáticamente?" class="mt-3" v-model="auto" />
         <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
       </form>
     </div>
@@ -204,19 +180,10 @@ const headers = [
         </EasyDataTable>
       </template>
       <template #drawer>
-        <TextInput label="Título" placeholder="Introducir" @input="updateTitle" />
-        <TextInput label="Descripción" placeholder="Introducir" @input="updateDescription" />
-        <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text font-medium">Precio</span>
-          </div>
-          <input type="number" class="input input-bordered w-full" max="100" v-model="price" />
-        </label>
-        <CheckInput
-          label="¿Agregar al vehículo automáticamente?"
-          class="mt-3"
-          @input="updateAuto"
-        />
+        <TextInput label="Título" placeholder="Introducir" v-model="title" />
+        <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
+        <NumberInput label="Precio" placeholder="Introducir" v-model="price" :max="200000" />
+        <CheckInput label="¿Agregar al vehículo automáticamente?" class="mt-3" v-model="auto" />
       </template>
     </SettingTable>
   </HeaderMain>
