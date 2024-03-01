@@ -16,5 +16,3 @@ defineExpose({ modal })
     </form>
   </dialog>
 </template>
-
-<style scoped></style>

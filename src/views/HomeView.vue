@@ -5,7 +5,6 @@ import axios from 'axios'
 import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
-import ModalDialog from '@/components/ModalDialog.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -43,22 +42,40 @@ const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const brandOptions = ref([])
 const newOptions = ref([])
 const bodyOptions = ref([])
-const brand = ref({})
+const brand = ref({ id: '', label: '' })
 const body = ref('')
 const typeList = ref([])
 const versionList = ref([])
 const typeOptions = []
 const disModel = ref(true)
 const disVersion = ref(true)
-const model = ref({})
+const model = ref({ id: '', label: '' })
 const versionOptions = []
-const version = ref({})
+const version = ref({ id: '', label: '' })
 const eurotax = ref([])
 const modalTitle = ref('')
 const modalMessage = ref('')
+const stepBtn = ref(null)
+const loading = ref(false)
+const loadingBtn = ref(false)
+const disAdd = ref(true)
+const loadingInfo = ref(true)
+
+const resetDrawer = () => {
+  brand.value = {}
+  body.value = ''
+  model.value = {}
+  version.value = {}
+  typeList.value = []
+  versionList.value = []
+  eurotax.value = []
+  disModel.value = true
+  disVersion.value = true
+}
 
 const toggle = () => {
   toggleDrawer.value = !toggleDrawer.value
+  resetDrawer()
 }
 
 const filterDrawer = () => {
@@ -314,35 +331,37 @@ const vehicleWeb = (slugWeb) => {
 }
 
 const addAuto = () => {
+  toggleDrawer.value = false
+  info.value.modal.showModal()
   axios
     .post(`${import.meta.env.VITE_VEHICLES}/from-chassis-number/`, {
       chassis_number: vin.value
     })
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
+        loadingInfo.value = false
         modalTitle.value = 'Auto añadido'
         modalMessage.value = 'El vehículo ha sido añadido con éxito'
-        info.value.modal.showModal()
       } else if (response.status === 400) {
+        loadingInfo.value = false
         modalTitle.value = 'Error'
         modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
-        info.value.modal.showModal()
       } else if (response.status === 409) {
-        alert('Auto ya existente')
+        loadingInfo.value = false
         modalTitle.value = 'Error'
         modalMessage.value = 'Puede que el vehiculo que intentas añadir ya existe'
-        info.value.modal.showModal()
       } else {
+        loadingInfo.value = false
         modalTitle.value = 'Error'
         modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
-        info.value.modal.showModal()
       }
     })
-  toggleDrawer.value = false
 }
 
 const addSemi = () => {
   const value = version.value.value.split('<')
+  info.value.modal.showModal()
+  toggleDrawer.value = false
   axios
     .post(`${import.meta.env.VITE_VEHICLES}/from-national-code/`, {
       national_vehicle_code: value[0],
@@ -354,28 +373,28 @@ const addSemi = () => {
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
         selected()
+        loadingInfo.value = false
         modalTitle.value = 'Auto añadido'
         modalMessage.value = 'El vehículo ha sido añadido con éxito'
-        info.value.modal.showModal()
       } else if (response.status === 400) {
+        loadingInfo.value = false
         modalTitle.value = 'Error'
         modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
-        info.value.modal.showModal()
       } else if (response.status === 409) {
-        alert('Auto ya existente')
+        loadingInfo.value = false
         modalTitle.value = 'Error'
         modalMessage.value = 'Puede que el vehiculo que intentas añadir ya existe'
-        info.value.modal.showModal()
       } else {
+        loadingInfo.value = false
         modalTitle.value = 'Error'
         modalMessage.value = 'Se ha producido un error al intentar añadir el vehículo'
-        info.value.modal.showModal()
       }
     })
-  toggleDrawer.value = false
+  resetDrawer()
 }
 
 const step2 = () => {
+  loading.value = true
   axios
     .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-models/`, {
       brand: brand.value.id,
@@ -397,10 +416,12 @@ const step2 = () => {
     .then(() => {
       refresh.value++
       disModel.value = false
+      loading.value = false
     })
 }
 
 const step3 = () => {
+  loadingBtn.value = true
   eurotax.value = model.value.value.split('-')
   axios
     .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-types/`, {
@@ -421,6 +442,8 @@ const step3 = () => {
     .then(() => {
       refresh.value++
       disVersion.value = false
+      loadingBtn.value = false
+      disAdd.value = false
     })
 }
 
@@ -488,7 +511,7 @@ onMounted(() => {
       <li><a @click="deleteVehicle">Eliminar</a></li>
     </ul>
   </ModalDialog>
-  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" :loading="loadingInfo" />
   <HeaderMain>
     <div class="drawer drawer-end">
       <input v-model="toggleDrawer" id="filterDrawer" type="checkbox" class="drawer-toggle" />
@@ -712,8 +735,6 @@ onMounted(() => {
               <CardDesktop
                 v-for="(vehicle, index) in vehiclesFilter"
                 :key="index"
-                @menu-btn2="vehicleWeb"
-                @menu-btn5="deleteVehicle"
                 :id="vehicle.id"
                 :slug="vehicle.slug || 'No disponible'"
                 :placa="vehicle.license_plate || 'No disponible'"
@@ -735,6 +756,8 @@ onMounted(() => {
                 :keys="vehicle.key_locator"
                 :kms="vehicle.kms || 0"
                 :distinctive="vehicle.maintenance.distinctive || 0"
+                @menu-btn2="vehicleWeb"
+                @menu-btn5="deleteVehicle"
               />
             </div>
           </div>
@@ -871,7 +894,10 @@ onMounted(() => {
             </label>
             <SelectInput label="Carrocería:" v-model="body" :options="bodyOptions" />
             <div class="mt-3 flex flex-row justify-end">
-              <button class="btn btn-primary text-white" @click="step2">Buscar</button>
+              <button ref="stepBtn" class="btn btn-primary text-white" @click="step2">
+                <LoadingSpinner v-if="loading" />
+                Buscar
+              </button>
             </div>
             <label class="form-control mb-4 w-full">
               <div class="label">
@@ -885,7 +911,10 @@ onMounted(() => {
               />
             </label>
             <div class="mt-3 flex flex-row justify-end">
-              <button class="btn btn-primary text-white" @click="step3">Buscar</button>
+              <button class="btn btn-primary text-white" :disabled="disModel" @click="step3">
+                <LoadingSpinner v-if="loadingBtn" />
+                Buscar
+              </button>
             </div>
             <label class="form-control mb-4 w-full">
               <div class="label">
@@ -904,6 +933,7 @@ onMounted(() => {
             primary="Añadir"
             @click-primary="addSemi"
             @click-secondary="toggle"
+            :disabled="disAdd"
           />
         </ul>
         <ul
@@ -939,10 +969,11 @@ onMounted(() => {
   font-size: 0.65rem;
   line-height: 0.75rem;
 }
-.v-select, .vs__dropdown-toggle  {
+.v-select,
+.vs__dropdown-toggle {
   height: 3rem;
   background-color: #f3f4f6;
   background: #f3f4f6;
-  border-radius: 10px!important;
+  border-radius: 10px !important;
 }
 </style>

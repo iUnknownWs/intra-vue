@@ -12,7 +12,7 @@ import DropdownAvatar from '@/components/DropdownAvatar.vue'
 import HeaderMain from '@/components/HeaderMain.vue'
 import MenuLink from '@/components/MenuLink.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
-import ModalInfo from './components/icons/ModalInfo.vue'
+import ModalInfo from './components/ModalInfo.vue'
 import NavLink from '@/components/NavLink.vue'
 import NumberInput from './components/NumberInput.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
@@ -24,6 +24,7 @@ import TextInput from '@/components/TextInput.vue'
 import TextIcon from '@/components/TextIcon.vue'
 import TextBtn from '@/components/TextBtn.vue'
 import CheckInput from '@/components/CheckInput.vue'
+import LoadingSpinner from './components/LoadingSpinner.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
 import VueSelect from "vue-select"
@@ -51,6 +52,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('SelectInput', SelectInput)
     .component('SelectTab', SelectTab)
     .component('SettingTable', SettingTable)
+    .component('LoadingSpinner', LoadingSpinner)
     .component('TextBtn', TextBtn)
     .component('TextIcon', TextIcon)
     .component('TextInput', TextInput)
