@@ -139,13 +139,7 @@ const reset = () => {
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form
-        method="dialog flex flex-col"
-        @submit.prevent="
-          edit.close()
-          reset()
-        "
-      >
+      <form method="dialog flex flex-col" @submit.prevent="edit.close(); reset()">
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Descuento</h3>

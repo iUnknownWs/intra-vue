@@ -26,13 +26,12 @@ import TextBtn from '@/components/TextBtn.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
-import VueSelect from "vue-select";
+import VueSelect from "vue-select"
 import 'vue-select/dist/vue-select.css'
 
 
 const app = createApp(App)
 app.component('EasyDataTable', Vue3EasyDataTable)
-    .component('v-select', VueSelect)
     .component('CheckInput', CheckInput)
     .component('DateInput', DateInput)
     .component('DrawerActions', DrawerActions)
