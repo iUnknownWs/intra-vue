@@ -8,6 +8,7 @@ const url = `${import.meta.env.VITE_SALES}/discounts/`
 const items = ref([])
 const serverItemsLength = ref(0)
 const loading = ref(false)
+const loadingSpinner = ref(false)
 const users = ref([])
 const isFetching = ref(false)
 const edit = ref(null)
@@ -112,6 +113,7 @@ const editModal = (id) => {
 }
 
 const editDiscount = () => {
+  loadingSpinner.value = true
   axios
     .put(`${url}${data.value.id}/`, {
       title: title.value,
@@ -124,6 +126,7 @@ const editDiscount = () => {
       reset()
       fetching()
       edit.value.close()
+      loadingSpinner.value = false
     })
 }
 
@@ -154,7 +157,10 @@ const reset = () => {
         <label class="form-control w-full">
           <NumberInput :label="'Valor (%)'" :max="100" v-model="amount_percent" />
         </label>
-        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+          <LoadingSpinner v-if="loadingSpinner" />
+          Guardar
+        </button>
       </form>
     </div>
   </dialog>

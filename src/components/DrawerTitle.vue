@@ -8,7 +8,7 @@ defineEmits(['toggle'])
 </script>
 
 <template>
-  <li class="menu-title flex flex-row justify-between lg:text-2xl">
+  <li class="menu-title flex flex-row flex-nowrap justify-between lg:text-lg">
     {{ title }}
     <button @click="$emit('toggle')" class="btn btn-square btn-xs">
       <Icon icon="mdi:close" width="20" />

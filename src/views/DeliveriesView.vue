@@ -12,6 +12,7 @@ const url = `${import.meta.env.VITE_SALES}/delivery-types/`
 const items = ref([])
 const serverItemsLength = ref(0)
 const loading = ref(false)
+const loadingSpinner = ref(false)
 const users = ref([])
 const isFetching = ref(false)
 const title = ref('')
@@ -96,7 +97,16 @@ const editModal = (id) => {
     })
 }
 
+const reset = () => {
+  title.value = ''
+  price.value = 0
+  description.value = ''
+  auto.value = false
+  delivery.value = false
+}
+
 const editData = () => {
+  loadingSpinner.value = true
   axios
     .put(`${url}${data.value.id}/`, {
       title: title.value,
@@ -105,14 +115,21 @@ const editData = () => {
       auto_add_vehicle: auto.value,
       is_home_delivery: delivery.value
     })
-    .then(() => router.go(0))
+    .then(() => {
+      reset()
+      fetching()
+      edit.value.close()
+      loadingSpinner.value = false
+    })
 }
 </script>
 
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form method="dialog flex flex-col" @submit.prevent="edit.close(); reset()">
+      <form
+        method="dialog flex flex-col"
+        @submit.prevent="edit.close(); reset()" >
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Tipo de Entrega</h3>
@@ -125,7 +142,10 @@ const editData = () => {
           <CheckInput label="Entrega a domicilio" v-model="delivery" />
           <CheckInput label="¿Agregar al vehículo automáticamente?" v-model="auto" />
         </div>
-        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+          <LoadingSpinner v-if="loadingSpinner" />
+          Guardar
+        </button>
       </form>
     </div>
   </dialog>

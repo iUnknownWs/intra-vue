@@ -5,6 +5,7 @@ import axios from 'axios'
 import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -60,12 +61,13 @@ const loading = ref(false)
 const loadingBtn = ref(false)
 const disAdd = ref(true)
 const loadingInfo = ref(true)
+const header = ref(null)
 
 const resetDrawer = () => {
-  brand.value = {}
+  brand.value = { id: '', label: '' }
   body.value = ''
-  model.value = {}
-  version.value = {}
+  model.value = { id: '', label: '' }
+  version.value = { id: '', label: '' }
   typeList.value = []
   versionList.value = []
   eurotax.value = []
@@ -146,6 +148,7 @@ const categoriaFilter = () => {
 }
 
 const filter = () => {
+  loading.value = true
   if (itv.value) {
     filterParams.maintenance__itv_expiration__gte = '2024-02-26'
   }
@@ -156,8 +159,10 @@ const filter = () => {
     filterParams.pvideo = 'true'
   }
   const filterUrl = `${urlParams.value}${new URLSearchParams(filterParams)}`
+  window.scrollTo({ top: 0, behavior: 'smooth' }) 
   axios.get(filterUrl).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
   toggleDrawer.value = ref(false)
 }
@@ -182,12 +187,14 @@ const reset = () => {
 }
 
 const search = () => {
+  loading.value = true
   const searchParams = {
     search: searchValue.value
   }
   const searchUrl = `${urlParams.value}${new URLSearchParams(searchParams)}`
   axios.get(searchUrl).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
@@ -225,80 +232,100 @@ const selected = () => {
 }
 
 const all = () => {
+  loading.value = true
   axios.get(url).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const pr = () => {
+  loading.value = true
   params.value = 'status=0'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const ppt = () => {
+  loading.value = true
   params.value = 'ppt=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const vpt = () => {
+  loading.value = true
   params.value = 'vpt=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const pp = () => {
+  loading.value = true
   params.value = 'status=3'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const venta = () => {
+  loading.value = true
   params.value = 'status=4'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const reserva = () => {
+  loading.value = true
   params.value = 'status=5'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const web = () => {
+  loading.value = true
   params.value = 'no_web=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
-    vehiclesFilter.value = response.data.results
+    vehiclesFilter.value = response.data.results  
+    loading.value = false
   })
 }
 
 const entrega = () => {
+  loading.value = true
   params.value = 'inmediate_delivery=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
 const na = () => {
+  loading.value = true
   params.value = 'status=10'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
     vehiclesFilter.value = response.data.results
+    loading.value = false
   })
 }
 
@@ -512,7 +539,7 @@ onMounted(() => {
     </ul>
   </ModalDialog>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" :loading="loadingInfo" />
-  <HeaderMain>
+  <HeaderMain ref="header">
     <div class="drawer drawer-end">
       <input v-model="toggleDrawer" id="filterDrawer" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content">
@@ -732,7 +759,9 @@ onMounted(() => {
               />
             </div>
             <div>
+              <LoadingSpinner v-if="loading" class="loading-lg" />
               <CardDesktop
+                v-else
                 v-for="(vehicle, index) in vehiclesFilter"
                 :key="index"
                 :id="vehicle.id"

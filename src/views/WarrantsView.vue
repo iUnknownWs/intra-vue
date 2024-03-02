@@ -8,6 +8,7 @@ const url = `${import.meta.env.VITE_SALES}/warranty-types/`
 const items = ref([])
 const serverItemsLength = ref(0)
 const loading = ref(false)
+const loadingSpinner = ref(false)
 const users = ref([])
 const isFetching = ref(false)
 const title = ref('')
@@ -121,6 +122,7 @@ const editModal = (id) => {
 }
 
 const editData = () => {
+  loadingSpinner.value = true
   axios
     .put(`${url}${data.value.id}/`, {
       title: title.value,
@@ -132,12 +134,13 @@ const editData = () => {
     })
     .then(() => {
       reset()
-      edit.value.close()
       fetching()
+      edit.value.close()
+      loadingSpinner.value = false
     })
 }
 
-const addDiscount = () => {
+const addWarrant = () => {
   axios
     .post(url, {
       title: title.value,
@@ -175,7 +178,10 @@ const addDiscount = () => {
             v-model="auto"
           />
         </div>
-        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+          <LoadingSpinner v-if="loadingSpinner" />
+          Guardar
+        </button>
       </form>
     </div>
   </dialog>
@@ -184,7 +190,7 @@ const addDiscount = () => {
       title="Lista de garantías"
       :add="true"
       drawerTitle="Añadir Nueva Garantía"
-      @toggle="addDiscount"
+      @toggle="addWarrant"
     >
       <template #content>
         <EasyDataTable

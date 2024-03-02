@@ -1,7 +1,9 @@
 <script setup></script>
 
 <template>
-  <div></div>
+  <HeaderMain>
+    <span class="text-3xl font-bold">Reservas</span>
+  </HeaderMain>
 </template>
 
 <style scoped></style>

@@ -3,11 +3,11 @@ import { ref, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import router from '@/router'
 import axios from 'axios'
-
 const url = `${import.meta.env.VITE_SALES}/documents-managements/`
 const items = ref([])
 const serverItemsLength = ref(0)
 const loading = ref(false)
+const loadingSpinner = ref(false)
 const users = ref([])
 const isFetching = ref(false)
 const edit = ref(null)
@@ -97,17 +97,19 @@ const editModal = (id) => {
 }
 
 const editData = () => {
+  loadingSpinner.value = true
   axios
-    .put(`${url}${data.value.id}/`, {
-      title: title.value,
-      price: price.value,
-      description: description.value,
-      auto_add_vehicle: auto.value
-    })
-    .then(() => {
-      reset()
-      fetching()
-      edit.value.close()
+  .put(`${url}${data.value.id}/`, {
+    title: title.value,
+    price: price.value,
+    description: description.value,
+    auto_add_vehicle: auto.value
+  })
+  .then(() => {
+    reset()
+    fetching()
+    edit.value.close()
+    loadingSpinner.value = false
     })
 }
 
@@ -138,7 +140,10 @@ const addDocs = () => {
         <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
         <NumberInput label="Precio" :max="200000" v-model="price" />
         <CheckInput label="¿Agregar al vehículo automáticamente?" class="mt-3" v-model="auto" />
-        <button type="submit" class="btn btn-primary mt-4 self-end text-white">Guardar</button>
+        <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+          <LoadingSpinner v-if="loadingSpinner" />
+          Guardar
+        </button>
       </form>
     </div>
   </dialog>
