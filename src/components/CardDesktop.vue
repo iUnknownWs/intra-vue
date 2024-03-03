@@ -32,60 +32,65 @@ const integrations = [true, true, true]
 
 <template>
   <div class="card card-side mt-4 h-[225px] w-full bg-base-100 text-xs font-normal">
-    <div
-      class="cover relative z-0 w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
-      :style="{
-        'background-image': 'url(' + img + ')'
-      }"
-    >
+    <RouterLink :to="'/vehiculos/' + id" class="relative z-10">
       <div
-        v-if="keys"
-        class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+        class="cover z-0 h-full w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
+        :style="{
+          'background-image': 'url(' + img + ')'
+        }"
       >
-        <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
+        <div
+          v-if="keys"
+          class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+        >
+          <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
+        </div>
+        <div class="absolute bottom-2 right-2">
+          <span
+            v-if="estado == 0"
+            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Pte. de Recepción
+          </span>
+          <span
+            v-if="estado == 3"
+            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Pte. de Publicación
+          </span>
+          <span
+            v-if="estado == 4"
+            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            En venta
+          </span>
+          <span
+            v-if="estado == 5"
+            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Reservado
+          </span>
+          <span
+            v-if="estado == 8"
+            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            Entregado
+          </span>
+          <span
+            v-if="estado == 10"
+            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
+            No Disponible
+          </span>
+        </div>
       </div>
-      <div class="absolute bottom-2 right-2">
-        <span
-          v-if="estado == 0"
-          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Pte. de Recepción
-        </span>
-        <span
-          v-if="estado == 3"
-          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Pte. de Publicación
-        </span>
-        <span
-          v-if="estado == 4"
-          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          En venta
-        </span>
-        <span
-          v-if="estado == 5"
-          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Reservado
-        </span>
-        <span v-if="estado == 8" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
-          Entregado
-        </span>
-        <span
-          v-if="estado == 10"
-          class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          No Disponible
-        </span>
-      </div>
-    </div>
+    </RouterLink>
     <div class="card-body flex-row justify-between p-4">
       <div class="relative flex w-full flex-row">
         <div class="w-full flex-col pl-4">
           <div class="flex w-full flex-row justify-between">
             <div class="flex gap-2 pr-10">
-              <span class="font-semibold">{{ placa }}</span>
+              <RouterLink :to="'/vehiculos/' + id" class="font-semibold">{{ placa }}</RouterLink>
               <span class="font-semibold capitalize">{{ marca }}</span>
               <span class="font-semibold capitalize">{{ modelo }}</span>
             </div>

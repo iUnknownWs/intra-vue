@@ -33,60 +33,61 @@ defineEmits(['btn-click'])
 <template>
   <div class="card card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
     <figure class="bg-cover">
-      <div
-        class="cover relative z-0 aspect-video w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
-        :style="{ 'background-image': 'url(' + img + ')' }"
-      >
+      <RouterLink :to="'/vehiculos/' + id" class="relative">
         <div
-          v-if="keys"
-          class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+          class="cover relative z-0 aspect-video h-full w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
+          :style="{ 'background-image': 'url(' + img + ')' }"
         >
-          <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
+          <div
+            v-if="keys"
+            class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+          >
+            <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
+          </div>
+          <div class="absolute bottom-2 right-2">
+            <span
+              v-if="estado == 0"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Recepción
+            </span>
+            <span
+              v-if="estado == 3"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Publicación
+            </span>
+            <span
+              v-if="estado == 4"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              En venta
+            </span>
+            <span
+              v-if="estado == 5"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Reservado
+            </span>
+            <span
+              v-if="estado == 8"
+              class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Entregado
+            </span>
+            <span
+              v-if="estado == 10"
+              class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              No disponible
+            </span>
+          </div>
         </div>
-
-        <div class="absolute bottom-2 right-2">
-          <span
-            v-if="estado == 0"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Pte. de Recepción
-          </span>
-          <span
-            v-if="estado == 3"
-            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Pte. de Publicación
-          </span>
-          <span
-            v-if="estado == 4"
-            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            En venta
-          </span>
-          <span
-            v-if="estado == 5"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Reservado
-          </span>
-          <span
-            v-if="estado == 8"
-            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Entregado
-          </span>
-          <span
-            v-if="estado == 10"
-            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            No disponible
-          </span>
-        </div>
-      </div>
+      </RouterLink>
     </figure>
     <div class="card-body relative flex">
       <div class="textcard mr-5 flex gap-1 font-bold">
-        <span>{{ placa }}</span>
+        <RouterLink :to="'/vehiculos/' + id">{{ placa }}</RouterLink>
         <span>{{ marca }}</span>
         <span>{{ modelo }}</span>
       </div>

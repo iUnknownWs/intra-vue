@@ -766,7 +766,7 @@ onMounted(() => {
                 :key="index"
                 :id="vehicle.id"
                 :slug="vehicle.slug || 'No disponible'"
-                :placa="vehicle.license_plate || 'No disponible'"
+                :placa="vehicle.license_plate || 'Sin matricula'"
                 :modelo="vehicle.model.model_web.title || 'No disponible'"
                 :marca="vehicle.model.brand.title || 'No disponible'"
                 :version="vehicle.version.title || 'No disponible'"
@@ -792,7 +792,9 @@ onMounted(() => {
           </div>
         </div>
         <div class="mt-4 flex flex-col items-center justify-center lg:hidden" :key="refresh">
+          <LoadingSpinner v-if="loading" class="loading-lg" />
           <CardMobile
+            v-else
             v-for="(vehicle, index) in vehiclesFilter"
             @menu="vehicleMenu"
             :key="index"
