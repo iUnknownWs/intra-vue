@@ -1,12 +1,12 @@
 <script setup>
-// import { Icon } from '@iconify/vue'
+import { ref } from 'vue'
 defineProps({
   vehicle: { type: Object, required: true }
 })
 
 defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
 
-// const integrations = [true, true, true]
+const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
 
 <template>
@@ -14,9 +14,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
     <div
       class="cover relative z-0 w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
       :style="{
-        'background-image':
-          'url(' + vehicle.image ||
-          'https://intranet-pre.garageclub.es/static/images/brand/favicon.png' + ')'
+        backgroundImage: `url(${vehicle.image ? vehicle.image : placeholder})`
       }"
     >
       <div
@@ -68,20 +66,22 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
       <div class="relative flex w-full flex-row">
         <div class="w-full flex-col pl-4">
           <div class="flex w-full flex-row justify-between text-lg">
-            <div class="flex gap-2 pr-10">
+            <div class="flex gap-3">
               <span class="font-semibold capitalize">{{ vehicle.brand_web.title }}</span>
               <span class="font-semibold capitalize">{{ vehicle.model_web.title }}</span>
               <span class="font-semibold capitalize">{{ vehicle.power }}CV</span>
-              <span class="font-semibold capitalize">{{ vehicle.doors }}P</span>
+              <span v-if="vehicle.doors" class="font-semibold capitalize"
+                >{{ vehicle.doors }}P</span
+              >
             </div>
-            <div class="flex gap-4">
+            <div class="absolute right-2 top-2 flex gap-4">
               <button class="btn btn-primary text-white">Reservar</button>
               <button class="btn btn-outline">Acciones</button>
             </div>
           </div>
           <span class="font-medium text-gray-500">{{ vehicle.version.title }}</span>
           <div class="flex flex-row items-center gap-3">
-            <span>{{ vehicle.kms }} Kms</span>
+            <span v-if="vehicle.kms">{{ vehicle.kms }} Kms</span>
             <span>{{ vehicle.year }}</span>
             <span>{{ vehicle.gear_box.description }}</span>
             <span>{{ vehicle.fuel.description }}</span>
@@ -110,56 +110,40 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
           </div>
           <div class="divider m-0"></div>
           <div class="mt-3 flex flex-row gap-6 [&>_div]:rounded [&>_div]:bg-base-200 [&>_div]:p-2">
-            <div class="flex flex-col items-start">
+            <div v-if="vehicle?.license_plate" class="flex flex-col items-start">
               <span class="font-bold">Matricula</span>
-              <span>{{ vehicle.license_plate }}€</span>
-              <span>{{ vehicle.chassis_number }}€</span>
+              <span>{{ vehicle.license_plate }}</span>
+              <span>{{ vehicle.chassis_number }}</span>
             </div>
-            <div class="flex flex-col items-start p-0">
+            <div v-else class="flex flex-col items-start">
+              <span class="font-bold">Matricula</span>
+              <span>Sin Asignar</span>
+            </div>
+            <div v-if="vehicle.price?.financed_price" class="flex flex-col items-start">
               <span class="font-bold">Precio</span>
               <span>{{ vehicle.price.financed_price }}€</span>
               <span>Desde {{ vehicle.price.financing_fee }}€</span>
             </div>
-            <div class="flex flex-col items-start p-0">
+            <div v-else class="flex flex-col items-start">
+              <span class="font-bold">Precio</span>
+              <span>Sin Asignar</span>
+              <span>Desde 0€</span>
+            </div>
+            <div v-if="vehicle?.date_first_registration" class="flex flex-col items-start">
               <span class="font-bold">Matriculación</span>
               <span>{{ vehicle.date_first_registration }} Dias</span>
             </div>
-            <div class="flex flex-col items-start p-0">
+            <div v-else class="flex flex-col items-start">
+              <span class="font-bold">Matriculación</span>
+              <span>Sin Asignar</span>
+            </div>
+            <div class="flex flex-col items-start">
               <span class="font-bold">Dias Stock</span>
               <span>{{ vehicle.days_in_stock }}</span>
             </div>
           </div>
         </div>
       </div>
-      <!-- <div class="flex flex-row">
-        <div class="divider divider-horizontal"></div>
-        <div class="flex flex-col justify-around">
-          <span v-if="integrations[0]" class="badge badge-neutral mr-2 rounded-md pb-1 text-white"
-            ><a href="">wallapop</a></span
-          >
-          <span v-if="integrations[1]" class="badge badge-neutral mr-2 rounded-md pb-1 text-white"
-            ><a href="">coches.net</a></span
-          >
-          <span v-if="integrations[2]" class="badge badge-neutral mr-2 rounded-md pb-1 text-white"
-            ><a href="">sumauto</a></span
-          >
-        </div>
-        <div class="dropdown dropdown-end menu-xs">
-          <div tabindex="0" role="button" class="btn btn-square btn-ghost">
-            <Icon icon="mdi:dots-vertical" width="30" />
-          </div>
-          <ul
-            tabindex="0"
-            class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
-          >
-            <li><a @click="$emit('menu-btn1', id)">Ver/Editar</a></li>
-            <li><a @click="$emit('menu-btn2', slug)">Ver anuncio</a></li>
-            <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
-            <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
-            <li><a @click="$emit('menu-btn5', id)">Eliminar</a></li>
-          </ul>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
