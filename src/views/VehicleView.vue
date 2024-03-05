@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
@@ -18,6 +18,8 @@ const navBtn2 = ref(null)
 const navBtn3 = ref(null)
 const navBtn4 = ref(null)
 const navBtn5 = ref(null)
+const scrollDown = ref(false)
+const scrollTop = ref(false)
 
 const navEvent1 = () => {
   tab.value = 1
@@ -121,6 +123,21 @@ axios
   .then(() => {
     loading.value = false
   })
+
+onMounted(() => {
+  let prev = window.scrollY
+  window.addEventListener('scroll', () => {
+    let current = window.scrollY
+    if (prev > current) {
+      scrollDown.value = false
+      scrollTop.value = true
+    } else {
+      scrollDown.value = true
+      scrollTop.value = false
+    }
+    prev = current
+  })
+})
 </script>
 
 <template>
@@ -130,6 +147,7 @@ axios
       <div class="divider m-0"></div>
       <li><a>Cambiar Estado</a></li>
       <div class="divider m-0"></div>
+      <li><a>Galeria</a></li>
     </ul>
   </ModalDialog>
   <HeaderMain>
@@ -238,7 +256,7 @@ axios
       </aside>
     </main>
   </HeaderMain>
-  <div class="btm-nav lg:hidden">
+  <div v-if="scrollTop" class="btm-nav lg:hidden">
     <button ref="navBtn1" @click="navEvent1" class="active">
       <Icon icon="mdi:car" width="30" />
       <span class="btm-nav-label">I. Admin</span>
@@ -256,9 +274,21 @@ axios
       <span class="btm-nav-label">PT</span>
     </button>
     <button ref="navBtn5" @click="navEvent5">
-      <Icon icon="mdi:interaction-tap" width="30" />
-      <span class="btm-nav-label">Acciones</span>
+      <Icon icon="mdi:image-multiple" width="30" />
+      <span class="btm-nav-label">Galeria</span>
     </button>
+  </div>
+  <div v-if="scrollDown" class="btm-nav lg:hidden">
+    <div>
+      <button class="btn w-36" ref="navBtn6" @click="1">
+        <span class="btm-nav-label">Reservar</span>
+      </button>
+    </div>
+    <div>
+      <button class="btn w-36" ref="navBtn6" @click="1">
+        <span class="btm-nav-label">Cambiar Estado</span>
+      </button>
+    </div>
   </div>
 </template>
 

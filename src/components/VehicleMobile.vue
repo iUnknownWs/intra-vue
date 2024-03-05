@@ -11,10 +11,10 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
-    <figure class="bg-cover">
+  <div class="card card-side card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
+    <figure>
       <div
-        class="cover relative z-0 aspect-video h-full w-[90vw] bg-cover bg-center"
+        class="cover z-0 aspect-video h-full w-screen self-center bg-cover bg-center"
         :style="{
           backgroundImage: `url(${vehicle.image ? vehicle.image : placeholder})`
         }"
@@ -27,63 +27,108 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         </div>
       </div>
     </figure>
-    <DropdownBtn class="absolute right-2 top-32">
-      <template #btn>
-        <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
-          Pte. de Recepción
-        </button>
-        <!-- <button
-              v-if="vehicle.status == 3"
-              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Pte. de Publicación
-            </button>
-            <button
-              v-if="vehicle.status == 4"
-              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              En venta
-            </button>
-            <button
-              v-if="vehicle.status == 5"
-              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Reservado
-            </button>
-            <button
-              v-if="vehicle.status == 8"
-              class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Entregado
-            </button>
-            <button
-              v-if="vehicle.status == 10"
-              class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              No Disponible
-            </button> -->
-      </template>
-      <template #content>
-        <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
-          Reservado
-        </button>
-        <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
-          Pte. de Recepción
-        </button>
-        <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+    <div class="card-body relative flex">
+      <div class="textcard mr-5 flex gap-1 text-nowrap font-bold">
+        <span>{{ vehicle.license_plate }}</span>
+        <span>{{ vehicle.brand_web.title }}</span>
+        <span>{{ vehicle.model_web.title }}</span>
+        <span>{{ vehicle.power }}CV</span>
+      </div>
+      <div class="textcard flex flex-row flex-wrap items-center justify-start gap-3">
+        <span>{{ vehicle.price?.financed_price ? vehicle.price.financed_price : 0 }}€</span>
+        <span>{{ vehicle.kms }} Kms</span>
+        <span>{{ vehicle.year }}</span>
+        <span>{{ vehicle.gear_box?.description ? vehicle.gear_box.description : 'Cambio' }}</span>
+        <span>{{ vehicle.fuel?.description }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+<!-- 
+<DropdownBtn class="absolute right-2 top-32">
+  <template #btn>
+    <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      Pte. de Recepción
+    </button>
+   <button
+          v-if="vehicle.status == 3"
+          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
           Pte. de Publicación
         </button>
-        <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+        <button
+          v-if="vehicle.status == 4"
+          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
           En venta
         </button>
-        <button class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+        <button
+          v-if="vehicle.status == 5"
+          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          Reservado
+        </button>
+        <button
+          v-if="vehicle.status == 8"
+          class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
           Entregado
         </button>
-        <button class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+        <button
+          v-if="vehicle.status == 10"
+          class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
           No Disponible
-        </button>
-      </template>
-    </DropdownBtn>
+        </button> 
+  </template>
+  <template #content>
+    <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      Reservado
+    </button>
+    <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      Pte. de Recepción
+    </button>
+    <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      Pte. de Publicación
+    </button>
+    <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      En venta
+    </button>
+    <button class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      Entregado
+    </button>
+    <button class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+      No Disponible
+    </button>
+  </template>
+</DropdownBtn> -->
+<!-- <script setup>
+import { ref } from 'vue'
+defineProps({
+  vehicle: {
+    type: Object,
+    required: true
+  }
+})
+
+const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
+</script>
+
+<template>
+  <div class="card card-side card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
+    <div
+      class="cover z-0 aspect-video h-full w-36 self-center bg-cover bg-center"
+      :style="{
+        backgroundImage: `url(${vehicle.image ? vehicle.image : placeholder})`
+      }"
+    >
+      <div
+        v-if="vehicle.key_locator"
+        class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+      >
+        <span class="w-fit text-base font-medium text-white">{{ vehicle.key_locator }}</span>
+      </div>
+    </div>
     <div class="card-body relative flex">
       <div class="textcard mr-5 flex gap-1 font-bold">
         <span>{{ vehicle.license_plate }}</span>
@@ -140,4 +185,4 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
       </div>
     </div>
   </div>
-</template>
+</template> -->
