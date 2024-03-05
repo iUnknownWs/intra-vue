@@ -58,13 +58,12 @@ const navEvent4 = () => {
 }
 
 const navEvent5 = () => {
-  menu.value.modal.showModal()
-  // tab.value = 12
-  // navBtn1.value.classList.remove('active')
-  // navBtn2.value.classList.remove('active')
-  // navBtn3.value.classList.remove('active')
-  // navBtn4.value.classList.remove('active')
-  // navBtn5.value.classList.add('active')
+  tab.value = 12
+  navBtn1.value.classList.remove('active')
+  navBtn2.value.classList.remove('active')
+  navBtn3.value.classList.remove('active')
+  navBtn4.value.classList.remove('active')
+  navBtn5.value.classList.add('active')
 }
 
 const tabsAdmin = ref([
@@ -141,16 +140,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ModalDialog ref="menu">
-    <ul class="menu w-full p-0 [&_li>*]:rounded-none">
-      <li><a>Reservar</a></li>
-      <div class="divider m-0"></div>
-      <li><a>Cambiar Estado</a></li>
-      <div class="divider m-0"></div>
-      <li><a>Galeria</a></li>
-    </ul>
-  </ModalDialog>
-  <HeaderMain>
+  <HeaderMain class="pb-16">
     <header class="flex flex-col items-center">
       <LoadingSpinner v-if="loading" class="loading-lg" />
       <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" />
@@ -227,8 +217,34 @@ onMounted(() => {
             <TextInput label="Procedencia:" />
           </div>
         </div>
+        <div v-if="tab === 12">
+          <h2 class="text-xl font-medium">Galería Multimedia</h2>
+          <div role="tablist" class="tabs tabs-bordered tabs-md">
+            <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
+            <div role="tabpanel" class="tab-content p-4 lg:p-8">
+              <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                <div class="skeleton h-28 w-28"></div>
+                <div class="skeleton h-28 w-28"></div>
+                <div class="skeleton h-28 w-28"></div>
+                <div class="skeleton h-28 w-28"></div>
+                <div class="skeleton h-28 w-28"></div>
+                <div class="skeleton h-28 w-28"></div>
+              </div>
+            </div>
+
+            <input
+              type="radio"
+              name="galeria"
+              role="tab"
+              class="tab"
+              aria-label="Documentos"
+              checked
+            />
+            <div role="tabpanel" class="tab-content p-8">Documentos</div>
+          </div>
+        </div>
       </section>
-      <aside class="flex w-full max-w-md flex-col gap-4 rounded bg-base-100 p-4">
+      <aside class="hidden w-full max-w-md flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
         <h2 class="text-xl font-medium">Galería Multimedia</h2>
         <div role="tablist" class="tabs tabs-bordered tabs-md">
           <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
