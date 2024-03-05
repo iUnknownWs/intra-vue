@@ -161,7 +161,7 @@ onMounted(() => {
         class="lg:hidden"
       /> -->
     </header>
-    <div role="tablist" class="tabs tabs-bordered overflow-x-scroll text-nowrap px-4">
+    <div role="tablist" class="tabs tabs-bordered overflow-x-scroll text-nowrap px-4 lg:hidden">
       <a role="tab" class="tab tab-active" @click="tab = 1">Información Básica</a>
       <a role="tab" class="tab" @click="tab = 2">Información Técnica</a>
       <a role="tab" class="tab" @click="tab = 3">Portales web</a>
