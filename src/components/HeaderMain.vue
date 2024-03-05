@@ -17,7 +17,7 @@ const toggleDrawer = () => {
     <input id="drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content flex flex-col">
       <!-- Navbar -->
-      <header>
+      <header class="sticky top-0 z-10">
         <NavBar />
       </header>
       <!-- Page content here -->
@@ -29,7 +29,7 @@ const toggleDrawer = () => {
       <label for="drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <div class="menu min-h-full w-screen bg-white p-4 text-lg font-medium lg:w-80">
         <!-- Sidebar content here -->
-        <DrawerLogo>
+        <DrawerLogo @toggle="toggleDrawer">
           <img
             class="w-60 pb-4 active:!bg-white"
             src="https://garageclub.es/static/img/logo_black.svg"

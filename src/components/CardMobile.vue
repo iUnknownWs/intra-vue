@@ -35,7 +35,7 @@ defineEmits(['btn-click'])
     <figure class="bg-cover">
       <RouterLink :to="'/vehiculos/' + id" class="relative">
         <div
-          class="cover relative z-0 aspect-video h-full w-[90vw] bg-[url('https://garageclub-prod.s3.amazonaws.com/backend/media/DSC03493_D1K6Ekt_9uWa7UD_jORggzh_lBr3MTE.jpg')] bg-cover bg-center"
+          class="cover relative z-0 aspect-video h-full w-[90vw] bg-cover bg-center"
           :style="{ 'background-image': 'url(' + img + ')' }"
         >
           <div

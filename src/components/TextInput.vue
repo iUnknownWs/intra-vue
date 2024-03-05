@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
   label: { type: String, required: true },
-  placeholder: { type: String, required: true },
+  placeholder: { type: String },
   disabled: { type: Boolean },
   type: { type: String, default: 'text' },
   modelValue: { type: String }

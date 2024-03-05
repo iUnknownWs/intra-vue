@@ -4,8 +4,6 @@ defineProps({
   vehicle: { type: Object, required: true }
 })
 
-defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
-
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
 
@@ -23,44 +21,68 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
       >
         <span class="w-fit text-base font-medium text-white">{{ vehicle.key_locator }}</span>
       </div>
-      <div class="absolute bottom-2 right-2">
-        <span
-          v-if="vehicle.status == 0"
-          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Pte. de Recepción
-        </span>
-        <span
-          v-if="vehicle.status == 3"
-          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Pte. de Publicación
-        </span>
-        <span
-          v-if="vehicle.status == 4"
-          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          En venta
-        </span>
-        <span
-          v-if="vehicle.status == 5"
-          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Reservado
-        </span>
-        <span
-          v-if="vehicle.status == 8"
-          class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          Entregado
-        </span>
-        <span
-          v-if="vehicle.status == 10"
-          class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-        >
-          No Disponible
-        </span>
-      </div>
+      <DropdownBtn class="absolute bottom-2 right-2">
+        <template #btn>
+          <div>
+            <button
+              v-if="vehicle.status == 0"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Recepción
+            </button>
+            <button
+              v-if="vehicle.status == 3"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Publicación
+            </button>
+            <button
+              v-if="vehicle.status == 4"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              En venta
+            </button>
+            <button
+              v-if="vehicle.status == 5"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Reservado
+            </button>
+            <button
+              v-if="vehicle.status == 8"
+              class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Entregado
+            </button>
+            <button
+              v-if="vehicle.status == 10"
+              class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              No Disponible
+            </button>
+          </div>
+        </template>
+        <template #content>
+          <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+            Reservado
+          </button>
+          <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+            Pte. de Recepción
+          </button>
+          <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+            Pte. de Publicación
+          </button>
+          <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+            En venta
+          </button>
+          <button class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+            Entregado
+          </button>
+          <button class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+            No Disponible
+          </button>
+        </template>
+      </DropdownBtn>
     </div>
     <div class="card-body flex-row justify-between p-4">
       <div class="relative flex w-full flex-row">
@@ -83,7 +105,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           <div class="flex flex-row items-center gap-3">
             <span v-if="vehicle.kms">{{ vehicle.kms }} Kms</span>
             <span>{{ vehicle.year }}</span>
-            <span>{{ vehicle.gear_box.description }}</span>
+            <span>{{ vehicle.gear_box?.description }}</span>
             <span>{{ vehicle.fuel.description }}</span>
             <div class="flex w-8 self-end">
               <img
@@ -110,15 +132,6 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </div>
           <div class="divider m-0"></div>
           <div class="mt-3 flex flex-row gap-6 [&>_div]:rounded [&>_div]:bg-base-200 [&>_div]:p-2">
-            <div v-if="vehicle?.license_plate" class="flex flex-col items-start">
-              <span class="font-bold">Matricula</span>
-              <span>{{ vehicle.license_plate }}</span>
-              <span>{{ vehicle.chassis_number }}</span>
-            </div>
-            <div v-else class="flex flex-col items-start">
-              <span class="font-bold">Matricula</span>
-              <span>Sin Asignar</span>
-            </div>
             <div v-if="vehicle.price?.financed_price" class="flex flex-col items-start">
               <span class="font-bold">Precio</span>
               <span>{{ vehicle.price.financed_price }}€</span>
@@ -128,6 +141,15 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               <span class="font-bold">Precio</span>
               <span>Sin Asignar</span>
               <span>Desde 0€</span>
+            </div>
+            <div v-if="vehicle?.license_plate" class="flex flex-col items-start">
+              <span class="font-bold"></span>
+              <span>{{ vehicle.license_plate }}</span>
+              <span>{{ vehicle.chassis_number }}</span>
+            </div>
+            <div v-else class="flex flex-col items-start">
+              <span class="font-bold">Matricula</span>
+              <span>Sin Asignar</span>
             </div>
             <div v-if="vehicle?.date_first_registration" class="flex flex-col items-start">
               <span class="font-bold">Matriculación</span>
