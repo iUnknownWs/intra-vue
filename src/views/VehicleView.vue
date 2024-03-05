@@ -12,7 +12,6 @@ const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
-const menu = ref(null)
 const navBtn1 = ref(null)
 const navBtn2 = ref(null)
 const navBtn3 = ref(null)
@@ -145,7 +144,7 @@ onMounted(() => {
       <LoadingSpinner v-if="loading" class="loading-lg" />
       <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" />
       <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
-      <SelectInput
+      <!-- <SelectInput
         v-if="tab > 0 && tab < 9"
         label="Navegación:"
         :options="tabsAdmin"
@@ -160,8 +159,18 @@ onMounted(() => {
         v-model="tab"
         @selected="id = $event"
         class="lg:hidden"
-      />
+      /> -->
     </header>
+    <div role="tablist" class="tabs tabs-bordered overflow-x-scroll text-nowrap px-4">
+      <a role="tab" class="tab tab-active" @click="tab = 1">Información Básica</a>
+      <a role="tab" class="tab" @click="tab = 2">Información Técnica</a>
+      <a role="tab" class="tab" @click="tab = 3">Portales web</a>
+      <a role="tab" class="tab" @click="tab = 4">Historia y Mantenimiento</a>
+      <a role="tab" class="tab" @click="tab = 5">Precio</a>
+      <a role="tab" class="tab" @click="tab = 6">Comentarios</a>
+      <a role="tab" class="tab" @click="tab = 7">Extras</a>
+      <a role="tab" class="tab" @click="tab = 8">Descuentos</a>
+    </div>
     <main class="flex flex-col gap-6 lg:flex-row">
       <aside class="hidden h-min max-w-64 rounded bg-base-100 lg:block">
         <ul class="menu menu-sm w-56 rounded-box bg-base-100">
@@ -297,12 +306,12 @@ onMounted(() => {
   <div v-if="scrollDown" class="btm-nav lg:hidden">
     <div>
       <button class="btn w-36" ref="navBtn6" @click="1">
-        <span class="btm-nav-label">Reservar</span>
+        <span class="btm-nav-label">Cambiar Estado</span>
       </button>
     </div>
     <div>
-      <button class="btn w-36" ref="navBtn6" @click="1">
-        <span class="btm-nav-label">Cambiar Estado</span>
+      <button class="btn btn-warning w-36" ref="navBtn6" @click="1">
+        <span class="btm-nav-label">Reservar</span>
       </button>
     </div>
   </div>

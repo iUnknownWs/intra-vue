@@ -11,23 +11,23 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card card-side card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
+  <div class="card-compact mt-3 flex w-[90vw] flex-row bg-base-100 text-xs">
     <figure>
       <div
-        class="cover z-0 aspect-video h-full w-screen self-center bg-cover bg-center"
+        class="cover relative z-0 aspect-square h-full self-center bg-cover bg-center"
         :style="{
           backgroundImage: `url(${vehicle.image ? vehicle.image : placeholder})`
         }"
       >
         <div
           v-if="vehicle.key_locator"
-          class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+          class="triangle1 absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2"
         >
           <span class="w-fit text-base font-medium text-white">{{ vehicle.key_locator }}</span>
         </div>
       </div>
     </figure>
-    <div class="card-body relative flex">
+    <div class="card-body ml-20 flex">
       <div class="textcard mr-5 flex gap-1 text-nowrap font-bold">
         <span>{{ vehicle.license_plate }}</span>
         <span>{{ vehicle.brand_web.title }}</span>
@@ -186,3 +186,10 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
     </div>
   </div>
 </template> -->
+<style>
+.triangle1 {
+  width: 3.5rem;
+  aspect-ratio: 1;
+  clip-path: polygon(0 100%, 100% 0, 0 0);
+}
+</style>
