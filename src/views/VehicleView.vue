@@ -15,7 +15,8 @@ const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const webBrandUrl = `${import.meta.env.VITE_API}/public/brands-web/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
-
+const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
+const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -39,15 +40,19 @@ const tabs = [tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8]
 const tabs2 = [tab9, tab10]
 const scrollDown = ref(false)
 const scrollTop = ref(true)
-const categoria = ref('0')
+const category = ref('0')
 const chassis = ref('')
 const bodyOptions = ref([])
 const brandOptions = ref([])
 const webBrandOptions = ref([])
-const body = ref('')
+const bodyTypeOptions = ref([])
+const modelWebOptions = ref([])
+// const body = ref('')
+const bodyType = ref('0')
 const brand = ref({ id: '', label: '' })
 const webBrand = ref({ id: '', label: '' })
 const model = ref({ id: '', label: '' })
+const modelWeb = ref({ id: '', label: '' })
 const license = ref('')
 const license1 = ref('')
 const kms = ref(0)
@@ -58,58 +63,90 @@ const doors = ref(0)
 const distinctive = ref('0')
 const licenseOG = ref('')
 const keysQ = ref(0)
+const fabrication = ref('')
 
-axios
-  .get(url)
-  .then((response) => {
-    vehicle.value = response.data
-  })
-  .then(() => {
-    loading.value = false
-    chassis.value = vehicle.value.chassis_number
-    brand.value = { id: vehicle.value.model.brand.id, label: vehicle.value.model.brand.title }
-    webBrand.value = { id: vehicle.value.brand_web.id, label: vehicle.value.brand_web.title }
-    license.value = vehicle.value.license_plate
-    license1.value = vehicle.value.date_first_registration
-    kms.value = vehicle.value.kms
-    fuel.value = vehicle.value.fuel.id
-    gearBox.value = vehicle.value.gear_box.id
-    power.value = vehicle.value.power
-    doors.value = vehicle.value.doors
-    distinctive.value = vehicle.value.maintenance.distinctive
-    licenseOG.value = vehicle.value.original_license_plate
-    keysQ.value = vehicle.value.maintenance.keys_quantity
-  })
-  .then(() => {
-    axios
-      .get(`https://intranet-pre.garageclub.es/get-models-web/?brand=${webBrand.value.id}`)
-      .then((response) => {
-        console.log(response.data)
+const updateData = () => {
+  loading.value = true
+  axios
+    .patch(url, {
+      web_categories: [category.value],
+      body_type: bodyType.value,
+      chassis_number: chassis.value,
+      license_plate: license.value,
+      date_first_registration: license1.value,
+      kms: kms.value,
+      fuel: fuel.value,
+      gear_box: gearBox.value,
+      power: power.value,
+      doors: doors.value,
+      maintenance: {
+        distinctive: distinctive.value,
+        keys_quantity: keysQ.value
+      },
+      registration_date: fabrication.value,
+      original_license_plate: licenseOG.value
+    })
+    .then(() => {
+      fetch()
+    })
+}
+
+const fetch = () => {
+  axios
+    .get(url)
+    .then((response) => {
+      vehicle.value = response.data
+    })
+    .then(() => {
+      loading.value = false
+      category.value = vehicle.value.web_categories[0].id
+      bodyType.value = vehicle.value.body_type?.id
+      brand.value = { id: vehicle.value.model.brand.id, label: vehicle.value.model.brand.title }
+      webBrand.value = { id: vehicle.value.brand_web.id, label: vehicle.value.brand_web.title }
+      modelWeb.value = { id: vehicle.value.model_web.id, label: vehicle.value.model_web.title }
+      chassis.value = vehicle.value.chassis_number
+      license.value = vehicle.value.license_plate
+      license1.value = vehicle.value.date_first_registration
+      kms.value = vehicle.value.kms
+      fuel.value = vehicle.value.fuel.id
+      gearBox.value = vehicle.value.gear_box.id
+      power.value = vehicle.value.power
+      doors.value = vehicle.value.doors
+      distinctive.value = vehicle.value.maintenance.distinctive
+      fabrication.value = vehicle.value.registration_date
+      licenseOG.value = vehicle.value.original_license_plate
+      keysQ.value = vehicle.value.maintenance.keys_quantity
+    })
+    .then(() => {
+      axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
         for (let option of response.data.results) {
-          webBrandOptions.value.push({
+          modelWebOptions.value.push({
             id: option.id,
             label: option.title
           })
         }
       })
-    // axios
-    //   .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-models/`, {
-    //     brand: brand.value.id,
-    //     vehicle_type: body.value
-    //   })
-    //   .then((response) => {
-    //     for (const types of response.data) {
-    //       types.codes.map((code) => {
-    //         let id = makeValue(code)
-    //         let title = makeType(code.data)
-    //         modelOptions.push({
-    //           value: id,
-    //           label: title
-    //         })
-    //       })
-    //     }
-    //   })
-  })
+    })
+}
+
+fetch()
+// axios
+//   .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-models/`, {
+//     brand: brand.value.id,
+//     vehicle_type: body.value
+//   })
+//   .then((response) => {
+//     for (const types of response.data) {
+//       types.codes.map((code) => {
+//         let id = makeValue(code)
+//         let title = makeType(code.data)
+//         modelOptions.push({
+//           value: id,
+//           label: title
+//         })
+//       })
+//     }
+//   })
 
 axios.get(bodyUrl).then((response) => {
   bodyOptions.value = response.data.results
@@ -129,6 +166,15 @@ axios.get(webBrandUrl).then((response) => {
     webBrandOptions.value.push({
       id: option.id,
       label: option.title
+    })
+  }
+})
+
+axios.get(bodyTypeUrl).then((response) => {
+  for (let option of response.data.bodies) {
+    bodyTypeOptions.value.push({
+      id: option.id,
+      title: option.name
     })
   }
 })
@@ -325,15 +371,15 @@ onMounted(() => {
         </ul>
       </aside>
       <section class="flex w-full flex-col gap-4 rounded bg-base-100 p-4">
-        <div v-if="tab > 0 && tab < 9">
+        <div v-if="tab === 1" class="flex flex-col gap-4">
           <h1 class="text-xl font-medium">Información Básica</h1>
           <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-            <SelectInput v-model="categoria" :options="options.categoria" label="Categoria web:" />
-            <SelectInput label="Carrocería:" :options="bodyOptions" v-model="body" />
+            <SelectInput v-model="category" :options="options.categoria" label="Categoria web:" />
+            <SelectInput label="Carrocería:" :options="bodyTypeOptions" v-model="bodyType" />
             <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
             <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
             <SearchSelect label="Modelo:" :options="webBrandOptions" v-model="model" />
-            <TextInput label="Modelo web:" />
+            <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
             <TextInput v-model="chassis" label="Bastidor:" />
             <TextInput label="Matricula:" v-model="license" />
             <DateInput label="1º Matriculación:" v-model="license1" />
@@ -348,10 +394,13 @@ onMounted(() => {
               :options="options.medioambiental"
               v-model="distinctive"
             />
-            <TextInput label="Fabricación:" />
+            <DateInput label="Fabricación:" v-model="fabrication" />
             <TextInput label="Matricula Origen:" v-model="licenseOG" />
             <TextInput label="Nº llaves:" v-model="keysQ" />
           </div>
+          <button class="btn btn-primary mt-8 self-end text-white" @click="updateData">
+            Guardar
+          </button>
         </div>
         <div v-if="tab > 8 && tab < 12">
           <h1 class="text-xl font-medium">Equipamiento</h1>
@@ -457,5 +506,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

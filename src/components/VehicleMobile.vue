@@ -28,12 +28,49 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         </div>
       </div>
     </figure>
-    <div class="card-body ml-20 flex">
+    <div class="card-body ml-28 flex">
       <div class="textcard mr-5 flex gap-1 text-nowrap font-bold">
-        <span>{{ vehicle.license_plate }}</span>
         <span>{{ vehicle.brand_web.title }}</span>
         <span>{{ vehicle.model_web.title }}</span>
         <span>{{ vehicle.power }}CV</span>
+      </div>
+      <div>
+        <button
+          v-if="vehicle.status == 0"
+          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          Pte. de Recepción
+        </button>
+        <button
+          v-if="vehicle.status == 3"
+          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          Pte. de Publicación
+        </button>
+        <button
+          v-if="vehicle.status == 4"
+          class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          En venta
+        </button>
+        <button
+          v-if="vehicle.status == 5"
+          class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          Reservado
+        </button>
+        <button
+          v-if="vehicle.status == 8"
+          class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          Entregado
+        </button>
+        <button
+          v-if="vehicle.status == 10"
+          class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+        >
+          No Disponible
+        </button>
       </div>
       <div class="textcard flex flex-row flex-wrap items-center justify-start gap-3">
         <span>{{ vehicle.price?.financed_price ? vehicle.price.financed_price : 0 }}€</span>

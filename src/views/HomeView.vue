@@ -61,6 +61,15 @@ const loadingBtn = ref(false)
 const disAdd = ref(true)
 const loadingInfo = ref(true)
 const header = ref(null)
+const disSearch = ref(true)
+
+const searchReact = () => {
+  if (searchValue.value !== '') {
+    disSearch.value = false
+  } else {
+    disSearch.value = true
+  }
+}
 
 const resetDrawer = () => {
   brand.value = { id: '', label: '' }
@@ -547,7 +556,9 @@ onMounted(() => {
             class="max-w-[400px] lg:ml-4"
             placeholder="Buscar"
             v-model="searchValue"
+            :disabled="disSearch"
             @btn-click="search"
+            @change="searchReact"
           >
             <Icon icon="mdi:magnify" width="25" />
           </TextBtn>
