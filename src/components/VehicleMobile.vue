@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+
 defineProps({
   vehicle: {
     type: Object,

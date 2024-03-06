@@ -19,6 +19,7 @@ import RangeInputN from '@/components/RangeInputN.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
 import SelectInput from '@/components/SelectInput.vue'
 import SelectTab from '@/components/SelectTab.vue'
+import SearchSelect from '@/components/SearchSelect.vue'
 import SettingTable from '@/components/SettingTable.vue'
 import TextInput from '@/components/TextInput.vue'
 import TextIcon from '@/components/TextIcon.vue'
@@ -50,6 +51,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('NumberInput', NumberInput)
     .component('RangeInputN', RangeInputN)
     .component('RangeSelect', RangeSelect)
+    .component('SearchSelect', SearchSelect)
     .component('SelectInput', SelectInput)
     .component('SelectTab', SelectTab)
     .component('SettingTable', SettingTable)

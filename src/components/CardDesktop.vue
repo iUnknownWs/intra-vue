@@ -32,7 +32,7 @@ const integrations = [true, true, true]
 
 <template>
   <div class="card card-side mt-4 h-[225px] w-full bg-base-100 text-xs font-normal">
-    <RouterLink :to="'/vehiculos/' + id" class="relative z-10">
+    <RouterLink :to="'/vehiculos/' + id" class="relative z-0">
       <div
         class="cover z-0 h-full w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
         :style="{

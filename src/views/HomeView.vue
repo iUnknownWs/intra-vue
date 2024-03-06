@@ -41,7 +41,6 @@ const vin = ref('')
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const brandOptions = ref([])
-const newOptions = ref([])
 const bodyOptions = ref([])
 const brand = ref({ id: '', label: '' })
 const body = ref('')
@@ -91,9 +90,8 @@ const autoDrawer = () => {
 const semiDrawer = () => {
   drawer.value = 'semi'
   axios.get(brandUrl).then((response) => {
-    brandOptions.value = response.data.results
-    for (let option of brandOptions.value) {
-      newOptions.value.push({
+    for (let option of response.data.results) {
+      brandOptions.value.push({
         id: option.id,
         label: option.title
       })
@@ -159,7 +157,7 @@ const filter = () => {
     filterParams.pvideo = 'true'
   }
   const filterUrl = `${urlParams.value}${new URLSearchParams(filterParams)}`
-  window.scrollTo({ top: 0, behavior: 'smooth' }) 
+  window.scrollTo({ top: 0, behavior: 'smooth' })
   axios.get(filterUrl).then((response) => {
     vehiclesFilter.value = response.data.results
     loading.value = false
@@ -304,7 +302,7 @@ const web = () => {
   params.value = 'no_web=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
-    vehiclesFilter.value = response.data.results  
+    vehiclesFilter.value = response.data.results
     loading.value = false
   })
 }
@@ -917,12 +915,7 @@ onMounted(() => {
           <!-- Sidebar content here -->
           <div class="flex flex-col">
             <DrawerTitle title="Nuevo Vehículo Semi-Automático" @toggle="toggle" />
-            <label class="form-control mb-4 w-full">
-              <div class="label">
-                <span class="label-text font-medium">Marca:</span>
-              </div>
-              <VueSelect v-model="brand" :options="newOptions" />
-            </label>
+            <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
             <SelectInput label="Carrocería:" v-model="body" :options="bodyOptions" />
             <div class="mt-3 flex flex-row justify-end">
               <button ref="stepBtn" class="btn btn-primary text-white" @click="step2">
@@ -930,34 +923,26 @@ onMounted(() => {
                 Buscar
               </button>
             </div>
-            <label class="form-control mb-4 w-full">
-              <div class="label">
-                <span class="label-text font-medium">Modelo:</span>
-              </div>
-              <VueSelect
-                v-model="model"
-                :options="typeOptions"
-                :key="refresh"
-                :disabled="disModel"
-              />
-            </label>
+            <SearchSelect
+              label="Modelo:"
+              :options="typeOptions"
+              v-model="model"
+              :key="refresh"
+              :disabled="disModel"
+            />
             <div class="mt-3 flex flex-row justify-end">
               <button class="btn btn-primary text-white" :disabled="disModel" @click="step3">
                 <LoadingSpinner v-if="loadingBtn" />
                 Buscar
               </button>
             </div>
-            <label class="form-control mb-4 w-full">
-              <div class="label">
-                <span class="label-text font-medium">Version:</span>
-              </div>
-              <VueSelect
-                v-model="version"
-                :options="versionOptions"
-                :key="refresh"
-                :disabled="disVersion"
-              />
-            </label>
+            <SearchSelect
+              label="Version:"
+              :options="versionOptions"
+              v-model="version"
+              :key="refresh"
+              :disabled="disVersion"
+            />
           </div>
           <DrawerActions
             secondary="Cancelar"
