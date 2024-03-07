@@ -17,7 +17,7 @@ const toggleDrawer = () => {
     <input id="drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content flex flex-col">
       <!-- Navbar -->
-      <header class="sticky top-0 z-10">
+      <header class="sticky top-0 z-20">
         <NavBar />
       </header>
       <!-- Page content here -->

@@ -17,6 +17,7 @@ const webBrandUrl = `${import.meta.env.VITE_API}/public/brands-web/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
 const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
+const keysWebUrl = `${import.meta.env.VITE_KEYS}?free_keys=true`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -46,8 +47,12 @@ const bodyOptions = ref([])
 const brandOptions = ref([])
 const webBrandOptions = ref([])
 const bodyTypeOptions = ref([])
+const driveOptions = ref([])
 const modelWebOptions = ref([])
+const regulationsOptions = ref([])
+const keysOptions = ref([])
 // const body = ref('')
+const drives = ref(0)
 const bodyType = ref('0')
 const brand = ref({ id: '', label: '' })
 const webBrand = ref({ id: '', label: '' })
@@ -62,10 +67,21 @@ const power = ref(0)
 const doors = ref(0)
 const distinctive = ref('0')
 const licenseOG = ref('')
+const key = ref(0)
 const keysQ = ref(0)
 const fabrication = ref('')
+const gears = ref(0)
+const speed = ref(0)
+const acceleration = ref(0)
+const environment = ref(0)
+const road = ref(0)
+const city = ref(0)
+const co2 = ref(0)
+const length = ref(0)
+const tare = ref(0)
+const height = ref(0)
 
-const updateData = () => {
+const updateBasic = () => {
   loading.value = true
   axios
     .patch(url, {
@@ -85,6 +101,27 @@ const updateData = () => {
       },
       registration_date: fabrication.value,
       original_license_plate: licenseOG.value
+    })
+    .then(() => {
+      fetch()
+    })
+}
+
+const updateTechnical = () => {
+  loading.value = true
+  axios
+    .patch(url, {
+      drive_type: drives.value,
+      number_gears: gears.value,
+      max_speed: speed.value,
+      acceleration: acceleration.value,
+      environment: environment.value,
+      road: road.value,
+      city: city.value,
+      co2: co2.value,
+      length: length.value,
+      tare: tare.value,
+      heigth: height.value
     })
     .then(() => {
       fetch()
@@ -115,7 +152,19 @@ const fetch = () => {
       distinctive.value = vehicle.value.maintenance.distinctive
       fabrication.value = vehicle.value.registration_date
       licenseOG.value = vehicle.value.original_license_plate
+      key.value = vehicle.value.key_locator
       keysQ.value = vehicle.value.maintenance.keys_quantity
+      drives.value = vehicle.value.drive_type.id
+      gears.value = vehicle.value.number_gears
+      speed.value = vehicle.value.max_speed
+      acceleration.value = vehicle.value.seconds_to_100_speed
+      environment.value = vehicle.value.consumption_in_environment
+      road.value = vehicle.value.consumption_in_road
+      city.value = vehicle.value.consumption_in_city
+      co2.value = vehicle.value.co2_emissions
+      length.value = vehicle.value.length
+      tare.value = vehicle.value.tare_weigth
+      height.value = vehicle.value.heigth
     })
     .then(() => {
       axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
@@ -152,6 +201,16 @@ axios.get(bodyUrl).then((response) => {
   bodyOptions.value = response.data.results
 })
 
+axios.get(keysWebUrl).then((response) => {
+  console.log(response.data.results)
+  for (let option of response.data.results) {
+    keysOptions.value.push({
+      id: option.id,
+      title: option.id
+    })
+  }
+})
+
 axios.get(brandUrl).then((response) => {
   for (let option of response.data.results) {
     brandOptions.value.push({
@@ -173,6 +232,24 @@ axios.get(webBrandUrl).then((response) => {
 axios.get(bodyTypeUrl).then((response) => {
   for (let option of response.data.bodies) {
     bodyTypeOptions.value.push({
+      id: option.id,
+      title: option.name
+    })
+  }
+})
+
+axios.get(bodyTypeUrl).then((response) => {
+  for (let option of response.data.drives) {
+    driveOptions.value.push({
+      id: option.id,
+      title: option.name
+    })
+  }
+})
+
+axios.get(bodyTypeUrl).then((response) => {
+  for (let option of response.data.vehicle_regulations) {
+    regulationsOptions.value.push({
       id: option.id,
       title: option.name
     })
@@ -325,7 +402,7 @@ onMounted(() => {
     <div
       v-if="tab > 0 && tab < 9"
       role="tablist"
-      class="tabs tabs-bordered sticky top-0 overflow-x-scroll text-nowrap px-4 lg:hidden"
+      class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
     >
       <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
       <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
@@ -372,15 +449,31 @@ onMounted(() => {
       </aside>
       <section class="flex w-full flex-col gap-4 rounded bg-base-100 p-4">
         <div v-if="tab === 1" class="flex flex-col gap-4">
-          <h1 class="text-xl font-medium">Información Básica</h1>
+          <div class="flex flex-row justify-between">
+            <h1 class="text-xl font-medium">Información Básica</h1>
+            <DropdownBtn>
+              <template #btn>
+                <button class="btn btn-primary hidden text-white lg:block">Acciones</button>
+                <button class="btn btn-circle btn-ghost lg:hidden">
+                  <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
+                </button>
+              </template>
+              <template #content>
+                <ul>
+                  <li><a>Recalcular etiqueta</a></li>
+                  <li><a>Liberar llave</a></li>
+                </ul>
+              </template>
+            </DropdownBtn>
+          </div>
           <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-            <SelectInput v-model="category" :options="options.categoria" label="Categoria web:" />
+            <SelectInput label="Categoria web:" :options="options.categoria" v-model="category" />
             <SelectInput label="Carrocería:" :options="bodyTypeOptions" v-model="bodyType" />
             <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
             <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
             <SearchSelect label="Modelo:" :options="webBrandOptions" v-model="model" />
             <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
-            <TextInput v-model="chassis" label="Bastidor:" />
+            <TextInput label="Bastidor:" v-model="chassis" />
             <TextInput label="Matricula:" v-model="license" />
             <DateInput label="1º Matriculación:" v-model="license1" />
             <TextInput label="Km Actuales:" v-model="kms" />
@@ -396,9 +489,53 @@ onMounted(() => {
             />
             <DateInput label="Fabricación:" v-model="fabrication" />
             <TextInput label="Matricula Origen:" v-model="licenseOG" />
+            <SelectInput label="Llave asignada:" :options="keysOptions" v-model="key" />
             <TextInput label="Nº llaves:" v-model="keysQ" />
           </div>
-          <button class="btn btn-primary mt-8 self-end text-white" @click="updateData">
+          <button class="btn btn-primary mt-4 self-end text-white" @click="updateBasic">
+            Guardar
+          </button>
+        </div>
+        <div v-if="tab === 2" class="flex flex-col gap-4">
+          <div class="flex flex-row justify-between">
+            <h1 class="text-xl font-medium">Información Técnica</h1>
+            <DropdownBtn>
+              <template #btn>
+                <button class="btn btn-primary hidden text-white lg:block">Acciones</button>
+                <button class="btn btn-circle btn-ghost lg:hidden">
+                  <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
+                </button>
+              </template>
+              <template #content>
+                <ul>
+                  <li><a>Recalcular etiqueta</a></li>
+                  <li><a>Liberar llave</a></li>
+                </ul>
+              </template>
+            </DropdownBtn>
+          </div>
+          <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+            <SelectInput label="Tracción:" :options="driveOptions" v-model="drives" />
+            <TextInput label="Marchas:" v-model="gears" />
+            <TextInput label="Vel Máxima:" v-model="speed" />
+            <TextInput label="Aceleración 0-100:" v-model="acceleration" />
+          </div>
+          <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
+          <div class="divider m-0 p-0"></div>
+          <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+            <TextInput label="Consumo en el Ambiente:" v-model="environment" />
+            <TextInput label="En carretera:" v-model="road" />
+            <TextInput label="En ciudad:" v-model="city" />
+            <TextInput label="Emisiones CO2:" v-model="co2" />
+          </div>
+          <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
+          <div class="divider m-0 p-0"></div>
+          <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+            <TextInput label="Longitud:" v-model="length" />
+            <TextInput label="Altura:" v-model="height" />
+            <TextInput label="Tara:" v-model="tare" />
+          </div>
+          <button class="btn btn-primary mt-4 self-end text-white" @click="updateTechnical">
             Guardar
           </button>
         </div>
