@@ -4,6 +4,7 @@ defineProps({
 })
 
 const value = defineModel()
+defineEmits(['select'])
 </script>
 
 <template>
@@ -11,7 +12,7 @@ const value = defineModel()
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <select class="select select-primary" v-model="value">
+    <select class="select select-primary" v-model="value" @select="$emit('select')">
       <option value="0">Todos</option>
       <option value="1">Recepción</option>
       <option value="2">Publicación</option>

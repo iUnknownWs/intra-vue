@@ -1,6 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
+import router from '@/router'
 import { ref, onMounted } from 'vue'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
@@ -17,7 +18,7 @@ const webBrandUrl = `${import.meta.env.VITE_API}/public/brands-web/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
 const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
-const keysWebUrl = `${import.meta.env.VITE_KEYS}?free_keys=true`
+const keysWebUrl = `${import.meta.env.VITE_KEYS}`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -80,6 +81,8 @@ const co2 = ref(0)
 const length = ref(0)
 const tare = ref(0)
 const height = ref(0)
+const itvExp = ref('')
+const owners = ref(0)
 
 const updateBasic = () => {
   loading.value = true
@@ -165,6 +168,8 @@ const fetch = () => {
       length.value = vehicle.value.length
       tare.value = vehicle.value.tare_weigth
       height.value = vehicle.value.heigth
+      itvExp.value = vehicle.value.maintenance.itv_expiration
+      owners.value = vehicle.value.maintenance.owners_quantity
     })
     .then(() => {
       axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
@@ -201,8 +206,7 @@ axios.get(bodyUrl).then((response) => {
   bodyOptions.value = response.data.results
 })
 
-axios.get(keysWebUrl).then((response) => {
-  console.log(response.data.results)
+axios.get(keysWebUrl + '?free_keys=true').then((response) => {
   for (let option of response.data.results) {
     keysOptions.value.push({
       id: option.id,
@@ -210,6 +214,18 @@ axios.get(keysWebUrl).then((response) => {
     })
   }
 })
+
+const unlinkKey = () => {
+  axios.put(keysWebUrl + key.value, { vehicle: null }).then(() => {
+    router.go(0)
+  })
+}
+
+const linkKey = () => {
+  axios.put(keysWebUrl + key.value, { vehicle: vehicle.value.id }).then(() => {
+    router.go(0)
+  })
+}
 
 axios.get(brandUrl).then((response) => {
   for (let option of response.data.results) {
@@ -407,7 +423,7 @@ onMounted(() => {
       <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
       <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
       <a ref="tab3" role="tab" class="tab" @click="tabEvent3">Portales web</a>
-      <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Historia y Mantenimiento</a>
+      <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
       <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Precio</a>
       <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
       <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
@@ -430,7 +446,7 @@ onMounted(() => {
               <li><a @click="tab = 1">Información Básica</a></li>
               <li><a @click="tab = 2">Información Técnica</a></li>
               <li><a @click="tab = 3">Portales web</a></li>
-              <li><a @click="tab = 4">Historia y Mantenimiento</a></li>
+              <li><a @click="tab = 4">Mantenimiento</a></li>
               <li><a @click="tab = 5">Precio</a></li>
               <li><a @click="tab = 6">Comentarios</a></li>
               <li><a @click="tab = 7">Extras</a></li>
@@ -461,7 +477,7 @@ onMounted(() => {
               <template #content>
                 <ul>
                   <li><a>Recalcular etiqueta</a></li>
-                  <li><a>Liberar llave</a></li>
+                  <li><a @click="unlinkKey">Liberar llave</a></li>
                 </ul>
               </template>
             </DropdownBtn>
@@ -489,7 +505,19 @@ onMounted(() => {
             />
             <DateInput label="Fabricación:" v-model="fabrication" />
             <TextInput label="Matricula Origen:" v-model="licenseOG" />
-            <SelectInput label="Llave asignada:" :options="keysOptions" v-model="key" />
+            <TextInput
+              v-if="vehicle.key_locator"
+              label="Llave asignada:"
+              v-model="key"
+              :disabled="true"
+            />
+            <SelectInput
+              v-else
+              label="Llave asignada:"
+              :options="keysOptions"
+              v-model="key"
+              @selected="linkKey"
+            />
             <TextInput label="Nº llaves:" v-model="keysQ" />
           </div>
           <button class="btn btn-primary mt-4 self-end text-white" @click="updateBasic">
@@ -499,20 +527,6 @@ onMounted(() => {
         <div v-if="tab === 2" class="flex flex-col gap-4">
           <div class="flex flex-row justify-between">
             <h1 class="text-xl font-medium">Información Técnica</h1>
-            <DropdownBtn>
-              <template #btn>
-                <button class="btn btn-primary hidden text-white lg:block">Acciones</button>
-                <button class="btn btn-circle btn-ghost lg:hidden">
-                  <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
-                </button>
-              </template>
-              <template #content>
-                <ul>
-                  <li><a>Recalcular etiqueta</a></li>
-                  <li><a>Liberar llave</a></li>
-                </ul>
-              </template>
-            </DropdownBtn>
           </div>
           <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
             <SelectInput label="Tracción:" :options="driveOptions" v-model="drives" />
@@ -535,6 +549,20 @@ onMounted(() => {
             <TextInput label="Altura:" v-model="height" />
             <TextInput label="Tara:" v-model="tare" />
           </div>
+          <button class="btn btn-primary mt-4 self-end text-white" @click="updateTechnical">
+            Guardar
+          </button>
+        </div>
+        <div v-if="tab === 4" class="flex flex-col gap-4">
+          <div class="flex flex-row justify-between">
+            <h1 class="text-xl font-medium">Mantenimiento</h1>
+          </div>
+          <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+            <TextInput label="Propietarios:" v-model="owners" />
+            <DateInput label="Vencimiento ITV:" v-model="itvExp" />
+          </div>
+          <h2>Libro de revisiones</h2>
+          <div class="divider m-0 p-0"></div>
           <button class="btn btn-primary mt-4 self-end text-white" @click="updateTechnical">
             Guardar
           </button>
