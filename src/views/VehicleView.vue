@@ -16,6 +16,8 @@ const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const webBrandUrl = `${import.meta.env.VITE_API}/public/brands-web/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
+const buyersUrl = `${import.meta.env.VITE_API}/buyers/`
+const providersUrl = `${import.meta.env.VITE_API}/companies/?limit=1000&is_provider=true`
 const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
 const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
 const keysWebUrl = `${import.meta.env.VITE_KEYS}`
@@ -42,8 +44,8 @@ const tabs = [tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8]
 const tabs2 = [tab9, tab10]
 const scrollDown = ref(false)
 const scrollTop = ref(true)
-const category = ref('0')
-const chassis = ref('')
+const category = ref([])
+const chassis = ref(null)
 const bodyOptions = ref([])
 const brandOptions = ref([])
 const webBrandOptions = ref([])
@@ -53,25 +55,29 @@ const modelWebOptions = ref([])
 const regulationsOptions = ref([])
 const keysOptions = ref([])
 const regimenOptions = ref([])
+const buyersOptions = ref([])
+const providersOptions = ref([])
 // const body = ref('')
-const drives = ref(0)
-const bodyType = ref('0')
+const drives = ref(null)
+const bodyType = ref(null)
 const brand = ref({ id: '', label: '' })
 const webBrand = ref({ id: '', label: '' })
 const model = ref({ id: '', label: '' })
 const modelWeb = ref({ id: '', label: '' })
+const provider = ref({ id: '', label: '' })
+const buyer = ref({ id: '', label: '' })
 const license = ref('')
-const license1 = ref('')
+const license1 = ref(null)
 const kms = ref(0)
-const fuel = ref('0')
-const gearBox = ref('0')
+const fuel = ref(null)
+const gearBox = ref(null)
 const power = ref(0)
 const doors = ref(0)
-const distinctive = ref('0')
+const distinctive = ref(null)
 const licenseOG = ref('')
 const key = ref(0)
 const keysQ = ref(0)
-const fabrication = ref('')
+const fabrication = ref(null)
 const gears = ref(0)
 const speed = ref(0)
 const acceleration = ref(0)
@@ -82,7 +88,7 @@ const co2 = ref(0)
 const length = ref(0)
 const tare = ref(0)
 const height = ref(0)
-const itvExp = ref('')
+const itvExp = ref(null)
 const owners = ref(0)
 const basic = ref(null)
 const technical = ref(null)
@@ -94,52 +100,115 @@ const extras = ref(null)
 const discounts = ref(null)
 const freeEquip = ref(null)
 const equip = ref(null)
+const basicTab = ref(null)
+const technicalTab = ref(null)
+const portalsTab = ref(null)
+const maintenanceTab = ref(null)
+const pricesTab = ref(null)
+const commentsTab = ref(null)
+const extrasTab = ref(null)
+const discountsTab = ref(null)
+const freeEquipTab = ref(null)
+const equipTab = ref(null)
+const asideTabs = [
+  basicTab,
+  technicalTab,
+  portalsTab,
+  maintenanceTab,
+  pricesTab,
+  commentsTab,
+  extrasTab,
+  discountsTab,
+  freeEquipTab,
+  equipTab
+]
+const regimen = ref(null)
+const purchaseDate = ref(null)
+const purchasePrice = ref(0)
+const sellManage = ref(false)
+const sellerName = ref('')
+const commission = ref(0)
+const price = ref('0')
+const financed = ref('0')
+const financingMonths = ref(0)
+const financingQ = ref('0')
+const reserve = ref('0')
+const iva = ref(false)
+const error = ref(null)
+const message = ref('')
 
-const updateBasic = () => {
+const updateData = () => {
   loading.value = true
-  axios
-    .patch(url, {
-      web_categories: [category.value],
-      body_type: bodyType.value,
-      chassis_number: chassis.value,
-      license_plate: license.value,
-      date_first_registration: license1.value,
-      kms: kms.value,
-      fuel: fuel.value,
-      gear_box: gearBox.value,
-      power: power.value,
-      doors: doors.value,
-      maintenance: {
-        distinctive: distinctive.value,
-        keys_quantity: keysQ.value
-      },
-      registration_date: fabrication.value,
-      original_license_plate: licenseOG.value
-    })
-    .then(() => {
+  const payload = {
+    acceleration: acceleration?.value,
+    body_type: bodyType?.value,
+    chassis_number: chassis?.value,
+    city: city?.value,
+    co2: co2?.value,
+    date_first_registration: license1?.value,
+    doors: doors?.value,
+    drive_type: drives?.value,
+    environment: environment?.value,
+    fuel: fuel?.value,
+    gear_box: gearBox?.value,
+    heigth: height?.value,
+    kms: kms?.value,
+    length: length?.value,
+    license_plate: license?.value,
+    maintenance: {
+      distinctive: distinctive?.value,
+      keys_quantity: keysQ?.value
+    },
+    max_speed: speed?.value,
+    number_gears: gears?.value,
+    original_license_plate: licenseOG?.value,
+    power: power?.value,
+    purchase: {
+      provider: provider.value?.id,
+      buyer: buyer.value?.id,
+      tax_regime: regimen?.value,
+      purchase_date: purchaseDate?.value,
+      price: purchasePrice?.value,
+      vehicle: vehicle.value.id
+    },
+    price: {
+      sale_price: price?.value,
+      financed_price: financed?.value,
+      amount_fees: financingMonths?.value,
+      financing_fee: financingQ?.value,
+      reserve_amount: reserve?.value,
+      is_tax_deductible: iva?.value,
+      vehicle: vehicle.value.id
+    },
+    registration_date: fabrication?.value,
+    road: road?.value,
+    tare: tare?.value,
+    web_categories: category?.value
+  }
+  if (payload.chassis_number === null) {
+    message.value = 'Debe ingresar el VIN del vehículo, el campo Bastidor es obligatorio'
+    error.value?.modal.showModal()
+    fetch()
+    return
+  }
+  if (payload.drive_type === 0) {
+    payload.drive_type = 1
+  }
+  if (vehicle.value.purchase?.vehicle && vehicle.value.price?.vehicle) {
+    delete payload.purchase.vehicle
+    delete payload.price.vehicle
+  } else if (!vehicle.value.purchase?.vehicle && !vehicle.value.price?.vehicle) {
+    axios.patch(url, {}).then(() => {
       fetch()
     })
-}
-
-const updateTechnical = () => {
-  loading.value = true
-  axios
-    .patch(url, {
-      drive_type: drives.value,
-      number_gears: gears.value,
-      max_speed: speed.value,
-      acceleration: acceleration.value,
-      environment: environment.value,
-      road: road.value,
-      city: city.value,
-      co2: co2.value,
-      length: length.value,
-      tare: tare.value,
-      heigth: height.value
-    })
-    .then(() => {
-      fetch()
-    })
+  } else if (vehicle.value.price?.vehicle) {
+    delete payload.price.vehicle
+  } else {
+    delete payload.purchase.vehicle
+  }
+  axios.patch(url, payload).then(() => {
+    fetch()
+  })
 }
 
 const fetch = () => {
@@ -150,37 +219,51 @@ const fetch = () => {
     })
     .then(() => {
       loading.value = false
-      category.value = vehicle.value.web_categories[0].id
-      bodyType.value = vehicle.value.body_type?.id
+      category.value = vehicle.value.web_categories[0]?.id
+      bodyType.value = vehicle.value.body_type?.id || null
       brand.value = { id: vehicle.value.model.brand.id, label: vehicle.value.model.brand.title }
       webBrand.value = { id: vehicle.value.brand_web.id, label: vehicle.value.brand_web.title }
       modelWeb.value = { id: vehicle.value.model_web.id, label: vehicle.value.model_web.title }
-      chassis.value = vehicle.value.chassis_number
+      chassis.value = vehicle.value?.chassis_number
       license.value = vehicle.value.license_plate
-      license1.value = vehicle.value.date_first_registration
-      kms.value = vehicle.value.kms
-      fuel.value = vehicle.value.fuel.id
-      gearBox.value = vehicle.value.gear_box.id
-      power.value = vehicle.value.power
-      doors.value = vehicle.value.doors
-      distinctive.value = vehicle.value.maintenance.distinctive
-      fabrication.value = vehicle.value.registration_date
-      licenseOG.value = vehicle.value.original_license_plate
-      key.value = vehicle.value.key_locator
-      keysQ.value = vehicle.value.maintenance.keys_quantity
-      drives.value = vehicle.value.drive_type.id
-      gears.value = vehicle.value.number_gears
-      speed.value = vehicle.value.max_speed
-      acceleration.value = vehicle.value.seconds_to_100_speed
-      environment.value = vehicle.value.consumption_in_environment
-      road.value = vehicle.value.consumption_in_road
-      city.value = vehicle.value.consumption_in_city
-      co2.value = vehicle.value.co2_emissions
-      length.value = vehicle.value.length
-      tare.value = vehicle.value.tare_weigth
-      height.value = vehicle.value.heigth
-      itvExp.value = vehicle.value.maintenance.itv_expiration
-      owners.value = vehicle.value.maintenance.owners_quantity
+      license1.value = vehicle.value?.date_first_registration
+      kms.value = vehicle.value?.kms
+      fuel.value = vehicle.value.fuel?.id
+      gearBox.value = vehicle.value?.gear_box.id
+      power.value = vehicle.value?.power
+      doors.value = vehicle.value?.doors
+      distinctive.value = vehicle.value?.maintenance.distinctive
+      fabrication.value = vehicle.value?.registration_date
+      licenseOG.value = vehicle.value?.original_license_plate
+      key.value = vehicle.value?.key_locator
+      keysQ.value = vehicle.value.maintenance?.keys_quantity
+      drives.value = vehicle.value.drive_type?.id || null
+      gears.value = vehicle.value?.number_gears
+      speed.value = vehicle.value?.max_speed
+      acceleration.value = vehicle.value?.seconds_to_100_speed
+      environment.value = vehicle.value?.consumption_in_environment
+      road.value = vehicle.value?.consumption_in_road
+      city.value = vehicle.value?.consumption_in_city
+      co2.value = vehicle.value?.co2_emissions
+      length.value = vehicle.value?.length
+      tare.value = vehicle.value?.tare_weigth
+      height.value = vehicle.value?.heigth
+      itvExp.value = vehicle.value.maintenance?.itv_expiration
+      owners.value = vehicle.value.maintenance?.owners_quantity
+      provider.value = vehicle.value.purchase?.provider || null
+      buyer.value = vehicle.value.purchase?.buyer || null
+      regimen.value = vehicle.value.purchase?.tax_regime || null
+      purchaseDate.value = vehicle.value.purchase?.purchase_date
+      purchasePrice.value = vehicle.value.purchase?.total_price
+      price.value = vehicle.value.price?.sale_price
+      financed.value = vehicle.value.price?.financed_price
+      financingMonths.value = vehicle.value.price?.amount_fees
+      financingQ.value = vehicle.value.price?.financing_fee
+      reserve.value = vehicle.value.price?.reserve_amount
+      iva.value = vehicle.value.price?.is_tax_deductible
+      sellerName.value = vehicle.value.purchase?.owner
+      commission.value = vehicle.value.purchase?.selling_fee
+      purchaseDate.value = vehicle.value.purchase?.purchase_date
     })
     .then(() => {
       axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
@@ -222,6 +305,24 @@ axios.get(keysWebUrl + '?free_keys=true').then((response) => {
     keysOptions.value.push({
       id: option.id,
       title: option.id
+    })
+  }
+})
+
+axios.get(buyersUrl).then((response) => {
+  for (let option of response.data.results) {
+    buyersOptions.value.push({
+      id: option.id,
+      label: option.name
+    })
+  }
+})
+
+axios.get(providersUrl).then((response) => {
+  for (let option of response.data.results) {
+    providersOptions.value.push({
+      id: option.id,
+      label: option.name
     })
   }
 })
@@ -433,12 +534,51 @@ onMounted(() => {
       scrollDown.value = true
       scrollTop.value = false
     }
-    prev = current
+    if (equip.value?.getBoundingClientRect().top < 80) {
+      asideTabs[8].value.classList?.remove('active')
+      asideTabs[9].value.classList?.add('active')
+    } else if (freeEquip.value?.getBoundingClientRect().top < 80) {
+      asideTabs[7].value.classList?.remove('active')
+      asideTabs[8].value.classList?.add('active')
+      asideTabs[9].value.classList?.remove('active')
+    } else if (discounts.value?.getBoundingClientRect().top < 80) {
+      asideTabs[6].value.classList?.remove('active')
+      asideTabs[7].value.classList?.add('active')
+      asideTabs[8].value.classList?.remove('active')
+    } else if (extras.value?.getBoundingClientRect().top < 80) {
+      asideTabs[5].value.classList?.remove('active')
+      asideTabs[6].value.classList?.add('active')
+      asideTabs[7].value.classList?.remove('active')
+    } else if (comments.value?.getBoundingClientRect().top < 80) {
+      asideTabs[4].value.classList?.remove('active')
+      asideTabs[5].value.classList?.add('active')
+      asideTabs[6].value.classList?.remove('active')
+    } else if (prices.value?.getBoundingClientRect().top < 80) {
+      asideTabs[3].value.classList?.remove('active')
+      asideTabs[4].value.classList?.add('active')
+      asideTabs[5].value.classList?.remove('active')
+    } else if (maintenance.value?.getBoundingClientRect().top < 80) {
+      asideTabs[2].value.classList?.remove('active')
+      asideTabs[3].value.classList?.add('active')
+      asideTabs[4].value.classList?.remove('active')
+    } else if (portals.value?.getBoundingClientRect().top < 80) {
+      asideTabs[1].value.classList?.remove('active')
+      asideTabs[2].value.classList?.add('active')
+      asideTabs[3].value.classList?.remove('active')
+    } else if (technical.value?.getBoundingClientRect().top < 80) {
+      asideTabs[0].value.classList?.remove('active')
+      asideTabs[1].value.classList?.add('active')
+      asideTabs[2].value.classList?.remove('active')
+    } else {
+      asideTabs[0].value.classList?.add('active')
+      asideTabs[1].value.classList?.remove('active')
+    }
   })
 })
 </script>
 
 <template>
+  <ModalInfo ref="error" title="Error" :message="message" />
   <HeaderMain class="pb-16">
     <header class="flex flex-col items-center">
       <LoadingSpinner v-if="loading" class="loading-lg" />
@@ -473,23 +613,27 @@ onMounted(() => {
           <li>
             <a class="font-bold" @click="tab = 1">Admin</a>
             <ul>
-              <li><a @click="tabEvent1">Información Básica</a></li>
               <li>
-                <a @click="tabEvent2">Información Técnica</a>
+                <a id="basicTab" ref="basicTab" class="active" @click="tabEvent1"
+                  >Información Básica</a
+                >
               </li>
-              <li><a @click="tabEvent3">Portales web</a></li>
-              <li><a @click="tabEvent4">Mantenimiento</a></li>
-              <li><a @click="tabEvent5">Compra y precio</a></li>
-              <li><a @click="tabEvent6">Comentarios</a></li>
-              <li><a @click="tabEvent7">Extras</a></li>
-              <li><a @click="tabEvent8">Descuentos</a></li>
+              <li>
+                <a ref="technicalTab" @click="tabEvent2">Información Técnica</a>
+              </li>
+              <li><a ref="portalsTab" @click="tabEvent3">Portales web</a></li>
+              <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
+              <li><a ref="pricesTab" @click="tabEvent5">Compra y precio</a></li>
+              <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
+              <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
+              <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
             </ul>
           </li>
           <li>
             <a class="font-bold" @click="tabEvent9">Equipamiento</a>
             <ul>
-              <li><a @click="tabEvent9">Equipamiento sin coste</a></li>
-              <li><a @click="tabEvent10">Equipamiento con coste</a></li>
+              <li><a ref="freeEquipTab" @click="tabEvent9">Equipamiento sin coste</a></li>
+              <li><a ref="equipTab" @click="tabEvent10">Equipamiento con coste</a></li>
             </ul>
           </li>
           <li><a class="font-bold" @click="tab = 11">PT</a></li>
@@ -516,8 +660,18 @@ onMounted(() => {
               </DropdownBtn>
             </div>
             <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <SelectInput label="Categoria web:" :options="options.categoria" v-model="category" />
-              <SelectInput label="Carrocería:" :options="bodyTypeOptions" v-model="bodyType" />
+              <SelectInput
+                label="Categoria web:"
+                :options="options.categoria"
+                v-model="category"
+                :initialValue="null"
+              />
+              <SelectInput
+                label="Carrocería:"
+                :options="bodyTypeOptions"
+                v-model="bodyType"
+                :initialValue="null"
+              />
               <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
               <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
               <SearchSelect label="Modelo:" :options="webBrandOptions" v-model="model" />
@@ -526,8 +680,18 @@ onMounted(() => {
               <TextInput label="Matricula:" v-model="license" />
               <DateInput label="1º Matriculación:" v-model="license1" />
               <TextInput label="Km Actuales:" v-model="kms" />
-              <SelectInput label="Combustible:" :options="options.combustible" v-model="fuel" />
-              <SelectInput label="Cambio:" :options="options.cambio" v-model="gearBox" />
+              <SelectInput
+                label="Combustible:"
+                :options="options.combustible"
+                v-model="fuel"
+                :initialValue="null"
+              />
+              <SelectInput
+                label="Cambio:"
+                :options="options.cambio"
+                v-model="gearBox"
+                :initialValue="null"
+              />
               <TextInput label="Potencia (cv):" v-model="power" />
               <TextInput label="Tamaño (cc):" />
               <TextInput label="Puertas:" v-model="doors" />
@@ -535,6 +699,7 @@ onMounted(() => {
                 label="Distintivo:"
                 :options="options.medioambiental"
                 v-model="distinctive"
+                :initialValue="null"
               />
               <DateInput label="Fabricación:" v-model="fabrication" />
               <TextInput label="Matricula Origen:" v-model="licenseOG" />
@@ -550,19 +715,22 @@ onMounted(() => {
                 :options="keysOptions"
                 v-model="key"
                 @selected="linkKey"
+                :initialValue="null"
               />
               <TextInput label="Nº llaves:" v-model="keysQ" />
             </div>
-            <button class="btn btn-primary mt-4 self-end text-white" @click="updateBasic">
-              Guardar
-            </button>
           </div>
           <div ref="technical" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
             <div class="flex flex-row justify-between">
               <h1 class="text-xl font-medium">Información Técnica</h1>
             </div>
             <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <SelectInput label="Tracción:" :options="driveOptions" v-model="drives" />
+              <SelectInput
+                label="Tracción:"
+                :options="driveOptions"
+                v-model="drives"
+                :initialValue="null"
+              />
               <TextInput label="Marchas:" v-model="gears" />
               <TextInput label="Vel Máxima:" v-model="speed" />
               <TextInput label="Aceleración 0-100:" v-model="acceleration" />
@@ -582,9 +750,6 @@ onMounted(() => {
               <TextInput label="Altura:" v-model="height" />
               <TextInput label="Tara:" v-model="tare" />
             </div>
-            <button class="btn btn-primary mt-4 self-end text-white" @click="updateTechnical">
-              Guardar
-            </button>
           </div>
           <div ref="portals" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"></div>
           <div ref="maintenance" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
@@ -595,18 +760,36 @@ onMounted(() => {
             </div>
             <h2>Libro de revisiones</h2>
             <div class="divider m-0 p-0"></div>
-            <button class="btn btn-primary mt-4 self-end text-white" @click="updateTechnical">
-              Guardar
-            </button>
           </div>
           <div ref="prices" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Mantenimiento</h1>
+            <h1 class="text-xl font-medium">Información de compra</h1>
+            <CheckInput label="Gestión de venta:" v-model="sellManage" class="flex items-start" />
+            <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+              <SearchSelect label="Proveedor:" :options="providersOptions" v-model="provider" />
+              <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
+              <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+              <TextInput label="Precio de compra:" v-model="purchasePrice" />
+              <SelectInput
+                label="Régimen:"
+                :options="regimenOptions"
+                v-model="regimen"
+                :initialValue="null"
+              />
+            </div>
+            <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+              <TextInput label="Nombre Completo:" v-model="sellerName" />
+              <TextInput label="Importe de comisión:" v-model="commission" />
+              <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+            </div>
+            <h1 class="text-xl font-medium">Configuración de precio</h1>
+            <div class="divider m-0 p-0"></div>
             <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <SearchSelect label="Proveedor:" :options="brandOptions" v-model="brand" />
-              <SearchSelect label="Comprador:" :options="brandOptions" v-model="brand" />
-              <DateInput label="Fecha de compra:" v-model="itvExp" />
-              <TextInput label="Precio de compra:" v-model="owners" />
-              <SelectInput label="Régimen:" :options="options.categoria" v-model="category" />
+              <TextInput label="Precio de venta:" v-model="price" />
+              <TextInput label="Precio financiado:" v-model="financed" />
+              <TextInput label="Meses de financiación:" v-model="financingMonths" />
+              <TextInput label="Cuota financiación:" v-model="financingQ" />
+              <TextInput label="Reserva:" v-model="reserve" />
+              <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
             </div>
           </div>
           <div ref="comments" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"></div>
@@ -662,7 +845,7 @@ onMounted(() => {
       <aside class="hidden w-full max-w-md flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
         <h2 class="text-xl font-medium">Galería Multimedia</h2>
         <div role="tablist" class="tabs tabs-bordered tabs-md">
-          <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
+          <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" checked />
           <div role="tabpanel" class="tab-content p-4 lg:p-8">
             <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
               <div class="skeleton h-28 w-28"></div>
@@ -674,51 +857,49 @@ onMounted(() => {
             </div>
           </div>
 
-          <input
-            type="radio"
-            name="galeria"
-            role="tab"
-            class="tab"
-            aria-label="Documentos"
-            checked
-          />
+          <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
           <div role="tabpanel" class="tab-content p-8">Documentos</div>
         </div>
       </aside>
     </main>
   </HeaderMain>
-  <div v-if="scrollTop" class="btm-nav lg:hidden">
-    <button ref="navBtn1" @click="navEvent1" class="active">
-      <Icon icon="mdi:car" width="30" />
-      <span class="btm-nav-label">I. Admin</span>
-    </button>
-    <button ref="navBtn2" @click="navEvent2">
-      <Icon icon="mdi:webpack" width="30" />
-      <span class="btm-nav-label">Port Web</span>
-    </button>
-    <button ref="navBtn3" @click="navEvent3">
-      <Icon icon="mdi:bag-checked" width="30" />
-      <span class="btm-nav-label">Equip</span>
-    </button>
-    <button ref="navBtn4" @click="navEvent4">
-      <Icon icon="mdi:performance" width="30" />
-      <span class="btm-nav-label">PT</span>
-    </button>
-    <button ref="navBtn5" @click="navEvent5">
-      <Icon icon="mdi:image-multiple" width="30" />
-      <span class="btm-nav-label">Galeria</span>
-    </button>
-  </div>
-  <div v-if="scrollDown" class="btm-nav lg:hidden">
-    <div>
-      <button class="btn w-36" ref="navBtn6" @click="1">
-        <span class="btm-nav-label">Cambiar Estado</span>
+  <footer>
+    <div @click="updateData" class="btm-nav hidden lg:flex">
+      <button class="btn btn-primary max-w-24 text-white">Guardar</button>
+    </div>
+    <div v-if="scrollTop" class="btm-nav lg:hidden">
+      <button ref="navBtn1" @click="navEvent1" class="active">
+        <Icon icon="mdi:car" width="30" />
+        <span class="btm-nav-label">I. Admin</span>
+      </button>
+      <button ref="navBtn2" @click="navEvent2">
+        <Icon icon="mdi:webpack" width="30" />
+        <span class="btm-nav-label">Port Web</span>
+      </button>
+      <button ref="navBtn3" @click="navEvent3">
+        <Icon icon="mdi:bag-checked" width="30" />
+        <span class="btm-nav-label">Equip</span>
+      </button>
+      <button ref="navBtn4" @click="navEvent4">
+        <Icon icon="mdi:performance" width="30" />
+        <span class="btm-nav-label">PT</span>
+      </button>
+      <button ref="navBtn5" @click="navEvent5">
+        <Icon icon="mdi:image-multiple" width="30" />
+        <span class="btm-nav-label">Galeria</span>
       </button>
     </div>
-    <div>
-      <button class="btn btn-warning w-36" ref="navBtn6" @click="1">
-        <span class="btm-nav-label">Reservar</span>
-      </button>
+    <div v-if="scrollDown" class="btm-nav lg:hidden">
+      <div>
+        <button class="btn w-36" ref="navBtn6" @click="1">
+          <span class="btm-nav-label">Cambiar Estado</span>
+        </button>
+      </div>
+      <div>
+        <button class="btn btn-warning w-36" ref="navBtn6" @click="1">
+          <span class="btm-nav-label">Reservar</span>
+        </button>
+      </div>
     </div>
-  </div>
+  </footer>
 </template>

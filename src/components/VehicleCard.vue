@@ -144,6 +144,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             </div>
             <div v-if="vehicle?.license_plate" class="flex flex-col items-start">
               <span class="font-bold"></span>
+              <span class="font-bold">Matricula</span>
               <span>{{ vehicle.license_plate }}</span>
               <span>{{ vehicle.chassis_number }}</span>
             </div>

@@ -10,7 +10,7 @@ const check = defineModel()
 <template>
   <div class="form-control">
     <label class="label cursor-pointer">
-      <span class="label-text font-medium">{{ label }}</span>
+      <span class="label-text mr-4 font-medium">{{ label }}</span>
       <input
         v-if="value"
         type="checkbox"

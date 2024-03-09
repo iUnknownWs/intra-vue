@@ -2,7 +2,8 @@
 defineProps({
   label: { type: String, required: true },
   options: { type: Object, required: true },
-  disabled: { type: Boolean }
+  disabled: { type: Boolean },
+  initialValue: { type: String || null, default: '0' }
 })
 defineEmits(['selected'])
 
@@ -14,13 +15,16 @@ const value = defineModel()
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <select class="select select-bordered" v-model="value" @change="$emit('selected')" :disabled="disabled">
-      <option disabled selected value="0">Seleccione una opción</option>
+    <select
+      class="select select-bordered"
+      v-model="value"
+      @change="$emit('selected')"
+      :disabled="disabled"
+    >
+      <option disabled selected :value="initialValue">Seleccione una opción</option>
       <option v-for="(option, index) in options" :key="index" :value="option.id">
         {{ option.title }}
       </option>
     </select>
   </label>
 </template>
-
-<style scoped></style>
