@@ -6,7 +6,7 @@ defineProps({
 
 <template>
   <div class="card w-[80vw] bg-base-100 shadow-xl lg:w-96">
-    <figure class="px-10 pt-10">
+    <figure class="h-28 px-10 pt-10">
       <img :src="img" alt="Logo" class="rounded-xl" />
     </figure>
     <div class="card-body items-center text-center">

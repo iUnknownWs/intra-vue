@@ -9,7 +9,6 @@ const items = ref([])
 const serverItemsLength = ref(0)
 const loading = ref(false)
 const loadingSpinner = ref(false)
-const users = ref([])
 const isFetching = ref(false)
 const edit = ref(null)
 const data = ref({})
@@ -40,7 +39,6 @@ const fetching = () => {
       }
       const API_URL = `${url}/?${new URLSearchParams(params)}`
       const response = await axios.get(API_URL)
-      users.value = response.data.results
       items.value = response.data.results
       serverItemsLength.value = response.data.count
       loading.value = false
@@ -142,7 +140,13 @@ const reset = () => {
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form method="dialog flex flex-col" @submit.prevent="edit.close(); reset()">
+      <form
+        method="dialog flex flex-col"
+        @submit.prevent="
+          edit.close()
+          reset()
+        "
+      >
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Descuento</h3>

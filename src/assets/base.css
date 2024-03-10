@@ -96,6 +96,7 @@ th:last-child {
   border-bottom-right-radius: 10px;
 }
 .customize-table {
+  z-index: 0;
   background: #fff;
   background-color: #fff;
   --easy-table-border: 1px solid #fff;

@@ -15,7 +15,7 @@ const toggleDrawer = () => {
 const toggle = ref(false)
 </script>
 <template>
-  <div class="drawer drawer-end">
+  <div class="drawer drawer-end z-50">
     <input id="rightDrawer" type="checkbox" class="drawer-toggle" v-model="toggle" />
     <div class="drawer-content">
       <!-- Page content here -->
@@ -25,7 +25,7 @@ const toggle = ref(false)
           <label
             v-if="add"
             for="rightDrawer"
-            class="btn btn-primary drawer-button mb-2 self-end text-white"
+            class="btn btn-primary drawer-button btn-sm mb-2 self-end text-white"
           >
             <Icon icon="mdi:plus" width="25" />
             Nuevo

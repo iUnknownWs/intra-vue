@@ -2,7 +2,7 @@
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
 import options from '@/js/filterOptions'
@@ -21,6 +21,7 @@ const providersUrl = `${import.meta.env.VITE_API}/companies/?limit=1000&is_provi
 const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
 const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
 const keysWebUrl = `${import.meta.env.VITE_KEYS}`
+const extrasUrl = `${import.meta.env.VITE_SALES}/discounts/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -520,6 +521,80 @@ const navEvent5 = () => {
   navBtn5.value.classList.add('active')
 }
 
+const isFetching = ref(false)
+const serverOptions = ref({
+  page: 1,
+  rowsPerPage: 20
+})
+const serverItemsLength = ref(0)
+const items = ref([])
+
+const fetching = () => {
+  if (isFetching.value) {
+    return
+  }
+
+  isFetching.value = true
+  loading.value = true
+
+  const fetchData = async () => {
+    try {
+      const params = {
+        limit: serverOptions.value.rowsPerPage,
+        pager: 'number',
+        page: serverOptions.value.page
+      }
+      const API_URL = `${extrasUrl}/?${new URLSearchParams(params)}`
+      const response = await axios.get(API_URL)
+      items.value = response.data.results
+      serverItemsLength.value = response.data.count
+      loading.value = false
+    } catch (error) {
+      console.error(error)
+    } finally {
+      isFetching.value = false
+    }
+  }
+
+  fetchData()
+}
+
+watch(
+  serverOptions,
+  () => {
+    fetching()
+  },
+  { deep: true }
+)
+
+const remove = (id) => {
+  axios.delete(`${url}/${id}/`).then(() => router.go(0))
+}
+
+const headers = [
+  { text: 'Nombre', value: 'title' },
+  { text: 'Descripción', value: 'from_date' },
+  { text: 'Precio', value: 'to_date' },
+  { text: 'Acciones', value: 'id', width: 60 }
+]
+
+const addExtra = () => {
+  axios
+    .post(url, {
+      // title: title.value,
+      // from_date: from_date.value,
+      // to_date: to_date.value,
+      // amount_percent: parseInt(amount_percent.value) || 0,
+      // amount_fix: parseInt(amount_fix.value) || 0
+    })
+    .then((response) => {
+      if (response.status === 201) {
+        // reset()
+        fetching()
+      }
+    })
+}
+
 onMounted(() => {
   let prev = window.scrollY
   window.addEventListener('scroll', () => {
@@ -531,6 +606,7 @@ onMounted(() => {
       scrollDown.value = true
       scrollTop.value = false
     }
+    prev = current
     if (equip.value?.getBoundingClientRect().top < 200) {
       asideTabs[0].value.classList?.remove('activeSection')
       asideTabs[1].value.classList?.remove('activeSection')
@@ -713,9 +789,6 @@ onMounted(() => {
           <div ref="basic" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
             <div class="flex flex-row justify-between">
               <h1 class="text-xl font-medium">Información Básica</h1>
-              <span
-                >Te gusta mas así? es mas parecido a la intranet o lo dejo del tamaño normal</span
-              >
               <DropdownBtn>
                 <template #btn>
                   <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
@@ -823,7 +896,17 @@ onMounted(() => {
               <TextInput label="Tara:" v-model="tare" />
             </div>
           </div>
-          <div ref="portals" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"></div>
+          <div ref="portals" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+            <h1 class="text-xl font-medium">Portales Web</h1>
+            <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+              <IntegrationCard
+                img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+              />
+              <IntegrationCard
+                img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+              />
+            </div>
+          </div>
           <div ref="maintenance" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
             <h1 class="text-xl font-medium">Mantenimiento</h1>
             <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
@@ -878,12 +961,83 @@ onMounted(() => {
             </div>
           </div>
           <div ref="extras" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Extras</h1>
+            <SettingTable
+              title="Lista de Extras"
+              :add="true"
+              drawerTitle="Añadir Extra"
+              @toggle="addExtra"
+            >
+              <template #content>
+                <EasyDataTable
+                  class="table-dark table-striped"
+                  table-class-name="z-0"
+                  header-class-name="z-0"
+                  border-cell
+                  buttons-pagination
+                  :headers="headers"
+                  :items="items"
+                  v-model:server-options="serverOptions"
+                  :server-items-length="serverItemsLength"
+                  :loading="loading"
+                  rows-per-page-message="Filas por pestaña"
+                >
+                  <template v-slot:item-id="{ id }">
+                    <div class="w-20">
+                      <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+                        <Icon icon="mdi:pencil" />
+                      </button>
+                      <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                        <Icon icon="mdi:trash-can-outline" />
+                      </button>
+                    </div>
+                  </template>
+                </EasyDataTable>
+              </template>
+              <template #drawer>
+                <ToggleInput label="Auto / Manual" v-model="active" />
+                <SelectInput label="Tipo:" :options="options.extra" v-model="extra" />
+              </template>
+            </SettingTable>
           </div>
-          <div
-            ref="discounts"
-            class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
-          ></div>
+          <div ref="discounts" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+            <SettingTable
+              title="Lista de Descuentos"
+              :add="true"
+              drawerTitle="Añadir Descuento"
+              @toggle="addDiscount"
+            >
+              <template #content>
+                <EasyDataTable
+                  class="table-dark table-striped"
+                  table-class-name="customize-table"
+                  header-class-name="z-0"
+                  border-cell
+                  buttons-pagination
+                  :headers="headers"
+                  :items="items"
+                  v-model:server-options="serverOptions"
+                  :server-items-length="serverItemsLength"
+                  :loading="loading"
+                  rows-per-page-message="Filas por pestaña"
+                >
+                  <template v-slot:item-id="{ id }">
+                    <div class="w-20">
+                      <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+                        <Icon icon="mdi:pencil" />
+                      </button>
+                      <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                        <Icon icon="mdi:trash-can-outline" />
+                      </button>
+                    </div>
+                  </template>
+                </EasyDataTable>
+              </template>
+              <template #drawer>
+                <ToggleInput label="Auto / Manual" v-model="disMode" />
+                <SelectInput label="Tipo:" :options="options.extra" v-model="disType" />
+              </template>
+            </SettingTable>
+          </div>
         </div>
         <div v-if="tab > 8 && tab < 12">
           <div ref="freeEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
@@ -950,7 +1104,7 @@ onMounted(() => {
     </main>
   </HeaderMain>
   <footer>
-    <div @click="updateData" class="btm-nav hidden lg:flex">
+    <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
       <div class="flex max-w-md flex-row justify-end">
         <button class="btn btn-primary max-w-24 text-white">Guardar</button>
       </div>
@@ -994,7 +1148,7 @@ onMounted(() => {
 
 <style>
 .activeSection {
-  background-color: antiquewhite;
+  background-color: #dcdddf;
   font-weight: 600;
 }
 </style>

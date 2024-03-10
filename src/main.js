@@ -11,6 +11,7 @@ import DrawerTitle from '@/components/DrawerTitle.vue'
 import DropdownBtn from '@/components/DropdownBtn.vue'
 import DropdownAvatar from '@/components/DropdownAvatar.vue'
 import HeaderMain from '@/components/HeaderMain.vue'
+import IntegrationCard from '@/components/IntegrationCard.vue'
 import MenuLink from '@/components/MenuLink.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import ModalInfo from './components/ModalInfo.vue'
@@ -25,6 +26,7 @@ import SettingTable from '@/components/SettingTable.vue'
 import TextInput from '@/components/TextInput.vue'
 import TextIcon from '@/components/TextIcon.vue'
 import TextBtn from '@/components/TextBtn.vue'
+import ToggleInput from '@/components/ToggleInput.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import VehicleCard from '@/components/VehicleCard.vue'
@@ -46,6 +48,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('DropdownAvatar', DropdownAvatar)
     .component('DropdownBtn', DropdownBtn)
     .component('HeaderMain', HeaderMain)
+    .component('IntegrationCard', IntegrationCard)
     .component('MenuLink', MenuLink)
     .component('ModalDialog', ModalDialog)
     .component('ModalInfo', ModalInfo)
@@ -61,6 +64,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('TextBtn', TextBtn)
     .component('TextIcon', TextIcon)
     .component('TextInput', TextInput)
+    .component('ToggleInput', ToggleInput)
     .component('VueSelect', VueSelect)
     .component('VehicleCard', VehicleCard)
 

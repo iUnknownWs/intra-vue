@@ -25,7 +25,7 @@ const toggleDrawer = () => {
         <slot />
       </main>
     </div>
-    <div class="drawer-side z-10">
+    <div class="drawer-side z-50">
       <label for="drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <div class="menu min-h-full w-screen bg-white p-4 text-lg font-medium lg:w-80">
         <!-- Sidebar content here -->
