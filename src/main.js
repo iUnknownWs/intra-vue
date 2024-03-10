@@ -30,9 +30,10 @@ import ToggleInput from '@/components/ToggleInput.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import VehicleCard from '@/components/VehicleCard.vue'
+import VehicleTable from '@/components/VehicleTable.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
-import 'vue3-easy-data-table/dist/style.css'
 import VueSelect from "vue-select"
+import 'vue3-easy-data-table/dist/style.css'
 import 'vue-select/dist/vue-select.css'
 
 
@@ -67,6 +68,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('ToggleInput', ToggleInput)
     .component('VueSelect', VueSelect)
     .component('VehicleCard', VehicleCard)
+    .component('VehicleTable', VehicleTable)
 
 app.use(router)
 

@@ -117,7 +117,8 @@ const reset = () => {
     >
       <template #content>
         <EasyDataTable
-          class="table-dark table-striped"
+          class="z-0"
+          table-class-name="z-0"
           border-cell
           buttons-pagination
           :headers="headers"

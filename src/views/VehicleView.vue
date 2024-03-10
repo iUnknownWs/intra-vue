@@ -139,6 +139,9 @@ const error = ref(null)
 const message = ref('')
 const commInternal = ref('')
 const commExternal = ref('')
+const drawer = ref(false)
+const drawerSection = ref('')
+const discountMode = ref(false)
 
 const updateData = () => {
   loading.value = true
@@ -595,6 +598,35 @@ const addExtra = () => {
     })
 }
 
+const addDiscount = () => {
+  axios
+    .post(url, {
+      // title: title.value,
+      // from_date: from_date.value,
+      // to_date: to_date.value,
+      // amount_percent: parseInt(amount_percent.value) || 0,
+      // amount_fix: parseInt(amount_fix.value) || 0
+    })
+    .then((response) => {
+      if (response.status === 201) {
+        // reset()
+        fetching()
+      }
+    })
+}
+
+const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
+
+const extraDrawer = () => {
+  drawerSection.value = 'extra'
+}
+
+const discountDrawer = () => {
+  drawerSection.value = 'discount'
+}
+
 onMounted(() => {
   let prev = window.scrollY
   window.addEventListener('scroll', () => {
@@ -723,343 +755,375 @@ onMounted(() => {
 </script>
 
 <template>
-  <ModalInfo ref="error" title="Error" :message="message" />
-  <HeaderMain class="pb-16">
-    <header class="flex flex-col items-center">
-      <LoadingSpinner v-if="loading" class="loading-lg" />
-      <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" />
-      <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
-    </header>
-    <div
-      v-if="tab > 0 && tab < 9"
-      role="tablist"
-      class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
-    >
-      <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
-      <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
-      <a ref="tab3" role="tab" class="tab" @click="tabEvent3">Portales web</a>
-      <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
-      <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Compra y precio</a>
-      <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
-      <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
-      <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
-    </div>
-    <div
-      v-if="tab === 9 || tab === 10"
-      role="tablist"
-      class="tabs tabs-bordered sticky top-0 overflow-x-scroll text-nowrap px-4 lg:hidden"
-    >
-      <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9">Equipamiento sin coste</a>
-      <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento con coste</a>
-    </div>
-    <main class="flex flex-col gap-6 lg:flex-row">
-      <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
-        <ul class="menu menu-sm w-56 rounded-box bg-base-100">
-          <li>
-            <a class="font-bold" @click="tab = 1">Admin</a>
-            <ul>
-              <li>
-                <a id="basicTab" ref="basicTab" class="activeSection" @click="tabEvent1"
-                  >Información Básica</a
-                >
-              </li>
-              <li>
-                <a ref="technicalTab" @click="tabEvent2">Información Técnica</a>
-              </li>
-              <li><a ref="portalsTab" @click="tabEvent3">Portales web</a></li>
-              <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
-              <li><a ref="pricesTab" @click="tabEvent5">Compra y precio</a></li>
-              <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
-              <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
-              <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
-            </ul>
-          </li>
-          <li>
-            <a class="font-bold" @click="tabEvent9">Equipamiento</a>
-            <ul>
-              <li><a ref="freeEquipTab" @click="tabEvent9">Equipamiento sin coste</a></li>
-              <li><a ref="equipTab" @click="tabEvent10">Equipamiento con coste</a></li>
-            </ul>
-          </li>
-          <li><a class="font-bold" @click="tab = 11">PT</a></li>
-        </ul>
-      </aside>
-      <section class="flex w-full flex-col">
-        <div v-if="tab > 0 && tab < 9" class="flex flex-col gap-8">
-          <div ref="basic" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <div class="flex flex-row justify-between">
-              <h1 class="text-xl font-medium">Información Básica</h1>
-              <DropdownBtn>
-                <template #btn>
-                  <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
-                  <button class="btn btn-circle btn-ghost lg:hidden">
-                    <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
-                  </button>
-                </template>
-                <template #content>
-                  <ul>
-                    <li><a>Recalcular etiqueta</a></li>
-                    <li><a @click="unlinkKey">Liberar llave</a></li>
-                  </ul>
-                </template>
-              </DropdownBtn>
-            </div>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <SelectInput
-                label="Categoria web:"
-                :options="options.categoria"
-                v-model="category"
-                :initialValue="null"
-              />
-              <SelectInput
-                label="Carrocería:"
-                :options="bodyTypeOptions"
-                v-model="bodyType"
-                :initialValue="null"
-              />
-              <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
-              <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
-              <SearchSelect label="Modelo:" :options="webBrandOptions" v-model="model" />
-              <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
-              <TextInput label="Bastidor:" v-model="chassis" />
-              <TextInput label="Matricula:" v-model="license" />
-              <DateInput label="1º Matriculación:" v-model="license1" />
-              <TextInput label="Km Actuales:" v-model="kms" />
-              <SelectInput
-                label="Combustible:"
-                :options="options.combustible"
-                v-model="fuel"
-                :initialValue="null"
-              />
-              <SelectInput
-                label="Cambio:"
-                :options="options.cambio"
-                v-model="gearBox"
-                :initialValue="null"
-              />
-              <TextInput label="Potencia (cv):" v-model="power" />
-              <TextInput label="Tamaño (cc):" />
-              <TextInput label="Puertas:" v-model="doors" />
-              <SelectInput
-                label="Distintivo:"
-                :options="options.medioambiental"
-                v-model="distinctive"
-                :initialValue="null"
-              />
-              <DateInput label="Fabricación:" v-model="fabrication" />
-              <TextInput label="Matricula Origen:" v-model="licenseOG" />
-              <TextInput
-                v-if="vehicle.key_locator"
-                label="Llave asignada:"
-                v-model="key"
-                :disabled="true"
-              />
-              <SelectInput
-                v-else
-                label="Llave asignada:"
-                :options="keysOptions"
-                v-model="key"
-                @selected="linkKey"
-                :initialValue="null"
-              />
-              <TextInput label="Nº llaves:" v-model="keysQ" />
-            </div>
-          </div>
-          <div ref="technical" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <div class="flex flex-row justify-between">
-              <h1 class="text-xl font-medium">Información Técnica</h1>
-            </div>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <SelectInput
-                label="Tracción:"
-                :options="driveOptions"
-                v-model="drives"
-                :initialValue="null"
-              />
-              <TextInput label="Marchas:" v-model="gears" />
-              <TextInput label="Vel Máxima:" v-model="speed" />
-              <TextInput label="Aceleración 0-100:" v-model="acceleration" />
-            </div>
-            <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
-            <div class="divider m-0 p-0"></div>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <TextInput label="Consumo en el Ambiente:" v-model="environment" />
-              <TextInput label="En carretera:" v-model="road" />
-              <TextInput label="En ciudad:" v-model="city" />
-              <TextInput label="Emisiones CO2:" v-model="co2" />
-            </div>
-            <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
-            <div class="divider m-0 p-0"></div>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <TextInput label="Longitud:" v-model="length" />
-              <TextInput label="Altura:" v-model="height" />
-              <TextInput label="Tara:" v-model="tare" />
-            </div>
-          </div>
-          <div ref="portals" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Portales Web</h1>
-            <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
-              <IntegrationCard
-                img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-              />
-              <IntegrationCard
-                img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-              />
-            </div>
-          </div>
-          <div ref="maintenance" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Mantenimiento</h1>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <TextInput label="Propietarios:" v-model="owners" />
-              <DateInput label="Vencimiento ITV:" v-model="itvExp" />
-            </div>
-            <h2>Libro de revisiones</h2>
-            <div class="divider m-0 p-0"></div>
-          </div>
-          <div ref="prices" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <div class="flex flex-row justify-between">
-              <h1 class="text-xl font-medium">Información de compra</h1>
-              <button class="btn btn-outline btn-sm hidden lg:block">Generar contrato</button>
-            </div>
-            <CheckInput label="Gestión de venta:" v-model="sellManage" class="flex items-start" />
-            <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <SearchSelect label="Proveedor:" :options="providersOptions" v-model="provider" />
-              <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
-              <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-              <TextInput label="Precio de compra:" v-model="purchasePrice" />
-              <SelectInput
-                label="Régimen:"
-                :options="regimenOptions"
-                v-model="regimen"
-                :initialValue="null"
-              />
-            </div>
-            <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <TextInput label="Nombre Completo:" v-model="sellerName" />
-              <TextInput label="Importe de comisión:" v-model="commission" />
-              <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-            </div>
-            <div class="flex flex-row justify-between">
-              <h1 class="text-xl font-medium">Configuración de precio</h1>
-              <button class="btn btn-outline btn-sm hidden lg:block">Conf. Financiera</button>
-            </div>
-            <div class="divider m-0 p-0"></div>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <TextInput label="Precio de venta:" v-model="price" />
-              <TextInput label="Precio financiado:" v-model="financed" />
-              <TextInput label="Meses de financiación:" v-model="financingMonths" />
-              <TextInput label="Cuota financiación:" v-model="financingQ" />
-              <TextInput label="Reserva:" v-model="reserve" />
-              <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
-            </div>
-          </div>
-          <div ref="comments" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Comentarios</h1>
-            <div class="flex flex-col gap-x-4 lg:gap-x-10">
-              <AreaInput label="Internos:" v-model="commInternal" />
-              <AreaInput label="Externos:" v-model="commExternal" />
-            </div>
-          </div>
-          <div ref="extras" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <SettingTable
-              title="Lista de Extras"
-              :add="true"
-              drawerTitle="Añadir Extra"
-              @toggle="addExtra"
-            >
-              <template #content>
-                <EasyDataTable
-                  class="table-dark table-striped"
-                  table-class-name="z-0"
-                  header-class-name="z-0"
-                  border-cell
-                  buttons-pagination
-                  :headers="headers"
-                  :items="items"
-                  v-model:server-options="serverOptions"
-                  :server-items-length="serverItemsLength"
-                  :loading="loading"
-                  rows-per-page-message="Filas por pestaña"
-                >
-                  <template v-slot:item-id="{ id }">
-                    <div class="w-20">
-                      <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
-                        <Icon icon="mdi:pencil" />
-                      </button>
-                      <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
-                        <Icon icon="mdi:trash-can-outline" />
-                      </button>
-                    </div>
-                  </template>
-                </EasyDataTable>
-              </template>
-              <template #drawer>
-                <ToggleInput label="Auto / Manual" v-model="active" />
-                <SelectInput label="Tipo:" :options="options.extra" v-model="extra" />
-              </template>
-            </SettingTable>
-          </div>
-          <div ref="discounts" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <SettingTable
-              title="Lista de Descuentos"
-              :add="true"
-              drawerTitle="Añadir Descuento"
-              @toggle="addDiscount"
-            >
-              <template #content>
-                <EasyDataTable
-                  class="table-dark table-striped"
-                  table-class-name="customize-table"
-                  header-class-name="z-0"
-                  border-cell
-                  buttons-pagination
-                  :headers="headers"
-                  :items="items"
-                  v-model:server-options="serverOptions"
-                  :server-items-length="serverItemsLength"
-                  :loading="loading"
-                  rows-per-page-message="Filas por pestaña"
-                >
-                  <template v-slot:item-id="{ id }">
-                    <div class="w-20">
-                      <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
-                        <Icon icon="mdi:pencil" />
-                      </button>
-                      <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
-                        <Icon icon="mdi:trash-can-outline" />
-                      </button>
-                    </div>
-                  </template>
-                </EasyDataTable>
-              </template>
-              <template #drawer>
-                <ToggleInput label="Auto / Manual" v-model="disMode" />
-                <SelectInput label="Tipo:" :options="options.extra" v-model="disType" />
-              </template>
-            </SettingTable>
-          </div>
+  <div class="drawer drawer-end">
+    <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
+    <div class="drawer-content">
+      <ModalInfo class="w-full" ref="error" title="Error" :message="message" />
+      <HeaderMain class="pb-16">
+        <header class="flex flex-col items-center">
+          <LoadingSpinner v-if="loading" class="loading-lg" />
+          <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" />
+          <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
+        </header>
+        <div
+          v-if="tab > 0 && tab < 9"
+          role="tablist"
+          class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
+        >
+          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
+          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
+          <a ref="tab3" role="tab" class="tab" @click="tabEvent3">Portales web</a>
+          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
+          <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Compra y precio</a>
+          <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
+          <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
+          <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
         </div>
-        <div v-if="tab > 8 && tab < 12">
-          <div ref="freeEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Equipamiento</h1>
-            <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-              <TextInput label="Categoria web:" />
-              <TextInput label="Carrocería:" />
-              <TextInput label="Marca Web:" />
-              <TextInput label="Modelo Web:" />
-              <TextInput label="Matricula:" />
-              <TextInput label="1º Matriculación:" />
-              <TextInput label="1º Matricula:" />
-              <TextInput label="Km Actuales:" />
-              <TextInput label="Procedencia:" />
+        <div
+          v-if="tab === 9 || tab === 10"
+          role="tablist"
+          class="tabs tabs-bordered sticky top-0 overflow-x-scroll text-nowrap px-4 lg:hidden"
+        >
+          <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9"
+            >Equipamiento sin coste</a
+          >
+          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento con coste</a>
+        </div>
+        <main class="flex w-full flex-col gap-6 lg:flex-row">
+          <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
+            <ul class="menu menu-sm w-56 rounded-box bg-base-100">
+              <li>
+                <a class="font-bold" @click="tab = 1">Admin</a>
+                <ul>
+                  <li>
+                    <a id="basicTab" ref="basicTab" class="activeSection" @click="tabEvent1"
+                      >Información Básica</a
+                    >
+                  </li>
+                  <li>
+                    <a ref="technicalTab" @click="tabEvent2">Información Técnica</a>
+                  </li>
+                  <li><a ref="portalsTab" @click="tabEvent3">Portales web</a></li>
+                  <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
+                  <li><a ref="pricesTab" @click="tabEvent5">Compra y precio</a></li>
+                  <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
+                  <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
+                  <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
+                </ul>
+              </li>
+              <li>
+                <a class="font-bold" @click="tabEvent9">Equipamiento</a>
+                <ul>
+                  <li><a ref="freeEquipTab" @click="tabEvent9">Equipamiento sin coste</a></li>
+                  <li><a ref="equipTab" @click="tabEvent10">Equipamiento con coste</a></li>
+                </ul>
+              </li>
+              <li><a class="font-bold" @click="tab = 11">PT</a></li>
+            </ul>
+          </aside>
+          <section class="flex w-full flex-col">
+            <div v-if="tab > 0 && tab < 9" class="flex flex-col gap-8">
+              <div ref="basic" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <div class="flex flex-row justify-between">
+                  <h1 class="text-xl font-medium">Información Básica</h1>
+                  <DropdownBtn>
+                    <template #btn>
+                      <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
+                      <button class="btn btn-circle btn-ghost lg:hidden">
+                        <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
+                      </button>
+                    </template>
+                    <template #content>
+                      <ul>
+                        <li><a>Recalcular etiqueta</a></li>
+                        <li><a @click="unlinkKey">Liberar llave</a></li>
+                      </ul>
+                    </template>
+                  </DropdownBtn>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <SelectInput
+                    label="Categoria web:"
+                    :options="options.categoria"
+                    v-model="category"
+                    :initialValue="null"
+                  />
+                  <SelectInput
+                    label="Carrocería:"
+                    :options="bodyTypeOptions"
+                    v-model="bodyType"
+                    :initialValue="null"
+                  />
+                  <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
+                  <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
+                  <SearchSelect label="Modelo:" :options="webBrandOptions" v-model="model" />
+                  <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
+                  <TextInput label="Bastidor:" v-model="chassis" />
+                  <TextInput label="Matricula:" v-model="license" />
+                  <DateInput label="1º Matriculación:" v-model="license1" />
+                  <TextInput label="Km Actuales:" v-model="kms" />
+                  <SelectInput
+                    label="Combustible:"
+                    :options="options.combustible"
+                    v-model="fuel"
+                    :initialValue="null"
+                  />
+                  <SelectInput
+                    label="Cambio:"
+                    :options="options.cambio"
+                    v-model="gearBox"
+                    :initialValue="null"
+                  />
+                  <TextInput label="Potencia (cv):" v-model="power" />
+                  <TextInput label="Tamaño (cc):" />
+                  <TextInput label="Puertas:" v-model="doors" />
+                  <SelectInput
+                    label="Distintivo:"
+                    :options="options.medioambiental"
+                    v-model="distinctive"
+                    :initialValue="null"
+                  />
+                  <DateInput label="Fabricación:" v-model="fabrication" />
+                  <TextInput label="Matricula Origen:" v-model="licenseOG" />
+                  <TextInput
+                    v-if="vehicle.key_locator"
+                    label="Llave asignada:"
+                    v-model="key"
+                    :disabled="true"
+                  />
+                  <SelectInput
+                    v-else
+                    label="Llave asignada:"
+                    :options="keysOptions"
+                    v-model="key"
+                    @selected="linkKey"
+                    :initialValue="null"
+                  />
+                  <TextInput label="Nº llaves:" v-model="keysQ" />
+                </div>
+              </div>
+              <div ref="technical" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <div class="flex flex-row justify-between">
+                  <h1 class="text-xl font-medium">Información Técnica</h1>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <SelectInput
+                    label="Tracción:"
+                    :options="driveOptions"
+                    v-model="drives"
+                    :initialValue="null"
+                  />
+                  <TextInput label="Marchas:" v-model="gears" />
+                  <TextInput label="Vel Máxima:" v-model="speed" />
+                  <TextInput label="Aceleración 0-100:" v-model="acceleration" />
+                </div>
+                <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
+                <div class="divider m-0 p-0"></div>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <TextInput label="Consumo en el Ambiente:" v-model="environment" />
+                  <TextInput label="En carretera:" v-model="road" />
+                  <TextInput label="En ciudad:" v-model="city" />
+                  <TextInput label="Emisiones CO2:" v-model="co2" />
+                </div>
+                <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
+                <div class="divider m-0 p-0"></div>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <TextInput label="Longitud:" v-model="length" />
+                  <TextInput label="Altura:" v-model="height" />
+                  <TextInput label="Tara:" v-model="tare" />
+                </div>
+              </div>
+              <!-- <div ref="portals" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <h1 class="text-xl font-medium">Portales Web</h1>
+                <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+                  <IntegrationCard
+                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                  />
+                  <IntegrationCard
+                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+                  />
+                </div>
+              </div> -->
+              <div
+                ref="maintenance"
+                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+              >
+                <h1 class="text-xl font-medium">Mantenimiento</h1>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <TextInput label="Propietarios:" v-model="owners" />
+                  <DateInput label="Vencimiento ITV:" v-model="itvExp" />
+                </div>
+                <h2>Libro de revisiones</h2>
+                <div class="divider m-0 p-0"></div>
+              </div>
+              <div ref="prices" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <div class="flex flex-row justify-between">
+                  <h1 class="text-xl font-medium">Información de compra</h1>
+                  <button class="btn btn-outline btn-sm hidden lg:block">Generar contrato</button>
+                </div>
+                <CheckInput
+                  label="Gestión de venta:"
+                  v-model="sellManage"
+                  class="flex items-start"
+                />
+                <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <SearchSelect label="Proveedor:" :options="providersOptions" v-model="provider" />
+                  <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
+                  <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                  <TextInput label="Precio de compra:" v-model="purchasePrice" />
+                  <SelectInput
+                    label="Régimen:"
+                    :options="regimenOptions"
+                    v-model="regimen"
+                    :initialValue="null"
+                  />
+                </div>
+                <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <TextInput label="Nombre Completo:" v-model="sellerName" />
+                  <TextInput label="Importe de comisión:" v-model="commission" />
+                  <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                </div>
+                <div class="flex flex-row justify-between">
+                  <h1 class="text-xl font-medium">Configuración de precio</h1>
+                  <button class="btn btn-outline btn-sm hidden lg:block">Conf. Financiera</button>
+                </div>
+                <div class="divider m-0 p-0"></div>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <TextInput label="Precio de venta:" v-model="price" />
+                  <TextInput label="Precio financiado:" v-model="financed" />
+                  <TextInput label="Meses de financiación:" v-model="financingMonths" />
+                  <TextInput label="Cuota financiación:" v-model="financingQ" />
+                  <TextInput label="Reserva:" v-model="reserve" />
+                  <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
+                </div>
+              </div>
+              <div ref="comments" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <h1 class="text-xl font-medium">Comentarios</h1>
+                <div class="flex flex-col gap-x-4 lg:gap-x-10">
+                  <AreaInput label="Internos:" v-model="commInternal" />
+                  <AreaInput label="Externos:" v-model="commExternal" />
+                </div>
+              </div>
+              <div ref="extras" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <VehicleTable title="Lista de Extras" @addBtn="extraDrawer">
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0 max-w-4xl"
+                      header-class-name="z-0"
+                      border-cell
+                      buttons-pagination
+                      :headers="headers"
+                      :items="items"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="loading"
+                      rows-per-page-message="Filas por pestaña"
+                    >
+                      <template v-slot:item-id="{ id }">
+                        <div class="w-20">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
+              </div>
+              <div ref="discounts" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer">
+                  <template #content>
+                    <EasyDataTable
+                      class="z-0"
+                      table-class-name="z-0 max-w-4xl"
+                      header-class-name="z-0"
+                      border-cell
+                      buttons-pagination
+                      :headers="headers"
+                      :items="items"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="loading"
+                      rows-per-page-message="Filas por pestaña"
+                    >
+                      <template v-slot:item-id="{ id }">
+                        <div class="w-20">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                </VehicleTable>
+              </div>
             </div>
-          </div>
-          <div ref="equip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"></div>
-          <div ref="gallery" class="flex flex-col gap-4 rounded bg-base-100 p-4">
+            <div v-if="tab > 8 && tab < 12">
+              <div ref="freeEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <h1 class="text-xl font-medium">Equipamiento</h1>
+                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                  <TextInput label="Categoria web:" />
+                  <TextInput label="Carrocería:" />
+                  <TextInput label="Marca Web:" />
+                  <TextInput label="Modelo Web:" />
+                  <TextInput label="Matricula:" />
+                  <TextInput label="1º Matriculación:" />
+                  <TextInput label="1º Matricula:" />
+                  <TextInput label="Km Actuales:" />
+                  <TextInput label="Procedencia:" />
+                </div>
+              </div>
+              <div
+                ref="equip"
+                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+              ></div>
+              <div ref="gallery" class="flex flex-col gap-4 rounded bg-base-100 p-4">
+                <h2 class="text-xl font-medium">Galería Multimedia</h2>
+                <div role="tablist" class="tabs tabs-bordered tabs-md">
+                  <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
+                  <div role="tabpanel" class="tab-content p-4 lg:p-8">
+                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                    </div>
+                  </div>
+                  <input
+                    type="radio"
+                    name="galeria"
+                    role="tab"
+                    class="tab"
+                    aria-label="Documentos"
+                    checked
+                  />
+                  <div role="tabpanel" class="tab-content p-8">Documentos</div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <aside class="hidden min-w-fit max-w-md flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
             <h2 class="text-xl font-medium">Galería Multimedia</h2>
             <div role="tablist" class="tabs tabs-bordered tabs-md">
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
-              <div role="tabpanel" class="tab-content p-4 lg:p-8">
+              <input
+                type="radio"
+                name="galeria"
+                role="tab"
+                class="tab"
+                aria-label="Galería"
+                checked
+              />
+              <div role="tabpanel" class="tab-content lg:p-3">
                 <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
@@ -1069,81 +1133,107 @@ onMounted(() => {
                   <div class="skeleton h-28 w-28"></div>
                 </div>
               </div>
-              <input
-                type="radio"
-                name="galeria"
-                role="tab"
-                class="tab"
-                aria-label="Documentos"
-                checked
-              />
+
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
               <div role="tabpanel" class="tab-content p-8">Documentos</div>
             </div>
+          </aside>
+        </main>
+      </HeaderMain>
+      <footer class="fixed bottom-0 z-50">
+        <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
+          <div class="flex max-w-md flex-row justify-end">
+            <button class="btn btn-primary max-w-24 text-white">Guardar</button>
           </div>
         </div>
-      </section>
-      <aside class="hidden w-full max-w-md flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
-        <h2 class="text-xl font-medium">Galería Multimedia</h2>
-        <div role="tablist" class="tabs tabs-bordered tabs-md">
-          <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" checked />
-          <div role="tabpanel" class="tab-content p-4 lg:p-8">
-            <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
-              <div class="skeleton h-28 w-28"></div>
-              <div class="skeleton h-28 w-28"></div>
-              <div class="skeleton h-28 w-28"></div>
-              <div class="skeleton h-28 w-28"></div>
-              <div class="skeleton h-28 w-28"></div>
-              <div class="skeleton h-28 w-28"></div>
+        <div v-if="scrollTop" class="btm-nav lg:hidden">
+          <button ref="navBtn1" @click="navEvent1" class="active">
+            <Icon icon="mdi:car" width="30" />
+            <span class="btm-nav-label">I. Admin</span>
+          </button>
+          <button ref="navBtn2" @click="navEvent2">
+            <Icon icon="mdi:webpack" width="30" />
+            <span class="btm-nav-label">Port Web</span>
+          </button>
+          <button ref="navBtn3" @click="navEvent3">
+            <Icon icon="mdi:bag-checked" width="30" />
+            <span class="btm-nav-label">Equip</span>
+          </button>
+          <button ref="navBtn4" @click="navEvent4">
+            <Icon icon="mdi:performance" width="30" />
+            <span class="btm-nav-label">PT</span>
+          </button>
+          <button ref="navBtn5" @click="navEvent5">
+            <Icon icon="mdi:image-multiple" width="30" />
+            <span class="btm-nav-label">Galeria</span>
+          </button>
+        </div>
+        <div v-if="scrollDown" class="btm-nav lg:hidden">
+          <div>
+            <button class="btn w-36" ref="navBtn6" @click="1">
+              <span class="btm-nav-label">Cambiar Estado</span>
+            </button>
+          </div>
+          <div>
+            <button class="btn btn-warning w-36" ref="navBtn6" @click="1">
+              <span class="btm-nav-label">Reservar</span>
+            </button>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <div class="drawer-side z-50 h-full w-full">
+      <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
+      <ul
+        v-if="drawerSection === 'extra'"
+        class="menu min-h-full w-80 flex-col justify-between bg-white p-4 text-base-content"
+      >
+        <div>
+          <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
+          <ToggleInput label="Auto / Manual" v-model="active" />
+          <SelectInput label="Tipo:" :options="options.extra" v-model="extra" />
+        </div>
+        <DrawerActions
+          class="self-end"
+          secondary="Cancelar"
+          primary="Guardar"
+          @click-secondary="toggleDrawer"
+          @click-primary="addExtra"
+        />
+      </ul>
+      <ul
+        v-if="drawerSection === 'discount'"
+        class="menu min-h-full w-80 flex-col justify-between bg-white p-4 text-base-content"
+      >
+        <div>
+          <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
+          <ToggleInput label="Auto / Manual" v-model="discountMode" />
+          <SelectInput
+            v-if="!discountMode"
+            label="Descuento:"
+            :options="options.extra"
+            v-model="addDiscount"
+          />
+          <div v-else>
+            <TextInput label="Titulo:" v-model="discountTitle" />
+            <div class="grid grid-cols-2 gap-x-4">
+              <DateInput label="Valido desde:" v-model="discountFrom" />
+              <DateInput label="Valido hasta:" v-model="discountTo" />
+              <NumberInput label="Valor Porcentual:" v-model="discountPercent" />
+              <NumberInput label="Valor Fijo:" v-model="discountFixed" />
             </div>
           </div>
-
-          <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
-          <div role="tabpanel" class="tab-content p-8">Documentos</div>
         </div>
-      </aside>
-    </main>
-  </HeaderMain>
-  <footer>
-    <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
-      <div class="flex max-w-md flex-row justify-end">
-        <button class="btn btn-primary max-w-24 text-white">Guardar</button>
-      </div>
+        <DrawerActions
+          class="self-end"
+          secondary="Cancelar"
+          primary="Guardar"
+          @click-secondary="toggleDrawer"
+          @click-primary="addExtra"
+        />
+      </ul>
     </div>
-    <div v-if="scrollTop" class="btm-nav lg:hidden">
-      <button ref="navBtn1" @click="navEvent1" class="active">
-        <Icon icon="mdi:car" width="30" />
-        <span class="btm-nav-label">I. Admin</span>
-      </button>
-      <button ref="navBtn2" @click="navEvent2">
-        <Icon icon="mdi:webpack" width="30" />
-        <span class="btm-nav-label">Port Web</span>
-      </button>
-      <button ref="navBtn3" @click="navEvent3">
-        <Icon icon="mdi:bag-checked" width="30" />
-        <span class="btm-nav-label">Equip</span>
-      </button>
-      <button ref="navBtn4" @click="navEvent4">
-        <Icon icon="mdi:performance" width="30" />
-        <span class="btm-nav-label">PT</span>
-      </button>
-      <button ref="navBtn5" @click="navEvent5">
-        <Icon icon="mdi:image-multiple" width="30" />
-        <span class="btm-nav-label">Galeria</span>
-      </button>
-    </div>
-    <div v-if="scrollDown" class="btm-nav lg:hidden">
-      <div>
-        <button class="btn w-36" ref="navBtn6" @click="1">
-          <span class="btm-nav-label">Cambiar Estado</span>
-        </button>
-      </div>
-      <div>
-        <button class="btn btn-warning w-36" ref="navBtn6" @click="1">
-          <span class="btm-nav-label">Reservar</span>
-        </button>
-      </div>
-    </div>
-  </footer>
+  </div>
 </template>
 
 <style>

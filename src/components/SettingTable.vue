@@ -15,7 +15,7 @@ const toggleDrawer = () => {
 const toggle = ref(false)
 </script>
 <template>
-  <div class="drawer drawer-end z-50">
+  <div class="drawer drawer-end">
     <input id="rightDrawer" type="checkbox" class="drawer-toggle" v-model="toggle" />
     <div class="drawer-content">
       <!-- Page content here -->
@@ -34,7 +34,7 @@ const toggle = ref(false)
         <slot name="content" />
       </div>
     </div>
-    <div class="drawer-side z-10">
+    <div class="drawer-side z-20">
       <label for="rightDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-80">
         <!-- Sidebar content here -->

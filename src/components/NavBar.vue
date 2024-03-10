@@ -26,7 +26,6 @@ axios.get(url).then((response) => {
   <div class="drawer drawer-end">
     <input id="riDrawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
-      <!-- Page content here -->
       <div class="navbar bg-black">
         <div class="navbar-start">
           <label
