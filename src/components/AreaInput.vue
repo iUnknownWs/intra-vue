@@ -9,10 +9,10 @@ const value = defineModel()
 <template>
   <label class="form-control">
     <div class="label">
-      <span class="label-text">{{ label }}</span>
+      <span class="label-text font-medium">{{ label }}</span>
     </div>
     <textarea
-      class="textarea textarea-bordered h-24"
+      class="textarea textarea-bordered h-36"
       :placeholder="placeholder"
       v-model="value"
     ></textarea>

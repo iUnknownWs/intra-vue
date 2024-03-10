@@ -136,6 +136,8 @@ const reserve = ref('0')
 const iva = ref(false)
 const error = ref(null)
 const message = ref('')
+const commInternal = ref('')
+const commExternal = ref('')
 
 const updateData = () => {
   loading.value = true
@@ -149,9 +151,11 @@ const updateData = () => {
     doors: doors?.value,
     drive_type: drives?.value,
     environment: environment?.value,
+    external_comments: commExternal?.value,
     fuel: fuel?.value,
     gear_box: gearBox?.value,
     heigth: height?.value,
+    internal_comments: commInternal?.value,
     kms: kms?.value,
     length: length?.value,
     license_plate: license?.value,
@@ -264,6 +268,8 @@ const fetch = () => {
       sellerName.value = vehicle.value.purchase?.owner
       commission.value = vehicle.value.purchase?.selling_fee
       purchaseDate.value = vehicle.value.purchase?.purchase_date
+      commExternal.value = vehicle.value?.external_comments
+      commInternal.value = vehicle.value?.internal_comments
     })
     .then(() => {
       axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
@@ -707,9 +713,12 @@ onMounted(() => {
           <div ref="basic" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
             <div class="flex flex-row justify-between">
               <h1 class="text-xl font-medium">Información Básica</h1>
+              <span
+                >Te gusta mas así? es mas parecido a la intranet o lo dejo del tamaño normal</span
+              >
               <DropdownBtn>
                 <template #btn>
-                  <button class="btn btn-outline hidden lg:block">Acciones</button>
+                  <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
                   <button class="btn btn-circle btn-ghost lg:hidden">
                     <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
                   </button>
@@ -825,7 +834,10 @@ onMounted(() => {
             <div class="divider m-0 p-0"></div>
           </div>
           <div ref="prices" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-            <h1 class="text-xl font-medium">Información de compra</h1>
+            <div class="flex flex-row justify-between">
+              <h1 class="text-xl font-medium">Información de compra</h1>
+              <button class="btn btn-outline btn-sm hidden lg:block">Generar contrato</button>
+            </div>
             <CheckInput label="Gestión de venta:" v-model="sellManage" class="flex items-start" />
             <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
               <SearchSelect label="Proveedor:" :options="providersOptions" v-model="provider" />
@@ -844,7 +856,10 @@ onMounted(() => {
               <TextInput label="Importe de comisión:" v-model="commission" />
               <DateInput label="Fecha de compra:" v-model="purchaseDate" />
             </div>
-            <h1 class="text-xl font-medium">Configuración de precio</h1>
+            <div class="flex flex-row justify-between">
+              <h1 class="text-xl font-medium">Configuración de precio</h1>
+              <button class="btn btn-outline btn-sm hidden lg:block">Conf. Financiera</button>
+            </div>
             <div class="divider m-0 p-0"></div>
             <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
               <TextInput label="Precio de venta:" v-model="price" />
@@ -855,8 +870,16 @@ onMounted(() => {
               <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
             </div>
           </div>
-          <div ref="comments" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"></div>
-          <div ref="extras" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"></div>
+          <div ref="comments" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+            <h1 class="text-xl font-medium">Comentarios</h1>
+            <div class="flex flex-col gap-x-4 lg:gap-x-10">
+              <AreaInput label="Internos:" v-model="commInternal" />
+              <AreaInput label="Externos:" v-model="commExternal" />
+            </div>
+          </div>
+          <div ref="extras" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+            <h1 class="text-xl font-medium">Extras</h1>
+          </div>
           <div
             ref="discounts"
             class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"

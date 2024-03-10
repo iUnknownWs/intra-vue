@@ -2,6 +2,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import AreaInput from '@/components/AreaInput.vue'
 import DateInput from '@/components/DateInput.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
 import DrawerLink from '@/components/DrawerLink.vue'
@@ -35,6 +36,7 @@ import 'vue-select/dist/vue-select.css'
 
 const app = createApp(App)
 app.component('EasyDataTable', Vue3EasyDataTable)
+    .component('AreaInput', AreaInput)
     .component('CheckInput', CheckInput)
     .component('DateInput', DateInput)
     .component('DrawerActions', DrawerActions)
