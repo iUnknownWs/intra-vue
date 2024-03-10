@@ -97,7 +97,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               >
             </div>
             <div class="absolute right-2 top-2 flex gap-4">
-              <button class="btn btn-primary text-white">Reservar</button>
+              <button class="btn btn-warning">Reservar</button>
               <button class="btn btn-outline">Acciones</button>
             </div>
           </div>

@@ -364,27 +364,18 @@ axios.get(bodyTypeUrl).then((response) => {
       title: option.name
     })
   }
-})
-
-axios.get(bodyTypeUrl).then((response) => {
   for (let option of response.data.drives) {
     driveOptions.value.push({
       id: option.id,
       title: option.name
     })
   }
-})
-
-axios.get(bodyTypeUrl).then((response) => {
   for (let option of response.data.vehicle_regulations) {
     regulationsOptions.value.push({
       id: option.id,
       title: option.name
     })
   }
-})
-
-axios.get(bodyTypeUrl).then((response) => {
   for (let option of response.data.tax_regimes) {
     regimenOptions.value.push({
       id: option.id,
@@ -534,44 +525,116 @@ onMounted(() => {
       scrollDown.value = true
       scrollTop.value = false
     }
-    if (equip.value?.getBoundingClientRect().top < 80) {
-      asideTabs[8].value.classList?.remove('active')
-      asideTabs[9].value.classList?.add('active')
-    } else if (freeEquip.value?.getBoundingClientRect().top < 80) {
-      asideTabs[7].value.classList?.remove('active')
-      asideTabs[8].value.classList?.add('active')
-      asideTabs[9].value.classList?.remove('active')
-    } else if (discounts.value?.getBoundingClientRect().top < 80) {
-      asideTabs[6].value.classList?.remove('active')
-      asideTabs[7].value.classList?.add('active')
-      asideTabs[8].value.classList?.remove('active')
-    } else if (extras.value?.getBoundingClientRect().top < 80) {
-      asideTabs[5].value.classList?.remove('active')
-      asideTabs[6].value.classList?.add('active')
-      asideTabs[7].value.classList?.remove('active')
-    } else if (comments.value?.getBoundingClientRect().top < 80) {
-      asideTabs[4].value.classList?.remove('active')
-      asideTabs[5].value.classList?.add('active')
-      asideTabs[6].value.classList?.remove('active')
-    } else if (prices.value?.getBoundingClientRect().top < 80) {
-      asideTabs[3].value.classList?.remove('active')
-      asideTabs[4].value.classList?.add('active')
-      asideTabs[5].value.classList?.remove('active')
-    } else if (maintenance.value?.getBoundingClientRect().top < 80) {
-      asideTabs[2].value.classList?.remove('active')
-      asideTabs[3].value.classList?.add('active')
-      asideTabs[4].value.classList?.remove('active')
-    } else if (portals.value?.getBoundingClientRect().top < 80) {
-      asideTabs[1].value.classList?.remove('active')
-      asideTabs[2].value.classList?.add('active')
-      asideTabs[3].value.classList?.remove('active')
-    } else if (technical.value?.getBoundingClientRect().top < 80) {
-      asideTabs[0].value.classList?.remove('active')
-      asideTabs[1].value.classList?.add('active')
-      asideTabs[2].value.classList?.remove('active')
+    if (equip.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.add('activeSection')
+    } else if (freeEquip.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.add('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (discounts.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.add('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (extras.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.add('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (comments.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.add('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (prices.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.add('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (maintenance.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.add('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (portals.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.add('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
+    } else if (technical.value?.getBoundingClientRect().top < 200) {
+      asideTabs[0].value.classList?.remove('activeSection')
+      asideTabs[1].value.classList?.add('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
     } else {
-      asideTabs[0].value.classList?.add('active')
-      asideTabs[1].value.classList?.remove('active')
+      asideTabs[0].value.classList?.add('activeSection')
+      asideTabs[1].value.classList?.remove('activeSection')
+      asideTabs[2].value.classList?.remove('activeSection')
+      asideTabs[3].value.classList?.remove('activeSection')
+      asideTabs[4].value.classList?.remove('activeSection')
+      asideTabs[5].value.classList?.remove('activeSection')
+      asideTabs[6].value.classList?.remove('activeSection')
+      asideTabs[7].value.classList?.remove('activeSection')
+      asideTabs[8].value.classList?.remove('activeSection')
+      asideTabs[9].value.classList?.remove('activeSection')
     }
   })
 })
@@ -614,7 +677,7 @@ onMounted(() => {
             <a class="font-bold" @click="tab = 1">Admin</a>
             <ul>
               <li>
-                <a id="basicTab" ref="basicTab" class="active" @click="tabEvent1"
+                <a id="basicTab" ref="basicTab" class="activeSection" @click="tabEvent1"
                   >Información Básica</a
                 >
               </li>
@@ -646,7 +709,7 @@ onMounted(() => {
               <h1 class="text-xl font-medium">Información Básica</h1>
               <DropdownBtn>
                 <template #btn>
-                  <button class="btn btn-primary hidden text-white lg:block">Acciones</button>
+                  <button class="btn btn-outline hidden lg:block">Acciones</button>
                   <button class="btn btn-circle btn-ghost lg:hidden">
                     <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
                   </button>
@@ -865,7 +928,9 @@ onMounted(() => {
   </HeaderMain>
   <footer>
     <div @click="updateData" class="btm-nav hidden lg:flex">
-      <button class="btn btn-primary max-w-24 text-white">Guardar</button>
+      <div class="flex max-w-md flex-row justify-end">
+        <button class="btn btn-primary max-w-24 text-white">Guardar</button>
+      </div>
     </div>
     <div v-if="scrollTop" class="btm-nav lg:hidden">
       <button ref="navBtn1" @click="navEvent1" class="active">
@@ -903,3 +968,10 @@ onMounted(() => {
     </div>
   </footer>
 </template>
+
+<style>
+.activeSection {
+  background-color: antiquewhite;
+  font-weight: 600;
+}
+</style>
