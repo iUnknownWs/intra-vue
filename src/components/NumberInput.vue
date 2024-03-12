@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
   label: { type: String, required: true },
-  max: { type: Number, required: true }
+  max: { type: Number }
 })
 
 const value = defineModel()

@@ -16,8 +16,6 @@ axios.get(`${import.meta.env.VITE_API}/permissions/`).then((response) => {
 
 const items = ref([])
 const serverItemsLength = ref(0)
-const loading = ref(false)
-const users = ref([])
 const isFetching = ref(false)
 const serverOptions = ref({
   page: 1,
@@ -44,7 +42,6 @@ const fetching = () => {
   }
 
   isFetching.value = true
-  loading.value = true
 
   const fetchData = async () => {
     try {
@@ -55,10 +52,8 @@ const fetching = () => {
       }
       const API_URL = `${url}/?${new URLSearchParams(params)}`
       const response = await axios.get(API_URL)
-      users.value = response.data.results
       items.value = response.data.results
       serverItemsLength.value = response.data.count
-      loading.value = false
     } catch (error) {
       console.error(error)
     } finally {
@@ -125,7 +120,7 @@ const reset = () => {
           :items="items"
           v-model:server-options="serverOptions"
           :server-items-length="serverItemsLength"
-          :loading="loading"
+          :loading="isFetching"
           rows-per-page-message="Filas por pestaña"
         >
           <template v-slot:item-is_admin="{ is_admin }">

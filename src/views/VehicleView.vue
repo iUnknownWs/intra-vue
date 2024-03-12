@@ -21,7 +21,13 @@ const providersUrl = `${import.meta.env.VITE_API}/companies/?limit=1000&is_provi
 const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
 const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
 const keysWebUrl = `${import.meta.env.VITE_KEYS}`
-const extrasUrl = `${import.meta.env.VITE_SALES}/discounts/`
+const extrasUrl = `${import.meta.env.VITE_API}/vehicles-extras/`
+const warrantyUrl = `${import.meta.env.VITE_SALES}/warranty-types/`
+const deliveryUrl = `${import.meta.env.VITE_SALES}/delivery-types/`
+const docsUrl = `${import.meta.env.VITE_SALES}/documents-managements/`
+const anyExtraUrl = `${import.meta.env.VITE_SALES}/any-extra/`
+const discountUrl = `${import.meta.env.VITE_API}/vehicles-discounts/`
+const discountListUrl = `${import.meta.env.VITE_SALES}/discounts/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -47,6 +53,10 @@ const scrollDown = ref(false)
 const scrollTop = ref(true)
 const category = ref([])
 const chassis = ref(null)
+const deliveryOptions = ref([])
+const discountOptions = ref([])
+const docsOptions = ref([])
+const anyExtraOptions = ref([])
 const bodyOptions = ref([])
 const brandOptions = ref([])
 const webBrandOptions = ref([])
@@ -58,6 +68,8 @@ const keysOptions = ref([])
 const regimenOptions = ref([])
 const buyersOptions = ref([])
 const providersOptions = ref([])
+const warrantOptions = ref([])
+const extrasType = ref([])
 // const body = ref('')
 const drives = ref(null)
 const bodyType = ref(null)
@@ -142,6 +154,27 @@ const commExternal = ref('')
 const drawer = ref(false)
 const drawerSection = ref('')
 const discountMode = ref(false)
+const extraCategory = ref('0')
+const extraValue = ref(0)
+const disCategory = ref(true)
+const disAdd = ref(true)
+const extraMode = ref(false)
+const extraTitle = ref('')
+const extraPrice = ref(0)
+const extraDescription = ref('')
+const extraDelivery = ref(false)
+const extraIVA = ref(0)
+const discount = ref(0)
+const discountTitle = ref('')
+const discountFrom = ref('')
+const discountTo = ref('')
+const discountPercent = ref(0)
+const discountFixed = ref(0)
+const discountId = ref(0)
+
+const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
 
 const updateData = () => {
   loading.value = true
@@ -288,23 +321,6 @@ const fetch = () => {
 }
 
 fetch()
-// axios
-//   .post(`${import.meta.env.VITE_API}/vehicles-models/eurotax-models/`, {
-//     brand: brand.value.id,
-//     vehicle_type: body.value
-//   })
-//   .then((response) => {
-//     for (const types of response.data) {
-//       types.codes.map((code) => {
-//         let id = makeValue(code)
-//         let title = makeType(code.data)
-//         modelOptions.push({
-//           value: id,
-//           label: title
-//         })
-//       })
-//     }
-//   })
 
 axios.get(bodyUrl).then((response) => {
   bodyOptions.value = response.data.results
@@ -524,21 +540,22 @@ const navEvent5 = () => {
   navBtn5.value.classList.add('active')
 }
 
-const isFetching = ref(false)
+const isFetchingExtras = ref(false)
+const isFetchingDiscounts = ref(false)
 const serverOptions = ref({
   page: 1,
   rowsPerPage: 20
 })
 const serverItemsLength = ref(0)
-const items = ref([])
+const itemsExtra = ref([])
+const itemsDiscount = ref([])
 
-const fetching = () => {
-  if (isFetching.value) {
+const fetchingExtras = () => {
+  if (isFetchingExtras.value) {
     return
   }
 
-  isFetching.value = true
-  loading.value = true
+  isFetchingExtras.value = true
 
   const fetchData = async () => {
     try {
@@ -547,87 +564,322 @@ const fetching = () => {
         pager: 'number',
         page: serverOptions.value.page
       }
-      const API_URL = `${extrasUrl}/?${new URLSearchParams(params)}`
+      const API_URL = `${extrasUrl}?vehicle__in=${id.value}&${new URLSearchParams(params)}`
       const response = await axios.get(API_URL)
-      items.value = response.data.results
+      itemsExtra.value = response.data.results
       serverItemsLength.value = response.data.count
-      loading.value = false
     } catch (error) {
       console.error(error)
     } finally {
-      isFetching.value = false
+      isFetchingExtras.value = false
     }
   }
 
   fetchData()
 }
 
+const fetchingDiscounts = () => {
+  if (isFetchingDiscounts.value) {
+    return
+  }
+
+  isFetchingDiscounts.value = true
+
+  const fetchData = async () => {
+    try {
+      const params = {
+        limit: serverOptions.value.rowsPerPage,
+        pager: 'number',
+        page: serverOptions.value.page
+      }
+      const API_URL = `${discountUrl}?vehicle__in=${id.value}&${new URLSearchParams(params)}`
+      const response = await axios.get(API_URL)
+      itemsDiscount.value = response.data.results
+      serverItemsLength.value = response.data.count
+    } catch (error) {
+      console.error(error)
+    } finally {
+      isFetchingDiscounts.value = false
+    }
+  }
+
+  fetchData()
+}
+
+const edit = ref(null)
+const extraId = ref(0)
+const editMode = ref('')
+const editModal = (id, mode) => {
+  if (mode === 0) {
+    editMode.value = 'extras'
+    axios
+      .get(`${extrasUrl}/${id}/`)
+      .then((response) => {
+        extraId.value = response.data.id
+        extraCategory.value = response.data.category
+        extraTitle.value = response.data.title
+        extraPrice.value = response.data.price
+        extraDescription.value = response.data.description
+        extraIVA.value = response.data.iva
+        extraDelivery.value = response.data.is_home_delivery
+      })
+      .then(() => {
+        edit.value.showModal()
+      })
+  }
+  if (mode === 1) {
+    editMode.value = 'discounts'
+    axios
+      .get(`${discountUrl}/${id}/`)
+      .then((response) => {
+        discountId.value = response.data.id
+        discountTitle.value = response.data.title
+        discountFrom.value = response.data.from_date
+        discountTo.value = response.data.to_date
+        discountPercent.value = response.data.amount_percent
+        discountFixed.value = response.data.amount_fix
+      })
+      .then(() => {
+        edit.value.showModal()
+      })
+  }
+}
+
+const updateExtra = () => {
+  const payload = {
+    content_type_category: extraCategory.value,
+    title: extraTitle.value,
+    price: extraPrice.value,
+    description: extraDescription.value,
+    vehicle: id.value
+  }
+  if (extraCategory.value === 'DocumentManagement') {
+    payload.iva = extraIVA.value
+  }
+  if (extraCategory.value === 'DeliveryType') {
+    payload.is_home_delivery = extraDelivery.value
+  }
+  axios.patch(`${extrasUrl}/${extraId.value}/`, payload).then(() => {
+    resetExtra()
+    fetchingExtras()
+    edit.value.close()
+  })
+}
+
+const updateDiscount = () => {
+  axios
+    .patch(`${discountUrl}/${discountId.value}/`, {
+      title: discountTitle.value,
+      from_date: discountFrom.value,
+      to_date: discountTo.value,
+      amount_percent: discountPercent.value,
+      amount_fix: discountFixed.value
+    })
+    .then(() => {
+      resetDiscount()
+      fetchingDiscounts()
+      edit.value.close()
+    })
+}
+
+const removeExtra = (id) => {
+  axios.delete(`${extrasUrl}/${id}/`).then(() => fetchingExtras())
+}
+
+const removeDiscount = (id) => {
+  axios.delete(`${discountUrl}/${id}/`).then(() => fetchingDiscounts())
+}
+
 watch(
   serverOptions,
   () => {
-    fetching()
+    fetchingExtras()
+    fetchingDiscounts()
   },
   { deep: true }
 )
 
-const remove = (id) => {
-  axios.delete(`${url}/${id}/`).then(() => router.go(0))
-}
-
-const headers = [
+const headersExtra = [
   { text: 'Nombre', value: 'title' },
-  { text: 'Descripción', value: 'from_date' },
-  { text: 'Precio', value: 'to_date' },
+  { text: 'Descripción', value: 'description' },
+  { text: 'Precio', value: 'price' },
+  { text: 'Acciones', value: 'id', width: 40 }
+]
+
+const headersDiscounts = [
+  { text: 'Nombre', value: 'title' },
+  { text: 'Fecha inicial', value: 'from_date' },
+  { text: 'Fecha final', value: 'to_date' },
+  { text: 'Valor', value: 'amount_percent' },
+  { text: 'Valor fijo', value: 'amount_fix' },
   { text: 'Acciones', value: 'id', width: 60 }
 ]
 
 const addExtra = () => {
-  axios
-    .post(url, {
-      // title: title.value,
-      // from_date: from_date.value,
-      // to_date: to_date.value,
-      // amount_percent: parseInt(amount_percent.value) || 0,
-      // amount_fix: parseInt(amount_fix.value) || 0
-    })
-    .then((response) => {
+  if (!extraMode.value) {
+    axios
+      .post(extrasUrl, {
+        content_type_category: extraCategory.value,
+        object_id: extraValue.value,
+        vehicle: id.value
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          fetchingExtras()
+          toggleDrawer()
+          resetExtra()
+        }
+      })
+  } else {
+    const payload = {
+      content_type_category: extraCategory.value,
+      title: extraTitle.value,
+      description: extraDescription.value,
+      price: extraPrice.value,
+      vehicle: id.value
+    }
+
+    if (extraCategory.value === 'DeliveryType') {
+      payload.is_home_delivery = extraDelivery.value
+    }
+    if (extraCategory.value === 'DocumentManagement') {
+      payload.iva = extraIVA.value
+    }
+
+    axios.post(extrasUrl, payload).then((response) => {
       if (response.status === 201) {
-        // reset()
-        fetching()
+        fetchingExtras()
+        toggleDrawer()
+        resetExtra()
       }
     })
+  }
 }
 
 const addDiscount = () => {
-  axios
-    .post(url, {
-      // title: title.value,
-      // from_date: from_date.value,
-      // to_date: to_date.value,
-      // amount_percent: parseInt(amount_percent.value) || 0,
-      // amount_fix: parseInt(amount_fix.value) || 0
-    })
-    .then((response) => {
-      if (response.status === 201) {
-        // reset()
-        fetching()
-      }
-    })
+  if (!discountMode.value) {
+    axios
+      .post(discountUrl, {
+        discount: discount.value,
+        vehicle: id.value
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          fetchingDiscounts()
+          toggleDrawer()
+          resetDiscount()
+        }
+      })
+  } else {
+    axios
+      .post(discountUrl, {
+        title: discountTitle.value,
+        from_date: discountFrom.value,
+        to_date: discountFrom.value,
+        amount_percent: discountPercent.value,
+        amount_fix: discountFixed.value,
+        vehicle: id.value
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          fetchingDiscounts()
+          toggleDrawer()
+          resetDiscount()
+        }
+      })
+  }
 }
 
-const toggleDrawer = () => {
-  drawer.value = !drawer.value
+const resetDiscount = () => {
+  discount.value = 0
+  discountTitle.value = ''
+  discountFrom.value = ''
+  discountTo.value = ''
+  discountFixed.value = 0
+  discountPercent.value = 0
+}
+
+const resetExtra = () => {
+  extraCategory.value = '0'
+  extraValue.value = '0'
+  extraId.value = 0
+  extraTitle.value = ''
+  extraPrice.value = 0
+  extraDescription.value = ''
+  extraIVA.value = 0
+  extraDelivery.value = false
+  extraMode.value = false
 }
 
 const extraDrawer = () => {
   drawerSection.value = 'extra'
+  axios.get(warrantyUrl).then((response) => {
+    for (let option of response.data.results) {
+      warrantOptions.value.push({
+        id: option.id,
+        title: option.title
+      })
+    }
+  })
+  axios.get(deliveryUrl).then((response) => {
+    console.log(response.data.results)
+    for (let option of response.data.results) {
+      deliveryOptions.value.push({
+        id: option.id,
+        title: option.title
+      })
+    }
+  })
+  axios.get(docsUrl).then((response) => {
+    for (let option of response.data.results) {
+      docsOptions.value.push({
+        id: option.id,
+        title: option.title
+      })
+    }
+  })
+  axios.get(anyExtraUrl).then((response) => {
+    for (let option of response.data.results) {
+      anyExtraOptions.value.push({
+        id: option.id,
+        title: option.title
+      })
+    }
+  })
+}
+
+const extraSelected = () => {
+  if (extraCategory.value === 'WarrantyType') {
+    extrasType.value = warrantOptions.value
+  }
+  if (extraCategory.value === 'DeliveryType') {
+    extrasType.value = deliveryOptions.value
+  }
+  if (extraCategory.value === 'DocumentManagement') {
+    extrasType.value = docsOptions.value
+  }
+  if (extraCategory.value === 'AnyExtra') {
+    extrasType.value = anyExtraOptions.value
+  }
+  extraValue.value = '0'
+  disCategory.value = false
 }
 
 const discountDrawer = () => {
   drawerSection.value = 'discount'
+  axios.get(discountListUrl).then((response) => {
+    for (let option of response.data.results) {
+      discountOptions.value.push({
+        id: option.id,
+        title: option.title
+      })
+    }
+  })
 }
 
 onMounted(() => {
+  fetchingExtras()
+  fetchingDiscounts()
   let prev = window.scrollY
   window.addEventListener('scroll', () => {
     let current = window.scrollY
@@ -639,116 +891,121 @@ onMounted(() => {
       scrollTop.value = false
     }
     prev = current
-    if (equip.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.add('activeSection')
-    } else if (freeEquip.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.add('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (discounts.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.add('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (extras.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.add('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (comments.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.add('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (prices.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.add('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (maintenance.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.add('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (portals.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.add('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
-    } else if (technical.value?.getBoundingClientRect().top < 200) {
-      asideTabs[0].value.classList?.remove('activeSection')
-      asideTabs[1].value.classList?.add('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
+    if (tab.value > 0 && tab.value < 9) {
+      if (discounts.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.add('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else if (extras.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.add('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else if (comments.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.add('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else if (prices.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.add('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else if (maintenance.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.add('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else if (portals.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.add('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else if (technical.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.add('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      } else {
+        asideTabs[0].value.classList?.add('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      }
     } else {
-      asideTabs[0].value.classList?.add('activeSection')
-      asideTabs[1].value.classList?.remove('activeSection')
-      asideTabs[2].value.classList?.remove('activeSection')
-      asideTabs[3].value.classList?.remove('activeSection')
-      asideTabs[4].value.classList?.remove('activeSection')
-      asideTabs[5].value.classList?.remove('activeSection')
-      asideTabs[6].value.classList?.remove('activeSection')
-      asideTabs[7].value.classList?.remove('activeSection')
-      asideTabs[8].value.classList?.remove('activeSection')
-      asideTabs[9].value.classList?.remove('activeSection')
+      console.log(freeEquip.value?.getBoundingClientRect().top)
+      if (equip.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.add('activeSection')
+      } else {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.add('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+      }
     }
   })
 })
@@ -759,6 +1016,54 @@ onMounted(() => {
     <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
       <ModalInfo class="w-full" ref="error" title="Error" :message="message" />
+      <dialog ref="edit" id="edit" class="modal">
+        <div class="modal-box flex flex-col">
+          <form method="dialog flex flex-col" @submit.prevent="edit.close(), reset()">
+            <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
+          </form>
+          <div v-if="editMode === 'extras'">
+            <h3 class="text-lg font-bold">Editar Descuento</h3>
+            <div class="divider m-0"></div>
+            <form @submit.prevent="updateExtra" class="flex flex-col">
+              <TextInput label="Titulo:" v-model="extraTitle" @input="disAdd = false" />
+              <NumberInput label="Precio:" v-model="extraPrice" />
+              <NumberInput
+                v-if="extraCategory === 'DocumentManagement'"
+                label="IVA:"
+                v-model="extraIVA"
+              />
+              <AreaInput label="Descripción:" v-model="extraDescription" />
+              <CheckInput
+                v-if="extraCategory === 'DeliveryType'"
+                label="¿Entrega a domicilio?"
+                class="mt-3"
+                v-model="extraDelivery"
+              />
+              <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+                <LoadingSpinner v-if="loadingSpinner" />
+                Guardar
+              </button>
+            </form>
+          </div>
+          <div v-if="editMode === 'discounts'">
+            <h3 class="text-lg font-bold">Editar Descuento</h3>
+            <div class="divider m-0"></div>
+            <form @submit.prevent="updateDiscount" class="flex flex-col">
+              <TextInput label="Titulo:" v-model="discountTitle" />
+              <div class="grid grid-cols-2 gap-x-4">
+                <DateInput label="Valido desde:" v-model="discountFrom" />
+                <DateInput label="Valido hasta:" v-model="discountTo" />
+                <NumberInput label="Valor Porcentual:" v-model="discountPercent" />
+                <NumberInput label="Valor Fijo:" v-model="discountFixed" />
+              </div>
+              <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+                <LoadingSpinner v-if="loadingSpinner" />
+                Guardar
+              </button>
+            </form>
+          </div>
+        </div>
+      </dialog>
       <HeaderMain class="pb-16">
         <header class="flex flex-col items-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
@@ -785,15 +1090,15 @@ onMounted(() => {
           class="tabs tabs-bordered sticky top-0 overflow-x-scroll text-nowrap px-4 lg:hidden"
         >
           <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9"
-            >Equipamiento sin coste</a
+            >Equipamiento gratis</a
           >
-          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento con coste</a>
+          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento pago</a>
         </div>
         <main class="flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
               <li>
-                <a class="font-bold" @click="tab = 1">Admin</a>
+                <a class="font-bold" @click="tabEvent1">Admin</a>
                 <ul>
                   <li>
                     <a id="basicTab" ref="basicTab" class="activeSection" @click="tabEvent1"
@@ -814,8 +1119,8 @@ onMounted(() => {
               <li>
                 <a class="font-bold" @click="tabEvent9">Equipamiento</a>
                 <ul>
-                  <li><a ref="freeEquipTab" @click="tabEvent9">Equipamiento sin coste</a></li>
-                  <li><a ref="equipTab" @click="tabEvent10">Equipamiento con coste</a></li>
+                  <li><a ref="freeEquipTab" @click="tabEvent9">Equipamiento gratis</a></li>
+                  <li><a ref="equipTab" @click="tabEvent10">Equipamiento pago</a></li>
                 </ul>
               </li>
               <li><a class="font-bold" @click="tab = 11">PT</a></li>
@@ -1009,23 +1314,23 @@ onMounted(() => {
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
-                      table-class-name="z-0 max-w-4xl"
+                      table-class-name="customize-table z-0"
                       header-class-name="z-0"
                       border-cell
                       buttons-pagination
-                      :headers="headers"
-                      :items="items"
+                      :headers="headersExtra"
+                      :items="itemsExtra"
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
-                      :loading="loading"
+                      :loading="isFetchingExtras"
                       rows-per-page-message="Filas por pestaña"
                     >
                       <template v-slot:item-id="{ id }">
                         <div class="w-20">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
                             <Icon icon="mdi:pencil" />
                           </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
                             <Icon icon="mdi:trash-can-outline" />
                           </button>
                         </div>
@@ -1040,23 +1345,26 @@ onMounted(() => {
                   <template #content>
                     <EasyDataTable
                       class="z-0"
-                      table-class-name="z-0 max-w-4xl"
+                      table-class-name="z-0"
                       header-class-name="z-0"
                       border-cell
                       buttons-pagination
-                      :headers="headers"
-                      :items="items"
+                      :headers="headersDiscounts"
+                      :items="itemsDiscount"
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
-                      :loading="loading"
+                      :loading="isFetchingDiscounts"
                       rows-per-page-message="Filas por pestaña"
                     >
                       <template v-slot:item-id="{ id }">
                         <div class="w-20">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
                             <Icon icon="mdi:pencil" />
                           </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                          <button
+                            class="btn btn-square btn-error btn-xs"
+                            @click="removeDiscount(id)"
+                          >
                             <Icon icon="mdi:trash-can-outline" />
                           </button>
                         </div>
@@ -1066,9 +1374,9 @@ onMounted(() => {
                 </VehicleTable>
               </div>
             </div>
-            <div v-if="tab > 8 && tab < 12">
+            <div v-if="tab > 8 && tab < 12" class="flex flex-col gap-8">
               <div ref="freeEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-                <h1 class="text-xl font-medium">Equipamiento</h1>
+                <h1 class="text-xl font-medium">Equipamiento Gratis</h1>
                 <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
                   <TextInput label="Categoria web:" />
                   <TextInput label="Carrocería:" />
@@ -1083,32 +1391,34 @@ onMounted(() => {
               </div>
               <div
                 ref="equip"
-                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
-              ></div>
-              <div ref="gallery" class="flex flex-col gap-4 rounded bg-base-100 p-4">
-                <h2 class="text-xl font-medium">Galería Multimedia</h2>
-                <div role="tablist" class="tabs tabs-bordered tabs-md">
-                  <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
-                  <div role="tabpanel" class="tab-content p-4 lg:p-8">
-                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                      <div class="skeleton h-28 w-28"></div>
-                      <div class="skeleton h-28 w-28"></div>
-                      <div class="skeleton h-28 w-28"></div>
-                      <div class="skeleton h-28 w-28"></div>
-                      <div class="skeleton h-28 w-28"></div>
-                      <div class="skeleton h-28 w-28"></div>
-                    </div>
+                class="flex min-h-screen scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+              >
+                <h1 class="text-xl font-medium">Equipamiento Pago</h1>
+              </div>
+            </div>
+            <div ref="gallery" class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden">
+              <h2 class="text-xl font-medium">Galería Multimedia</h2>
+              <div role="tablist" class="tabs tabs-bordered tabs-md">
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
+                <div role="tabpanel" class="tab-content p-4 lg:p-8">
+                  <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
                   </div>
-                  <input
-                    type="radio"
-                    name="galeria"
-                    role="tab"
-                    class="tab"
-                    aria-label="Documentos"
-                    checked
-                  />
-                  <div role="tabpanel" class="tab-content p-8">Documentos</div>
                 </div>
+                <input
+                  type="radio"
+                  name="galeria"
+                  role="tab"
+                  class="tab"
+                  aria-label="Documentos"
+                  checked
+                />
+                <div role="tabpanel" class="tab-content p-8">Documentos</div>
               </div>
             </div>
           </section>
@@ -1190,13 +1500,44 @@ onMounted(() => {
       >
         <div>
           <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
-          <ToggleInput label="Auto / Manual" v-model="active" />
-          <SelectInput label="Tipo:" :options="options.extra" v-model="extra" />
+          <ToggleInput label="Auto / Manual" v-model="extraMode" />
+          <SelectInput
+            vif
+            label="categoria:"
+            :options="options.extraType"
+            v-model="extraCategory"
+            @selected="extraSelected"
+          />
+          <SelectInput
+            v-if="!extraMode"
+            label="Tipo:"
+            :options="extrasType"
+            v-model="extraValue"
+            :disabled="disCategory"
+            @selected="disAdd = false"
+          />
+          <div v-if="extraMode && extraCategory !== '0'" class="flex flex-col">
+            <TextInput label="Titulo:" v-model="extraTitle" @input="disAdd = false" />
+            <NumberInput label="Precio:" v-model="extraPrice" />
+            <NumberInput
+              v-if="extraMode && extraCategory === 'DocumentManagement'"
+              label="IVA:"
+              v-model="extraIVA"
+            />
+            <AreaInput label="Descripción:" v-model="extraDescription" />
+            <CheckInput
+              v-if="extraMode && extraCategory === 'DeliveryType'"
+              label="¿Entrega a domicilio?"
+              class="mt-3"
+              v-model="extraDelivery"
+            />
+          </div>
         </div>
         <DrawerActions
           class="self-end"
           secondary="Cancelar"
           primary="Guardar"
+          :disabled="disAdd"
           @click-secondary="toggleDrawer"
           @click-primary="addExtra"
         />
@@ -1211,8 +1552,8 @@ onMounted(() => {
           <SelectInput
             v-if="!discountMode"
             label="Descuento:"
-            :options="options.extra"
-            v-model="addDiscount"
+            :options="discountOptions"
+            v-model="discount"
           />
           <div v-else>
             <TextInput label="Titulo:" v-model="discountTitle" />
@@ -1229,7 +1570,7 @@ onMounted(() => {
           secondary="Cancelar"
           primary="Guardar"
           @click-secondary="toggleDrawer"
-          @click-primary="addExtra"
+          @click-primary="addDiscount"
         />
       </ul>
     </div>

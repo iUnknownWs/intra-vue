@@ -8,6 +8,7 @@ defineProps({
 })
 
 const value = defineModel()
+defineEmits(['input'])
 </script>
 
 <template>
@@ -21,6 +22,7 @@ const value = defineModel()
       class="input input-bordered w-full"
       :disabled="disabled"
       v-model="value"
+      @input="$emit('input')"
     />
   </label>
 </template>

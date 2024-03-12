@@ -68,7 +68,7 @@ const categoria = [
         id: '4',
         title: 'Clásico'
     },
-    
+
 ]
 
 const medioambiental = [
@@ -117,6 +117,25 @@ const etiqueta = [
     }
 ]
 
+const extraType = [{
+    id: 'WarrantyType',
+    title: 'Garantía'
+},
+{
+    id: 'DeliveryType',
+    title: 'Tipo de entrega'
+},
+{
+    id: 'DocumentManagement',
+    title: 'Gestión documental'
+},
+{
+    id: 'AnyExtra',
+    title: 'Varios'
+}
+
+]
+
 export const interes = [
     {
         id: '1',
@@ -144,6 +163,7 @@ const options = {
     etiqueta,
     years,
     reverseYears,
+    extraType
 }
 
 export default options
