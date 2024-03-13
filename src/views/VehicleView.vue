@@ -19,7 +19,8 @@ const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const buyersUrl = `${import.meta.env.VITE_API}/buyers/`
 const providersUrl = `${import.meta.env.VITE_API}/companies/?limit=1000&is_provider=true`
 const bodyTypeUrl = `${import.meta.env.VITE_DATA}`
-const modelWebUrl = `${import.meta.env.VITE_PUBLIC}/models-web/?limit=5000&brand_web=`
+const modelUrl = `${import.meta.env.VITE_PUBLIC}vehicles-models/`
+const modelWebUrl = `${import.meta.env.VITE_PUBLIC}models-web/?limit=5000&brand_web=`
 const keysWebUrl = `${import.meta.env.VITE_KEYS}`
 const extrasUrl = `${import.meta.env.VITE_API}/vehicles-extras/`
 const warrantyUrl = `${import.meta.env.VITE_SALES}/warranty-types/`
@@ -28,6 +29,7 @@ const docsUrl = `${import.meta.env.VITE_SALES}/documents-managements/`
 const anyExtraUrl = `${import.meta.env.VITE_SALES}/any-extra/`
 const discountUrl = `${import.meta.env.VITE_API}/vehicles-discounts/`
 const discountListUrl = `${import.meta.env.VITE_SALES}/discounts/`
+const equipUrl = `${import.meta.env.VITE_API}/vehicles-equipments/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -47,8 +49,9 @@ const tab7 = ref(null)
 const tab8 = ref(null)
 const tab9 = ref(null)
 const tab10 = ref(null)
+const tab11 = ref(null)
 const tabs = [tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8]
-const tabs2 = [tab9, tab10]
+const tabs2 = [tab9, tab10, tab11]
 const scrollDown = ref(false)
 const scrollTop = ref(true)
 const category = ref([])
@@ -59,6 +62,7 @@ const docsOptions = ref([])
 const anyExtraOptions = ref([])
 const bodyOptions = ref([])
 const brandOptions = ref([])
+const modelOptions = ref([])
 const webBrandOptions = ref([])
 const bodyTypeOptions = ref([])
 const driveOptions = ref([])
@@ -68,7 +72,10 @@ const keysOptions = ref([])
 const regimenOptions = ref([])
 const buyersOptions = ref([])
 const providersOptions = ref([])
-const warrantOptions = ref([])
+const warrantyOptions = ref([])
+const serialEquipItems = ref([])
+const freeEquipItems = ref([])
+const paidEquipItems = ref([])
 const extrasType = ref([])
 // const body = ref('')
 const drives = ref(null)
@@ -79,6 +86,7 @@ const model = ref({ id: '', label: '' })
 const modelWeb = ref({ id: '', label: '' })
 const provider = ref({ id: '', label: '' })
 const buyer = ref({ id: '', label: '' })
+const equipmentsGroup = ref([])
 const license = ref('')
 const license1 = ref(null)
 const kms = ref(0)
@@ -111,8 +119,9 @@ const prices = ref(null)
 const comments = ref(null)
 const extras = ref(null)
 const discounts = ref(null)
+const serialEquip = ref(null)
 const freeEquip = ref(null)
-const equip = ref(null)
+const paidEquip = ref(null)
 const basicTab = ref(null)
 const technicalTab = ref(null)
 const portalsTab = ref(null)
@@ -121,8 +130,9 @@ const pricesTab = ref(null)
 const commentsTab = ref(null)
 const extrasTab = ref(null)
 const discountsTab = ref(null)
+const serialEquipTab = ref(null)
 const freeEquipTab = ref(null)
-const equipTab = ref(null)
+const paidEquipTab = ref(null)
 const asideTabs = [
   basicTab,
   technicalTab,
@@ -132,8 +142,9 @@ const asideTabs = [
   commentsTab,
   extrasTab,
   discountsTab,
+  serialEquipTab,
   freeEquipTab,
-  equipTab
+  paidEquipTab
 ]
 const regimen = ref(null)
 const purchaseDate = ref(null)
@@ -171,6 +182,11 @@ const discountTo = ref('')
 const discountPercent = ref(0)
 const discountFixed = ref(0)
 const discountId = ref(0)
+const equipTitle = ref('')
+const equipDescription = ref('')
+const equipGroup = ref('0')
+const equipWeb = ref(false)
+const equipFeatured = ref(false)
 
 const toggleDrawer = () => {
   drawer.value = !drawer.value
@@ -264,6 +280,7 @@ const fetch = () => {
       bodyType.value = vehicle.value.body_type?.id || null
       brand.value = { id: vehicle.value.model.brand.id, label: vehicle.value.model.brand.title }
       webBrand.value = { id: vehicle.value.brand_web.id, label: vehicle.value.brand_web.title }
+      model.value = { id: vehicle.value.model.id, label: vehicle.value.model.title }
       modelWeb.value = { id: vehicle.value.model_web.id, label: vehicle.value.model_web.title }
       chassis.value = vehicle.value?.chassis_number
       license.value = vehicle.value.license_plate
@@ -293,7 +310,7 @@ const fetch = () => {
       owners.value = vehicle.value.maintenance?.owners_quantity
       provider.value = vehicle.value.purchase?.provider || null
       buyer.value = vehicle.value.purchase?.buyer || null
-      regimen.value = vehicle.value.purchase?.tax_regime || null
+      regimen.value = vehicle.value.purchase?.tax_regime
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       purchasePrice.value = vehicle.value.purchase?.total_price
       price.value = vehicle.value.price?.sale_price
@@ -307,11 +324,30 @@ const fetch = () => {
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       commExternal.value = vehicle.value?.external_comments
       commInternal.value = vehicle.value?.internal_comments
+      for (let item of vehicle.value.equipments) {
+        if (item.type === 'OPTIONAL_AT_EXTRA_CHARGE') {
+          paidEquipItems.value.push(item)
+        }
+        if (item.type === 'OPTIONAL_FREE_OF_CHARGE') {
+          freeEquipItems.value.push(item)
+        }
+        if (item.type === 'SERIAL') {
+          serialEquipItems.value.push(item)
+        }
+      }
     })
     .then(() => {
       axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
         for (let option of response.data.results) {
           modelWebOptions.value.push({
+            id: option.id,
+            label: option.title
+          })
+        }
+      })
+      axios.get(`${modelUrl}?brand=${brand.value.id}&title=`).then((response) => {
+        for (let option of response.data.results) {
+          modelOptions.value.push({
             id: option.id,
             label: option.title
           })
@@ -408,6 +444,14 @@ axios.get(bodyTypeUrl).then((response) => {
       title: option.name
     })
   }
+  for (let option of response.data.equipment_groups) {
+    equipmentsGroup.value.push({
+      id: option.id,
+      title: option.name
+    })
+  }
+  console.log(response.data.equipment_groups)
+  console.log(equipmentsGroup.value)
 })
 
 const tabEvent1 = () => {
@@ -488,7 +532,7 @@ const tabEvent9 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab9.value.classList.add('tab-active')
-  freeEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+  serialEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent10 = () => {
@@ -497,7 +541,16 @@ const tabEvent10 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab10.value.classList.add('tab-active')
-  equip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+  freeEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+}
+
+const tabEvent11 = () => {
+  tab.value = 11
+  for (let tab of tabs2) {
+    tab.value.classList.remove('tab-active')
+  }
+  tab11.value.classList.add('tab-active')
+  paidEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const navEvent1 = () => {
@@ -613,7 +666,7 @@ const editModal = (id, mode) => {
   if (mode === 0) {
     editMode.value = 'extras'
     axios
-      .get(`${extrasUrl}/${id}/`)
+      .get(`${extrasUrl}${id}/`)
       .then((response) => {
         extraId.value = response.data.id
         extraCategory.value = response.data.category
@@ -643,6 +696,19 @@ const editModal = (id, mode) => {
         edit.value.showModal()
       })
   }
+  if (mode === 2) {
+    editMode.value = 'equip'
+    for (let equip of vehicle.value.equipments) {
+      if (equip.id === id) {
+        equipTitle.value = equip.title
+        equipDescription.value = equip.description
+        equipGroup.value = equip.group
+        equipWeb.value = equip.show_in_web
+        equipFeatured.value = equip.is_featured
+      }
+    }
+    edit.value.showModal()
+  }
 }
 
 const updateExtra = () => {
@@ -659,7 +725,7 @@ const updateExtra = () => {
   if (extraCategory.value === 'DeliveryType') {
     payload.is_home_delivery = extraDelivery.value
   }
-  axios.patch(`${extrasUrl}/${extraId.value}/`, payload).then(() => {
+  axios.patch(`${extrasUrl}${extraId.value}/`, payload).then(() => {
     resetExtra()
     fetchingExtras()
     edit.value.close()
@@ -683,11 +749,11 @@ const updateDiscount = () => {
 }
 
 const removeExtra = (id) => {
-  axios.delete(`${extrasUrl}/${id}/`).then(() => fetchingExtras())
+  axios.delete(`${extrasUrl}${id}/`).then(() => fetchingExtras())
 }
 
 const removeDiscount = (id) => {
-  axios.delete(`${discountUrl}/${id}/`).then(() => fetchingDiscounts())
+  axios.delete(`${discountUrl}${id}/`).then(() => fetchingDiscounts())
 }
 
 watch(
@@ -698,6 +764,15 @@ watch(
   },
   { deep: true }
 )
+
+const headersEquip = [
+  { text: 'Nombre', value: 'title' },
+  { text: 'Descripción', value: 'description' },
+  { text: 'Grupo', value: 'group' },
+  // { text: 'Web', value: 'id', width: 40 },
+  // { text: 'Destacado', value: 'id', width: 40 },
+  { text: 'Acciones', value: 'id', width: 40 }
+]
 
 const headersExtra = [
   { text: 'Nombre', value: 'title' },
@@ -790,6 +865,31 @@ const addDiscount = () => {
   }
 }
 
+const addEquip = () => {
+  axios.post(equipUrl, {
+    title: equipTitle.value,
+    description: equipDescription.value,
+    group: equipGroup.value,
+    show_in_web: equipWeb.value,
+    is_featured: equipFeatured.value,
+    type: drawerSection.value,
+    vehicle: id.value
+  }).then((response) => {
+    if (response.status === 201) {
+      toggleDrawer()
+      resetEquip()
+    }
+  })
+}
+
+const resetEquip = () => {
+  equipTitle.value = ''
+  equipDescription.value = ''
+  equipGroup.value = '0'
+  equipWeb.value = false
+  equipFeatured.value = false
+}
+
 const resetDiscount = () => {
   discount.value = 0
   discountTitle.value = ''
@@ -815,7 +915,7 @@ const extraDrawer = () => {
   drawerSection.value = 'extra'
   axios.get(warrantyUrl).then((response) => {
     for (let option of response.data.results) {
-      warrantOptions.value.push({
+      warrantyOptions.value.push({
         id: option.id,
         title: option.title
       })
@@ -850,7 +950,7 @@ const extraDrawer = () => {
 
 const extraSelected = () => {
   if (extraCategory.value === 'WarrantyType') {
-    extrasType.value = warrantOptions.value
+    extrasType.value = warrantyOptions.value
   }
   if (extraCategory.value === 'DeliveryType') {
     extrasType.value = deliveryOptions.value
@@ -903,6 +1003,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.add('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else if (extras.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -914,6 +1015,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else if (comments.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -925,6 +1027,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else if (prices.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -936,6 +1039,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else if (maintenance.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -947,6 +1051,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else if (portals.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -958,6 +1063,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else if (technical.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.add('activeSection')
@@ -969,6 +1075,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else {
         asideTabs[0].value.classList?.add('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -980,10 +1087,22 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       }
     } else {
-      console.log(freeEquip.value?.getBoundingClientRect().top)
-      if (equip.value?.getBoundingClientRect().top < 200) {
+      if (paidEquip.value?.getBoundingClientRect().top < 200) {
+        asideTabs[0].value.classList?.remove('activeSection')
+        asideTabs[1].value.classList?.remove('activeSection')
+        asideTabs[2].value.classList?.remove('activeSection')
+        asideTabs[3].value.classList?.remove('activeSection')
+        asideTabs[4].value.classList?.remove('activeSection')
+        asideTabs[5].value.classList?.remove('activeSection')
+        asideTabs[6].value.classList?.remove('activeSection')
+        asideTabs[7].value.classList?.remove('activeSection')
+        asideTabs[8].value.classList?.remove('activeSection')
+        asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.add('activeSection')
+      } else if (freeEquip.value?.getBoundingClientRect().top < 200) {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
         asideTabs[2].value.classList?.remove('activeSection')
@@ -994,6 +1113,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.add('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       } else {
         asideTabs[0].value.classList?.remove('activeSection')
         asideTabs[1].value.classList?.remove('activeSection')
@@ -1005,6 +1125,7 @@ onMounted(() => {
         asideTabs[7].value.classList?.remove('activeSection')
         asideTabs[8].value.classList?.add('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[10].value.classList?.remove('activeSection')
       }
     }
   })
@@ -1062,6 +1183,25 @@ onMounted(() => {
               </button>
             </form>
           </div>
+          <div v-if="editMode === 'equip'">
+            <h3 class="text-lg font-bold">Editar Equipamiento</h3>
+            <div class="divider m-0"></div>
+            <form @submit.prevent="updateDiscount" class="flex flex-col">
+              <TextInput label="Nombre:" placeholder="Introducir Serial" v-model="equipTitle" />
+              <TextInput
+                label="Descripción:"
+                placeholder="Introducir Serial"
+                v-model="equipDescription"
+              />
+              <SelectInput label="Grupo:" :options="equipmentsGroup" v-model="equipGroup" />
+              <CheckInput label="Mostrar en pagina web:" v-model="equipWeb" />
+              <CheckInput label="Mostrar como destacado:" v-model="equipFeatured" />
+              <button type="submit" class="btn btn-primary mt-4 self-end text-white">
+                <LoadingSpinner v-if="loadingSpinner" />
+                Guardar
+              </button>
+            </form>
+          </div>
         </div>
       </dialog>
       <HeaderMain class="pb-16">
@@ -1085,14 +1225,15 @@ onMounted(() => {
           <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
         </div>
         <div
-          v-if="tab === 9 || tab === 10"
+          v-if="tab > 8 && tab < 12"
           role="tablist"
           class="tabs tabs-bordered sticky top-0 overflow-x-scroll text-nowrap px-4 lg:hidden"
         >
           <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9"
-            >Equipamiento gratis</a
+            >Equipamiento de serie</a
           >
-          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento pago</a>
+          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento gratis</a>
+          <a ref="tab11" role="tab" class="tab" @click="tabEvent11">Equipamiento pago</a>
         </div>
         <main class="flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
@@ -1119,8 +1260,9 @@ onMounted(() => {
               <li>
                 <a class="font-bold" @click="tabEvent9">Equipamiento</a>
                 <ul>
-                  <li><a ref="freeEquipTab" @click="tabEvent9">Equipamiento gratis</a></li>
-                  <li><a ref="equipTab" @click="tabEvent10">Equipamiento pago</a></li>
+                  <li><a ref="serialEquipTab" @click="tabEvent9">Equipamiento de serie</a></li>
+                  <li><a ref="freeEquipTab" @click="tabEvent10">Equipamiento gratis</a></li>
+                  <li><a ref="paidEquipTab" @click="tabEvent11">Equipamiento pago</a></li>
                 </ul>
               </li>
               <li><a class="font-bold" @click="tab = 11">PT</a></li>
@@ -1161,7 +1303,7 @@ onMounted(() => {
                   />
                   <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
                   <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
-                  <SearchSelect label="Modelo:" :options="webBrandOptions" v-model="model" />
+                  <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
                   <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
                   <TextInput label="Bastidor:" v-model="chassis" />
                   <TextInput label="Matricula:" v-model="license" />
@@ -1314,16 +1456,15 @@ onMounted(() => {
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
-                      table-class-name="customize-table z-0"
+                      table-class-name="z-0"
                       header-class-name="z-0"
+                      hide-footer
                       border-cell
-                      buttons-pagination
                       :headers="headersExtra"
                       :items="itemsExtra"
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
                       :loading="isFetchingExtras"
-                      rows-per-page-message="Filas por pestaña"
                     >
                       <template v-slot:item-id="{ id }">
                         <div class="w-20">
@@ -1347,6 +1488,7 @@ onMounted(() => {
                       class="z-0"
                       table-class-name="z-0"
                       header-class-name="z-0"
+                      hide-footer
                       border-cell
                       buttons-pagination
                       :headers="headersDiscounts"
@@ -1354,7 +1496,6 @@ onMounted(() => {
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
                       :loading="isFetchingDiscounts"
-                      rows-per-page-message="Filas por pestaña"
                     >
                       <template v-slot:item-id="{ id }">
                         <div class="w-20">
@@ -1375,25 +1516,104 @@ onMounted(() => {
               </div>
             </div>
             <div v-if="tab > 8 && tab < 12" class="flex flex-col gap-8">
-              <div ref="freeEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
-                <h1 class="text-xl font-medium">Equipamiento Gratis</h1>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Categoria web:" />
-                  <TextInput label="Carrocería:" />
-                  <TextInput label="Marca Web:" />
-                  <TextInput label="Modelo Web:" />
-                  <TextInput label="Matricula:" />
-                  <TextInput label="1º Matriculación:" />
-                  <TextInput label="1º Matricula:" />
-                  <TextInput label="Km Actuales:" />
-                  <TextInput label="Procedencia:" />
-                </div>
-              </div>
               <div
-                ref="equip"
-                class="flex min-h-screen scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+                ref="serialEquip"
+                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
               >
-                <h1 class="text-xl font-medium">Equipamiento Pago</h1>
+                <VehicleTable title="Equipamiento de serie" @addBtn="drawerSection = 'SERIAL'">
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0"
+                      header-class-name="z-0"
+                      hide-footer
+                      border-cell
+                      :headers="headersEquip"
+                      :items="serialEquipItems"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="isFetchingExtras"
+                    >
+                      <template v-slot:item-id="{ id }">
+                        <div class="w-20">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
+              </div>
+              <div ref="freeEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <VehicleTable
+                  title="Equipamiento gratis"
+                  @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
+                >
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0"
+                      header-class-name="z-0"
+                      hide-footer
+                      border-cell
+                      :headers="headersEquip"
+                      :items="freeEquipItems"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="isFetchingExtras"
+                    >
+                      <template v-slot:item-id="{ id }">
+                        <div class="w-20">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
+              </div>
+              <div ref="paidEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+                <VehicleTable
+                  title="Equipamiento pago"
+                  @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
+                >
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0"
+                      header-class-name="z-0"
+                      hide-footer
+                      border-cell
+                      :headers="headersEquip"
+                      :items="paidEquipItems"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="isFetchingExtras"
+                    >
+                      <template v-slot:item-id="{ id }">
+                        <div class="w-20">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
               </div>
             </div>
             <div ref="gallery" class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden">
@@ -1571,6 +1791,30 @@ onMounted(() => {
           primary="Guardar"
           @click-secondary="toggleDrawer"
           @click-primary="addDiscount"
+        />
+      </ul>
+      <ul
+        v-if="
+          drawerSection === 'OPTIONAL_AT_EXTRA_CHARGE' ||
+          drawerSection === 'OPTIONAL_FREE_OF_CHARGE' ||
+          drawerSection === 'SERIAL'
+        "
+        class="menu min-h-full w-96 flex-col justify-between bg-white p-4 text-base-content"
+      >
+        <div>
+          <DrawerTitle title="Añadir Equipamiento" @toggle="toggleDrawer" />
+          <TextInput label="Nombre:" v-model="equipTitle" />
+          <TextInput label="Descripción:" v-model="equipDescription" />
+          <SelectInput label="Grupo:" :options="equipmentsGroup" v-model="equipGroup" />
+          <CheckInput label="Mostrar en pagina web:" v-model="equipWeb" />
+          <CheckInput label="Mostrar como destacado:" v-model="equipFeatured" />
+        </div>
+        <DrawerActions
+          class="self-end"
+          secondary="Cancelar"
+          primary="Guardar"
+          @click-secondary="toggleDrawer"
+          @click-primary="addEquip"
         />
       </ul>
     </div>
