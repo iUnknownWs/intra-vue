@@ -6,16 +6,19 @@ import axios from 'axios'
 const props = defineProps({
   url: { type: String, required: true },
   type: { type: String, required: true },
+  file_name: { type: String },
   format: { type: String, required: true },
   params: { type: Array, required: true },
-  fetch: { type: Function },
+  fetch: { type: Function }
 })
+
 const loading = ref(false)
 
 const saveFiles = (files) => {
   const formData = new FormData()
   for (var x = 0; x < files.length; x++) {
     formData.append(props.type, files[x])
+    if (props.file_name) formData.append(props.file_name, files[x].name)
     for (let param of props.params) {
       formData.append(param.key, param.value)
     }
@@ -44,7 +47,7 @@ const onDrop = (acceptFiles) => {
 const optionsDrop = reactive({
   multiple: true,
   onDrop,
-  accept: props.format,
+  accept: props.format
 })
 
 const { getRootProps, getInputProps, isDragActive } = useDropzone(optionsDrop)

@@ -1,8 +1,8 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
-import { Sortable } from "sortablejs-vue3";
-import { ref, onMounted, watch } from 'vue'
+import { Sortable } from 'sortablejs-vue3'
+import { ref, onMounted, watch, computed } from 'vue'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
 import options from '@/js/filterOptions'
@@ -34,6 +34,7 @@ const equipUrl = `${import.meta.env.VITE_API}/vehicles-equipments/`
 const galleryUrl = `${import.meta.env.VITE_API}/vehicles-images/`
 const gallery360Url = `${import.meta.env.VITE_API}/vehicles-image-360/`
 const galleryVideoUrl = `${import.meta.env.VITE_API}/vehicles-videos/`
+const galleryDocsUrl = `${import.meta.env.VITE_API}/vehicles-documents/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -85,6 +86,7 @@ const galleryImages = ref([])
 const galleryFaulty = ref([])
 const gallery360 = ref([])
 const galleryVideo = ref([])
+const galleryDocs = ref([])
 const drives = ref(null)
 const bodyType = ref(null)
 const brand = ref({ id: '', label: '' })
@@ -194,6 +196,7 @@ const equipWeb = ref(false)
 const equipFeatured = ref(false)
 const isFetchingEquip = ref(true)
 const skeletonGallery = ref(true)
+const galleryHover = ref(null)
 const imagesParams = [
   {
     key: 'vehicle',
@@ -214,18 +217,34 @@ const faultyParams = [
     value: 'faulty'
   }
 ]
-const params360 = [
+const params = [
   {
     key: 'vehicle',
     value: id.value
   }
 ]
-const videoParams = [
-  {
-    key: 'vehicle',
-    value: id.value
+
+const optionsDrag = computed(() => {
+  return {
+    draggable: '.draggable',
+    animation: 150,
+    ghostClass: 'ghost',
+    dragClass: 'drag',
+    scroll: true,
+    forceFallback: true,
+    bubbleScroll: true
   }
-]
+})
+
+const test = (event, event2) => {
+  if (event2) {
+    console.log(event, event2);
+  } else {
+    console.log(event);
+  }
+
+  console.log(galleryImages.value);
+}
 
 const fetchingGallery = () => {
   axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=main').then((response) => {
@@ -233,6 +252,7 @@ const fetchingGallery = () => {
     skeletonGallery.value = false
   })
 }
+
 const fetchingFaulty = () => {
   axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=faulty').then((response) => {
     galleryFaulty.value = response.data.results
@@ -242,7 +262,6 @@ const fetchingFaulty = () => {
 
 const fetchingVideo = () => {
   axios.get(galleryVideoUrl + '?vehicle=' + id.value).then((response) => {
-    console.log(response.data.results)
     galleryVideo.value = response.data.results
     skeletonGallery.value = false
   })
@@ -250,8 +269,14 @@ const fetchingVideo = () => {
 
 const fetching360 = () => {
   axios.get(gallery360Url + '?vehicle=' + id.value).then((response) => {
-    console.log(response.data.results)
     gallery360.value = response.data.results
+    skeletonGallery.value = false
+  })
+}
+
+const fetchingDocs = () => {
+  axios.get(galleryDocsUrl + '?vehicle=' + id.value).then((response) => {
+    galleryDocs.value = response.data.results
     skeletonGallery.value = false
   })
 }
@@ -260,6 +285,18 @@ fetchingGallery()
 fetchingFaulty()
 fetchingVideo()
 fetching360()
+fetchingDocs()
+
+const deleteDoc = (id) => {
+  axios
+    .delete(galleryDocsUrl + id)
+    .then(() => {
+      fetchingDocs()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
 
 const toggleDrawer = () => {
   drawer.value = !drawer.value
@@ -1175,16 +1212,16 @@ onMounted(() => {
         asideTabs[8].value.classList?.remove('activeSection')
         asideTabs[9].value.classList?.remove('activeSection')
       } else {
-        asideTabs[0].value.classList?.add('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
+        asideTabs[0].value.classList.add('activeSection')
+        asideTabs[1].value.classList.remove('activeSection')
+        asideTabs[2].value.classList.remove('activeSection')
+        asideTabs[3].value.classList.remove('activeSection')
+        asideTabs[4].value.classList.remove('activeSection')
+        asideTabs[5].value.classList.remove('activeSection')
+        asideTabs[6].value.classList.remove('activeSection')
+        asideTabs[7].value.classList.remove('activeSection')
+        asideTabs[8].value.classList.remove('activeSection')
+        asideTabs[9].value.classList.remove('activeSection')
       }
     } else {
       if (optionalEquip.value?.getBoundingClientRect().top < 200) {
@@ -1800,15 +1837,49 @@ onMounted(() => {
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                 </div>
-                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <img
-                    v-for="(image, index) in galleryImages"
-                    :key="index"
-                    :src="image.image"
-                    :alt="'vehicle img' + image.id"
-                    class="h-28 w-28 rounded object-cover"
-                  />
-                </div>
+                <Sortable
+                  v-else
+                  :list="galleryImages"
+                  item-key="id"
+                  :options="optionsDrag"
+                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                  @sort="test"
+                >
+                  <template #item="{ element, index }">
+                    <!-- <img
+                      :key="element.id"
+                      :src="element.image"
+                      :alt="'vehicle img' + element.id"
+                      class="draggable h-28 w-28 rounded object-cover"
+                    /> -->
+                    <div
+                      @mouseover="galleryHover = index"
+                      @mouseleave="galleryHover = null"
+                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
+                      :style="{
+                        backgroundImage: `url(${element.image})`
+                      }"
+                    >
+                      <div
+                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                        :class="{
+                          hidden: galleryHover !== index,
+                          'bg-black/30': galleryHover === index
+                        }"
+                      >
+                        <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+                          <Icon icon="mdi:eye" width="20" />
+                        </a>
+                        <button
+                          class="btn btn-square btn-error btn-sm"
+                          @click="deleteDoc(element.id)"
+                        >
+                          <Icon icon="mdi:delete" width="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
@@ -1833,7 +1904,7 @@ onMounted(() => {
                     :key="index"
                     :src="image.image"
                     :alt="'vehicle img' + image.id"
-                    class="h-28 w-28 rounded object-cover"
+                    class="aspect-square w-28 rounded object-cover"
                   />
                 </div>
               </div>
@@ -1844,7 +1915,7 @@ onMounted(() => {
                   :url="galleryVideoUrl"
                   :fetch="fetchingVideo"
                   format=".mp4"
-                  :params="videoParams"
+                  :params="params"
                 />
                 <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
                   <div class="skeleton h-28 w-28"></div>
@@ -1871,7 +1942,7 @@ onMounted(() => {
                   :url="gallery360Url"
                   :fetch="fetching360"
                   format=".jpg"
-                  :params="params360"
+                  :params="params"
                 />
                 <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
                   <div class="skeleton h-28 w-28"></div>
@@ -1887,19 +1958,40 @@ onMounted(() => {
                     :key="index"
                     :src="image.image"
                     :alt="'vehicle img' + image.id"
-                    class="h-28 w-28 rounded object-cover"
+                    class="aspect-square w-28 rounded object-cover"
                   />
                 </div>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
                 <DragDrop
-                  type="image"
-                  :url="galleryUrl"
-                  :fetch="fetchingFaulty"
-                  format=".jpg"
-                  :params="faultyParams"
+                  format=""
+                  type="file"
+                  file_name="file_name"
+                  :url="galleryDocsUrl"
+                  :fetch="fetchingDocs"
+                  :params="params"
                 />
+                <div
+                  v-for="(doc, index) in galleryDocs"
+                  :key="index"
+                  class="card card-side m-3 bg-base-100 shadow-xl"
+                >
+                  <div class="card-body flex-row justify-between p-4">
+                    <div class="flex gap-2">
+                      <Icon icon="mdi:file-document" width="50" />
+                      <h2 class="card-title text-lg">{{ doc.file_name }}</h2>
+                    </div>
+                    <div class="self flex gap-2">
+                      <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
+                        <Icon icon="mdi:eye" width="20" />
+                      </a>
+                      <button class="btn btn-square btn-error btn-sm" @click="deleteDoc(doc.id)">
+                        <Icon icon="mdi:delete" width="20" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
