@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import AreaInput from '@/components/AreaInput.vue'
 import DateInput from '@/components/DateInput.vue'
+import DragDrop from '@/components/DragDrop.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
 import DrawerLink from '@/components/DrawerLink.vue'
 import DrawerLogo from '@/components/DrawerLogo.vue'
@@ -42,6 +43,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('AreaInput', AreaInput)
     .component('CheckInput', CheckInput)
     .component('DateInput', DateInput)
+    .component('DragDrop', DragDrop)
     .component('DrawerActions', DrawerActions)
     .component('DrawerLink', DrawerLink)
     .component('DrawerLogo', DrawerLogo)

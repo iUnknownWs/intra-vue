@@ -1,8 +1,8 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
-import { useDropzone } from 'vue3-dropzone'
-import { ref, onMounted, watch, reactive } from 'vue'
+import { Sortable } from "sortablejs-vue3";
+import { ref, onMounted, watch } from 'vue'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
 import options from '@/js/filterOptions'
@@ -32,6 +32,8 @@ const discountUrl = `${import.meta.env.VITE_API}/vehicles-discounts/`
 const discountListUrl = `${import.meta.env.VITE_SALES}/discounts/`
 const equipUrl = `${import.meta.env.VITE_API}/vehicles-equipments/`
 const galleryUrl = `${import.meta.env.VITE_API}/vehicles-images/`
+const gallery360Url = `${import.meta.env.VITE_API}/vehicles-image-360/`
+const galleryVideoUrl = `${import.meta.env.VITE_API}/vehicles-videos/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -80,6 +82,9 @@ const paidEquipItems = ref([])
 const extrasType = ref([])
 const vehicleEquips = ref([])
 const galleryImages = ref([])
+const galleryFaulty = ref([])
+const gallery360 = ref([])
+const galleryVideo = ref([])
 const drives = ref(null)
 const bodyType = ref(null)
 const brand = ref({ id: '', label: '' })
@@ -189,47 +194,72 @@ const equipWeb = ref(false)
 const equipFeatured = ref(false)
 const isFetchingEquip = ref(true)
 const skeletonGallery = ref(true)
-
-const saveFiles = (files) => {
-  const formData = new FormData()
-  for (var x = 0; x < files.length; x++) {
-    formData.append('image', files[x])
-    formData.append('vehicle', id.value)
+const imagesParams = [
+  {
+    key: 'vehicle',
+    value: id.value
+  },
+  {
+    key: 'gallery_type',
+    value: 'main'
   }
+]
+const faultyParams = [
+  {
+    key: 'vehicle',
+    value: id.value
+  },
+  {
+    key: 'gallery_type',
+    value: 'faulty'
+  }
+]
+const params360 = [
+  {
+    key: 'vehicle',
+    value: id.value
+  }
+]
+const videoParams = [
+  {
+    key: 'vehicle',
+    value: id.value
+  }
+]
 
-  axios
-    .post(galleryUrl, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    .then((response) => {
-      console.info(response.data)
-    })
-    .catch((err) => {
-      console.error(err)
-    })
+const fetchingGallery = () => {
+  axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=main').then((response) => {
+    galleryImages.value = response.data.results
+    skeletonGallery.value = false
+  })
+}
+const fetchingFaulty = () => {
+  axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=faulty').then((response) => {
+    galleryFaulty.value = response.data.results
+    skeletonGallery.value = false
+  })
 }
 
-const onDrop = (acceptFiles, rejectReasons) => {
-  saveFiles(acceptFiles) // saveFiles as callback
-  console.log(acceptFiles)
-  console.log(rejectReasons)
+const fetchingVideo = () => {
+  axios.get(galleryVideoUrl + '?vehicle=' + id.value).then((response) => {
+    console.log(response.data.results)
+    galleryVideo.value = response.data.results
+    skeletonGallery.value = false
+  })
 }
 
-const optionsDrop = reactive({
-  multiple: true,
-  onDrop,
-  accept: '.jpg'
-})
+const fetching360 = () => {
+  axios.get(gallery360Url + '?vehicle=' + id.value).then((response) => {
+    console.log(response.data.results)
+    gallery360.value = response.data.results
+    skeletonGallery.value = false
+  })
+}
 
-const { getRootProps, getInputProps, isDragActive, isFocused, isDragReject, open } =
-  useDropzone(optionsDrop)
-
-axios.get(galleryUrl + '?vehicle=' + id.value).then((response) => {
-  galleryImages.value = response.data.results
-  skeletonGallery.value = false
-})
+fetchingGallery()
+fetchingFaulty()
+fetchingVideo()
+fetching360()
 
 const toggleDrawer = () => {
   drawer.value = !drawer.value
@@ -1723,22 +1753,13 @@ onMounted(() => {
               <div role="tablist" class="tabs tabs-bordered tabs-md">
                 <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
                 <div role="tabpanel" class="tab-content p-4 lg:p-8">
-                  <div v-bind="getRootProps()" class="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                    <input v-bind="getInputProps()" />
-                    <p v-if="isDragActive">Drop the files here ...</p>
-                    <p v-else>Drag 'n' drop some files here, or click to select files</p>
-                    <div v-if="isFocused" id="focus">focused</div>
-                    <div v-if="isDragReject" id="isDragReject">
-                      isDragReject: {{ isDragReject }}
-                    </div>
-                    <button @click="open">open</button>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                  </div>
+                  <button @click="open">open</button>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
                 </div>
                 <input
                   type="radio"
@@ -1748,39 +1769,30 @@ onMounted(() => {
                   aria-label="Documentos"
                   checked
                 />
-                <div role="tabpanel" class="tab-content p-8">
-                  <div>
-                    <div v-bind="getRootProps()">
-                      <input v-bind="getInputProps()" />
-                      <p v-if="isDragActive">Drop the files here ...</p>
-                      <p v-else>Drag 'n' drop some files here, or click to select files</p>
-                    </div>
-                    <button @click="open">open</button>
-                  </div>
-                </div>
+                <div role="tabpanel" class="tab-content p-8"></div>
               </div>
             </div>
           </section>
           <aside class="hidden h-fit flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
             <h2 class="text-xl font-medium">Galería Multimedia</h2>
-            <div role="tablist" class="tabs tabs-bordered tabs-md"> 
+            <div role="tablist" class="tabs tabs-bordered tabs-md">
               <input
                 type="radio"
                 name="galeria"
                 role="tab"
                 class="tab"
-                aria-label="Galería"
+                aria-label="Fotos"
                 checked
               />
-              <div role="tabpanel" class="tab-content min-w-96 lg:p-3">
-                <div v-bind="getRootProps()" class="m-2 w-96 rounded border-2 border-black p-3">
-                  <input v-bind="getInputProps()" />
-                  <div class="w-96">
-                    <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
-                    <p v-else>Arrastra y suelta los archivos o selecciónalos haciendo click</p>
-                  </div>
-                </div>
-                <div v-if="skeletonGallery" class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+              <div role="tabpanel" class="tab-content min-w-96 p-3">
+                <DragDrop
+                  type="image"
+                  :url="galleryUrl"
+                  :fetch="fetchingGallery"
+                  format=".jpg"
+                  :params="imagesParams"
+                />
+                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
@@ -1788,7 +1800,7 @@ onMounted(() => {
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                 </div>
-                <div v-else class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
                   <img
                     v-for="(image, index) in galleryImages"
                     :key="index"
@@ -1798,21 +1810,96 @@ onMounted(() => {
                   />
                 </div>
               </div>
-
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
-              <div role="tabpanel" class="tab-content p-8">
-                <div>
-                  <div v-bind="getRootProps()">
-                    <input v-bind="getInputProps()" />
-                    <p v-if="isDragActive">Drop the files here ...</p>
-                    <p v-else>Drag 'n' drop some files here, or click to select files</p>
-                    <div v-if="isFocused" id="focus">focused</div>
-                    <div v-if="isDragReject" id="isDragReject">
-                      isDragReject: {{ isDragReject }}
-                    </div>
-                  </div>
-                  <button @click="open">open</button>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
+              <div role="tabpanel" class="tab-content min-w-96 p-3">
+                <DragDrop
+                  type="image"
+                  :url="galleryUrl"
+                  :fetch="fetchingFaulty"
+                  format=".jpg"
+                  :params="faultyParams"
+                />
+                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
                 </div>
+                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <img
+                    v-for="(image, index) in galleryFaulty"
+                    :key="index"
+                    :src="image.image"
+                    :alt="'vehicle img' + image.id"
+                    class="h-28 w-28 rounded object-cover"
+                  />
+                </div>
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
+              <div role="tabpanel" class="tab-content min-w-96 p-3">
+                <DragDrop
+                  type="video"
+                  :url="galleryVideoUrl"
+                  :fetch="fetchingVideo"
+                  format=".mp4"
+                  :params="videoParams"
+                />
+                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                </div>
+                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <video
+                    v-for="(video, index) in galleryVideo"
+                    :key="index"
+                    :src="video.video"
+                    :alt="'vehicle video' + video.id"
+                    class="h-28 w-28 rounded object-cover"
+                  />
+                </div>
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
+              <div role="tabpanel" class="tab-content min-w-96 p-3">
+                <DragDrop
+                  type="image"
+                  :url="gallery360Url"
+                  :fetch="fetching360"
+                  format=".jpg"
+                  :params="params360"
+                />
+                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                  <div class="skeleton h-28 w-28"></div>
+                </div>
+                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <img
+                    v-for="(image, index) in gallery360"
+                    :key="index"
+                    :src="image.image"
+                    :alt="'vehicle img' + image.id"
+                    class="h-28 w-28 rounded object-cover"
+                  />
+                </div>
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
+              <div role="tabpanel" class="tab-content min-w-96 p-3">
+                <DragDrop
+                  type="image"
+                  :url="galleryUrl"
+                  :fetch="fetchingFaulty"
+                  format=".jpg"
+                  :params="faultyParams"
+                />
               </div>
             </div>
           </aside>

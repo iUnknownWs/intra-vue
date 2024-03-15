@@ -8,6 +8,12 @@ dependencies:
   axios:
     specifier: ^1.6.7
     version: 1.6.7
+  sortablejs:
+    specifier: ^1.15.2
+    version: 1.15.2
+  sortablejs-vue3:
+    specifier: ^1.2.11
+    version: 1.2.11(sortablejs@1.15.2)(vue@3.4.21)
   tailwind:
     specifier: ^4.0.0
     version: 4.0.0
@@ -3096,6 +3102,20 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
     dev: true
+
+  /sortablejs-vue3@1.2.11(sortablejs@1.15.2)(vue@3.4.21):
+    resolution: {integrity: sha512-oKOA6N7yu2ktmqYXPHlPTQWbe9G4v16mn5ewogb+Ybc9Bk1Y+MIURrpbgedEv7f9TS5Bptvh81HGjazh5FEyJw==}
+    peerDependencies:
+      sortablejs: ^1.15.0
+      vue: ^3.2.25
+    dependencies:
+      sortablejs: 1.15.2
+      vue: 3.4.21
+    dev: false
+
+  /sortablejs@1.15.2:
+    resolution: {integrity: sha512-FJF5jgdfvoKn1MAKSdGs33bIqLi3LmsgVTliuX6iITj834F+JRQZN90Z93yql8h0K2t0RwDPBmxwlbZfDcxNZA==}
+    dev: false
 
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
