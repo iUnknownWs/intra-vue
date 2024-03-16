@@ -14,6 +14,7 @@ axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('
 const route = useRoute()
 const id = ref(route.params.id)
 const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
+const updateGalleryUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/update_vehicle_order/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const webBrandUrl = `${import.meta.env.VITE_API}/public/brands-web/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
@@ -236,62 +237,129 @@ const optionsDrag = computed(() => {
   }
 })
 
-const test = (event, event2) => {
-  if (event2) {
-    console.log(event, event2);
-  } else {
-    console.log(event);
+const updateImages = (event) => {
+  galleryImages.value.splice(event.newIndex, 0, galleryImages.value.splice(event.oldIndex, 1)[0])
+
+  let newGallery = []
+
+  for (let image of galleryImages.value) {
+    newGallery.push({
+      media_id: image.id,
+      media_type: 'image'
+    })
   }
 
-  console.log(galleryImages.value);
+  axios.post(updateGalleryUrl, newGallery).then(() => {
+    fetchingGallery()
+    fetch()
+  })
 }
 
-const fetchingGallery = () => {
+const updateFaulty = (event) => {
+  galleryFaulty.value.splice(event.newIndex, 0, galleryFaulty.value.splice(event.oldIndex, 1)[0])
+
+  let newGallery = []
+
+  for (let image of galleryFaulty.value) {
+    newGallery.push({
+      media_id: image.id,
+      media_type: 'image'
+    })
+  }
+
+  axios.post(updateGalleryUrl, newGallery).then(() => {
+    fetchingFaulty()
+  })
+}
+
+const fetchingGallery = (firstTime) => {
   axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=main').then((response) => {
     galleryImages.value = response.data.results
+    if (!firstTime) fetch()
     skeletonGallery.value = false
   })
 }
 
-const fetchingFaulty = () => {
+const fetchingFaulty = (firstTime) => {
   axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=faulty').then((response) => {
     galleryFaulty.value = response.data.results
+    if (!firstTime) fetch()
     skeletonGallery.value = false
   })
 }
 
-const fetchingVideo = () => {
+const fetchingVideo = (firstTime) => {
   axios.get(galleryVideoUrl + '?vehicle=' + id.value).then((response) => {
     galleryVideo.value = response.data.results
+    if (!firstTime) fetch()
     skeletonGallery.value = false
   })
 }
 
-const fetching360 = () => {
+const fetching360 = (firstTime) => {
   axios.get(gallery360Url + '?vehicle=' + id.value).then((response) => {
     gallery360.value = response.data.results
+    if (!firstTime) fetch()
     skeletonGallery.value = false
   })
 }
 
-const fetchingDocs = () => {
+const fetchingDocs = (firstTime) => {
   axios.get(galleryDocsUrl + '?vehicle=' + id.value).then((response) => {
     galleryDocs.value = response.data.results
+    if (!firstTime) fetch()
     skeletonGallery.value = false
   })
 }
 
-fetchingGallery()
-fetchingFaulty()
-fetchingVideo()
-fetching360()
-fetchingDocs()
+fetchingGallery(true)
+fetchingFaulty(true)
+fetchingVideo(true)
+fetching360(true)
+fetchingDocs(true)
 
 const deleteDoc = (id) => {
   axios
     .delete(galleryDocsUrl + id)
     .then(() => {
       fetchingDocs()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const deleteImage = (id) => {
+  axios
+    .delete(galleryUrl + id)
+    .then(() => {
+      fetchingGallery()
+      fetchingFaulty()
+      fetch()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const delete360 = (id) => {
+  axios
+    .delete(gallery360Url + id)
+    .then(() => {
+      fetching360()
+      fetch()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const deleteVideo = (id) => {
+  axios
+    .delete(galleryVideoUrl + id)
+    .then(() => {
+      fetchingVideo()
+      fetch()
     })
     .catch((error) => {
       console.error(error)
@@ -387,7 +455,7 @@ const fetch = () => {
     })
     .then(() => {
       loading.value = false
-      category.value = vehicle.value.web_categories[0]?.id
+      category.value = vehicle.value.web_categories[0]?.id || null
       bodyType.value = vehicle.value.body_type?.id || null
       brand.value = { id: vehicle.value.model.brand.id, label: vehicle.value.model.brand.title }
       webBrand.value = { id: vehicle.value.brand_web.id, label: vehicle.value.brand_web.title }
@@ -473,6 +541,17 @@ const fetch = () => {
 }
 
 fetch()
+
+const updateStatus = (status) => {
+  console.log(status)
+  axios
+    .patch(url, {
+      status: status
+    })
+    .then(() => {
+      fetch()
+    })
+}
 
 axios.get(bodyUrl).then((response) => {
   bodyOptions.value = response.data.results
@@ -1327,7 +1406,7 @@ onMounted(() => {
       <HeaderMain class="pb-16">
         <header class="flex flex-col items-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
-          <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" />
+          <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" @status="updateStatus" />
           <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
         </header>
         <div
@@ -1843,15 +1922,9 @@ onMounted(() => {
                   item-key="id"
                   :options="optionsDrag"
                   class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
-                  @sort="test"
+                  @sort="updateImages"
                 >
                   <template #item="{ element, index }">
-                    <!-- <img
-                      :key="element.id"
-                      :src="element.image"
-                      :alt="'vehicle img' + element.id"
-                      class="draggable h-28 w-28 rounded object-cover"
-                    /> -->
                     <div
                       @mouseover="galleryHover = index"
                       @mouseleave="galleryHover = null"
@@ -1872,7 +1945,7 @@ onMounted(() => {
                         </a>
                         <button
                           class="btn btn-square btn-error btn-sm"
-                          @click="deleteDoc(element.id)"
+                          @click="deleteImage(element.id)"
                         >
                           <Icon icon="mdi:delete" width="20" />
                         </button>
@@ -1898,15 +1971,43 @@ onMounted(() => {
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                 </div>
-                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <img
-                    v-for="(image, index) in galleryFaulty"
-                    :key="index"
-                    :src="image.image"
-                    :alt="'vehicle img' + image.id"
-                    class="aspect-square w-28 rounded object-cover"
-                  />
-                </div>
+                <Sortable
+                  v-else
+                  :list="galleryFaulty"
+                  item-key="id"
+                  :options="optionsDrag"
+                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                  @sort="updateFaulty"
+                >
+                  <template #item="{ element, index }">
+                    <div
+                      @mouseover="galleryHover = index"
+                      @mouseleave="galleryHover = null"
+                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
+                      :style="{
+                        backgroundImage: `url(${element.image})`
+                      }"
+                    >
+                      <div
+                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                        :class="{
+                          hidden: galleryHover !== index,
+                          'bg-black/30': galleryHover === index
+                        }"
+                      >
+                        <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+                          <Icon icon="mdi:eye" width="20" />
+                        </a>
+                        <button
+                          class="btn btn-square btn-error btn-sm"
+                          @click="deleteImage(element.id)"
+                        >
+                          <Icon icon="mdi:delete" width="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
@@ -1925,15 +2026,45 @@ onMounted(() => {
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                 </div>
-                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <video
-                    v-for="(video, index) in galleryVideo"
-                    :key="index"
-                    :src="video.video"
-                    :alt="'vehicle video' + video.id"
-                    class="h-28 w-28 rounded object-cover"
-                  />
-                </div>
+                <Sortable
+                  v-else
+                  :list="galleryVideo"
+                  item-key="id"
+                  :options="optionsDrag"
+                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                  @sort="updateImages"
+                >
+                  <template #item="{ element, index }">
+                    <div
+                      @mouseover="galleryHover = index"
+                      @mouseleave="galleryHover = null"
+                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center"
+                    >
+                      <video autoplay muted loop class="h-full w-full object-cover">
+                        <source :src="element.video" type="video/mp4" />
+                        Tu navegador no soporta el elemento de video.
+                      </video>
+
+                      <div
+                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                        :class="{
+                          hidden: galleryHover !== index,
+                          'bg-black/30': galleryHover === index
+                        }"
+                      >
+                        <a :href="element.video" target="_blank" class="btn btn-square btn-sm">
+                          <Icon icon="mdi:eye" width="20" />
+                        </a>
+                        <button
+                          class="btn btn-square btn-error btn-sm"
+                          @click="deleteVideo(element.id)"
+                        >
+                          <Icon icon="mdi:delete" width="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
@@ -1952,15 +2083,43 @@ onMounted(() => {
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                 </div>
-                <div v-else class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <img
-                    v-for="(image, index) in gallery360"
-                    :key="index"
-                    :src="image.image"
-                    :alt="'vehicle img' + image.id"
-                    class="aspect-square w-28 rounded object-cover"
-                  />
-                </div>
+                <Sortable
+                  v-else
+                  :list="gallery360"
+                  item-key="id"
+                  :options="optionsDrag"
+                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                  @sort="updateImages"
+                >
+                  <template #item="{ element, index }">
+                    <div
+                      @mouseover="galleryHover = index"
+                      @mouseleave="galleryHover = null"
+                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
+                      :style="{
+                        backgroundImage: `url(${element.image})`
+                      }"
+                    >
+                      <div
+                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                        :class="{
+                          hidden: galleryHover !== index,
+                          'bg-black/30': galleryHover === index
+                        }"
+                      >
+                        <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+                          <Icon icon="mdi:eye" width="20" />
+                        </a>
+                        <button
+                          class="btn btn-square btn-error btn-sm"
+                          @click="delete360(element.id)"
+                        >
+                          <Icon icon="mdi:delete" width="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">

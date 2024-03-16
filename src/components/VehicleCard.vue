@@ -4,6 +4,8 @@ defineProps({
   vehicle: { type: Object, required: true }
 })
 
+defineEmits(['status'])
+
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
 
@@ -63,22 +65,22 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </div>
         </template>
         <template #content>
-          <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button @click="$emit('status', 5)" class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
             Reservado
           </button>
-          <button class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button @click="$emit('status', 0)" class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
             Pte. de Recepción
           </button>
-          <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button @click="$emit('status', 3)" class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
             Pte. de Publicación
           </button>
-          <button class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button @click="$emit('status', 4)" class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
             En venta
           </button>
-          <button class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button @click="$emit('status', 8)" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
             Entregado
           </button>
-          <button class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button @click="$emit('status', 10)" class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
             No Disponible
           </button>
         </template>
