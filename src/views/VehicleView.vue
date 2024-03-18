@@ -226,6 +226,9 @@ const walcu = ref('')
 const walcuId = ref('')
 const walcuUsers = ref([])
 const addressFull = ref([])
+const buyerInput = ref(null)
+const companyInput = ref(null)
+const companyVat = ref('')
 const imagesParams = [
   {
     key: 'vehicle',
@@ -1291,6 +1294,11 @@ const setCompanyPlace = (place) => {
       companyZip.value = address.long_name
     }
   }
+}
+
+const toggleReserve = () => {
+  companyEmail.value = buyerEmail.value
+  companyPhone.value = buyerPhone.value
 }
 
 onMounted(async () => {
@@ -2710,7 +2718,7 @@ onMounted(async () => {
             <GMapAutocomplete @place_changed="setBuyerPlace">
               <template #input="slotProps">
                 <TextInput
-                  ref="input"
+                  ref="buyerInput"
                   v-bind="slotProps"
                   label="Dirección:"
                   v-model="buyerAddress"
@@ -2725,7 +2733,12 @@ onMounted(async () => {
               <TextInput label="Código Postal:" v-model="buyerZip" />
             </div>
           </div>
-          <ToggleInput label="Empresa" v-model="enterpriseReserve" class="my-4 w-1/5" />
+          <ToggleInput
+            label="Empresa"
+            v-model="enterpriseReserve"
+            class="my-4 w-1/5"
+            @changed="toggleReserve"
+          />
           <div v-if="enterpriseReserve">
             <h2 class="text-xl font-semibold">Información de la empresa</h2>
             <div class="grid grid-cols-2 gap-x-4">
@@ -2745,7 +2758,7 @@ onMounted(async () => {
             <GMapAutocomplete @place_changed="setCompanyPlace">
               <template #input="slotProps">
                 <TextInput
-                  ref="input"
+                  ref="companyInput"
                   v-bind="slotProps"
                   label="Dirección:"
                   v-model="companyAddress"
