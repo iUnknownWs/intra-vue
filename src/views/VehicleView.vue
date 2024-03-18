@@ -1259,7 +1259,6 @@ const reserveDrawer = (step) => {
 const setBuyerPlace = (place) => {
   addressFull.value = place.address_components
   for (let address of addressFull.value) {
-    console.log(address.types)
     if (address.types.includes('locality')) {
       buyerCity.value = address.long_name
     }
@@ -2714,7 +2713,7 @@ onMounted(async () => {
                   ref="input"
                   v-bind="slotProps"
                   label="Dirección:"
-                  v-model="companyAddress"
+                  v-model="buyerAddress"
                   class="w-full"
                 />
               </template>
