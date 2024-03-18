@@ -1237,6 +1237,8 @@ const reserveDrawer = (step) => {
   drawerSection.value = 'reserve'
 
   if (step === 2) {
+    drawerSection.value = 'reserve' + step
+    walcu.value = 'loading'
     axios
       .get(
         walcuUrl +
@@ -1247,20 +1249,24 @@ const reserveDrawer = (step) => {
           buyerPhone.value
       )
       .then((response) => {
-        if (response.status === 404) {
-          walcu.value = 'fail'
-        } else {
-          walcu.value = 'success'
-          walcuUsers.value = response.data
-        }
-        drawerSection.value = 'reserve' + step
+        walcu.value = 'success'
+        walcuUsers.value = response.data
       })
+      .catch(() => {
+        walcu.value = 'fail'
+      })
+    return
+  }
+
+  if (step === 3) {
+    drawerSection.value = 'reserve' + step
     return
   }
 }
 
 const setBuyerPlace = (place) => {
   addressFull.value = place.address_components
+  buyerAddress.value = place.formatted_address
   for (let address of addressFull.value) {
     if (address.types.includes('locality')) {
       buyerCity.value = address.long_name
@@ -1279,6 +1285,7 @@ const setBuyerPlace = (place) => {
 
 const setCompanyPlace = (place) => {
   addressFull.value = place.address_components
+  companyAddress.value = place.formatted_address
   for (let address of addressFull.value) {
     console.log(address.types)
     if (address.types.includes('locality')) {
@@ -2715,18 +2722,13 @@ onMounted(async () => {
                 </div>
               </label>
             </div>
-            <GMapAutocomplete @place_changed="setBuyerPlace">
-              <template #input="slotProps">
-                <div ref="input">
-                  <TextInput
-                    v-bind="slotProps"
-                    label="Dirección:"
-                    v-model="buyerAddress"
-                    class="w-full"
-                  />
-                </div>
-              </template>
-            </GMapAutocomplete>
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Dirección:</span>
+              </div>
+              <GMapAutocomplete @place_changed="setBuyerPlace" class="input input-bordered w-full">
+              </GMapAutocomplete>
+            </label>
             <div class="grid grid-cols-2 gap-x-4">
               <TextInput label="Ciudad:" v-model="buyerCity" />
               <TextInput label="Provincia:" v-model="buyerProvince" />
@@ -2756,17 +2758,17 @@ onMounted(async () => {
                 </div>
               </label>
             </div>
-            <GMapAutocomplete @place_changed="setCompanyPlace">
-              <template #input="slotProps">
-                <TextInput
-                  ref="companyInput"
-                  v-bind="slotProps"
-                  label="Dirección:"
-                  v-model="companyAddress"
-                  class="w-full"
-                />
-              </template>
-            </GMapAutocomplete>
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Dirección:</span>
+              </div>
+
+              <GMapAutocomplete
+                @place_changed="setCompanyPlace"
+                class="input input-bordered w-full"
+              >
+              </GMapAutocomplete>
+            </label>
             <div class="grid grid-cols-2 gap-x-4">
               <TextInput label="Ciudad:" v-model="companyCity" />
               <TextInput label="Provincia:" v-model="companyProvince" />
@@ -2788,7 +2790,8 @@ onMounted(async () => {
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
-          <div v-if="walcu === 'fail'">
+          <LoadingSpinner v-if="walcu === 'loading'" />
+          <div v-else-if="walcu === 'fail'">
             <h2 class="text-xl font-semibold">
               No se encontró ningún usuario con estos datos si continua se creara uno nuevo
             </h2>
