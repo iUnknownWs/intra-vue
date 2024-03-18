@@ -2717,13 +2717,14 @@ onMounted(async () => {
             </div>
             <GMapAutocomplete @place_changed="setBuyerPlace">
               <template #input="slotProps">
-                <TextInput
-                  ref="buyerInput"
-                  v-bind="slotProps"
-                  label="Dirección:"
-                  v-model="buyerAddress"
-                  class="w-full"
-                />
+                <div ref="input">
+                  <TextInput
+                    v-bind="slotProps"
+                    label="Dirección:"
+                    v-model="buyerAddress"
+                    class="w-full"
+                  />
+                </div>
               </template>
             </GMapAutocomplete>
             <div class="grid grid-cols-2 gap-x-4">
