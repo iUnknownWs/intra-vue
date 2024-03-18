@@ -4,7 +4,7 @@ defineProps({
   vehicle: { type: Object, required: true }
 })
 
-defineEmits(['status'])
+defineEmits(['status', 'reserve'])
 
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
@@ -99,7 +99,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               >
             </div>
             <div class="absolute right-2 top-2 flex gap-4">
-              <button class="btn btn-warning">Reservar</button>
+              <label for="vehicle-drawer" class="btn btn-warning" @click="$emit('reserve')">Reservar</label>
               <button class="btn btn-outline">Acciones</button>
             </div>
           </div>

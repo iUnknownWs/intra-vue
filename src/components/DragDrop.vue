@@ -6,10 +6,10 @@ import axios from 'axios'
 const props = defineProps({
   url: { type: String, required: true },
   type: { type: String, required: true },
-  file_name: { type: String },
-  format: { type: String, required: true },
   params: { type: Array, required: true },
-  fetch: { type: Function }
+  format: { type: String, required: true },
+  fetch: { type: Function },
+  file_name: { type: String }
 })
 
 const loading = ref(false)
@@ -54,9 +54,9 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone(optionsDrop)
 </script>
 
 <template>
-  <div v-bind="getRootProps()" class="m-2 w-96 rounded border-2 border-black p-3">
+  <div v-bind="getRootProps()" class="m-2 w-fit rounded border-2 border-black p-3">
     <input v-bind="getInputProps()" />
-    <div class="w-96">
+    <div class="w-[25rem] text-center">
       <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
       <LoadingSpinner v-else-if="loading" />
       <p v-else>Arrastra y suelta los archivos o selecciónalos haciendo click</p>

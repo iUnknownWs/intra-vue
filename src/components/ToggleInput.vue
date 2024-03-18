@@ -8,7 +8,7 @@ const value = defineModel()
 <template>
   <div class="form-control">
     <label class="label cursor-pointer">
-      <span class="label-text font-medium">{{ label }}</span>
+      <span class="label-text text-lg font-medium">{{ label }}</span>
       <input type="checkbox" class="toggle" v-model="value" />
     </label>
   </div>

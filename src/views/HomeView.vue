@@ -830,7 +830,7 @@ onMounted(() => {
           />
         </div>
       </div>
-      <div class="drawer-side">
+      <div class="drawer-side z-50">
         <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
         <ul
           v-if="drawer === 'filter'"
@@ -982,6 +982,7 @@ onMounted(() => {
           </div>
           <DrawerActions secondary="Cancelar" primary="Añadir" />
         </ul>
+
       </div>
     </div>
   </HeaderMain>

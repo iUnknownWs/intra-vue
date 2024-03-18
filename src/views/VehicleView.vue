@@ -3,6 +3,7 @@ import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
 import { Sortable } from 'sortablejs-vue3'
 import { ref, onMounted, watch, computed } from 'vue'
+import phonePrefix from '@/js/phone_prefixes.json'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
 import options from '@/js/filterOptions'
@@ -36,6 +37,7 @@ const galleryUrl = `${import.meta.env.VITE_API}/vehicles-images/`
 const gallery360Url = `${import.meta.env.VITE_API}/vehicles-image-360/`
 const galleryVideoUrl = `${import.meta.env.VITE_API}/vehicles-videos/`
 const galleryDocsUrl = `${import.meta.env.VITE_API}/vehicles-documents/`
+const walcuUrl = `${import.meta.env.VITE_API}/walcu_lead/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -88,6 +90,7 @@ const galleryFaulty = ref([])
 const gallery360 = ref([])
 const galleryVideo = ref([])
 const galleryDocs = ref([])
+const phonesPre = ref([])
 const drives = ref(null)
 const bodyType = ref(null)
 const brand = ref({ id: '', label: '' })
@@ -96,6 +99,7 @@ const model = ref({ id: '', label: '' })
 const modelWeb = ref({ id: '', label: '' })
 const provider = ref({ id: '', label: '' })
 const buyer = ref({ id: '', label: '' })
+const prefix = ref({ id: '+34', label: 'ES+34' })
 const equipmentsGroup = ref([])
 const license = ref('')
 const license1 = ref(null)
@@ -198,6 +202,30 @@ const equipFeatured = ref(false)
 const isFetchingEquip = ref(true)
 const skeletonGallery = ref(true)
 const galleryHover = ref(null)
+const enterpriseReserve = ref(false)
+const idType = ref('0')
+const idNumber = ref('')
+const buyerName = ref('')
+const buyerLastName = ref('')
+const buyerEmail = ref('')
+const buyerPhone = ref('')
+const buyerCity = ref('')
+const buyerCountry = ref('')
+const buyerProvince = ref('')
+const buyerAddress = ref('')
+const buyerZip = ref('')
+const companyName = ref('')
+const companyEmail = ref('')
+const companyPhone = ref('')
+const companyAddress = ref('')
+const companyCity = ref('')
+const companyProvince = ref('')
+const companyCountry = ref('')
+const companyZip = ref('')
+const walcu = ref('')
+const walcuId = ref('')
+const walcuUsers = ref([])
+const addressFull = ref([])
 const imagesParams = [
   {
     key: 'vehicle',
@@ -574,6 +602,10 @@ axios.get(buyersUrl).then((response) => {
     })
   }
 })
+
+for (let prefix of phonePrefix) {
+  phonesPre.value.push({ id: prefix.dial_code, label: prefix.code + prefix.dial_code })
+}
 
 axios.get(providersUrl).then((response) => {
   for (let option of response.data.results) {
@@ -1198,7 +1230,71 @@ const discountDrawer = () => {
   })
 }
 
-onMounted(() => {
+const reserveDrawer = (step) => {
+  drawerSection.value = 'reserve'
+
+  if (step === 2) {
+    axios
+      .get(
+        walcuUrl +
+          '?email=' +
+          buyerEmail.value +
+          '&phone_number=' +
+          prefix.value.id +
+          buyerPhone.value
+      )
+      .then((response) => {
+        if (response.status === 404) {
+          walcu.value = 'fail'
+        } else {
+          walcu.value = 'success'
+          walcuUsers.value = response.data
+        }
+        drawerSection.value = 'reserve' + step
+      })
+    return
+  }
+}
+
+const setBuyerPlace = (place) => {
+  addressFull.value = place.address_components
+  for (let address of addressFull.value) {
+    console.log(address.types)
+    if (address.types.includes('locality')) {
+      buyerCity.value = address.long_name
+    }
+    if (address.types.includes('administrative_area_level_1')) {
+      buyerProvince.value = address.long_name
+    }
+    if (address.types.includes('country')) {
+      buyerCountry.value = address.long_name
+    }
+    if (address.types.includes('postal_code')) {
+      buyerZip.value = address.long_name
+    }
+  }
+}
+
+const setCompanyPlace = (place) => {
+  addressFull.value = place.address_components
+  for (let address of addressFull.value) {
+    console.log(address.types)
+    if (address.types.includes('locality')) {
+      companyCity.value = address.long_name
+    }
+    if (address.types.includes('administrative_area_level_1')) {
+      companyProvince.value = address.long_name
+    }
+    if (address.types.includes('country')) {
+      companyCountry.value = address.long_name
+    }
+    if (address.types.includes('postal_code')) {
+      companyZip.value = address.long_name
+    }
+  }
+}
+
+onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
   let prev = window.scrollY
@@ -1406,7 +1502,13 @@ onMounted(() => {
       <HeaderMain class="pb-16">
         <header class="flex flex-col items-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
-          <VehicleCard v-else :vehicle="vehicle" class="hidden lg:flex" @status="updateStatus" />
+          <VehicleCard
+            v-else
+            :vehicle="vehicle"
+            class="hidden lg:flex"
+            @status="updateStatus"
+            @reserve="reserveDrawer"
+          />
           <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
         </header>
         <div
@@ -1426,12 +1528,10 @@ onMounted(() => {
         <div
           v-if="tab > 8 && tab < 11"
           role="tablist"
-          class="tabs tabs-bordered sticky top-0 overflow-x-scroll text-nowrap px-4 lg:hidden"
+          class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
-          <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9"
-            >Equipamiento de serie</a
-          >
-          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equipamiento opcional</a>
+          <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9">Equip de serie</a>
+          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equip opcional</a>
         </div>
         <main class="flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
@@ -1467,7 +1567,10 @@ onMounted(() => {
           </aside>
           <section class="flex flex-1 flex-col">
             <div v-if="tab > 0 && tab < 9" class="flex flex-col gap-8">
-              <div ref="basic" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="basic"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <div class="flex flex-row justify-between">
                   <h1 class="text-xl font-medium">Información Básica</h1>
                   <DropdownBtn>
@@ -1546,7 +1649,10 @@ onMounted(() => {
                   <TextInput label="Nº llaves:" v-model="keysQ" />
                 </div>
               </div>
-              <div ref="technical" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="technical"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <div class="flex flex-row justify-between">
                   <h1 class="text-xl font-medium">Información Técnica</h1>
                 </div>
@@ -1577,7 +1683,7 @@ onMounted(() => {
                   <TextInput label="Tara:" v-model="tare" />
                 </div>
               </div>
-              <!-- <div ref="portals" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <!-- <div ref="portals" class="flex scroll-m-28 lg:scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
                 <h1 class="text-xl font-medium">Portales Web</h1>
                 <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
                   <IntegrationCard
@@ -1590,7 +1696,7 @@ onMounted(() => {
               </div> -->
               <div
                 ref="maintenance"
-                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
                 <h1 class="text-xl font-medium">Mantenimiento</h1>
                 <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
@@ -1600,7 +1706,10 @@ onMounted(() => {
                 <h2>Libro de revisiones</h2>
                 <div class="divider m-0 p-0"></div>
               </div>
-              <div ref="prices" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="prices"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <div class="flex flex-row justify-between">
                   <h1 class="text-xl font-medium">Información de compra</h1>
                   <button class="btn btn-outline btn-sm hidden lg:block">Generar contrato</button>
@@ -1641,14 +1750,20 @@ onMounted(() => {
                   <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
                 </div>
               </div>
-              <div ref="comments" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="comments"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <h1 class="text-xl font-medium">Comentarios</h1>
                 <div class="flex flex-col gap-x-4 lg:gap-x-10">
                   <AreaInput label="Internos:" v-model="commInternal" />
                   <AreaInput label="Externos:" v-model="commExternal" />
                 </div>
               </div>
-              <div ref="extras" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="extras"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <VehicleTable title="Lista de Extras" @addBtn="extraDrawer">
                   <template #content>
                     <EasyDataTable
@@ -1664,7 +1779,7 @@ onMounted(() => {
                       :loading="isFetchingExtras"
                     >
                       <template v-slot:item-id="{ id }">
-                        <div class="w-20">
+                        <div class="w-14">
                           <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
                             <Icon icon="mdi:pencil" />
                           </button>
@@ -1678,7 +1793,10 @@ onMounted(() => {
                   <template #drawer> </template>
                 </VehicleTable>
               </div>
-              <div ref="discounts" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="discounts"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer">
                   <template #content>
                     <EasyDataTable
@@ -1695,7 +1813,7 @@ onMounted(() => {
                       :loading="isFetchingDiscounts"
                     >
                       <template v-slot:item-id="{ id }">
-                        <div class="w-20">
+                        <div class="w-14">
                           <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
                             <Icon icon="mdi:pencil" />
                           </button>
@@ -1715,7 +1833,7 @@ onMounted(() => {
             <div v-if="tab > 8 && tab < 12" class="flex flex-col gap-8">
               <div
                 ref="serialEquip"
-                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
                 <VehicleTable title="Equipamiento de serie" @addBtn="drawerSection = 'SERIAL'">
                   <template #content>
@@ -1748,7 +1866,7 @@ onMounted(() => {
                         />
                       </template>
                       <template v-slot:item-id="{ id }">
-                        <div class="w-20">
+                        <div class="w-14">
                           <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
                             <Icon icon="mdi:pencil" />
                           </button>
@@ -1764,7 +1882,7 @@ onMounted(() => {
               </div>
               <div
                 ref="optionalEquip"
-                class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
                 <VehicleTable
                   title="Equipamiento opcional sin coste"
@@ -1800,7 +1918,7 @@ onMounted(() => {
                         />
                       </template>
                       <template v-slot:item-id="{ id }">
-                        <div class="w-20">
+                        <div class="w-14">
                           <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
                             <Icon icon="mdi:pencil" />
                           </button>
@@ -1814,7 +1932,10 @@ onMounted(() => {
                   <template #drawer> </template>
                 </VehicleTable>
               </div>
-              <div ref="paidEquip" class="flex scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="paidEquip"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <VehicleTable
                   title="Equipamiento opcional con coste"
                   @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
@@ -1849,7 +1970,7 @@ onMounted(() => {
                         />
                       </template>
                       <template v-slot:item-id="{ id }">
-                        <div class="w-20">
+                        <div class="w-14">
                           <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
                             <Icon icon="mdi:pencil" />
                           </button>
@@ -1864,28 +1985,279 @@ onMounted(() => {
                 </VehicleTable>
               </div>
             </div>
-            <div ref="gallery" class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden">
+            <div
+              v-if="tab === 12"
+              ref="gallery"
+              class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden"
+            >
               <h2 class="text-xl font-medium">Galería Multimedia</h2>
-              <div role="tablist" class="tabs tabs-bordered tabs-md">
-                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Galería" />
-                <div role="tabpanel" class="tab-content p-4 lg:p-8">
-                  <button @click="open">open</button>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
+              <div role="tablist" class="tabs tabs-bordered tabs-md overflow-x-hidden">
+                <input
+                  type="radio"
+                  name="galeria"
+                  role="tab"
+                  class="tab"
+                  aria-label="Fotos"
+                  checked
+                />
+                <div role="tabpanel" class="tab-content p-3">
+                  <!-- <DragDrop
+                    type="image"
+                    :url="galleryUrl"
+                    :fetch="fetchingGallery"
+                    format=".jpg"
+                    :params="imagesParams"
+                  /> -->
+                  <div v-if="skeletonGallery" class="grid grid-cols-2 lg:grid-cols-3 lg:gap-4">
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                  </div>
+                  <Sortable
+                    v-else
+                    :list="galleryImages"
+                    item-key="id"
+                    :options="optionsDrag"
+                    class="grid grid-cols-2 lg:grid-cols-3 lg:gap-4"
+                    @sort="updateImages"
+                  >
+                    <template #item="{ element, index }">
+                      <div
+                        @mouseover="galleryHover = index"
+                        @mouseleave="galleryHover = null"
+                        class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
+                        :style="{
+                          backgroundImage: `url(${element.image})`
+                        }"
+                      >
+                        <div
+                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                          :class="{
+                            hidden: galleryHover !== index,
+                            'bg-black/30': galleryHover === index
+                          }"
+                        >
+                          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+                            <Icon icon="mdi:eye" width="20" />
+                          </a>
+                          <button
+                            class="btn btn-square btn-error btn-sm"
+                            @click="deleteImage(element.id)"
+                          >
+                            <Icon icon="mdi:delete" width="20" />
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                  </Sortable>
                 </div>
                 <input
                   type="radio"
                   name="galeria"
                   role="tab"
                   class="tab"
-                  aria-label="Documentos"
-                  checked
+                  aria-label="Desperfectos"
                 />
-                <div role="tabpanel" class="tab-content p-8"></div>
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
+                  <DragDrop
+                    type="image"
+                    :url="galleryUrl"
+                    :fetch="fetchingFaulty"
+                    format=".jpg"
+                    :params="faultyParams"
+                  />
+                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                  </div>
+                  <Sortable
+                    v-else
+                    :list="galleryFaulty"
+                    item-key="id"
+                    :options="optionsDrag"
+                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                    @sort="updateFaulty"
+                  >
+                    <template #item="{ element, index }">
+                      <div
+                        @mouseover="galleryHover = index"
+                        @mouseleave="galleryHover = null"
+                        class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
+                        :style="{
+                          backgroundImage: `url(${element.image})`
+                        }"
+                      >
+                        <div
+                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                          :class="{
+                            hidden: galleryHover !== index,
+                            'bg-black/30': galleryHover === index
+                          }"
+                        >
+                          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+                            <Icon icon="mdi:eye" width="20" />
+                          </a>
+                          <button
+                            class="btn btn-square btn-error btn-sm"
+                            @click="deleteImage(element.id)"
+                          >
+                            <Icon icon="mdi:delete" width="20" />
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                  </Sortable>
+                </div>
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
+                  <DragDrop
+                    type="video"
+                    :url="galleryVideoUrl"
+                    :fetch="fetchingVideo"
+                    format=".mp4"
+                    :params="params"
+                  />
+                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                  </div>
+                  <Sortable
+                    v-else
+                    :list="galleryVideo"
+                    item-key="id"
+                    :options="optionsDrag"
+                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                    @sort="updateImages"
+                  >
+                    <template #item="{ element, index }">
+                      <div
+                        @mouseover="galleryHover = index"
+                        @mouseleave="galleryHover = null"
+                        class="relative aspect-square w-28 rounded bg-cover bg-center"
+                      >
+                        <video autoplay muted loop class="h-full w-full object-cover">
+                          <source :src="element.video" type="video/mp4" />
+                          Tu navegador no soporta el elemento de video.
+                        </video>
+
+                        <div
+                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                          :class="{
+                            hidden: galleryHover !== index,
+                            'bg-black/30': galleryHover === index
+                          }"
+                        >
+                          <a :href="element.video" target="_blank" class="btn btn-square btn-sm">
+                            <Icon icon="mdi:eye" width="20" />
+                          </a>
+                          <button
+                            class="btn btn-square btn-error btn-sm"
+                            @click="deleteVideo(element.id)"
+                          >
+                            <Icon icon="mdi:delete" width="20" />
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                  </Sortable>
+                </div>
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
+                  <DragDrop
+                    type="image"
+                    :url="gallery360Url"
+                    :fetch="fetching360"
+                    format=".jpg"
+                    :params="params"
+                  />
+                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                    <div class="skeleton h-28 w-28"></div>
+                  </div>
+                  <Sortable
+                    v-else
+                    :list="gallery360"
+                    item-key="id"
+                    :options="optionsDrag"
+                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                    @sort="updateImages"
+                  >
+                    <template #item="{ element, index }">
+                      <div
+                        @mouseover="galleryHover = index"
+                        @mouseleave="galleryHover = null"
+                        class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
+                        :style="{
+                          backgroundImage: `url(${element.image})`
+                        }"
+                      >
+                        <div
+                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                          :class="{
+                            hidden: galleryHover !== index,
+                            'bg-black/30': galleryHover === index
+                          }"
+                        >
+                          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+                            <Icon icon="mdi:eye" width="20" />
+                          </a>
+                          <button
+                            class="btn btn-square btn-error btn-sm"
+                            @click="delete360(element.id)"
+                          >
+                            <Icon icon="mdi:delete" width="20" />
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                  </Sortable>
+                </div>
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
+                  <DragDrop
+                    format=""
+                    type="file"
+                    file_name="file_name"
+                    :url="galleryDocsUrl"
+                    :fetch="fetchingDocs"
+                    :params="params"
+                  />
+                  <div
+                    v-for="(doc, index) in galleryDocs"
+                    :key="index"
+                    class="card card-side m-3 bg-base-100 shadow-xl"
+                  >
+                    <div class="card-body flex-row justify-between p-4">
+                      <div class="flex gap-2">
+                        <Icon icon="mdi:file-document" width="50" />
+                        <h2 class="card-title text-lg">{{ doc.file_name }}</h2>
+                      </div>
+                      <div class="self flex gap-2">
+                        <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
+                          <Icon icon="mdi:eye" width="20" />
+                        </a>
+                        <button class="btn btn-square btn-error btn-sm" @click="deleteDoc(doc.id)">
+                          <Icon icon="mdi:delete" width="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -1908,7 +2280,10 @@ onMounted(() => {
                   format=".jpg"
                   :params="imagesParams"
                 />
-                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                <div
+                  v-if="skeletonGallery"
+                  class="mx-auto grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                >
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
                   <div class="skeleton h-28 w-28"></div>
@@ -1921,7 +2296,7 @@ onMounted(() => {
                   :list="galleryImages"
                   item-key="id"
                   :options="optionsDrag"
-                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                  class="mx-auto grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
                   @sort="updateImages"
                 >
                   <template #item="{ element, index }">
@@ -2038,7 +2413,7 @@ onMounted(() => {
                     <div
                       @mouseover="galleryHover = index"
                       @mouseleave="galleryHover = null"
-                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center"
+                      class="relative aspect-square w-28 rounded bg-cover bg-center"
                     >
                       <video autoplay muted loop class="h-full w-full object-cover">
                         <source :src="element.video" type="video/mp4" />
@@ -2191,9 +2566,14 @@ onMounted(() => {
             </button>
           </div>
           <div>
-            <button class="btn btn-warning w-36" ref="navBtn6" @click="1">
+            <label
+              for="vehicle-drawer"
+              class="btn btn-warning w-36"
+              ref="navBtn6"
+              @click="drawerSection = 'reserve'"
+            >
               <span class="btm-nav-label">Reservar</span>
-            </button>
+            </label>
           </div>
         </div>
       </footer>
@@ -2302,6 +2682,185 @@ onMounted(() => {
           @click-secondary="toggleDrawer"
           @click-primary="addEquip"
         />
+      </ul>
+      <ul
+        v-if="drawerSection === 'reserve'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
+          <DragDrop :url="url" type="vehicle" :params="params" format=".pdf" />
+          <div>
+            <h2 class="text-xl font-semibold">Información del comprador</h2>
+            <SelectInput label="Tipo de documento:" :options="options.idTypes" v-model="idType" />
+            <TextInput label="Numero de documento:" v-model="idNumber" />
+            <div class="grid grid-cols-2 gap-x-4">
+              <TextInput label="Nombre:" v-model="buyerName" />
+              <TextInput label="Apellido:" v-model="buyerLastName" />
+              <TextInput label="Email:" v-model="buyerEmail" />
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Teléfono:</span>
+                </div>
+                <div class="flex flex-row gap-2">
+                  <VueSelect v-model="prefix" :options="phonesPre" class="w-44" />
+                  <input type="text" class="input input-bordered w-full" v-model="buyerPhone" />
+                </div>
+              </label>
+            </div>
+            <GMapAutocomplete @place_changed="setBuyerPlace">
+              <template #input="slotProps">
+                <TextInput
+                  ref="input"
+                  v-bind="slotProps"
+                  label="Dirección:"
+                  v-model="companyAddress"
+                  class="w-full"
+                />
+              </template>
+            </GMapAutocomplete>
+            <div class="grid grid-cols-2 gap-x-4">
+              <TextInput label="Ciudad:" v-model="buyerCity" />
+              <TextInput label="Provincia:" v-model="buyerProvince" />
+              <TextInput label="País:" v-model="buyerCountry" />
+              <TextInput label="Código Postal:" v-model="buyerZip" />
+            </div>
+          </div>
+          <ToggleInput label="Empresa" v-model="enterpriseReserve" class="my-4 w-1/5" />
+          <div v-if="enterpriseReserve">
+            <h2 class="text-xl font-semibold">Información de la empresa</h2>
+            <div class="grid grid-cols-2 gap-x-4">
+              <TextInput label="VAT:" v-model="companyVat" />
+              <TextInput label="Nombre:" v-model="companyName" />
+              <TextInput label="Email:" v-model="companyEmail" />
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Teléfono:</span>
+                </div>
+                <div class="flex flex-row gap-2">
+                  <VueSelect v-model="prefix" :options="phonesPre" class="w-44" />
+                  <input type="text" class="input input-bordered w-full" v-model="companyPhone" />
+                </div>
+              </label>
+            </div>
+            <GMapAutocomplete @place_changed="setCompanyPlace">
+              <template #input="slotProps">
+                <TextInput
+                  ref="input"
+                  v-bind="slotProps"
+                  label="Dirección:"
+                  v-model="companyAddress"
+                  class="w-full"
+                />
+              </template>
+            </GMapAutocomplete>
+            <div class="grid grid-cols-2 gap-x-4">
+              <TextInput label="Ciudad:" v-model="companyCity" />
+              <TextInput label="Provincia:" v-model="companyProvince" />
+              <TextInput label="País:" v-model="companyCountry" />
+              <TextInput label="Código Postal:" v-model="companyZip" />
+            </div>
+          </div>
+        </div>
+        <DrawerActions
+          secondary="Cancelar"
+          primary="Siguiente"
+          @click-secondary="toggleDrawer"
+          @click-primary="reserveDrawer(2)"
+        />
+      </ul>
+      <ul
+        v-if="drawerSection === 'reserve2'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
+          <div v-if="walcu === 'fail'">
+            <h2 class="text-xl font-semibold">
+              No se encontró ningún usuario con estos datos si continua se creara uno nuevo
+            </h2>
+          </div>
+          <div v-else>
+            <h2 class="text-xl font-semibold">Se han encontrado usuarios con estos datos</h2>
+            <h3 class="text-lg font-semibold">¿Que desea hacer?</h3>
+            <RadioInput label="Crear nuevo usuario" v-model="walcuId" value="" name="users" />
+            <RadioInput
+              v-for="user in walcuUsers"
+              :key="user._id"
+              :label="`${user.contacts[0].name} (${user.contacts[0].emails[0]})`"
+              v-model="walcuId"
+              :value="user._id"
+              name="users"
+            />
+          </div>
+        </div>
+        <DrawerActions
+          secondary="Volver"
+          primary="Reservar"
+          @click-secondary="reserveDrawer()"
+          @click-primary="reserveDrawer(3)"
+        />
+      </ul>
+      <ul
+        v-if="drawerSection === 'reserve3'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
+          <div>
+            <h2 class="text-xl font-semibold">Información de la reserva</h2>
+            <SelectInput label="Vendedor:" :options="idTypes" />
+            <SelectInput label="Vehículo:" :options="idTypes" />
+            <h3 class="text-lg font-semibold">Gestión de extras</h3>
+            <SelectInput label="Categoria:" :options="idTypes" />
+            <SelectInput label="Tipo:" :options="idTypes" />
+            <TextInput label="Importe:" v-model="idNumber" />
+            <button>Añadir</button>
+            <span>No hay extras</span>
+            <TextInput label="Precio de venta:" v-model="idNumber" />
+            <div class="flex flex-row">
+              <TextInput label="Importe de reserva:" v-model="idNumber" />
+              <TextInput label="Método de pago:" v-model="idNumber" />
+            </div>
+            <TextInput label="Dirección Fiscal:" v-model="buyerAddress" />
+            <AreaInput label="Comentarios:" v-model="idNumber" />
+          </div>
+        </div>
+        <DrawerActions secondary="Cancelar" primary="Reservar" />
+      </ul>
+      <ul
+        v-if="drawerSection === 'reserve4'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
+          <div>
+            <h2 class="text-xl font-semibold">Dirección de entrega</h2>
+            <CheckInput label="Misma que documentación" class="my-4 w-1/5" v-model="auto" />
+            <TextInput label="Dirección de envió:" v-model="idNumber" />
+            <div class="grid grid-cols-2 gap-x-4">
+              <TextInput label="Email:" v-model="buyerEmail" />
+              <TextInput label="Celular:" v-model="buyerPhone" />
+              <TextInput label="Ciudad:" v-model="buyerCity" />
+              <TextInput label="Provincia:" v-model="buyerProvince" />
+              <TextInput label="País:" v-model="buyerCountry" />
+              <TextInput label="Código Postal:" v-model="buyerZip" />
+            </div>
+            <SelectInput label="Forma de pago:" :options="idTypes" />
+            <CheckInput label="¿Vehiculo como parte del pago?" class="my-4 w-1/5" v-model="auto" />
+            <div>
+              <TextInput label="Numero de placa:" v-model="buyerEmail" />
+              <TextInput label="Numero de chasis:" v-model="buyerPhone" />
+              <SelectInput label="Marca:" :options="idTypes" />
+              <SelectInput label="Modelo:" :options="idTypes" />
+              <TextInput label="Kilometraje:" v-model="buyerCity" />
+              <SelectInput label="Combustible:" :options="idTypes" />
+              <SelectInput label="Cambios:" :options="idTypes" />
+              <TextInput label="Valoración:" v-model="buyerProvince" />
+            </div>
+          </div>
+        </div>
+        <DrawerActions secondary="Cancelar" primary="Reservar" />
       </ul>
     </div>
   </div>

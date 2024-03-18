@@ -21,7 +21,7 @@ const toggleDrawer = () => {
         <NavBar />
       </header>
       <!-- Page content here -->
-      <main class="min-h-[90vh] w-[98vw]">
+      <main class="min-h-[90vh] w-screen lg:w-[98vw]">
         <slot />
       </main>
     </div>

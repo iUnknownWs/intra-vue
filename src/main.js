@@ -15,9 +15,10 @@ import HeaderMain from '@/components/HeaderMain.vue'
 import IntegrationCard from '@/components/IntegrationCard.vue'
 import MenuLink from '@/components/MenuLink.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
-import ModalInfo from './components/ModalInfo.vue'
+import ModalInfo from '@/components/ModalInfo.vue'
 import NavLink from '@/components/NavLink.vue'
-import NumberInput from './components/NumberInput.vue'
+import NumberInput from '@/components/NumberInput.vue'
+import RadioInput from '@/components/RadioInput.vue'
 import RangeInputN from '@/components/RangeInputN.vue'
 import RangeSelect from '@/components/RangeSelect.vue'
 import SelectInput from '@/components/SelectInput.vue'
@@ -34,6 +35,7 @@ import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleTable from '@/components/VehicleTable.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import VueSelect from "vue-select"
+import VueGoogleMaps from 'vue-google-maps-community-fork'
 import 'vue3-easy-data-table/dist/style.css'
 import 'vue-select/dist/vue-select.css'
 
@@ -57,6 +59,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('ModalInfo', ModalInfo)
     .component('NavLink', NavLink)
     .component('NumberInput', NumberInput)
+    .component('RadioInput', RadioInput)
     .component('RangeInputN', RangeInputN)
     .component('RangeSelect', RangeSelect)
     .component('SearchSelect', SearchSelect)
@@ -73,5 +76,13 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('VehicleTable', VehicleTable)
 
 app.use(router)
+
+app.use(VueGoogleMaps, {
+    load: {
+        key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        libraries: 'places',
+        language: 'es'
+    },
+})
 
 app.mount('#app')

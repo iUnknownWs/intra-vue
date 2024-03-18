@@ -1,5 +1,16 @@
 import HomeViewVue from '@/views/HomeView.vue'
 import LoginViewVue from '@/views/LoginView.vue'
+import VehicleView from '@/views/VehicleView.vue'
+import ReserveView from '@/views/ReserveView.vue'
+import ValuationView from '@/views/ValuationView.vue'
+import RecoveryView from '@/views/RecoveryView.vue'
+import UsersView from '@/views/UsersView.vue'
+import DiscountsView from '@/views/DiscountsView.vue'
+import WarrantsView from '@/views/WarrantsView.vue'
+import DeliveriesView from '@/views/DeliveriesView.vue'
+import DocsView from '@/views/DocsView.vue'
+import ExtrasView from '@/views/ExtrasView.vue'
+import IntegrationsView from '@/views/IntegrationsView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -8,67 +19,67 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: LoginViewVue,
+      component: LoginViewVue
     },
     {
       path: '/vehiculos',
       name: 'home',
-      component: HomeViewVue,
+      component: HomeViewVue
     },
     {
       path: '/vehiculos/:id',
       name: 'vehicle',
-      component: () => import('../views/VehicleView.vue')
+      component: VehicleView
     },
     {
       path: '/reservas',
       name: 'reserve',
-      component: () => import('../views/ReserveView.vue')
+      component: ReserveView
     },
     {
       path: '/tasaciones',
       name: 'valuation',
-      component: () => import('../views/ValuationView.vue')
+      component: () => ValuationView
     },
     {
       path: '/recuperar',
       name: 'recovery',
-      component: () => import('../views/RecoveryView.vue')
+      component: () => RecoveryView
     },
     {
       path: '/usuarios',
       name: 'users',
-      component: () => import('../views/UsersView.vue')
+      component: () => UsersView
     },
     {
       path: '/descuentos',
       name: 'discounts',
-      component: () => import('../views/DiscountsView.vue')
+      component: () => DiscountsView
     },
     {
       path: '/garantias',
       name: 'warranty',
-      component: () => import('../views/WarrantsView.vue')
+      component: () => WarrantsView
     },
     {
       path: '/entregas',
       name: 'deliveries',
-      component: () => import('../views/DeliveriesView.vue')
+      component: () => DeliveriesView
     },
     {
       path: '/documentos',
       name: 'docs',
-      component: () => import('../views/DocsView.vue')
+      component: () => DocsView
     },
     {
       path: '/extras',
       name: 'extras',
-      component: () => import('../views/ExtrasView.vue')
+      component: () => ExtrasView
     },
     {
       path: '/integraciones',
       name: 'integration',
-      component: () => import('../views/IntegrationsView.vue')
+      component: () => IntegrationsView
     },
   ]
 })
