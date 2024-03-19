@@ -136,7 +136,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           <div class="mt-3 flex flex-row gap-6 [&>_div]:rounded [&>_div]:bg-base-200 [&>_div]:p-2">
             <div v-if="vehicle.price?.financed_price" class="flex flex-col items-start">
               <span class="font-bold">Precio</span>
-              <span>{{ vehicle.price.financed_price }}€</span>
+              <span>{{ vehicle.price.price_with_discount }}€</span>
               <span>Desde {{ vehicle.price.financing_fee }}€</span>
             </div>
             <div v-else class="flex flex-col items-start">

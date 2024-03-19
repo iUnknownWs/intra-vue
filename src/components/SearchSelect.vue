@@ -4,15 +4,21 @@ defineProps({
   options: { type: Object, required: true },
   disabled: { type: Boolean }
 })
+defineEmits(['selected'])
 const brand = defineModel()
 </script>
 
 <template>
-  <label class="form-control mb-4 w-full">
+  <label class="form-control w-full">
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <VueSelect v-model="brand" :options="options" :disabled="disabled" />
+    <VueSelect
+      v-model="brand"
+      :options="options"
+      :disabled="disabled"
+      @option:selected="$emit('selected')"
+    />
   </label>
 </template>
 

@@ -11,7 +11,7 @@ const value = defineModel()
 </script>
 
 <template>
-  <label class="form-control mb-4 w-full">
+  <label class="form-control w-full">
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>

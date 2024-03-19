@@ -157,8 +157,36 @@ const extraType = [{
 {
     id: 'AnyExtra',
     title: 'Varios'
-}
+}]
 
+const paymentMethods = [
+    {
+        id: 'card',
+        title: 'Tarjeta'
+    },
+    {
+        id: 'cash',
+        title: 'Efectivo'
+    },
+    {
+        id: 'transfer',
+        title: 'Transferencia'
+    },
+    {
+        id: 'vehicle_exchange',
+        title: 'Vehículo de cambio'
+    }
+]
+
+const paymentType = [
+    {
+        id: '0',
+        title: 'Contado'
+    },
+    {
+        id: '1',
+        title: 'Financiado'
+    }
 ]
 
 export const interes = [
@@ -189,7 +217,9 @@ const options = {
     years,
     reverseYears,
     extraType,
-    idTypes
+    idTypes,
+    paymentMethods,
+    paymentType
 }
 
 export default options

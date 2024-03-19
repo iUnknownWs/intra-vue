@@ -38,6 +38,8 @@ const gallery360Url = `${import.meta.env.VITE_API}/vehicles-image-360/`
 const galleryVideoUrl = `${import.meta.env.VITE_API}/vehicles-videos/`
 const galleryDocsUrl = `${import.meta.env.VITE_API}/vehicles-documents/`
 const walcuUrl = `${import.meta.env.VITE_API}/walcu_lead/`
+const walcuVehicleUrl = `${import.meta.env.VITE_API}/walcu_vehicle/`
+const reserveUrl = `${import.meta.env.VITE_SALES}/bookings/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -80,6 +82,7 @@ const regimenOptions = ref([])
 const buyersOptions = ref([])
 const providersOptions = ref([])
 const warrantyOptions = ref([])
+const buyersReserveOptions = ref([])
 const serialEquipItems = ref([])
 const freeEquipItems = ref([])
 const paidEquipItems = ref([])
@@ -94,14 +97,17 @@ const phonesPre = ref([])
 const drives = ref(null)
 const bodyType = ref(null)
 const brand = ref({ id: '', label: '' })
+const carPayBrand = ref({ id: '', label: '' })
 const webBrand = ref({ id: '', label: '' })
 const model = ref({ id: '', label: '' })
+const carPayModel = ref({ id: '', label: '' })
 const modelWeb = ref({ id: '', label: '' })
 const provider = ref({ id: '', label: '' })
 const buyer = ref({ id: '', label: '' })
-const prefix = ref({ id: '+34', label: 'ES+34' })
+const prefixBuyer = ref({ id: '+34', label: 'ES+34' })
+const prefixCompany = ref({ id: '+34', label: 'ES+34' })
 const equipmentsGroup = ref([])
-const license = ref('')
+const plate = ref('')
 const license1 = ref(null)
 const kms = ref(0)
 const fuel = ref(null)
@@ -214,21 +220,50 @@ const buyerCountry = ref('')
 const buyerProvince = ref('')
 const buyerAddress = ref('')
 const buyerZip = ref('')
-const companyName = ref('')
-const companyEmail = ref('')
-const companyPhone = ref('')
-const companyAddress = ref('')
-const companyCity = ref('')
-const companyProvince = ref('')
-const companyCountry = ref('')
-const companyZip = ref('')
+const buyerReserve = ref(null)
+const companyName = ref(null)
+const companyEmail = ref(null)
+const companyPhone = ref(null)
+const companyAddress = ref(null)
+const companyCity = ref(null)
+const companyProvince = ref(null)
+const companyCountry = ref(null)
+const companyZip = ref(null)
+const companyVat = ref(null)
 const walcu = ref('')
-const walcuId = ref('')
+const walcuId = ref('create_new')
 const walcuUsers = ref([])
 const addressFull = ref([])
-const buyerInput = ref(null)
-const companyInput = ref(null)
-const companyVat = ref('')
+const extraReserve = ref(0)
+const priceReserve = ref(0)
+const sellReserve = ref(0)
+const sellAddress = ref('')
+const commentsReserve = ref('')
+const carPay = ref(false)
+const deliveryAddress = ref('')
+const deliveryCity = ref('')
+const deliveryProvince = ref('')
+const deliveryCountry = ref('')
+const deliveryZip = ref('')
+const carPayPlate = ref('')
+const carPayVin = ref('')
+const carPayKms = ref('')
+const carPayFuel = ref('0')
+const carPayTrans = ref('0')
+const carPayValue = ref('')
+const walcuVehicleOptions = ref([])
+const paymentReserve = ref('0')
+const extrasReserve = ref([])
+const extrasAdded = ref([])
+const extrasOptions = ref([])
+const modelReserveOptions = ref([])
+const extraPick = ref('')
+const deliveryToggle = ref(false)
+const financedFeeReserve = ref(0)
+const financedPriceReserve = ref(0)
+const monthsReserve = ref(0)
+const paymentType = ref(null)
+const walcuVehicleId = ref(null)
 const imagesParams = [
   {
     key: 'vehicle',
@@ -420,7 +455,7 @@ const updateData = () => {
     internal_comments: commInternal?.value,
     kms: kms?.value,
     length: length?.value,
-    license_plate: license?.value,
+    license_plate: plate?.value,
     maintenance: {
       distinctive: distinctive?.value,
       keys_quantity: keysQ?.value
@@ -493,7 +528,7 @@ const fetch = () => {
       model.value = { id: vehicle.value.model.id, label: vehicle.value.model.title }
       modelWeb.value = { id: vehicle.value.model_web.id, label: vehicle.value.model_web.title }
       chassis.value = vehicle.value?.chassis_number
-      license.value = vehicle.value.license_plate
+      plate.value = vehicle.value.license_plate
       license1.value = vehicle.value?.date_first_registration
       kms.value = vehicle.value?.kms
       fuel.value = vehicle.value.fuel?.id
@@ -523,10 +558,15 @@ const fetch = () => {
       regimen.value = vehicle.value.purchase?.tax_regime
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       purchasePrice.value = vehicle.value.purchase?.total_price
-      price.value = vehicle.value.price?.sale_price
+      price.value = vehicle.value.price?.price_with_discounts
+      sellReserve.value = vehicle.value.price?.price_with_discounts
+      priceReserve.value = vehicle.value.price?.reserve_amount
       financed.value = vehicle.value.price?.financed_price
+      financedPriceReserve.value = vehicle.value.price?.financed_price
       financingMonths.value = vehicle.value.price?.amount_fees
+      monthsReserve.value = vehicle.value.price?.amount_fees
       financingQ.value = vehicle.value.price?.financing_fee
+      financedFeeReserve.value = vehicle.value.price?.financing_fee
       reserve.value = vehicle.value.price?.reserve_amount
       iva.value = vehicle.value.price?.is_tax_deductible
       sellerName.value = vehicle.value.purchase?.owner
@@ -602,6 +642,10 @@ axios.get(buyersUrl).then((response) => {
     buyersOptions.value.push({
       id: option.id,
       label: option.name
+    })
+    buyersReserveOptions.value.push({
+      id: option.id,
+      title: option.name
     })
   }
 })
@@ -822,6 +866,30 @@ const serverItemsLength = ref(0)
 const itemsExtra = ref([])
 const itemsDiscount = ref([])
 
+const extraPicked = () => {
+  for (const item of extrasReserve.value) {
+    if (item.id == extraPick.value) {
+      extraReserve.value = item.price
+    }
+  }
+}
+
+const addExtraReserve = () => {
+  if (extraPick.value == null) {
+    return
+  }
+
+  extrasAdded.value.push(extrasReserve.value.find((item) => item.id == extraPick.value))
+  extrasOptions.value = extrasOptions.value.filter((item) => item.id != extraPick.value)
+  extraReserve.value = 0
+  extraPick.value = null
+}
+
+const removeExtraReserve = (id) => {
+  extrasOptions.value.push(extrasAdded.value.find((item) => item.id == id))
+  extrasAdded.value = extrasAdded.value.filter((item) => item.id != id)
+}
+
 const fetchingExtras = () => {
   if (isFetchingExtras.value) {
     return
@@ -839,6 +907,20 @@ const fetchingExtras = () => {
       const API_URL = `${extrasUrl}?vehicle__in=${id.value}&${new URLSearchParams(params)}`
       const response = await axios.get(API_URL)
       itemsExtra.value = response.data.results
+      for (const item of itemsExtra.value) {
+        item.extra = item.id
+        if (item.category == 'DocumentManagement') {
+          extrasAdded.value.push(item)
+        } else {
+          extrasReserve.value.push(item)
+        }
+      }
+      for (const item of extrasReserve.value) {
+        extrasOptions.value.push({
+          id: item.id,
+          title: item.title
+        })
+      }
       serverItemsLength.value = response.data.count
     } catch (error) {
       console.error(error)
@@ -1234,7 +1316,18 @@ const discountDrawer = () => {
 }
 
 const reserveDrawer = (step) => {
-  drawerSection.value = 'reserve'
+  if (!step) drawerSection.value = 'reserve'
+
+  axios
+    .get(walcuVehicleUrl + '?plate_number=' + plate.value + '&body_number=' + chassis.value)
+    .then((response) => {
+      for (let option of response.data) {
+        walcuVehicleOptions.value.push({
+          id: option._id,
+          title: option.make + ' ' + option.model
+        })
+      }
+    })
 
   if (step === 2) {
     drawerSection.value = 'reserve' + step
@@ -1245,7 +1338,7 @@ const reserveDrawer = (step) => {
           '?email=' +
           buyerEmail.value +
           '&phone_number=' +
-          prefix.value.id +
+          prefixBuyer.value.id +
           buyerPhone.value
       )
       .then((response) => {
@@ -1262,6 +1355,111 @@ const reserveDrawer = (step) => {
     drawerSection.value = 'reserve' + step
     return
   }
+
+  if (step === 4) {
+    drawerSection.value = 'reserve' + step
+    return
+  }
+
+  if (step === 5) {
+    const payload = {
+      additional_info: commentsReserve.value,
+      buyer_company: {
+        address: {
+          address: companyAddress.value,
+          city: companyCity.value,
+          country: companyCountry.value,
+          postal_code: companyZip.value,
+          region: companyProvince.value
+        },
+        email: companyEmail.value,
+        name: companyName.value,
+        phone: companyPhone.value,
+        vat: companyVat.value
+      },
+      company_phone_prefix: prefixCompany.value.id,
+      contact_address: buyerAddress.value,
+      contact_city: buyerCity.value,
+      contact_country: buyerCountry.value,
+      contact_document_id: idNumber.value,
+      contact_document_type: idType.value,
+      contact_email: buyerEmail.value,
+      contact_first_name: buyerName.value,
+      contact_last_name: buyerLastName.value,
+      contact_phone: buyerPhone.value,
+      contact_phone_prefix: prefixBuyer.value.id,
+      contact_postal_code: buyerZip.value,
+      contact_region: buyerProvince.value,
+      delivery_address: deliveryAddress.value,
+      delivery_city: deliveryCity.value,
+      delivery_country: deliveryCountry.value,
+      delivery_postal_code: deliveryZip.value,
+      delivery_province_name: deliveryProvince.value,
+      extra_list: extrasAdded.value,
+      media_files: [],
+      original_price: sellReserve.value,
+      payments: [
+        {
+          amount: priceReserve.value,
+          payment_method: paymentReserve.value,
+          payment_type: 'booking_pre_order_payment'
+        }
+      ],
+      price: financedPriceReserve.value,
+      seller: buyerReserve.value,
+      vehicle: id.value,
+      walcu_lead_id: walcuId.value,
+      walcu_vehicle_id: walcuVehicleId.value
+    }
+
+    if (paymentType.value === '1') {
+      payload.form_of_payment_financed_fee = financedFeeReserve.value
+      payload.form_of_payment_financed_price = financedPriceReserve.value
+      payload.form_of_payment_months = monthsReserve.value
+      payload.form_of_payment_type = paymentType.value
+      payload.form_of_payment_vehicle_price = carPayValue.value
+    }
+
+    if (carPay.value) {
+      payload.payments.push({
+        amount: carPayValue.value,
+        form_of_payment_vehicle: {
+          brand: carPayBrand.value.id,
+          fuel: carPayFuel.value,
+          gearbox: carPayTrans.value,
+          kms: carPayKms.value,
+          model_car: carPayModel.value.id,
+          plate: carPayPlate.value,
+          price: carPayValue.value,
+          vin: carPayVin.value
+        },
+        payment_method: 'vehicle_exchange',
+        payment_type: 'counted'
+      })
+    }
+
+    axios
+      .post(reserveUrl, payload)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    return
+  }
+}
+
+const getModelReserve = () => {
+  modelReserveOptions.value = []
+  axios.get(`${modelUrl}?brand=${carPayBrand.value.id}&title=`).then((response) => {
+    for (let option of response.data.results) {
+      modelReserveOptions.value.push({
+        id: option.id,
+        label: option.title
+      })
+    }
+  })
 }
 
 const setBuyerPlace = (place) => {
@@ -1300,6 +1498,41 @@ const setCompanyPlace = (place) => {
     if (address.types.includes('postal_code')) {
       companyZip.value = address.long_name
     }
+  }
+}
+
+const setDeliveryPlace = (place) => {
+  addressFull.value = place.address_components
+  deliveryAddress.value = place.formatted_address
+  for (let address of addressFull.value) {
+    if (address.types.includes('locality')) {
+      deliveryCity.value = address.long_name
+    }
+    if (address.types.includes('administrative_area_level_1')) {
+      deliveryProvince.value = address.long_name
+    }
+    if (address.types.includes('country')) {
+      deliveryCountry.value = address.long_name
+    }
+    if (address.types.includes('postal_code')) {
+      deliveryZip.value = address.long_name
+    }
+  }
+}
+
+const deliveryChange = () => {
+  if (deliveryToggle.value) {
+    deliveryAddress.value = buyerAddress.value
+    deliveryCity.value = buyerCity.value
+    deliveryProvince.value = buyerProvince.value
+    deliveryCountry.value = buyerCountry.value
+    deliveryZip.value = buyerZip.value
+  } else {
+    deliveryAddress.value = ''
+    deliveryCity.value = ''
+    deliveryProvince.value = ''
+    deliveryCountry.value = ''
+    deliveryZip.value = ''
   }
 }
 
@@ -1620,7 +1853,7 @@ onMounted(async () => {
                   <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
                   <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
                   <TextInput label="Bastidor:" v-model="chassis" />
-                  <TextInput label="Matricula:" v-model="license" />
+                  <TextInput label="Matricula:" v-model="plate" />
                   <DateInput label="1º Matriculación:" v-model="license1" />
                   <TextInput label="Km Actuales:" v-model="kms" />
                   <SelectInput
@@ -1678,14 +1911,14 @@ onMounted(async () => {
                     :initialValue="null"
                   />
                   <TextInput label="Marchas:" v-model="gears" />
-                  <TextInput label="Vel Máxima:" v-model="speed" />
-                  <TextInput label="Aceleración 0-100:" v-model="acceleration" />
+                  <TextInput label="Velocidad Máxima:" v-model="speed" />
+                  <TextInput label="Aceleración 0/100:" v-model="acceleration" />
                 </div>
                 <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
                 <div class="divider m-0 p-0"></div>
                 <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Consumo en el Ambiente:" v-model="environment" />
-                  <TextInput label="En carretera:" v-model="road" />
+                  <TextInput label="Consumo ambiente:" v-model="environment" />
+                  <TextInput label="Consumo en carretera:" v-model="road" />
                   <TextInput label="En ciudad:" v-model="city" />
                   <TextInput label="Emisiones CO2:" v-model="co2" />
                 </div>
@@ -2005,24 +2238,28 @@ onMounted(async () => {
               class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden"
             >
               <h2 class="text-xl font-medium">Galería Multimedia</h2>
-              <div role="tablist" class="tabs tabs-bordered tabs-md overflow-x-hidden">
-                <input
-                  type="radio"
-                  name="galeria"
-                  role="tab"
-                  class="tab"
-                  aria-label="Fotos"
-                  checked
-                />
-                <div role="tabpanel" class="tab-content p-3">
-                  <!-- <DragDrop
+              <!-- <div role="tablist" class="tabs tabs-bordered tabs-md overflow-x-hidden"> -->
+              <input
+                type="radio"
+                name="galeria"
+                role="tab"
+                class="tab"
+                aria-label="Fotos"
+                checked
+              />
+              <div role="tabpanel" class="tab-content px-3 pt-0">
+                <div class="flex flex-col items-center">
+                  <DropMobile
                     type="image"
                     :url="galleryUrl"
                     :fetch="fetchingGallery"
                     format=".jpg"
                     :params="imagesParams"
-                  /> -->
-                  <div v-if="skeletonGallery" class="grid grid-cols-2 lg:grid-cols-3 lg:gap-4">
+                  />
+                  <div
+                    v-if="skeletonGallery"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                  >
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
@@ -2035,7 +2272,7 @@ onMounted(async () => {
                     :list="galleryImages"
                     item-key="id"
                     :options="optionsDrag"
-                    class="grid grid-cols-2 lg:grid-cols-3 lg:gap-4"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                     @sort="updateImages"
                   >
                     <template #item="{ element, index }">
@@ -2068,22 +2305,21 @@ onMounted(async () => {
                     </template>
                   </Sortable>
                 </div>
-                <input
-                  type="radio"
-                  name="galeria"
-                  role="tab"
-                  class="tab"
-                  aria-label="Desperfectos"
-                />
-                <div role="tabpanel" class="tab-content min-w-96 p-3">
-                  <DragDrop
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
+              <div role="tabpanel" class="tab-content px-3 pt-0">
+                <div class="flex flex-col items-center">
+                  <DropMobile
                     type="image"
                     :url="galleryUrl"
                     :fetch="fetchingFaulty"
                     format=".jpg"
                     :params="faultyParams"
                   />
-                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <div
+                    v-if="skeletonGallery"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                  >
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
@@ -2096,7 +2332,7 @@ onMounted(async () => {
                     :list="galleryFaulty"
                     item-key="id"
                     :options="optionsDrag"
-                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                     @sort="updateFaulty"
                   >
                     <template #item="{ element, index }">
@@ -2129,16 +2365,21 @@ onMounted(async () => {
                     </template>
                   </Sortable>
                 </div>
-                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
-                <div role="tabpanel" class="tab-content min-w-96 p-3">
-                  <DragDrop
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
+              <div role="tabpanel" class="tab-content px-3 pt-0">
+                <div class="flex flex-col items-center">
+                  <DropMobile
                     type="video"
                     :url="galleryVideoUrl"
                     :fetch="fetchingVideo"
                     format=".mp4"
                     :params="params"
                   />
-                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <div
+                    v-if="skeletonGallery"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                  >
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
@@ -2151,7 +2392,7 @@ onMounted(async () => {
                     :list="galleryVideo"
                     item-key="id"
                     :options="optionsDrag"
-                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                     @sort="updateImages"
                   >
                     <template #item="{ element, index }">
@@ -2164,7 +2405,6 @@ onMounted(async () => {
                           <source :src="element.video" type="video/mp4" />
                           Tu navegador no soporta el elemento de video.
                         </video>
-
                         <div
                           class="absolute inset-0 flex items-center justify-center gap-3 rounded"
                           :class="{
@@ -2186,16 +2426,21 @@ onMounted(async () => {
                     </template>
                   </Sortable>
                 </div>
-                <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
-                <div role="tabpanel" class="tab-content min-w-96 p-3">
-                  <DragDrop
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
+              <div role="tabpanel" class="tab-content px-3 pt-0">
+                <div class="flex flex-col items-center">
+                  <DropMobile
                     type="image"
                     :url="gallery360Url"
                     :fetch="fetching360"
                     format=".jpg"
                     :params="params"
                   />
-                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                  <div
+                    v-if="skeletonGallery"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                  >
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
@@ -2208,7 +2453,7 @@ onMounted(async () => {
                     :list="gallery360"
                     item-key="id"
                     :options="optionsDrag"
-                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                     @sort="updateImages"
                   >
                     <template #item="{ element, index }">
@@ -2241,9 +2486,11 @@ onMounted(async () => {
                     </template>
                   </Sortable>
                 </div>
-                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
-                <div role="tabpanel" class="tab-content min-w-96 p-3">
-                  <DragDrop
+              </div>
+              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
+              <div role="tabpanel" class="tab-content pt-0">
+                <div class="flex flex-col items-center">
+                  <DropMobile
                     format=""
                     type="file"
                     file_name="file_name"
@@ -2258,8 +2505,8 @@ onMounted(async () => {
                   >
                     <div class="card-body flex-row justify-between p-4">
                       <div class="flex gap-2">
-                        <Icon icon="mdi:file-document" width="50" />
-                        <h2 class="card-title text-lg">{{ doc.file_name }}</h2>
+                        <Icon icon="mdi:file-document" width="40" />
+                        <h2 class="card-title text-sm">{{ doc.file_name }}</h2>
                       </div>
                       <div class="self flex gap-2">
                         <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
@@ -2273,6 +2520,7 @@ onMounted(async () => {
                   </div>
                 </div>
               </div>
+              <!-- </div> -->
             </div>
           </section>
           <aside class="hidden h-fit flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
@@ -2596,14 +2844,14 @@ onMounted(async () => {
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
       <ul
         v-if="drawerSection === 'extra'"
-        class="menu min-h-full w-80 flex-col justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-80"
       >
         <div>
           <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
           <ToggleInput label="Auto / Manual" v-model="extraMode" />
           <SelectInput
             vif
-            label="categoria:"
+            label="Categoria:"
             :options="options.extraType"
             v-model="extraCategory"
             @selected="extraSelected"
@@ -2644,7 +2892,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'discount'"
-        class="menu min-h-full w-80 flex-col justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-80"
       >
         <div>
           <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
@@ -2679,7 +2927,7 @@ onMounted(async () => {
           drawerSection === 'OPTIONAL_FREE_OF_CHARGE' ||
           drawerSection === 'SERIAL'
         "
-        class="menu min-h-full w-96 flex-col justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-96"
       >
         <div>
           <DrawerTitle title="Añadir Equipamiento" @toggle="toggleDrawer" />
@@ -2703,12 +2951,18 @@ onMounted(async () => {
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
-          <DragDrop :url="url" type="vehicle" :params="params" format=".pdf" />
+          <!-- <DragDrop :url="url" type="vehicle" :params="params" format=".pdf" /> -->
           <div>
+            <ToggleInput
+              label="Empresa"
+              v-model="enterpriseReserve"
+              class="my-4 mr-4 w-fit"
+              @changed="toggleReserve"
+            />
             <h2 class="text-xl font-semibold">Información del comprador</h2>
             <SelectInput label="Tipo de documento:" :options="options.idTypes" v-model="idType" />
             <TextInput label="Numero de documento:" v-model="idNumber" />
-            <div class="grid grid-cols-2 gap-x-4">
+            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
               <TextInput label="Nombre:" v-model="buyerName" />
               <TextInput label="Apellido:" v-model="buyerLastName" />
               <TextInput label="Email:" v-model="buyerEmail" />
@@ -2717,7 +2971,7 @@ onMounted(async () => {
                   <span class="label-text font-medium">Teléfono:</span>
                 </div>
                 <div class="flex flex-row gap-2">
-                  <VueSelect v-model="prefix" :options="phonesPre" class="w-44" />
+                  <VueSelect v-model="prefixBuyer" :options="phonesPre" class="w-60" />
                   <input type="text" class="input input-bordered w-full" v-model="buyerPhone" />
                 </div>
               </label>
@@ -2729,22 +2983,16 @@ onMounted(async () => {
               <GMapAutocomplete @place_changed="setBuyerPlace" class="input input-bordered w-full">
               </GMapAutocomplete>
             </label>
-            <div class="grid grid-cols-2 gap-x-4">
+            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
               <TextInput label="Ciudad:" v-model="buyerCity" />
               <TextInput label="Provincia:" v-model="buyerProvince" />
               <TextInput label="País:" v-model="buyerCountry" />
               <TextInput label="Código Postal:" v-model="buyerZip" />
             </div>
           </div>
-          <ToggleInput
-            label="Empresa"
-            v-model="enterpriseReserve"
-            class="my-4 w-1/5"
-            @changed="toggleReserve"
-          />
           <div v-if="enterpriseReserve">
-            <h2 class="text-xl font-semibold">Información de la empresa</h2>
-            <div class="grid grid-cols-2 gap-x-4">
+            <h2 class="mt-4 text-xl font-semibold">Información de la empresa</h2>
+            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
               <TextInput label="VAT:" v-model="companyVat" />
               <TextInput label="Nombre:" v-model="companyName" />
               <TextInput label="Email:" v-model="companyEmail" />
@@ -2753,7 +3001,7 @@ onMounted(async () => {
                   <span class="label-text font-medium">Teléfono:</span>
                 </div>
                 <div class="flex flex-row gap-2">
-                  <VueSelect v-model="prefix" :options="phonesPre" class="w-44" />
+                  <VueSelect v-model="prefixCompany" :options="phonesPre" class="w-60" />
                   <input type="text" class="input input-bordered w-full" v-model="companyPhone" />
                 </div>
               </label>
@@ -2762,14 +3010,13 @@ onMounted(async () => {
               <div class="label">
                 <span class="label-text font-medium">Dirección:</span>
               </div>
-
               <GMapAutocomplete
                 @place_changed="setCompanyPlace"
                 class="input input-bordered w-full"
               >
               </GMapAutocomplete>
             </label>
-            <div class="grid grid-cols-2 gap-x-4">
+            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
               <TextInput label="Ciudad:" v-model="companyCity" />
               <TextInput label="Provincia:" v-model="companyProvince" />
               <TextInput label="País:" v-model="companyCountry" />
@@ -2812,7 +3059,7 @@ onMounted(async () => {
         </div>
         <DrawerActions
           secondary="Volver"
-          primary="Reservar"
+          primary="Siguiente"
           @click-secondary="reserveDrawer()"
           @click-primary="reserveDrawer(3)"
         />
@@ -2825,24 +3072,75 @@ onMounted(async () => {
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
           <div>
             <h2 class="text-xl font-semibold">Información de la reserva</h2>
-            <SelectInput label="Vendedor:" :options="idTypes" />
-            <SelectInput label="Vehículo:" :options="idTypes" />
-            <h3 class="text-lg font-semibold">Gestión de extras</h3>
-            <SelectInput label="Categoria:" :options="idTypes" />
-            <SelectInput label="Tipo:" :options="idTypes" />
-            <TextInput label="Importe:" v-model="idNumber" />
-            <button>Añadir</button>
-            <span>No hay extras</span>
-            <TextInput label="Precio de venta:" v-model="idNumber" />
-            <div class="flex flex-row">
-              <TextInput label="Importe de reserva:" v-model="idNumber" />
-              <TextInput label="Método de pago:" v-model="idNumber" />
+            <SelectInput
+              label="Vendedor:"
+              :options="buyersReserveOptions"
+              v-model="buyerReserve"
+              :initialValue="null"
+            />
+            <SelectInput
+              label="Vehículo:"
+              :options="walcuVehicleOptions"
+              v-model="walcuVehicleId"
+              :initialValue="null"
+            />
+            <h3 class="mt-4 text-lg font-semibold">Gestión de extras</h3>
+            <div class="flex flex-col gap-3 lg:flex-row">
+              <SelectInput
+                label="Extras disponibles:"
+                :options="extrasOptions"
+                v-model="extraPick"
+                @selected="extraPicked"
+              />
+              <div class="flex flex-row">
+                <TextInput label="Importe:" v-model="extraReserve" />
+                <button class="btn btn-square mt-9" @click="addExtraReserve">
+                  <Icon icon="mdi:plus" width="30" />
+                </button>
+              </div>
             </div>
-            <TextInput label="Dirección Fiscal:" v-model="buyerAddress" />
-            <AreaInput label="Comentarios:" v-model="idNumber" />
+            <h3 class="mt-4 text-lg font-semibold">Extras agregados</h3>
+            <div
+              v-for="(extra, index) in extrasAdded"
+              :key="index"
+              class="card card-side m-3 w-fit bg-base-100 shadow-xl"
+            >
+              <div class="card-body flex-row justify-between p-2">
+                <div class="mr-3 flex gap-2">
+                  <Icon icon="mdi:basket-plus" width="40" />
+                  <span class="card-title text-sm font-medium lg:text-base"
+                    >{{ extra.title }} ({{ extra.price }}€)</span
+                  >
+                </div>
+                <div class="self flex gap-2">
+                  <button
+                    class="btn btn-square btn-error btn-sm"
+                    @click="removeExtraReserve(extra.id)"
+                  >
+                    <Icon icon="mdi:delete" width="20" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <TextInput label="Precio de venta:" v-model="sellReserve" />
+            <div class="flex flex-col gap-3 lg:flex-row">
+              <TextInput label="Importe de reserva:" v-model="priceReserve" />
+              <SelectInput
+                label="Método de pago:"
+                :options="options.paymentMethods"
+                v-model="paymentReserve"
+              />
+            </div>
+            <TextInput label="Dirección Fiscal:" v-model="sellAddress" />
+            <AreaInput label="Comentarios:" v-model="commentsReserve" />
           </div>
         </div>
-        <DrawerActions secondary="Cancelar" primary="Reservar" />
+        <DrawerActions
+          secondary="Volver"
+          primary="Siguiente"
+          @click-secondary="reserveDrawer()"
+          @click-primary="reserveDrawer(4)"
+        />
       </ul>
       <ul
         v-if="drawerSection === 'reserve4'"
@@ -2852,31 +3150,58 @@ onMounted(async () => {
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
           <div>
             <h2 class="text-xl font-semibold">Dirección de entrega</h2>
-            <CheckInput label="Misma que documentación" class="my-4 w-1/5" v-model="auto" />
-            <TextInput label="Dirección de envió:" v-model="idNumber" />
+            <CheckInput
+              label="Misma que documentación"
+              class="my-3 w-fit"
+              v-model="deliveryToggle"
+              @changed="deliveryChange"
+            />
+            <GMapAutocomplete @place_changed="setDeliveryPlace" class="input input-bordered w-full">
+            </GMapAutocomplete>
             <div class="grid grid-cols-2 gap-x-4">
-              <TextInput label="Email:" v-model="buyerEmail" />
-              <TextInput label="Celular:" v-model="buyerPhone" />
-              <TextInput label="Ciudad:" v-model="buyerCity" />
-              <TextInput label="Provincia:" v-model="buyerProvince" />
-              <TextInput label="País:" v-model="buyerCountry" />
-              <TextInput label="Código Postal:" v-model="buyerZip" />
+              <TextInput label="Ciudad:" v-model="deliveryCity" />
+              <TextInput label="Provincia:" v-model="deliveryProvince" />
+              <TextInput label="País:" v-model="deliveryCountry" />
+              <TextInput label="Código Postal:" v-model="deliveryZip" />
             </div>
-            <SelectInput label="Forma de pago:" :options="idTypes" />
-            <CheckInput label="¿Vehiculo como parte del pago?" class="my-4 w-1/5" v-model="auto" />
-            <div>
-              <TextInput label="Numero de placa:" v-model="buyerEmail" />
-              <TextInput label="Numero de chasis:" v-model="buyerPhone" />
-              <SelectInput label="Marca:" :options="idTypes" />
-              <SelectInput label="Modelo:" :options="idTypes" />
-              <TextInput label="Kilometraje:" v-model="buyerCity" />
-              <SelectInput label="Combustible:" :options="idTypes" />
-              <SelectInput label="Cambios:" :options="idTypes" />
-              <TextInput label="Valoración:" v-model="buyerProvince" />
+            <SelectInput
+              label="Forma de pago:"
+              :options="options.paymentType"
+              v-model="paymentType"
+              :initialValue="null"
+            />
+            <div v-if="paymentType === '1'">
+              <TextInput label="Cuota Mensual:" v-model="financedFeeReserve" />
+              <TextInput label="Meses de Financiación:" v-model="monthsReserve" />
+              <TextInput label="Precio de Financiado:" v-model="financedPriceReserve" />
+            </div>
+            <CheckInput
+              label="¿Vehiculo como parte del pago?"
+              class="my-3 w-fit"
+              v-model="carPay"
+            />
+            <div v-if="carPay">
+              <TextInput label="Numero de placa:" v-model="carPayPlate" />
+              <TextInput label="Numero de chasis:" v-model="carPayVin" />
+              <SearchSelect label="Marca:" :options="brandOptions" v-model="carPayBrand" @selected="getModelReserve" />
+              <SearchSelect label="Modelo:" :options="modelReserveOptions" v-model="carPayModel" />
+              <TextInput label="Kilometraje:" v-model="carPayKms" />
+              <SelectInput
+                label="Combustible:"
+                :options="options.combustible"
+                v-model="carPayFuel"
+              />
+              <SelectInput label="Cambios:" :options="options.cambio" v-model="carPayTrans" />
+              <TextInput label="Valoración:" v-model="carPayValue" />
             </div>
           </div>
         </div>
-        <DrawerActions secondary="Cancelar" primary="Reservar" />
+        <DrawerActions
+          secondary="Volver"
+          primary="Reservar"
+          @click-secondary="reserveDrawer(3)"
+          @click-primary="reserveDrawer(5)"
+        />
       </ul>
     </div>
   </div>
@@ -2888,3 +3213,97 @@ onMounted(async () => {
   font-weight: 600;
 }
 </style>
+
+<!-- {
+  additional_info: commentsReserve.value,
+  address: companyAddress.value,
+  brand: carPayBrand.value.id,
+  buyer_company: {
+    address: {
+      address: companyAddress.value,
+      city: companyCity.value,
+      country: companyCountry.value,
+      postal_code: companyZip.value,
+      region: companyProvince.value
+    },
+    email: companyEmail.value,
+    name: companyName.value,
+    phone: companyPhone.value,
+    vat: companyVat.value
+  },
+  city: companyCity.value,
+  company_phone_prefix: prefixCompany.value.id,
+  contact_address: buyerAddress.value,
+  contact_city: buyerCity.value,
+  contact_country: buyerCountry.value,
+  contact_document_id: idNumber.value,
+  contact_email: buyerEmail.value,
+  contact_first_name: buyerName.value,
+  contact_last_name: buyerLastName.value,
+  contact_phone: buyerPhone.value,
+  contact_phone_prefix: prefixBuyer.value.id,
+  contact_postal_code: buyerZip.value,
+  contact_region: buyerProvince.value,
+  country: companyCountry.value,
+  delivery_address: deliveryAddress.value,
+  delivery_city: deliveryCity.value,
+  delivery_country: deliveryCountry.value,
+  delivery_documentation_address: {
+    address: deliveryAddress.value,
+    city: deliveryCity.value,
+    country: deliveryCountry.value,
+    postal_code: deliveryZip.value,
+    region: deliveryProvince.value
+  },
+  delivery_postal_code: deliveryZip.value,
+  delivery_province_name: deliveryProvince.value,
+  email: companyEmail.value,
+  extra_list: extrasAdded.value,
+  form_of_payment_financed_fee: financedFeeReserve.value,
+  form_of_payment_financed_price: financedPriceReserve.value,
+  form_of_payment_months: monthsReserve.value,
+  form_of_payment_type: paymentType.value,
+  form_of_payment_vehicle_price: carPayValue.value,
+  fuel: carPayFuel.value,
+  gearbox: carPayTrans.value,
+  has_vehicle_as_payment: 'on',
+  kms: carPayKms.value,
+  media_files: [],
+  model_car: carPayModel.value.id,
+  name: '',
+  original_price: sellReserve.value,
+  payments: [
+    {
+      amount: priceReserve.value,
+      payment_method: paymentReserve.value,
+      payment_type: 'booking_pre_order_payment'
+    },
+    {
+      amount: carPayValue.value,
+      form_of_payment_vehicle: {
+        brand: carPayBrand.value.id,
+        fuel: carPayFuel.value,
+        gearbox: carPayTrans.value,
+        kms: carPayKms.value,
+        model_car: carPayModel.value.id,
+        plate: carPayPlate.value,
+        price: carPayValue.value,
+        vin: carPayVin.value
+      },
+      payment_method: "vehicle_exchange",
+      payment_type: "counted"
+    }
+  ],
+  phone: companyPhone.value,
+  plate: carPayPlate.value,
+  postal_code: companyZip.value,
+  price: financedPriceReserve.value,
+  region: companyProvince.value,
+  reserve_amount: 0,
+  seller: buyerReserve.value,
+  vat: companyVat.value,
+  vehicle: id.value,
+  vin: carPayVin.value,
+  walcu_lead_id: walcuId.value,
+  walcu_vehicle_id: walcuVehicleId.value
+} -->

@@ -11,6 +11,7 @@ import DrawerLogo from '@/components/DrawerLogo.vue'
 import DrawerTitle from '@/components/DrawerTitle.vue'
 import DropdownBtn from '@/components/DropdownBtn.vue'
 import DropdownAvatar from '@/components/DropdownAvatar.vue'
+import DropMobile from '@/components/DropMobile.vue'
 import HeaderMain from '@/components/HeaderMain.vue'
 import IntegrationCard from '@/components/IntegrationCard.vue'
 import MenuLink from '@/components/MenuLink.vue'
@@ -52,6 +53,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('DrawerTitle', DrawerTitle)
     .component('DropdownAvatar', DropdownAvatar)
     .component('DropdownBtn', DropdownBtn)
+    .component('DropMobile', DropMobile)
     .component('HeaderMain', HeaderMain)
     .component('IntegrationCard', IntegrationCard)
     .component('MenuLink', MenuLink)

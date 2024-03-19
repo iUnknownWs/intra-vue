@@ -3,6 +3,7 @@ defineProps({
   label: { type: String, required: true },
   value: { type: [String, Number] }
 })
+defineEmits(['changed'])
 
 const check = defineModel()
 </script>
