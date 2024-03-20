@@ -117,30 +117,31 @@ const etiqueta = [
     }
 ]
 
-const idTypes = [{
-    id: 'dni',
-    title: 'DNI'
-},
-{
-    id: 'tarjeta_de_extranjeria',
-    title: 'Tarjeta de Extranjería'
-},
-{
-    id: 'permiso_de_conducir',
-    title: 'Permiso de Conducir'
-},
-{
-    id: 'pasaporte_español',
-    title: 'Pasaporte Español'
-},
-{
-    id: 'visado_schengen',
-    title: 'Visado Schengen'
-},
-{
-    id: 'permiso_de_residencia',
-    title: 'Permiso de Residencia'
-}]
+const idTypes = [
+    {
+        id: 'dni',
+        title: 'DNI'
+    },
+    {
+        id: 'tarjeta_de_extranjeria',
+        title: 'Tarjeta de Extranjería'
+    },
+    {
+        id: 'permiso_de_conducir',
+        title: 'Permiso de Conducir'
+    },
+    {
+        id: 'pasaporte_español',
+        title: 'Pasaporte Español'
+    },
+    {
+        id: 'visado_schengen',
+        title: 'Visado Schengen'
+    },
+    {
+        id: 'permiso_de_residencia',
+        title: 'Permiso de Residencia'
+    }]
 
 const extraType = [{
     id: 'WarrantyType',

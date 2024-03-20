@@ -15,6 +15,8 @@ axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('
 const route = useRoute()
 const id = ref(route.params.id)
 const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
+const docusignUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/generate_buy_contract/`
+const docusignTemplatesUrl = `${import.meta.env.VITE_API}/docusign_list_templates/?purchase_templates`
 const updateGalleryUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/update_vehicle_order/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const webBrandUrl = `${import.meta.env.VITE_API}/public/brands-web/?limit=500`
@@ -209,7 +211,7 @@ const isFetchingEquip = ref(true)
 const skeletonGallery = ref(true)
 const galleryHover = ref(null)
 const enterpriseReserve = ref(false)
-const idType = ref('0')
+const idType = ref('dni')
 const idNumber = ref('')
 const buyerName = ref('')
 const buyerLastName = ref('')
@@ -231,13 +233,12 @@ const companyCountry = ref(null)
 const companyZip = ref(null)
 const companyVat = ref(null)
 const walcu = ref('')
-const walcuId = ref('create_new')
+const walcuId = ref(null)
 const walcuUsers = ref([])
 const addressFull = ref([])
 const extraReserve = ref(0)
 const priceReserve = ref(0)
 const sellReserve = ref(0)
-const sellAddress = ref('')
 const commentsReserve = ref('')
 const carPay = ref(false)
 const deliveryAddress = ref('')
@@ -256,14 +257,30 @@ const paymentReserve = ref('0')
 const extrasReserve = ref([])
 const extrasAdded = ref([])
 const extrasOptions = ref([])
+const extrasWarrantyOptions = ref([])
+const extrasDeliveryOptions = ref([])
+const extrasDocsOptions = ref([])
+const extrasAnyOptions = ref([])
 const modelReserveOptions = ref([])
 const extraPick = ref('')
+const extraTypePick = ref('')
 const deliveryToggle = ref(false)
 const financedFeeReserve = ref(0)
 const financedPriceReserve = ref(0)
 const monthsReserve = ref(0)
 const paymentType = ref(null)
 const walcuVehicleId = ref(null)
+const docusignEmail = ref(null)
+const docusignComments = ref(null)
+const docusignTemplate = ref(null)
+const docusignTemplates = ref([])
+const loadingTemplates = ref(false)
+const addContract = ref(false)
+const buyerPlace = ref(null)
+const userPicked = ref(true)
+const paymentPicked = ref(true)
+const formPicked = ref(true)
+const docusignDis = ref(true)
 const imagesParams = [
   {
     key: 'vehicle',
@@ -484,7 +501,7 @@ const updateData = () => {
     registration_date: fabrication?.value,
     road: road?.value,
     tare: tare?.value,
-    web_categories: category?.value
+    web_categories: [category?.value]
   }
   if (payload.chassis_number === null) {
     message.value = 'Debe ingresar el VIN del vehículo, el campo Bastidor es obligatorio'
@@ -555,6 +572,10 @@ const fetch = () => {
       owners.value = vehicle.value.maintenance?.owners_quantity
       provider.value = vehicle.value.purchase?.provider || null
       buyer.value = vehicle.value.purchase?.buyer || null
+      if (buyer.value && provider.value) {
+        addContract.value = true
+      }
+      buyerReserve.value = vehicle.value.purchase?.buyer || null
       regimen.value = vehicle.value.purchase?.tax_regime
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       purchasePrice.value = vehicle.value.purchase?.total_price
@@ -614,7 +635,6 @@ const fetch = () => {
 fetch()
 
 const updateStatus = (status) => {
-  console.log(status)
   axios
     .patch(url, {
       status: status
@@ -866,6 +886,21 @@ const serverItemsLength = ref(0)
 const itemsExtra = ref([])
 const itemsDiscount = ref([])
 
+const extraTypePicked = () => {
+  if (extraTypePick.value == 'WarrantyType') {
+    extrasOptions.value = extrasWarrantyOptions.value
+  }
+  if (extraTypePick.value == 'DeliveryType') {
+    extrasOptions.value = extrasDeliveryOptions.value
+  }
+  if (extraTypePick.value == 'DocumentManagement') {
+    extrasOptions.value = extrasDocsOptions.value
+  }
+  if (extraTypePick.value == 'AnyExtra') {
+    extrasOptions.value = extrasAnyOptions.value
+  }
+}
+
 const extraPicked = () => {
   for (const item of extrasReserve.value) {
     if (item.id == extraPick.value) {
@@ -878,16 +913,14 @@ const addExtraReserve = () => {
   if (extraPick.value == null) {
     return
   }
-
-  extrasAdded.value.push(extrasReserve.value.find((item) => item.id == extraPick.value))
-  extrasOptions.value = extrasOptions.value.filter((item) => item.id != extraPick.value)
-  extraReserve.value = 0
-  extraPick.value = null
+  if (extrasAdded.value.find((item) => item.id === extraPick.value)) {
+    return
+  }
+  extrasAdded.value.push(extrasReserve.value.find((item) => item.id === extraPick.value))
 }
 
 const removeExtraReserve = (id) => {
-  extrasOptions.value.push(extrasAdded.value.find((item) => item.id == id))
-  extrasAdded.value = extrasAdded.value.filter((item) => item.id != id)
+  extrasAdded.value = extrasAdded.value.filter((item) => item.id !== id)
 }
 
 const fetchingExtras = () => {
@@ -911,15 +944,34 @@ const fetchingExtras = () => {
         item.extra = item.id
         if (item.category == 'DocumentManagement') {
           extrasAdded.value.push(item)
+          extrasReserve.value.push(item)
+          extrasDocsOptions.value.push({
+            id: item.id,
+            title: item.title
+          })
         } else {
           extrasReserve.value.push(item)
         }
       }
       for (const item of extrasReserve.value) {
-        extrasOptions.value.push({
-          id: item.id,
-          title: item.title
-        })
+        if (item.category == 'DeliveryType') {
+          extrasDeliveryOptions.value.push({
+            id: item.id,
+            title: item.title
+          })
+        }
+        if (item.category == 'AnyExtra') {
+          extrasAnyOptions.value.push({
+            id: item.id,
+            title: item.title
+          })
+        }
+        if (item.category == 'Warranty') {
+          extrasWarrantyOptions.value.push({
+            id: item.id,
+            title: item.title
+          })
+        }
       }
       serverItemsLength.value = response.data.count
     } catch (error) {
@@ -1260,7 +1312,6 @@ const extraDrawer = () => {
     }
   })
   axios.get(deliveryUrl).then((response) => {
-    console.log(response.data.results)
     for (let option of response.data.results) {
       deliveryOptions.value.push({
         id: option.id,
@@ -1316,18 +1367,11 @@ const discountDrawer = () => {
 }
 
 const reserveDrawer = (step) => {
-  if (!step) drawerSection.value = 'reserve'
-
-  axios
-    .get(walcuVehicleUrl + '?plate_number=' + plate.value + '&body_number=' + chassis.value)
-    .then((response) => {
-      for (let option of response.data) {
-        walcuVehicleOptions.value.push({
-          id: option._id,
-          title: option.make + ' ' + option.model
-        })
-      }
-    })
+  if (!step) {
+    drawerSection.value = 'reserve'
+    userPicked.value = true
+    walcuId.value = null
+  }
 
   if (step === 2) {
     drawerSection.value = 'reserve' + step
@@ -1347,12 +1391,26 @@ const reserveDrawer = (step) => {
       })
       .catch(() => {
         walcu.value = 'fail'
+        walcuId.value = 'create_new'
+        userPicked.value = false
       })
     return
   }
 
   if (step === 3) {
     drawerSection.value = 'reserve' + step
+    walcuVehicleOptions.value = []
+    axios
+      .get(walcuVehicleUrl + '?plate_number=' + plate.value + '&body_number=' + chassis.value)
+      .then((response) => {
+        for (let option of response.data) {
+          walcuVehicleOptions.value.push({
+            id: option._id,
+            title: option.make + ' ' + option.model
+          })
+        }
+        walcuVehicleId.value = walcuVehicleOptions.value[0].id
+      })
     return
   }
 
@@ -1450,6 +1508,18 @@ const reserveDrawer = (step) => {
   }
 }
 
+const getModel = () => {
+  modelOptions.value = []
+  axios.get(`${modelUrl}?brand=${brand.value.id}&title=`).then((response) => {
+    for (let option of response.data.results) {
+      modelOptions.value.push({
+        id: option.id,
+        label: option.title
+      })
+    }
+  })
+}
+
 const getModelReserve = () => {
   modelReserveOptions.value = []
   axios.get(`${modelUrl}?brand=${carPayBrand.value.id}&title=`).then((response) => {
@@ -1463,6 +1533,7 @@ const getModelReserve = () => {
 }
 
 const setBuyerPlace = (place) => {
+  console.log(buyerPlace.value)
   addressFull.value = place.address_components
   buyerAddress.value = place.formatted_address
   for (let address of addressFull.value) {
@@ -1485,7 +1556,6 @@ const setCompanyPlace = (place) => {
   addressFull.value = place.address_components
   companyAddress.value = place.formatted_address
   for (let address of addressFull.value) {
-    console.log(address.types)
     if (address.types.includes('locality')) {
       companyCity.value = address.long_name
     }
@@ -1539,6 +1609,77 @@ const deliveryChange = () => {
 const toggleReserve = () => {
   companyEmail.value = buyerEmail.value
   companyPhone.value = buyerPhone.value
+}
+
+const docusignDrawer = (step) => {
+  if (!step) {
+    drawerSection.value = 'docusign'
+    docusignTemplate.value = null
+    docusignDis.value = true
+  }
+
+  if (step === 2) {
+    docusignEmail.value = buyerEmail.value
+    loadingTemplates.value = true
+    axios.get(docusignTemplatesUrl).then((response) => {
+      docusignTemplates.value = response.data.envelope_templates
+      loadingTemplates.value = false
+      drawerSection.value = 'docusign2'
+    })
+  }
+
+  if (step === 3) {
+    const payload = {
+      contact_person: {
+        address: {
+          address: buyerAddress.value,
+          city: buyerCity.value,
+          country: buyerCountry.value,
+          postal_code: buyerZip.value,
+          region: buyerProvince.value
+        },
+        person_info: {
+          document_id: idNumber.value,
+          document_type: idType.value,
+          first_name: buyerName.value,
+          last_name: buyerLastName.value
+        },
+        primary_email: buyerEmail.value,
+        primary_phone_number: buyerPhone.value,
+        primary_phone_prefix: prefixBuyer.value.id
+      },
+      extra_comments: docusignComments.value,
+      sent_to: docusignEmail.value,
+      template_id: docusignTemplate.value
+    }
+
+    if (enterpriseReserve.value) {
+      payload.contact_company = {
+        address: {
+          address: companyAddress.value,
+          city: companyCity.value,
+          country: companyCountry.value,
+          postal_code: companyZip.value,
+          region: companyProvince.value
+        },
+        company_info: {
+          name: companyName.value,
+          vat: companyVat.value
+        },
+        person_info: {
+          document_id: idNumber.value,
+          document_type: idType.value,
+          first_name: buyerName.value,
+          last_name: buyerLastName.value
+        },
+        primary_email: companyEmail.value,
+        primary_phone_number: companyPhone.value,
+        primary_phone_prefix: prefixCompany.value.id
+      }
+    }
+
+    axios.post(docusignUrl, payload)
+  }
 }
 
 onMounted(async () => {
@@ -1848,7 +1989,12 @@ onMounted(async () => {
                     v-model="bodyType"
                     :initialValue="null"
                   />
-                  <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
+                  <SearchSelect
+                    label="Marca:"
+                    :options="brandOptions"
+                    v-model="brand"
+                    @selected="getModel"
+                  />
                   <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
                   <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
                   <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
@@ -1959,7 +2105,13 @@ onMounted(async () => {
               >
                 <div class="flex flex-row justify-between">
                   <h1 class="text-xl font-medium">Información de compra</h1>
-                  <button class="btn btn-outline btn-sm hidden lg:block">Generar contrato</button>
+                  <label
+                    v-if="addContract"
+                    for="vehicle-drawer"
+                    class="btn btn-outline btn-sm mb-2"
+                    @click="docusignDrawer()"
+                    >Generar contrato</label
+                  >
                 </div>
                 <CheckInput
                   label="Gestión de venta:"
@@ -2946,33 +3098,38 @@ onMounted(async () => {
         />
       </ul>
       <ul
-        v-if="drawerSection === 'reserve'"
+        v-if="drawerSection === 'docusign'"
         class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
       >
-        <div>
-          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
-          <!-- <DragDrop :url="url" type="vehicle" :params="params" format=".pdf" /> -->
+        <form @submit.prevent="docusignDrawer(2)">
+          <DrawerTitle title="Generar Contrato" @toggle="toggleDrawer" />
           <div>
             <ToggleInput
-              label="Empresa"
+              label="Particular"
+              option="Empresa"
               v-model="enterpriseReserve"
               class="my-4 mr-4 w-fit"
               @changed="toggleReserve"
             />
-            <h2 class="text-xl font-semibold">Información del comprador</h2>
+            <h2 class="text-xl font-semibold">Información del vendedor</h2>
             <SelectInput label="Tipo de documento:" :options="options.idTypes" v-model="idType" />
-            <TextInput label="Numero de documento:" v-model="idNumber" />
+            <TextInput label="Numero de documento:" v-model="idNumber" required />
             <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
               <TextInput label="Nombre:" v-model="buyerName" />
               <TextInput label="Apellido:" v-model="buyerLastName" />
-              <TextInput label="Email:" v-model="buyerEmail" />
+              <TextInput label="Email:" v-model="buyerEmail" required />
               <label class="form-control w-full">
                 <div class="label">
                   <span class="label-text font-medium">Teléfono:</span>
                 </div>
                 <div class="flex flex-row gap-2">
                   <VueSelect v-model="prefixBuyer" :options="phonesPre" class="w-60" />
-                  <input type="text" class="input input-bordered w-full" v-model="buyerPhone" />
+                  <input
+                    type="text"
+                    class="input input-bordered w-full"
+                    v-model="buyerPhone"
+                    required
+                  />
                 </div>
               </label>
             </div>
@@ -2989,20 +3146,110 @@ onMounted(async () => {
               <TextInput label="País:" v-model="buyerCountry" />
               <TextInput label="Código Postal:" v-model="buyerZip" />
             </div>
+            <div v-if="enterpriseReserve">
+              <h2 class="mt-4 text-xl font-semibold">Información de la empresa</h2>
+              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                <TextInput label="VAT:" v-model="companyVat" />
+                <TextInput label="Nombre:" v-model="companyName" />
+                <TextInput label="Email:" v-model="companyEmail" />
+                <label class="form-control w-full">
+                  <div class="label">
+                    <span class="label-text font-medium">Teléfono:</span>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <VueSelect v-model="prefixCompany" :options="phonesPre" class="w-60" />
+                    <input type="text" class="input input-bordered w-full" v-model="companyPhone" />
+                  </div>
+                </label>
+              </div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Dirección:</span>
+                </div>
+                <GMapAutocomplete
+                  @place_changed="setCompanyPlace"
+                  class="input input-bordered w-full"
+                >
+                </GMapAutocomplete>
+              </label>
+              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                <TextInput label="Ciudad:" v-model="companyCity" />
+                <TextInput label="Provincia:" v-model="companyProvince" />
+                <TextInput label="País:" v-model="companyCountry" />
+                <TextInput label="Código Postal:" v-model="companyZip" />
+              </div>
+            </div>
           </div>
-          <div v-if="enterpriseReserve">
-            <h2 class="mt-4 text-xl font-semibold">Información de la empresa</h2>
+          <li class="mt-8 flex flex-row justify-end gap-4">
+            <button @click="toggleDrawer" class="btn btn-outline w-28">Cancelar</button>
+            <button type="submit" class="btn btn-primary w-24">
+              <LoadingSpinner v-if="loadingTemplates" />
+              <span class="text-white" v-else>Siguiente</span>
+            </button>
+          </li>
+        </form>
+      </ul>
+      <ul
+        v-if="drawerSection === 'docusign2'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Generar contrato" @toggle="toggleDrawer" />
+          <TextInput label="Email del firmante:" v-model="docusignEmail" />
+          <h2 class="text-xl font-semibold">Seleccione el tipo de documento</h2>
+          <RadioInput
+            v-for="(template, index) in docusignTemplates"
+            :key="index"
+            :label="template.name"
+            v-model="docusignTemplate"
+            :value="template.template_id"
+            name="document"
+            @changed="docusignDis = false"
+          />
+          <AreaInput label="Comentarios:" v-model="docusignComments" />
+        </div>
+        <DrawerActions
+          secondary="Volver"
+          primary="Enviar"
+          @click-secondary="docusignDrawer()"
+          @click-primary="docusignDrawer(3)"
+          :disabled="docusignDis"
+        />
+      </ul>
+      <ul
+        v-if="drawerSection === 'reserve'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <form @submit.prevent="reserveDrawer(2)">
+          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
+          <!-- <DragDrop :url="url" type="vehicle" :params="params" format=".pdf" /> -->
+          <div>
+            <ToggleInput
+              label="Particular"
+              option="Empresa"
+              v-model="enterpriseReserve"
+              class="my-4 w-fit"
+              @changed="toggleReserve"
+            />
+            <h2 class="text-xl font-semibold">Información del comprador</h2>
+            <SelectInput label="Tipo de documento:" :options="options.idTypes" v-model="idType" />
+            <TextInput label="Numero de documento:" v-model="idNumber" required />
             <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-              <TextInput label="VAT:" v-model="companyVat" />
-              <TextInput label="Nombre:" v-model="companyName" />
-              <TextInput label="Email:" v-model="companyEmail" />
+              <TextInput label="Nombre:" v-model="buyerName" />
+              <TextInput label="Apellido:" v-model="buyerLastName" />
+              <TextInput label="Email:" v-model="buyerEmail" required />
               <label class="form-control w-full">
                 <div class="label">
                   <span class="label-text font-medium">Teléfono:</span>
                 </div>
                 <div class="flex flex-row gap-2">
-                  <VueSelect v-model="prefixCompany" :options="phonesPre" class="w-60" />
-                  <input type="text" class="input input-bordered w-full" v-model="companyPhone" />
+                  <VueSelect v-model="prefixBuyer" :options="phonesPre" class="w-60" />
+                  <input
+                    type="text"
+                    class="input input-bordered w-full"
+                    v-model="buyerPhone"
+                    required
+                  />
                 </div>
               </label>
             </div>
@@ -3010,26 +3257,54 @@ onMounted(async () => {
               <div class="label">
                 <span class="label-text font-medium">Dirección:</span>
               </div>
-              <GMapAutocomplete
-                @place_changed="setCompanyPlace"
-                class="input input-bordered w-full"
-              >
+              <GMapAutocomplete @place_changed="setBuyerPlace" class="input input-bordered w-full">
               </GMapAutocomplete>
             </label>
             <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-              <TextInput label="Ciudad:" v-model="companyCity" />
-              <TextInput label="Provincia:" v-model="companyProvince" />
-              <TextInput label="País:" v-model="companyCountry" />
-              <TextInput label="Código Postal:" v-model="companyZip" />
+              <TextInput label="Ciudad:" v-model="buyerCity" />
+              <TextInput label="Provincia:" v-model="buyerProvince" />
+              <TextInput label="País:" v-model="buyerCountry" />
+              <TextInput label="Código Postal:" v-model="buyerZip" />
+            </div>
+            <div v-if="enterpriseReserve">
+              <h2 class="mt-4 text-xl font-semibold">Información de la empresa</h2>
+              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                <TextInput label="VAT:" v-model="companyVat" />
+                <TextInput label="Nombre:" v-model="companyName" />
+                <TextInput label="Email:" v-model="companyEmail" />
+                <label class="form-control w-full">
+                  <div class="label">
+                    <span class="label-text font-medium">Teléfono:</span>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <VueSelect v-model="prefixCompany" :options="phonesPre" class="w-60" />
+                    <input type="text" class="input input-bordered w-full" v-model="companyPhone" />
+                  </div>
+                </label>
+              </div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Dirección:</span>
+                </div>
+                <GMapAutocomplete
+                  @place_changed="setCompanyPlace"
+                  class="input input-bordered w-full"
+                >
+                </GMapAutocomplete>
+              </label>
+              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                <TextInput label="Ciudad:" v-model="companyCity" />
+                <TextInput label="Provincia:" v-model="companyProvince" />
+                <TextInput label="País:" v-model="companyCountry" />
+                <TextInput label="Código Postal:" v-model="companyZip" />
+              </div>
             </div>
           </div>
-        </div>
-        <DrawerActions
-          secondary="Cancelar"
-          primary="Siguiente"
-          @click-secondary="toggleDrawer"
-          @click-primary="reserveDrawer(2)"
-        />
+          <li class="mt-8 flex flex-row justify-end gap-4">
+            <button @click="toggleDrawer" class="btn btn-outline w-28">Cancelar</button>
+            <button type="submit" class="btn btn-primary w-24 text-white">Siguiente</button>
+          </li>
+        </form>
       </ul>
       <ul
         v-if="drawerSection === 'reserve2'"
@@ -3046,7 +3321,13 @@ onMounted(async () => {
           <div v-else>
             <h2 class="text-xl font-semibold">Se han encontrado usuarios con estos datos</h2>
             <h3 class="text-lg font-semibold">¿Que desea hacer?</h3>
-            <RadioInput label="Crear nuevo usuario" v-model="walcuId" value="" name="users" />
+            <RadioInput
+              label="Crear nuevo usuario"
+              v-model="walcuId"
+              value="create_new"
+              name="users"
+              @changed="userPicked = false"
+            />
             <RadioInput
               v-for="user in walcuUsers"
               :key="user._id"
@@ -3054,6 +3335,7 @@ onMounted(async () => {
               v-model="walcuId"
               :value="user._id"
               name="users"
+              @changed="userPicked = false"
             />
           </div>
         </div>
@@ -3062,6 +3344,7 @@ onMounted(async () => {
           primary="Siguiente"
           @click-secondary="reserveDrawer()"
           @click-primary="reserveDrawer(3)"
+          :disabled="userPicked || !(walcuId === 'create_new')"
         />
       </ul>
       <ul
@@ -3085,9 +3368,15 @@ onMounted(async () => {
               :initialValue="null"
             />
             <h3 class="mt-4 text-lg font-semibold">Gestión de extras</h3>
-            <div class="flex flex-col gap-3 lg:flex-row">
+            <div class="flex flex-col gap-3 lg:grid lg:grid-cols-3">
               <SelectInput
-                label="Extras disponibles:"
+                label="Tipo:"
+                :options="options.extraType"
+                v-model="extraTypePick"
+                @selected="extraTypePicked"
+              />
+              <SelectInput
+                label="Extra:"
                 :options="extrasOptions"
                 v-model="extraPick"
                 @selected="extraPicked"
@@ -3099,28 +3388,20 @@ onMounted(async () => {
                 </button>
               </div>
             </div>
-            <h3 class="mt-4 text-lg font-semibold">Extras agregados</h3>
+            <!-- <h3 class="mt-4 text-lg font-semibold">Extras agregados</h3> -->
             <div
               v-for="(extra, index) in extrasAdded"
               :key="index"
-              class="card card-side m-3 w-fit bg-base-100 shadow-xl"
+              class="my-2 flex flex-row items-center rounded bg-base-200 p-3"
             >
-              <div class="card-body flex-row justify-between p-2">
-                <div class="mr-3 flex gap-2">
-                  <Icon icon="mdi:basket-plus" width="40" />
-                  <span class="card-title text-sm font-medium lg:text-base"
-                    >{{ extra.title }} ({{ extra.price }}€)</span
-                  >
-                </div>
-                <div class="self flex gap-2">
-                  <button
-                    class="btn btn-square btn-error btn-sm"
-                    @click="removeExtraReserve(extra.id)"
-                  >
-                    <Icon icon="mdi:delete" width="20" />
-                  </button>
-                </div>
+              <div class="grid w-full grid-cols-3 text-center">
+                <span>{{ extra.verbose_category }}</span>
+                <span>{{ extra.title }}</span>
+                <span>{{ extra.price }}</span>
               </div>
+              <a @click="removeExtraReserve(extra.id)" class="cursor-pointer"
+                ><Icon icon="mdi:times" width="30"
+              /></a>
             </div>
             <TextInput label="Precio de venta:" v-model="sellReserve" />
             <div class="flex flex-col gap-3 lg:flex-row">
@@ -3129,9 +3410,9 @@ onMounted(async () => {
                 label="Método de pago:"
                 :options="options.paymentMethods"
                 v-model="paymentReserve"
+                @selected="paymentPicked = false"
               />
             </div>
-            <TextInput label="Dirección Fiscal:" v-model="sellAddress" />
             <AreaInput label="Comentarios:" v-model="commentsReserve" />
           </div>
         </div>
@@ -3140,6 +3421,7 @@ onMounted(async () => {
           primary="Siguiente"
           @click-secondary="reserveDrawer()"
           @click-primary="reserveDrawer(4)"
+          :disabled="paymentPicked"
         />
       </ul>
       <ul
@@ -3169,6 +3451,7 @@ onMounted(async () => {
               :options="options.paymentType"
               v-model="paymentType"
               :initialValue="null"
+              @selected="formPicked = false"
             />
             <div v-if="paymentType === '1'">
               <TextInput label="Cuota Mensual:" v-model="financedFeeReserve" />
@@ -3183,7 +3466,12 @@ onMounted(async () => {
             <div v-if="carPay">
               <TextInput label="Numero de placa:" v-model="carPayPlate" />
               <TextInput label="Numero de chasis:" v-model="carPayVin" />
-              <SearchSelect label="Marca:" :options="brandOptions" v-model="carPayBrand" @selected="getModelReserve" />
+              <SearchSelect
+                label="Marca:"
+                :options="brandOptions"
+                v-model="carPayBrand"
+                @selected="getModelReserve"
+              />
               <SearchSelect label="Modelo:" :options="modelReserveOptions" v-model="carPayModel" />
               <TextInput label="Kilometraje:" v-model="carPayKms" />
               <SelectInput
@@ -3201,6 +3489,7 @@ onMounted(async () => {
           primary="Reservar"
           @click-secondary="reserveDrawer(3)"
           @click-primary="reserveDrawer(5)"
+          :disabled="formPicked"
         />
       </ul>
     </div>
@@ -3213,97 +3502,3 @@ onMounted(async () => {
   font-weight: 600;
 }
 </style>
-
-<!-- {
-  additional_info: commentsReserve.value,
-  address: companyAddress.value,
-  brand: carPayBrand.value.id,
-  buyer_company: {
-    address: {
-      address: companyAddress.value,
-      city: companyCity.value,
-      country: companyCountry.value,
-      postal_code: companyZip.value,
-      region: companyProvince.value
-    },
-    email: companyEmail.value,
-    name: companyName.value,
-    phone: companyPhone.value,
-    vat: companyVat.value
-  },
-  city: companyCity.value,
-  company_phone_prefix: prefixCompany.value.id,
-  contact_address: buyerAddress.value,
-  contact_city: buyerCity.value,
-  contact_country: buyerCountry.value,
-  contact_document_id: idNumber.value,
-  contact_email: buyerEmail.value,
-  contact_first_name: buyerName.value,
-  contact_last_name: buyerLastName.value,
-  contact_phone: buyerPhone.value,
-  contact_phone_prefix: prefixBuyer.value.id,
-  contact_postal_code: buyerZip.value,
-  contact_region: buyerProvince.value,
-  country: companyCountry.value,
-  delivery_address: deliveryAddress.value,
-  delivery_city: deliveryCity.value,
-  delivery_country: deliveryCountry.value,
-  delivery_documentation_address: {
-    address: deliveryAddress.value,
-    city: deliveryCity.value,
-    country: deliveryCountry.value,
-    postal_code: deliveryZip.value,
-    region: deliveryProvince.value
-  },
-  delivery_postal_code: deliveryZip.value,
-  delivery_province_name: deliveryProvince.value,
-  email: companyEmail.value,
-  extra_list: extrasAdded.value,
-  form_of_payment_financed_fee: financedFeeReserve.value,
-  form_of_payment_financed_price: financedPriceReserve.value,
-  form_of_payment_months: monthsReserve.value,
-  form_of_payment_type: paymentType.value,
-  form_of_payment_vehicle_price: carPayValue.value,
-  fuel: carPayFuel.value,
-  gearbox: carPayTrans.value,
-  has_vehicle_as_payment: 'on',
-  kms: carPayKms.value,
-  media_files: [],
-  model_car: carPayModel.value.id,
-  name: '',
-  original_price: sellReserve.value,
-  payments: [
-    {
-      amount: priceReserve.value,
-      payment_method: paymentReserve.value,
-      payment_type: 'booking_pre_order_payment'
-    },
-    {
-      amount: carPayValue.value,
-      form_of_payment_vehicle: {
-        brand: carPayBrand.value.id,
-        fuel: carPayFuel.value,
-        gearbox: carPayTrans.value,
-        kms: carPayKms.value,
-        model_car: carPayModel.value.id,
-        plate: carPayPlate.value,
-        price: carPayValue.value,
-        vin: carPayVin.value
-      },
-      payment_method: "vehicle_exchange",
-      payment_type: "counted"
-    }
-  ],
-  phone: companyPhone.value,
-  plate: carPayPlate.value,
-  postal_code: companyZip.value,
-  price: financedPriceReserve.value,
-  region: companyProvince.value,
-  reserve_amount: 0,
-  seller: buyerReserve.value,
-  vat: companyVat.value,
-  vehicle: id.value,
-  vin: carPayVin.value,
-  walcu_lead_id: walcuId.value,
-  walcu_vehicle_id: walcuVehicleId.value
-} -->

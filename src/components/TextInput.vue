@@ -4,6 +4,7 @@ defineProps({
   placeholder: { type: String },
   disabled: { type: Boolean },
   type: { type: String, default: 'text' },
+  required: { type: Boolean, default: false },
   modelValue: { type: String }
 })
 
@@ -23,6 +24,7 @@ defineEmits(['input'])
       :disabled="disabled"
       v-model="value"
       @input="$emit('input')"
+      :required="required"
     />
   </label>
 </template>
