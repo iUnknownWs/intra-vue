@@ -1,7 +1,8 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 defineProps({
-  title: { type: String, required: true }
+  title: { type: String, required: true },
+  add: { type: Boolean }
 })
 defineEmits(['addBtn'])
 </script>
@@ -9,8 +10,9 @@ defineEmits(['addBtn'])
 <template>
   <div class="flex flex-col">
     <div class="flex flex-row justify-between">
-      <span class="text-xl font-semibold">{{ title }}</span>
+      <span class="mb-4 text-xl font-semibold">{{ title }}</span>
       <label
+        v-if="add"
         for="vehicle-drawer"
         class="btn btn-outline btn-sm mb-2 self-end"
         @click="$emit('addBtn')"

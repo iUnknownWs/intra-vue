@@ -213,6 +213,7 @@ const equipGroup = ref('0')
 const equipWeb = ref(false)
 const equipFeatured = ref(false)
 const isFetchingEquip = ref(true)
+const isFetchingDocs = ref(true)
 const skeletonGallery = ref(true)
 const galleryHover = ref(null)
 const enterpriseReserve = ref(false)
@@ -279,6 +280,7 @@ const docusignEmail = ref(null)
 const docusignComments = ref(null)
 const docusignTemplate = ref(null)
 const docusignTemplates = ref([])
+const docusignContracts = ref(null)
 const loadingTemplates = ref(false)
 const addContract = ref(false)
 const buyerPlace = ref(null)
@@ -541,6 +543,7 @@ const updateData = () => {
 
 const fetch = () => {
   isFetchingEquip.value = true
+  isFetchingDocs.value = true
   axios
     .get(url)
     .then((response) => {
@@ -589,6 +592,9 @@ const fetch = () => {
       regimen.value = vehicle.value.purchase?.tax_regime
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       purchasePrice.value = vehicle.value.purchase?.total_price
+      docusignContracts.value = vehicle.value.purchase?.docusign_contracts || null
+      console.log(docusignContracts.value)
+      isFetchingDocs.value = false
       price.value = vehicle.value.price?.price_with_discounts
       sellReserve.value = vehicle.value.price?.price_with_discounts
       priceReserve.value = vehicle.value.price?.reserve_amount
@@ -1201,6 +1207,14 @@ watch(
   { deep: true }
 )
 
+const headersDocusign = [
+  { text: 'Fecha', value: 'created_at' },
+  { text: 'Enviado a', value: 'sent_to' },
+  { text: 'Estado', value: 'status', width: 40 },
+  { text: 'Archivos', value: 'files' },
+  { text: 'Eliminar', value: 'id', width: 40 }
+]
+
 const headersEquip = [
   { text: 'Nombre', value: 'title' },
   { text: 'Descripción', value: 'description' },
@@ -1727,7 +1741,10 @@ const docusignDrawer = (step) => {
       }
     }
 
-    axios.post(docusignUrl, payload)
+    axios.post(docusignUrl, payload).then(() => {
+      fetch()
+      toggleDrawer()
+    })
   }
 }
 
@@ -2214,13 +2231,61 @@ onMounted(async () => {
                   <TextInput label="Importe de comisión:" v-model="commission" />
                   <DateInput label="Fecha de compra:" v-model="purchaseDate" />
                 </div>
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Configuración de precio</h1>
-                  <label for="vehicle-drawer" class="btn btn-outline btn-sm" @click="drawerFinance"
-                    >Conf. Financiera</label
-                  >
+                <div v-if="docusignContracts?.length > 0" class="my-8">
+                  <h1 class="text-xl font-medium">Documentos de compra</h1>
+                  <div class="divider m-0 p-0"></div>
+                  <VehicleTable>
+                    <template #content>
+                      <EasyDataTable
+                        class="table-dark table-striped"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        :headers="headersDocusign"
+                        :items="docusignContracts"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingDocs"
+                      >
+                        <template v-slot:item-files="{ files }">
+                          <a
+                            v-for="(file, index) in files"
+                            :key="index"
+                            :href="file.file"
+                            target="_blank"
+                            class="btn btn-square btn-xs mr-2"
+                          >
+                            <Icon icon="mdi:eye" />
+                          </a>
+                        </template>
+                        <template v-slot:item-status="{ status }">
+                          <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                            {{ status.toUpperCase() }}
+                          </span>
+                        </template>
+                        <template v-slot:item-id="{ id }">
+                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                    <template #drawer> </template>
+                  </VehicleTable>
                 </div>
-                <div class="divider m-0 p-0"></div>
+                <div class="mt-4 flex flex-col">
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Configuración de precio</h1>
+                    <label
+                      for="vehicle-drawer"
+                      class="btn btn-outline btn-sm"
+                      @click="drawerFinance"
+                      >Conf. Financiera
+                    </label>
+                  </div>
+                  <div class="divider m-0 p-0"></div>
+                </div>
                 <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
                   <TextInput label="Precio de venta:" v-model="price" />
                   <TextInput label="Precio financiado:" v-model="financed" />
@@ -2244,7 +2309,7 @@ onMounted(async () => {
                 ref="extras"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
-                <VehicleTable title="Lista de Extras" @addBtn="extraDrawer">
+                <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
@@ -2277,7 +2342,7 @@ onMounted(async () => {
                 ref="discounts"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
-                <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer">
+                <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
                   <template #content>
                     <EasyDataTable
                       class="z-0"
@@ -2315,7 +2380,7 @@ onMounted(async () => {
                 ref="serialEquip"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
-                <VehicleTable title="Equipamiento de serie" @addBtn="drawerSection = 'SERIAL'">
+                <VehicleTable title="Equipamiento de serie" @addBtn="drawerSection = 'SERIAL'" add>
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
@@ -2367,6 +2432,7 @@ onMounted(async () => {
                 <VehicleTable
                   title="Equipamiento opcional sin coste"
                   @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
+                  add
                 >
                   <template #content>
                     <EasyDataTable
@@ -2419,6 +2485,7 @@ onMounted(async () => {
                 <VehicleTable
                   title="Equipamiento opcional con coste"
                   @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
+                  add
                 >
                   <template #content>
                     <EasyDataTable
