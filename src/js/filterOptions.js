@@ -73,7 +73,7 @@ const categoria = [
 
 const medioambiental = [
     {
-        id: '1',
+        id: '0',
         title: '0'
     },
     {
@@ -190,6 +190,49 @@ const paymentType = [
     }
 ]
 
+const financingMonths = [
+    {
+        id: '',
+        title: 'Automático (Máximo Posible)'
+    },
+    {
+        id: '24',
+        title: '24 Mes'
+    },
+    {
+        id: '36',
+        title: '36 Meses'
+    },
+    {
+        id: '48',
+        title: '48 Meses'
+    },
+    {
+        id: '60',
+        title: '60 Meses'
+    },
+    {
+        id: '72',
+        title: '72 Meses'
+    },
+    {
+        id: '84',
+        title: '84 Meses'
+    },
+    {
+        id: '96',
+        title: '96 Meses'
+    },
+    {
+        id: '108',
+        title: '108 Meses'
+    },
+    {
+        id: '120',
+        title: '120 Meses'
+    }
+]
+
 export const interes = [
     {
         id: '1',
@@ -220,7 +263,8 @@ const options = {
     extraType,
     idTypes,
     paymentMethods,
-    paymentType
+    paymentType,
+    financingMonths
 }
 
 export default options

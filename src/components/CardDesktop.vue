@@ -21,7 +21,7 @@ defineProps({
   cambios: { type: String, required: true, default: '-' },
   keys: { type: Number },
   kms: { type: Number, required: true },
-  distinctive: { type: Number, required: true },
+  distinctive: { type: [Number, null], required: true },
   leads: { type: Number, default: 0 }
 })
 
@@ -155,7 +155,7 @@ const integrations = [true, true, true]
             tabindex="0"
             class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
           >
-            <li><a @click="$emit('menu-btn1', id)">Ver/Editar</a></li>
+            <li><RouterLink :to="'/vehiculos/' + id">Ver/Editar</RouterLink></li>
             <li><a @click="$emit('menu-btn2', slug)">Ver anuncio</a></li>
             <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
             <li><a @click="$emit('menu-btn4')">Imprimir</a></li>

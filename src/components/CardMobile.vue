@@ -21,7 +21,7 @@ defineProps({
   cambios: { type: [String, null], required: true },
   keys: { type: [Number, null], required: true },
   kms: { type: [Number, null], required: true },
-  distinctive: { type: Number, required: true },
+  distinctive: { type: [Number, null], required: true },
   leads: { type: Number, default: 0 }
 })
 

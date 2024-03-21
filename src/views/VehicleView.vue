@@ -15,7 +15,9 @@ axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('
 const route = useRoute()
 const id = ref(route.params.id)
 const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
+const statusUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/status/`
 const docusignUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/generate_buy_contract/`
+const refreshDistinctiveUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/recalculate_env_label/`
 const docusignTemplatesUrl = `${import.meta.env.VITE_API}/docusign_list_templates/?purchase_templates`
 const updateGalleryUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/update_vehicle_order/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
@@ -42,6 +44,9 @@ const galleryDocsUrl = `${import.meta.env.VITE_API}/vehicles-documents/`
 const walcuUrl = `${import.meta.env.VITE_API}/walcu_lead/`
 const walcuVehicleUrl = `${import.meta.env.VITE_API}/walcu_vehicle/`
 const reserveUrl = `${import.meta.env.VITE_SALES}/bookings/`
+const finRatesUrl = `${import.meta.env.VITE_API}/vehicles-financing-rates/`
+const finProdUrl = `${import.meta.env.VITE_API}/vehicles-financing-products/`
+const finCalculateUrl = `${import.meta.env.VITE_VEHICLES}/calculate_financing/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -281,6 +286,11 @@ const userPicked = ref(true)
 const paymentPicked = ref(true)
 const formPicked = ref(true)
 const docusignDis = ref(true)
+const finProdOptions = ref([])
+const finRateOptions = ref([])
+const finProduct = ref(null)
+const finRate = ref(null)
+const finMonths = ref('')
 const imagesParams = [
   {
     key: 'vehicle',
@@ -636,11 +646,19 @@ fetch()
 
 const updateStatus = (status) => {
   axios
-    .patch(url, {
+    .patch(statusUrl, {
       status: status
     })
     .then(() => {
       fetch()
+    })
+    .catch((e) => {
+      if (e.response.status === 400) {
+        message.value = 'No se ha podido cambiar al estado indicado'
+      } else {
+        message.value = e.message
+      }
+      error.value?.modal.showModal()
     })
 }
 
@@ -682,6 +700,37 @@ axios.get(providersUrl).then((response) => {
     })
   }
 })
+
+const recalculateDistinctive = () => {
+  let envLabel = null
+  error.value.modal.focus()
+  axios
+    .get(refreshDistinctiveUrl)
+    .then((response) => {
+      console.log(response.data.env_label)
+      if (response.data.env_label === '0') {
+        envLabel = 0
+      }
+      if (response.data.env_label === 'ECO') {
+        envLabel = 1
+      }
+      if (response.data.env_label === 'B') {
+        envLabel = 2
+      }
+      if (response.data.env_label === 'C') {
+        envLabel = 3
+      }
+      axios.patch(url, { maintenance: { distinctive: envLabel } }).then(() => {
+        fetch()
+      })
+    })
+    .catch((e) => {
+      console.log(e)
+      message.value =
+        'No se encontró una Etiqueta Medioambiental para esta matricula, por favor verifique e intente nuevamente'
+      error.value?.modal.showModal()
+    })
+}
 
 const unlinkKey = () => {
   axios.put(keysWebUrl + key.value, { vehicle: null }).then(() => {
@@ -1682,6 +1731,33 @@ const docusignDrawer = (step) => {
   }
 }
 
+const drawerFinance = () => {
+  drawerSection.value = 'finance'
+
+  axios.get(finProdUrl).then((response) => {
+    finProdOptions.value = response.data.results
+  })
+
+  axios.get(finRatesUrl).then((response) => {
+    finRateOptions.value = response.data.results
+  })
+}
+
+const calculateFinance = () => {
+  const payload = {
+    product: finProduct.value,
+    rate: finRate.value,
+    vehicle: id.value
+  }
+
+  if (finMonths.value !== '') payload.months = finMonths.value
+
+  axios.post(finCalculateUrl, payload).then(() => {
+    toggleDrawer()
+    fetch()
+  })
+}
+
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
@@ -1970,7 +2046,7 @@ onMounted(async () => {
                     </template>
                     <template #content>
                       <ul>
-                        <li><a>Recalcular etiqueta</a></li>
+                        <li><a @click="recalculateDistinctive">Recalcular etiqueta</a></li>
                         <li><a @click="unlinkKey">Liberar llave</a></li>
                       </ul>
                     </template>
@@ -2137,7 +2213,9 @@ onMounted(async () => {
                 </div>
                 <div class="flex flex-row justify-between">
                   <h1 class="text-xl font-medium">Configuración de precio</h1>
-                  <button class="btn btn-outline btn-sm hidden lg:block">Conf. Financiera</button>
+                  <label for="vehicle-drawer" class="btn btn-outline btn-sm" @click="drawerFinance"
+                    >Conf. Financiera</label
+                  >
                 </div>
                 <div class="divider m-0 p-0"></div>
                 <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
@@ -2229,7 +2307,7 @@ onMounted(async () => {
                 </VehicleTable>
               </div>
             </div>
-            <div v-if="tab > 8 && tab < 12" class="flex flex-col gap-8">
+            <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
               <div
                 ref="serialEquip"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
@@ -2383,6 +2461,20 @@ onMounted(async () => {
                   <template #drawer> </template>
                 </VehicleTable>
               </div>
+            </div>
+            <div
+              v-if="tab === 11"
+              class="flex scroll-m-28 flex-col items-center justify-center gap-4 rounded bg-base-100 p-4 text-center lg:scroll-m-20"
+            >
+              <h2 class="text-xl font-medium">Performance Test</h2>
+              <h3 class="text-base font-medium">
+                No se ha realizado ningún performance test a este vehículo hasta el momento
+              </h3>
+              <span class="text-base">¿Desea realizar un Performance Test?</span>
+              <button class="btn btn-primary w-fit text-white" @click="performTest">
+                Performance Test
+                <Icon icon="mdi:arrow-right" />
+              </button>
             </div>
             <div
               v-if="tab === 12"
@@ -3490,6 +3582,38 @@ onMounted(async () => {
           @click-secondary="reserveDrawer(3)"
           @click-primary="reserveDrawer(5)"
           :disabled="formPicked"
+        />
+      </ul>
+      <ul
+        v-if="drawerSection === 'finance'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Calcular Cuotas de Financiación" @toggle="toggleDrawer" />
+          <SelectInput
+            label="Interes:"
+            :options="finRateOptions"
+            v-model="finRate"
+            optionValue="id"
+            optionLabel="label"
+            :initialValue="null"
+          />
+          <SelectInput
+            label="Producto:"
+            :options="finProdOptions"
+            v-model="finProduct"
+            optionValue="id"
+            optionLabel="label"
+            :initialValue="null"
+          />
+          <SelectInput label="Meses:" :options="options.financingMonths" v-model="finMonths" />
+        </div>
+        <DrawerActions
+          secondary="Cancelar"
+          primary="Calcular"
+          @click-secondary="toggleDrawer"
+          @click-primary="calculateFinance"
+          :disabled="finRate === null || finProduct === null"
         />
       </ul>
     </div>

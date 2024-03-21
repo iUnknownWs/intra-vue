@@ -1,6 +1,6 @@
 <script setup>
 import { Icon } from '@iconify/vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
@@ -10,6 +10,9 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 const url = `${import.meta.env.VITE_VEHICLES}/?`
+const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
+const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
+let scrollNextUrl = ''
 const vehiclesFilter = ref([])
 const params = ref('')
 const filterParams = {}
@@ -25,7 +28,7 @@ const kmsLte = ref(200000)
 const combustible = ref('0')
 const cambio = ref('0')
 const vehiculo = ref('0')
-const medioambiental = ref('0')
+const medioambiental = ref(null)
 const categoria = ref('0')
 const itv = ref(false)
 const pitv = ref(false)
@@ -38,8 +41,6 @@ const info = ref(null)
 const id = ref(0)
 const slug = ref('')
 const vin = ref('')
-const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
-const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 const brandOptions = ref([])
 const bodyOptions = ref([])
 const brand = ref({ id: '', label: '' })
@@ -62,6 +63,8 @@ const disAdd = ref(true)
 const loadingInfo = ref(true)
 const header = ref(null)
 const disSearch = ref(true)
+const vehicleNext = ref(null)
+const loadingNext = ref(false)
 
 const searchReact = () => {
   if (searchValue.value !== '') {
@@ -143,10 +146,6 @@ const vehiculoFilter = () => {
 }
 
 const medioambientalFilter = () => {
-  if (medioambiental.value === '1') {
-    filterParams.maintenance__distinctive = '0'
-    return
-  }
   filterParams.maintenance__distinctive = medioambiental.value
 }
 
@@ -184,7 +183,7 @@ const reset = () => {
   combustible.value = '0'
   cambio.value = '0'
   vehiculo.value = '0'
-  medioambiental.value = '0'
+  medioambiental.value = null
   categoria.value = '0'
   itv.value = false
   pitv.value = false
@@ -241,6 +240,7 @@ const selected = () => {
 const all = () => {
   loading.value = true
   axios.get(url).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -526,8 +526,30 @@ const makeType = (code) => {
   return name
 }
 
+const fillVehicle = () => {
+  loadingNext.value = true
+  axios
+    .get(scrollNextUrl)
+    .then((response) => {
+      scrollNextUrl = response.data.next
+      vehiclesFilter.value = [...vehiclesFilter.value, ...response.data.results]
+    })
+    .then(() => {
+      loadingNext.value = false
+    })
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      fillVehicle()
+    }
+  })
+})
+
 onMounted(() => {
   selected()
+  observer.observe(vehicleNext.value)
 })
 </script>
 
@@ -664,6 +686,7 @@ onMounted(() => {
               :options="options.medioambiental"
               v-model="medioambiental"
               @selected="medioambientalFilter"
+              :initialValue="null"
             />
             <CheckInput label="ITV Vigente:" v-model="itv" />
             <CheckInput label="Pendiente ITV:" v-model="pitv" />
@@ -767,7 +790,7 @@ onMounted(() => {
                 @change="na"
               />
             </div>
-            <div>
+            <div class="flex min-h-[150vh] flex-col justify-between">
               <LoadingSpinner v-if="loading" class="loading-lg" />
               <CardDesktop
                 v-else
@@ -776,9 +799,9 @@ onMounted(() => {
                 :id="vehicle.id"
                 :slug="vehicle.slug || 'No disponible'"
                 :placa="vehicle.license_plate || 'Sin matricula'"
-                :modelo="vehicle.model.model_web.title || 'No disponible'"
-                :marca="vehicle.model.brand.title || 'No disponible'"
-                :version="vehicle.version.title || 'No disponible'"
+                :modelo="vehicle.model?.model_web?.title || 'No disponible'"
+                :marca="vehicle.model?.brand?.title || 'No disponible'"
+                :version="vehicle.version?.title || 'No disponible'"
                 :estado="vehicle.status"
                 :contado="vehicle.price?.price_with_discounts || 0"
                 :financiado="vehicle.price?.financed_price || '0'"
@@ -788,19 +811,25 @@ onMounted(() => {
                   vehicle.image ||
                   'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
                 "
-                :combustible="vehicle.fuel.description || 'No disponible'"
+                :combustible="vehicle.fuel?.description || 'No disponible'"
                 :año="vehicle.year || 0"
                 :cambios="vehicle.gear_box?.description || 'No disponible'"
                 :keys="vehicle.key_locator"
                 :kms="vehicle.kms || 0"
-                :distinctive="vehicle.maintenance.distinctive || 0"
+                :distinctive="vehicle.maintenance?.distinctive"
                 @menu-btn2="vehicleWeb"
                 @menu-btn5="deleteVehicle"
               />
+              <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
+                <LoadingSpinner v-if="loadingNext" class="loading-lg" />
+              </div>
             </div>
           </div>
         </div>
-        <div class="mt-4 flex flex-col items-center justify-center lg:hidden" :key="refresh">
+        <div
+          class="mt-4 flex min-h-[150vh] flex-col items-center justify-center lg:hidden"
+          :key="refresh"
+        >
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <CardMobile
             v-else
@@ -809,10 +838,10 @@ onMounted(() => {
             :key="index"
             :id="vehicle.id"
             :slug="vehicle.slug || 'No disponible'"
-            :placa="vehicle.license_plate || 'No disponible'"
-            :modelo="vehicle.model.model_web.title || 'No disponible'"
-            :marca="vehicle.model.brand.title || 'No disponible'"
-            :version="vehicle.version.title || 'No disponible'"
+            :placa="vehicle.license_plate || 'Sin matricula'"
+            :modelo="vehicle.model?.model_web?.title || 'No disponible'"
+            :marca="vehicle.model?.brand?.title || 'No disponible'"
+            :version="vehicle.version?.title || 'No disponible'"
             :estado="vehicle.status"
             :contado="vehicle.price?.price_with_discounts || 0"
             :financiado="vehicle.price?.financed_price || '0'"
@@ -821,13 +850,17 @@ onMounted(() => {
             :img="
               vehicle.image || 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
             "
-            :combustible="vehicle.fuel.description || 'No disponible'"
+            :combustible="vehicle.fuel?.description || 'No disponible'"
             :año="vehicle.year || 0"
             :cambios="vehicle.gear_box?.description || 'No disponible'"
-            :keys="vehicle.key_locator || 0"
+            :keys="vehicle.key_locator"
             :kms="vehicle.kms || 0"
-            :distinctive="vehicle.maintenance.distinctive || 0"
+            :distinctive="vehicle.maintenance?.distinctive"
           />
+          <div ref="vehicleNext2" class="mx-auto w-full">
+            <LoadingSpinner v-if="loadingNext" class="loading-lg" />
+            <span v-else>Final de la pagina</span>
+          </div>
         </div>
       </div>
       <div class="drawer-side z-50">
@@ -982,7 +1015,6 @@ onMounted(() => {
           </div>
           <DrawerActions secondary="Cancelar" primary="Añadir" />
         </ul>
-
       </div>
     </div>
   </HeaderMain>
