@@ -2152,7 +2152,10 @@ onMounted(async () => {
                   <TextInput label="Tara:" v-model="tare" />
                 </div>
               </div>
-              <!-- <div ref="portals" class="flex scroll-m-28 lg:scroll-m-20 flex-col gap-4 rounded bg-base-100 p-4">
+              <div
+                ref="portals"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <h1 class="text-xl font-medium">Portales Web</h1>
                 <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
                   <IntegrationCard
@@ -2162,7 +2165,7 @@ onMounted(async () => {
                     img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
                   />
                 </div>
-              </div> -->
+              </div>
               <div
                 ref="maintenance"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
