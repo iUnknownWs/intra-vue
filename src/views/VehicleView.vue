@@ -9,6 +9,7 @@ import VehicleMobile from '@/components/VehicleMobile.vue'
 import options from '@/js/filterOptions'
 import router from '@/router'
 import axios from 'axios'
+import CochesnetDrawer from '@/components/CochesnetDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -293,6 +294,7 @@ const finRateOptions = ref([])
 const finProduct = ref(null)
 const finRate = ref(null)
 const finMonths = ref('')
+
 const imagesParams = [
   {
     key: 'vehicle',
@@ -465,6 +467,11 @@ const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
 
+const cochesnetDrawer = () => {
+  drawer.value = !drawer.value
+  drawerSection.value = 'cochesnet'
+}
+
 const updateData = () => {
   loading.value = true
   const payload = {
@@ -593,7 +600,6 @@ const fetch = () => {
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       purchasePrice.value = vehicle.value.purchase?.total_price
       docusignContracts.value = vehicle.value.purchase?.docusign_contracts || null
-      console.log(docusignContracts.value)
       isFetchingDocs.value = false
       price.value = vehicle.value.price?.price_with_discounts
       sellReserve.value = vehicle.value.price?.price_with_discounts
@@ -905,6 +911,7 @@ const navEvent2 = () => {
     nav.value.classList.remove('active')
   }
   navBtn2.value.classList.add('active')
+  portals.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const navEvent3 = () => {
@@ -2177,6 +2184,7 @@ onMounted(async () => {
                 <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
                   <IntegrationCard
                     img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                    @settingClick="cochesnetDrawer"
                   />
                   <IntegrationCard
                     img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
@@ -3685,6 +3693,16 @@ onMounted(async () => {
           @click-primary="calculateFinance"
           :disabled="finRate === null || finProduct === null"
         />
+      </ul>
+      <ul
+        v-if="drawerSection === 'cochesnet'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <div>
+          <DrawerTitle title="Configuración CochesNet" @toggle="toggleDrawer" />
+          <CochesnetDrawer :id="id" :cochesnetBodyOptions="bodyTypeOptions" :toggle="toggleDrawer" />
+        </div>
+        
       </ul>
     </div>
   </div>

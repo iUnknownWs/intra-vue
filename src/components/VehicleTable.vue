@@ -1,7 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 defineProps({
-  title: { type: String, required: true },
+  title: { type: String },
   add: { type: Boolean }
 })
 defineEmits(['addBtn'])

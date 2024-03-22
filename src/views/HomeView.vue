@@ -1,6 +1,6 @@
 <script setup>
 import { Icon } from '@iconify/vue'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
@@ -199,6 +199,7 @@ const search = () => {
   }
   const searchUrl = `${urlParams.value}${new URLSearchParams(searchParams)}`
   axios.get(searchUrl).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -251,6 +252,7 @@ const pr = () => {
   params.value = 'status=0'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -261,6 +263,7 @@ const ppt = () => {
   params.value = 'ppt=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -271,6 +274,7 @@ const vpt = () => {
   params.value = 'vpt=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -281,6 +285,7 @@ const pp = () => {
   params.value = 'status=3'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -291,6 +296,7 @@ const venta = () => {
   params.value = 'status=4'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -301,6 +307,7 @@ const reserva = () => {
   params.value = 'status=5'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -311,6 +318,7 @@ const web = () => {
   params.value = 'no_web=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -321,6 +329,7 @@ const entrega = () => {
   params.value = 'inmediate_delivery=true'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -331,6 +340,7 @@ const na = () => {
   params.value = 'status=10'
   urlParams.value = url + params.value + '&'
   axios.get(urlParams.value).then((response) => {
+    scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })

@@ -1,3 +1,17 @@
+export const interes = [
+    {
+        id: '1',
+        title: '1'
+    }
+]
+
+export const ajuste = [
+    {
+        id: '1',
+        title: '1'
+    }
+]
+
 const combustible = [
     {
         id: '1',
@@ -141,24 +155,27 @@ const idTypes = [
     {
         id: 'permiso_de_residencia',
         title: 'Permiso de Residencia'
-    }]
+    }
+]
 
-const extraType = [{
-    id: 'WarrantyType',
-    title: 'Garantía'
-},
-{
-    id: 'DeliveryType',
-    title: 'Tipo de entrega'
-},
-{
-    id: 'DocumentManagement',
-    title: 'Gestión documental'
-},
-{
-    id: 'AnyExtra',
-    title: 'Varios'
-}]
+const extraType = [
+    {
+        id: 'WarrantyType',
+        title: 'Garantía'
+    },
+    {
+        id: 'DeliveryType',
+        title: 'Tipo de entrega'
+    },
+    {
+        id: 'DocumentManagement',
+        title: 'Gestión documental'
+    },
+    {
+        id: 'AnyExtra',
+        title: 'Varios'
+    }
+]
 
 const paymentMethods = [
     {
@@ -233,17 +250,18 @@ const financingMonths = [
     }
 ]
 
-export const interes = [
+const cochesnetCategory = [
     {
-        id: '1',
-        title: '1'
-    }
-]
-
-export const ajuste = [
+        id: '250025002500',
+        title: 'Automóvil Turismo'
+    },
     {
-        id: '1',
-        title: '1'
+        id: '250028102810',
+        title: 'Automóvil Todo Terreno'
+    },
+    {
+        id: '290029302930',
+        title: 'Furgonetas'
     }
 ]
 
@@ -264,7 +282,8 @@ const options = {
     idTypes,
     paymentMethods,
     paymentType,
-    financingMonths
+    financingMonths,
+    cochesnetCategory
 }
 
 export default options

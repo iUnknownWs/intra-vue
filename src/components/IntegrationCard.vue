@@ -11,8 +11,8 @@ defineProps({
     </figure>
     <div class="card-body items-center text-center">
       <div class="card-actions w-full flex-col">
-        <button class="btn btn-outline w-full">Configurar</button>
-        <button class="btn btn-error w-full text-white">Desactivar</button>
+        <button class="btn btn-outline w-full" @click="$emit('settingClick')">Configurar</button>
+        <button class="btn btn-error w-full text-white" @click="$emit('primaryClick')">Desactivar</button>
       </div>
     </div>
   </div>
