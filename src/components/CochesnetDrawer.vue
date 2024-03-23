@@ -10,6 +10,8 @@ const props = defineProps({
 })
 
 const cochesnetUrl = `${import.meta.env.VITE_VEHICLES}/${props.id}/get_cochesnet_info/`
+const updateUrl = `${import.meta.env.VITE_API}/coches-net-images/update_in_bulk/`
+const deleteUrl = `${import.meta.env.VITE_API}/coches-net-images/`
 const cochesnetIntegrationUrl = `${import.meta.env.VITE_INTEGRATIONS}/coches_net/`
 const cochesnetDescription = ref(null)
 const cochesnetCategory = ref(null)
@@ -42,52 +44,54 @@ const offer_type = ref(true)
 const version = ref(true)
 
 const getFabrication = () => {
-  axios.post(cochesnetIntegrationUrl + 'unique_vehicles/', {
-  body_type: cochesnetBody.value,
-  brand: cochesnetBrand.value,
-  category: cochesnetCategory.value,
-  color: cochesnetColor.value,
-  description: cochesnetDescription.value,
-  doors: cochesnetDoors.value,
-  env_label: cochesnetEnv.value,
-  fuel: cochesnetFuel.value,
-  is_metalized: cochesnetMetalized.value,
-  model: cochesnetModel.value,
-  model_id: cochesnetModel.value,
-  offer_type: cochesnetType.value,
-  transmission: cochesnetVersion.value,
-  version: cochesnetVersion.value,
-  warranty: cochesnetWarranty.value,
-  years: cochesnetYear.value,
-  youtube_video: cochesnetYoutube.value
-}).then((response) => {
-    cochesnetFabricationOptions.value = response.data
-    version.value = false
-  })
+  axios
+    .post(cochesnetIntegrationUrl + 'unique_vehicles/', {
+      body_type: cochesnetBody.value,
+      brand: cochesnetBrand.value,
+      category: cochesnetCategory.value,
+      color: cochesnetColor.value,
+      description: cochesnetDescription.value,
+      doors: cochesnetDoors.value,
+      env_label: cochesnetEnv.value,
+      fuel: cochesnetFuel.value,
+      is_metalized: cochesnetMetalized.value,
+      model: cochesnetModel.value,
+      model_id: cochesnetModel.value,
+      offer_type: cochesnetType.value,
+      transmission: cochesnetVersion.value,
+      version: cochesnetVersion.value,
+      warranty: cochesnetWarranty.value,
+      years: cochesnetYear.value,
+      youtube_video: cochesnetYoutube.value
+    })
+    .then((response) => {
+      cochesnetFabricationOptions.value = response.data
+      version.value = false
+    })
 }
 
 const publish = () => {
   axios.post(cochesnetIntegrationUrl + 'publish_vehicle/', {
-  body_type: cochesnetBody.value,
-  brand: cochesnetBrand.value,
-  category: cochesnetCategory.value,
-  color: cochesnetColor.value,
-  description: cochesnetDescription.value,
-  doors: cochesnetDoors.value,
-  env_label: cochesnetEnv.value,
-  fuel: cochesnetFuel.value,
-  is_metalized: cochesnetMetalized.value,
-  model: cochesnetModel.value,
-  model_id: cochesnetModel.value,
-  offer_type: cochesnetType.value,
-  transmission: cochesnetVersion.value,
-  version: cochesnetVersion.value,
-  warranty: cochesnetWarranty.value,
-  years: cochesnetYear.value,
-  youtube_video: cochesnetYoutube.value,
-  unique_vehicle: cochesnetFabrication.value,
-  vehicle: props.id
-})
+    body_type: cochesnetBody.value,
+    brand: cochesnetBrand.value,
+    category: cochesnetCategory.value,
+    color: cochesnetColor.value,
+    description: cochesnetDescription.value,
+    doors: cochesnetDoors.value,
+    env_label: cochesnetEnv.value,
+    fuel: cochesnetFuel.value,
+    is_metalized: cochesnetMetalized.value,
+    model: cochesnetModel.value,
+    model_id: cochesnetModel.value,
+    offer_type: cochesnetType.value,
+    transmission: cochesnetVersion.value,
+    version: cochesnetVersion.value,
+    warranty: cochesnetWarranty.value,
+    years: cochesnetYear.value,
+    youtube_video: cochesnetYoutube.value,
+    unique_vehicle: cochesnetFabrication.value,
+    vehicle: props.id
+  })
 }
 
 onMounted(() => {
@@ -139,103 +143,107 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
-  <div class="my-4 grid grid-cols-3 gap-2 lg:grid-cols-5 lg:gap-4">
-    <img
-      v-for="(image, index) in cochesnetImages"
-      :key="index"
-      :src="image.image"
-      :alt="'vehicle img' + image.id"
-      class="aspect-square min-w-20 rounded object-cover"
+  <div class="flex min-h-full w-full flex-col justify-between">
+    <div>
+      <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
+      <DraggableGallery
+        :url="cochesnetUrl"
+        dataKey="images"
+        :updateUrl="updateUrl"
+        :deleteUrl="deleteUrl"
+        :id="id"
+        class="my-4 grid h-min grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-4"
+        :skeletons="20"
+      />
+      <AreaInput label="Descripción:" v-model="cochesnetDescription" />
+      <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
+      <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
+        <TextInput label="Año:" v-model="cochesnetYear" />
+        <TextInput label="Puertas:" v-model="cochesnetDoors" />
+        <SelectInput label="Combustible" :options="options.combustible" v-model="cochesnetFuel" />
+        <SelectInput
+          label="Color"
+          :options="cochesnetColorsOptions"
+          v-model="cochesnetColor"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          @selected="color = false"
+        />
+        <SelectInput
+          label="Categoria"
+          :options="options.cochesnetCategory"
+          v-model="cochesnetCategory"
+        />
+        <SelectInput
+          label="Marca"
+          :options="cochesnetBrandsOptions"
+          v-model="cochesnetBrand"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+        />
+        <SelectInput
+          label="Modelo"
+          :options="cochesnetModelsOptions"
+          v-model="cochesnetModel"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+        />
+        <SelectInput
+          label="Carrocería"
+          :options="cochesnetBodyOptions"
+          v-model="cochesnetBody"
+          :initialValue="null"
+        />
+        <SelectInput
+          label="Version"
+          :options="cochesnetVersionOptions"
+          v-model="cochesnetVersion"
+          @selected="getFabrication"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+        />
+        <SelectInput
+          label="Fabricación"
+          :options="cochesnetFabricationOptions"
+          v-model="cochesnetFabrication"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          :disabled="version"
+          @selected="fabrication = false"
+        />
+      </div>
+      <h2 class="my-4 text-lg font-semibold">Extras</h2>
+      <CheckInput label="Metalizado" v-model="cochesnetMetalized" class="w-fit" />
+      <SelectInput
+        label="Tipo de anuncio"
+        :options="cochesnetTypeOptions"
+        v-model="cochesnetType"
+        optionLabel="value"
+        optionValue="key"
+        :initialValue="null"
+        @selected="offer_type = false"
+      />
+      <SelectInput
+        label="Garantia"
+        :options="cochesnetWarrantyOptions"
+        v-model="cochesnetWarranty"
+        optionLabel="value"
+        optionValue="key"
+        :initialValue="null"
+      />
+      <TextInput label="Link de YouTube" v-model="cochesnetYoutube" />
+    </div>
+    <DrawerActions
+      secondary="Cancelar"
+      primary="Guardar"
+      @click-secondary="toggle"
+      @click-primary="publish"
+      :disabled="color || fabrication || offer_type"
     />
   </div>
-  <AreaInput label="Descripción:" v-model="cochesnetDescription" />
-  <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
-  <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
-    <TextInput label="Año:" v-model="cochesnetYear" />
-    <TextInput label="Puertas:" v-model="cochesnetDoors" />
-    <SelectInput label="Combustible" :options="options.combustible" v-model="cochesnetFuel" />
-    <SelectInput
-      label="Color"
-      :options="cochesnetColorsOptions"
-      v-model="cochesnetColor"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      @selected="color = false"
-    />
-    <SelectInput
-      label="Categoria"
-      :options="options.cochesnetCategory"
-      v-model="cochesnetCategory"
-    />
-    <SelectInput
-      label="Marca"
-      :options="cochesnetBrandsOptions"
-      v-model="cochesnetBrand"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-    />
-    <SelectInput
-      label="Modelo"
-      :options="cochesnetModelsOptions"
-      v-model="cochesnetModel"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-    />
-    <SelectInput
-      label="Carrocería"
-      :options="cochesnetBodyOptions"
-      v-model="cochesnetBody"
-      :initialValue="null"
-    />
-    <SelectInput
-      label="Version"
-      :options="cochesnetVersionOptions"
-      v-model="cochesnetVersion"
-      @selected="getFabrication"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-    />
-    <SelectInput
-      label="Fabricación"
-      :options="cochesnetFabricationOptions"
-      v-model="cochesnetFabrication"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      :disabled="version"
-      @selected="fabrication = false"
-    />
-  </div>
-  <h2 class="my-4 text-lg font-semibold">Extras</h2>
-  <CheckInput label="Metalizado" v-model="cochesnetMetalized" class="w-fit" />
-  <SelectInput
-    label="Tipo de anuncio"
-    :options="cochesnetTypeOptions"
-    v-model="cochesnetType"
-    optionLabel="value"
-    optionValue="key"
-    :initialValue="null"
-    @selected="offer_type = false"
-  />
-  <SelectInput
-    label="Garantia"
-    :options="cochesnetWarrantyOptions"
-    v-model="cochesnetWarranty"
-    optionLabel="value"
-    optionValue="key"
-    :initialValue="null"
-  />
-  <TextInput label="Link de YouTube" v-model="cochesnetYoutube" />
-  <DrawerActions
-    secondary="Cancelar"
-    primary="Guardar"
-    @click-secondary="toggle"
-    @click-primary="publish"
-    :disabled="color || fabrication || offer_type"
-  />
 </template>

@@ -1,7 +1,6 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
-import { Sortable } from 'sortablejs-vue3'
 import { ref, onMounted, watch, computed } from 'vue'
 import phonePrefix from '@/js/phone_prefixes.json'
 import VehicleCard from '@/components/VehicleCard.vue'
@@ -38,8 +37,13 @@ const anyExtraUrl = `${import.meta.env.VITE_SALES}/any-extra/`
 const discountUrl = `${import.meta.env.VITE_API}/vehicles-discounts/`
 const discountListUrl = `${import.meta.env.VITE_SALES}/discounts/`
 const equipUrl = `${import.meta.env.VITE_API}/vehicles-equipments/`
-const galleryUrl = `${import.meta.env.VITE_API}/vehicles-images/`
-const gallery360Url = `${import.meta.env.VITE_API}/vehicles-image-360/`
+const galleryUrl =
+  `${import.meta.env.VITE_API}/vehicles-images/?vehicle=` + id.value + '&gallery_type=main'
+const galleryFaultyUrl =
+  `${import.meta.env.VITE_API}/vehicles-images/?vehicle=` + id.value + '&gallery_type=faulty'
+const galleryDeleteUrl = `${import.meta.env.VITE_API}/vehicles-images/`
+const gallery360Url = `${import.meta.env.VITE_API}/vehicles-image-360/?vehicle=` + id.value
+const galleryDelete360Url = `${import.meta.env.VITE_API}/vehicles-image-360/`
 const galleryVideoUrl = `${import.meta.env.VITE_API}/vehicles-videos/`
 const galleryDocsUrl = `${import.meta.env.VITE_API}/vehicles-documents/`
 const walcuUrl = `${import.meta.env.VITE_API}/walcu_lead/`
@@ -97,8 +101,6 @@ const paidEquipItems = ref([])
 const extrasType = ref([])
 const vehicleEquips = ref([])
 const galleryImages = ref([])
-const galleryFaulty = ref([])
-const gallery360 = ref([])
 const galleryVideo = ref([])
 const galleryDocs = ref([])
 const phonesPre = ref([])
@@ -186,8 +188,8 @@ const reserve = ref('0')
 const iva = ref(false)
 const error = ref(null)
 const message = ref('')
-const commInternal = ref('')
-const commExternal = ref('')
+const commInternal = ref(null)
+const commExternal = ref(null)
 const drawer = ref(false)
 const drawerSection = ref('')
 const discountMode = ref(false)
@@ -294,27 +296,7 @@ const finRateOptions = ref([])
 const finProduct = ref(null)
 const finRate = ref(null)
 const finMonths = ref('')
-
-const imagesParams = [
-  {
-    key: 'vehicle',
-    value: id.value
-  },
-  {
-    key: 'gallery_type',
-    value: 'main'
-  }
-]
-const faultyParams = [
-  {
-    key: 'vehicle',
-    value: id.value
-  },
-  {
-    key: 'gallery_type',
-    value: 'faulty'
-  }
-]
+const commentAlert = ref(false)
 const params = [
   {
     key: 'vehicle',
@@ -337,49 +319,24 @@ const optionsDrag = computed(() => {
 const updateImages = (event) => {
   galleryImages.value.splice(event.newIndex, 0, galleryImages.value.splice(event.oldIndex, 1)[0])
 
-  let newGallery = []
+  let newImages = []
 
   for (let image of galleryImages.value) {
-    newGallery.push({
+    newImages.push({
       media_id: image.id,
       media_type: 'image'
     })
   }
 
-  axios.post(updateGalleryUrl, newGallery).then(() => {
+  axios.post(updateGalleryUrl, newImages).then(() => {
     fetchingGallery()
-    fetch()
-  })
-}
-
-const updateFaulty = (event) => {
-  galleryFaulty.value.splice(event.newIndex, 0, galleryFaulty.value.splice(event.oldIndex, 1)[0])
-
-  let newGallery = []
-
-  for (let image of galleryFaulty.value) {
-    newGallery.push({
-      media_id: image.id,
-      media_type: 'image'
-    })
-  }
-
-  axios.post(updateGalleryUrl, newGallery).then(() => {
-    fetchingFaulty()
   })
 }
 
 const fetchingGallery = (firstTime) => {
+  loading.value = true
   axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=main').then((response) => {
     galleryImages.value = response.data.results
-    if (!firstTime) fetch()
-    skeletonGallery.value = false
-  })
-}
-
-const fetchingFaulty = (firstTime) => {
-  axios.get(galleryUrl + '?vehicle=' + id.value + '&gallery_type=faulty').then((response) => {
-    galleryFaulty.value = response.data.results
     if (!firstTime) fetch()
     skeletonGallery.value = false
   })
@@ -393,14 +350,6 @@ const fetchingVideo = (firstTime) => {
   })
 }
 
-const fetching360 = (firstTime) => {
-  axios.get(gallery360Url + '?vehicle=' + id.value).then((response) => {
-    gallery360.value = response.data.results
-    if (!firstTime) fetch()
-    skeletonGallery.value = false
-  })
-}
-
 const fetchingDocs = (firstTime) => {
   axios.get(galleryDocsUrl + '?vehicle=' + id.value).then((response) => {
     galleryDocs.value = response.data.results
@@ -409,10 +358,7 @@ const fetchingDocs = (firstTime) => {
   })
 }
 
-fetchingGallery(true)
-fetchingFaulty(true)
 fetchingVideo(true)
-fetching360(true)
 fetchingDocs(true)
 
 const deleteDoc = (id) => {
@@ -420,31 +366,6 @@ const deleteDoc = (id) => {
     .delete(galleryDocsUrl + id)
     .then(() => {
       fetchingDocs()
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
-
-const deleteImage = (id) => {
-  axios
-    .delete(galleryUrl + id)
-    .then(() => {
-      fetchingGallery()
-      fetchingFaulty()
-      fetch()
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
-
-const delete360 = (id) => {
-  axios
-    .delete(gallery360Url + id)
-    .then(() => {
-      fetching360()
-      fetch()
     })
     .catch((error) => {
       console.error(error)
@@ -617,6 +538,7 @@ const fetch = () => {
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       commExternal.value = vehicle.value?.external_comments
       commInternal.value = vehicle.value?.internal_comments
+      if (commInternal.value) commentAlert.value = true
       paidEquipItems.value = []
       freeEquipItems.value = []
       serialEquipItems.value = []
@@ -2054,6 +1976,7 @@ onMounted(async () => {
             </ul>
           </aside>
           <section class="flex flex-1 flex-col">
+            <VehicleAlert v-if="commentAlert" :message="commInternal" @btn="commentAlert = false" />
             <div v-if="tab > 0 && tab < 9" class="flex flex-col gap-8">
               <div
                 ref="basic"
@@ -2177,21 +2100,6 @@ onMounted(async () => {
                 </div>
               </div>
               <div
-                ref="portals"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <h1 class="text-xl font-medium">Portales Web</h1>
-                <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
-                  <IntegrationCard
-                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-                    @settingClick="cochesnetDrawer"
-                  />
-                  <IntegrationCard
-                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-                  />
-                </div>
-              </div>
-              <div
                 ref="maintenance"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
@@ -2307,11 +2215,16 @@ onMounted(async () => {
                 ref="comments"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
-                <h1 class="text-xl font-medium">Comentarios</h1>
-                <div class="flex flex-col gap-x-4 lg:gap-x-10">
-                  <AreaInput label="Internos:" v-model="commInternal" />
-                  <AreaInput label="Externos:" v-model="commExternal" />
+                <div>
+                  <h2 class="text-xl font-medium">Comentarios Internos</h2>
+                  <div class="divider m-0 p-0"></div>
                 </div>
+                <AreaInput v-model="commInternal" />
+                <div class="mt-8">
+                  <h2 class="text-xl font-medium">Comentarios Externos</h2>
+                  <div class="divider m-0 p-0"></div>
+                </div>
+                <AreaInput v-model="commExternal" />
               </div>
               <div
                 ref="extras"
@@ -2571,121 +2484,32 @@ onMounted(async () => {
               />
               <div role="tabpanel" class="tab-content px-3 pt-0">
                 <div class="flex flex-col items-center">
-                  <DropMobile
-                    type="image"
+                  <DraggableGallery
                     :url="galleryUrl"
-                    :fetch="fetchingGallery"
-                    format=".jpg"
-                    :params="imagesParams"
+                    dataKey="results"
+                    :params="{ key: 'gallery_type', value: 'main' }"
+                    :updateUrl="updateGalleryUrl"
+                    :deleteUrl="galleryDeleteUrl"
+                    :updateFunction="fetch"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                    mobile
                   />
-                  <div
-                    v-if="skeletonGallery"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                  >
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                  </div>
-                  <Sortable
-                    v-else
-                    :list="galleryImages"
-                    item-key="id"
-                    :options="optionsDrag"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                    @sort="updateImages"
-                  >
-                    <template #item="{ element, index }">
-                      <div
-                        @mouseover="galleryHover = index"
-                        @mouseleave="galleryHover = null"
-                        class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
-                        :style="{
-                          backgroundImage: `url(${element.image})`
-                        }"
-                      >
-                        <div
-                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                          :class="{
-                            hidden: galleryHover !== index,
-                            'bg-black/30': galleryHover === index
-                          }"
-                        >
-                          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
-                            <Icon icon="mdi:eye" width="20" />
-                          </a>
-                          <button
-                            class="btn btn-square btn-error btn-sm"
-                            @click="deleteImage(element.id)"
-                          >
-                            <Icon icon="mdi:delete" width="20" />
-                          </button>
-                        </div>
-                      </div>
-                    </template>
-                  </Sortable>
                 </div>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
               <div role="tabpanel" class="tab-content px-3 pt-0">
                 <div class="flex flex-col items-center">
-                  <DropMobile
-                    type="image"
-                    :url="galleryUrl"
-                    :fetch="fetchingFaulty"
-                    format=".jpg"
-                    :params="faultyParams"
+                  <DraggableGallery
+                    :url="galleryFaultyUrl"
+                    dataKey="results"
+                    :id="id"
+                    :params="{ key: 'gallery_type', value: 'faulty' }"
+                    :updateUrl="updateGalleryUrl"
+                    :deleteUrl="galleryDeleteUrl"
+                    :updateFunction="fetch"
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                    mobile
                   />
-                  <div
-                    v-if="skeletonGallery"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                  >
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                  </div>
-                  <Sortable
-                    v-else
-                    :list="galleryFaulty"
-                    item-key="id"
-                    :options="optionsDrag"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                    @sort="updateFaulty"
-                  >
-                    <template #item="{ element, index }">
-                      <div
-                        @mouseover="galleryHover = index"
-                        @mouseleave="galleryHover = null"
-                        class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
-                        :style="{
-                          backgroundImage: `url(${element.image})`
-                        }"
-                      >
-                        <div
-                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                          :class="{
-                            hidden: galleryHover !== index,
-                            'bg-black/30': galleryHover === index
-                          }"
-                        >
-                          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
-                            <Icon icon="mdi:eye" width="20" />
-                          </a>
-                          <button
-                            class="btn btn-square btn-error btn-sm"
-                            @click="deleteImage(element.id)"
-                          >
-                            <Icon icon="mdi:delete" width="20" />
-                          </button>
-                        </div>
-                      </div>
-                    </template>
-                  </Sortable>
                 </div>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
@@ -2752,61 +2576,15 @@ onMounted(async () => {
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
               <div role="tabpanel" class="tab-content px-3 pt-0">
                 <div class="flex flex-col items-center">
-                  <DropMobile
-                    type="image"
+                  <DraggableGallery
                     :url="gallery360Url"
-                    :fetch="fetching360"
-                    format=".jpg"
-                    :params="params"
+                    :id="id"
+                    dataKey="results"
+                    :updateUrl="updateGalleryUrl"
+                    :deleteUrl="galleryDelete360Url"
+                    mobile
+                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                   />
-                  <div
-                    v-if="skeletonGallery"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                  >
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                    <div class="skeleton h-28 w-28"></div>
-                  </div>
-                  <Sortable
-                    v-else
-                    :list="gallery360"
-                    item-key="id"
-                    :options="optionsDrag"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                    @sort="updateImages"
-                  >
-                    <template #item="{ element, index }">
-                      <div
-                        @mouseover="galleryHover = index"
-                        @mouseleave="galleryHover = null"
-                        class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
-                        :style="{
-                          backgroundImage: `url(${element.image})`
-                        }"
-                      >
-                        <div
-                          class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                          :class="{
-                            hidden: galleryHover !== index,
-                            'bg-black/30': galleryHover === index
-                          }"
-                        >
-                          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
-                            <Icon icon="mdi:eye" width="20" />
-                          </a>
-                          <button
-                            class="btn btn-square btn-error btn-sm"
-                            @click="delete360(element.id)"
-                          >
-                            <Icon icon="mdi:delete" width="20" />
-                          </button>
-                        </div>
-                      </div>
-                    </template>
-                  </Sortable>
                 </div>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
@@ -2857,116 +2635,29 @@ onMounted(async () => {
                 checked
               />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DragDrop
-                  type="image"
+                <DraggableGallery
                   :url="galleryUrl"
-                  :fetch="fetchingGallery"
-                  format=".jpg"
-                  :params="imagesParams"
+                  dataKey="results"
+                  :id="id"
+                  :params="{ key: 'gallery_type', value: 'main' }"
+                  :updateUrl="updateGalleryUrl"
+                  :deleteUrl="galleryDeleteUrl"
+                  :updateFunction="fetch"
+                  class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                 />
-                <div
-                  v-if="skeletonGallery"
-                  class="mx-auto grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
-                >
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                </div>
-                <Sortable
-                  v-else
-                  :list="galleryImages"
-                  item-key="id"
-                  :options="optionsDrag"
-                  class="mx-auto grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
-                  @sort="updateImages"
-                >
-                  <template #item="{ element, index }">
-                    <div
-                      @mouseover="galleryHover = index"
-                      @mouseleave="galleryHover = null"
-                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
-                      :style="{
-                        backgroundImage: `url(${element.image})`
-                      }"
-                    >
-                      <div
-                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                        :class="{
-                          hidden: galleryHover !== index,
-                          'bg-black/30': galleryHover === index
-                        }"
-                      >
-                        <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
-                          <Icon icon="mdi:eye" width="20" />
-                        </a>
-                        <button
-                          class="btn btn-square btn-error btn-sm"
-                          @click="deleteImage(element.id)"
-                        >
-                          <Icon icon="mdi:delete" width="20" />
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DragDrop
-                  type="image"
-                  :url="galleryUrl"
-                  :fetch="fetchingFaulty"
-                  format=".jpg"
-                  :params="faultyParams"
+                <DraggableGallery
+                  :url="galleryFaultyUrl"
+                  dataKey="results"
+                  :id="id"
+                  :params="{ key: 'gallery_type', value: 'faulty' }"
+                  :updateUrl="updateGalleryUrl"
+                  :deleteUrl="galleryDeleteUrl"
+                  :updateFunction="fetch"
+                  class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                 />
-                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                </div>
-                <Sortable
-                  v-else
-                  :list="galleryFaulty"
-                  item-key="id"
-                  :options="optionsDrag"
-                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
-                  @sort="updateFaulty"
-                >
-                  <template #item="{ element, index }">
-                    <div
-                      @mouseover="galleryHover = index"
-                      @mouseleave="galleryHover = null"
-                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
-                      :style="{
-                        backgroundImage: `url(${element.image})`
-                      }"
-                    >
-                      <div
-                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                        :class="{
-                          hidden: galleryHover !== index,
-                          'bg-black/30': galleryHover === index
-                        }"
-                      >
-                        <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
-                          <Icon icon="mdi:eye" width="20" />
-                        </a>
-                        <button
-                          class="btn btn-square btn-error btn-sm"
-                          @click="deleteImage(element.id)"
-                        >
-                          <Icon icon="mdi:delete" width="20" />
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
@@ -3027,58 +2718,14 @@ onMounted(async () => {
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DragDrop
-                  type="image"
+                <DraggableGallery
                   :url="gallery360Url"
-                  :fetch="fetching360"
-                  format=".jpg"
-                  :params="params"
+                  dataKey="results"
+                  :id="id"
+                  :updateUrl="updateGalleryUrl"
+                  :deleteUrl="galleryDelete360Url"
+                  class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                 />
-                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                </div>
-                <Sortable
-                  v-else
-                  :list="gallery360"
-                  item-key="id"
-                  :options="optionsDrag"
-                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
-                  @sort="updateImages"
-                >
-                  <template #item="{ element, index }">
-                    <div
-                      @mouseover="galleryHover = index"
-                      @mouseleave="galleryHover = null"
-                      class="draggable relative aspect-square w-28 rounded bg-cover bg-center object-cover"
-                      :style="{
-                        backgroundImage: `url(${element.image})`
-                      }"
-                    >
-                      <div
-                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                        :class="{
-                          hidden: galleryHover !== index,
-                          'bg-black/30': galleryHover === index
-                        }"
-                      >
-                        <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
-                          <Icon icon="mdi:eye" width="20" />
-                        </a>
-                        <button
-                          class="btn btn-square btn-error btn-sm"
-                          @click="delete360(element.id)"
-                        >
-                          <Icon icon="mdi:delete" width="20" />
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </Sortable>
               </div>
               <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
               <div role="tabpanel" class="tab-content min-w-96 p-3">
@@ -3114,6 +2761,21 @@ onMounted(async () => {
             </div>
           </aside>
         </main>
+        <div
+          ref="portals"
+          class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+        >
+          <h1 class="text-xl font-medium">Portales Web</h1>
+          <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+            <IntegrationCard
+              img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+              @settingClick="cochesnetDrawer"
+            />
+            <IntegrationCard
+              img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+            />
+          </div>
+        </div>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50">
         <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
@@ -3696,13 +3358,10 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'cochesnet'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
-        <div>
-          <DrawerTitle title="Configuración CochesNet" @toggle="toggleDrawer" />
-          <CochesnetDrawer :id="id" :cochesnetBodyOptions="bodyTypeOptions" :toggle="toggleDrawer" />
-        </div>
-        
+        <DrawerTitle title="Configuración CochesNet" @toggle="toggleDrawer" />
+        <CochesnetDrawer :id="id" :cochesnetBodyOptions="bodyTypeOptions" :toggle="toggleDrawer" />
       </ul>
     </div>
   </div>

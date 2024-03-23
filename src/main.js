@@ -5,6 +5,7 @@ import router from './router'
 import AreaInput from '@/components/AreaInput.vue'
 import DateInput from '@/components/DateInput.vue'
 import DragDrop from '@/components/DragDrop.vue'
+import DraggableGallery from '@/components/DraggableGallery.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
 import DrawerLink from '@/components/DrawerLink.vue'
 import DrawerLogo from '@/components/DrawerLogo.vue'
@@ -32,11 +33,13 @@ import TextBtn from '@/components/TextBtn.vue'
 import ToggleInput from '@/components/ToggleInput.vue'
 import CheckInput from '@/components/CheckInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import VehicleAlert from '@/components/VehicleAlert.vue'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleTable from '@/components/VehicleTable.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import VueSelect from "vue-select"
 import VueGoogleMaps from 'vue-google-maps-community-fork'
+import { Sortable } from 'sortablejs-vue3'
 import 'vue3-easy-data-table/dist/style.css'
 import 'vue-select/dist/vue-select.css'
 
@@ -47,6 +50,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('CheckInput', CheckInput)
     .component('DateInput', DateInput)
     .component('DragDrop', DragDrop)
+    .component('DraggableGallery', DraggableGallery)
     .component('DrawerActions', DrawerActions)
     .component('DrawerLink', DrawerLink)
     .component('DrawerLogo', DrawerLogo)
@@ -68,14 +72,16 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('SelectInput', SelectInput)
     .component('SelectTab', SelectTab)
     .component('SettingTable', SettingTable)
+    .component('Sortable', Sortable)
     .component('LoadingSpinner', LoadingSpinner)
     .component('TextBtn', TextBtn)
     .component('TextIcon', TextIcon)
     .component('TextInput', TextInput)
     .component('ToggleInput', ToggleInput)
-    .component('VueSelect', VueSelect)
+    .component('VehicleAlert', VehicleAlert)
     .component('VehicleCard', VehicleCard)
     .component('VehicleTable', VehicleTable)
+    .component('VueSelect', VueSelect)
 
 app.use(router)
 
