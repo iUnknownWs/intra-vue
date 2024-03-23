@@ -1928,12 +1928,12 @@ onMounted(async () => {
         >
           <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
           <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
-          <a ref="tab3" role="tab" class="tab" @click="tabEvent3">Portales web</a>
           <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
           <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Compra y precio</a>
           <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
           <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
           <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
+          <a ref="tab3" role="tab" class="tab" @click="tabEvent3">Portales web</a>
         </div>
         <div
           v-if="tab > 8 && tab < 11"
@@ -1957,12 +1957,12 @@ onMounted(async () => {
                   <li>
                     <a ref="technicalTab" @click="tabEvent2">Información Técnica</a>
                   </li>
-                  <li><a ref="portalsTab" @click="tabEvent3">Portales web</a></li>
                   <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
                   <li><a ref="pricesTab" @click="tabEvent5">Compra y precio</a></li>
                   <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
                   <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
                   <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
+                  <li><a ref="portalsTab" @click="tabEvent3">Portales web</a></li>
                 </ul>
               </li>
               <li>
@@ -2766,7 +2766,7 @@ onMounted(async () => {
           class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
         >
           <h1 class="text-xl font-medium">Portales Web</h1>
-          <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+          <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
             <IntegrationCard
               img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
               @settingClick="cochesnetDrawer"
