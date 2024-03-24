@@ -156,7 +156,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             </div>
             <div v-if="vehicle?.date_first_registration" class="flex flex-col items-start">
               <span class="font-bold">Matriculación</span>
-              <span>{{ vehicle.date_first_registration }} Dias</span>
+              <span>{{ vehicle.date_first_registration }}</span>
             </div>
             <div v-else class="flex flex-col items-start">
               <span class="font-bold">Matriculación</span>
@@ -164,7 +164,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             </div>
             <div class="flex flex-col items-start">
               <span class="font-bold">Dias Stock</span>
-              <span>{{ vehicle.days_in_stock }}</span>
+              <span>{{ vehicle.days_in_stock }} Dias</span>
             </div>
           </div>
         </div>

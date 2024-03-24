@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-  label: { type: String, required: true },
+  label: { type: String },
   placeholder: { type: String }
 })
 const value = defineModel()

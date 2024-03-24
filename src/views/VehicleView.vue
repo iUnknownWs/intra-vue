@@ -3,6 +3,7 @@ import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
 import { ref, onMounted, watch, computed } from 'vue'
 import phonePrefix from '@/js/phone_prefixes.json'
+import PerformanceTest from '@/components/PerformanceTest.vue'
 import VehicleCard from '@/components/VehicleCard.vue'
 import VehicleMobile from '@/components/VehicleMobile.vue'
 import options from '@/js/filterOptions'
@@ -51,6 +52,8 @@ const walcuVehicleUrl = `${import.meta.env.VITE_API}/walcu_vehicle/`
 const reserveUrl = `${import.meta.env.VITE_SALES}/bookings/`
 const finRatesUrl = `${import.meta.env.VITE_API}/vehicles-financing-rates/`
 const finProdUrl = `${import.meta.env.VITE_API}/vehicles-financing-products/`
+const ptVehicleUrl = `${import.meta.env.VITE_API}/performance-tests/answered/?vehicle=` + id.value
+const ptUrl = `${import.meta.env.VITE_API}/performance-tests/`
 const finCalculateUrl = `${import.meta.env.VITE_VEHICLES}/calculate_financing/`
 const loading = ref(true)
 const vehicle = ref({})
@@ -297,6 +300,9 @@ const finProduct = ref(null)
 const finRate = ref(null)
 const finMonths = ref('')
 const commentAlert = ref(false)
+const performanceTests = ref(null)
+const ptStep = ref(0)
+const ptTestId = ref(null)
 const params = [
   {
     key: 'vehicle',
@@ -385,6 +391,13 @@ const deleteVideo = (id) => {
 }
 
 const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
+
+const ptDrawer = (step, id) => {
+  ptStep.value = step
+  ptTestId.value = id
+  drawerSection.value = 'pt'
   drawer.value = !drawer.value
 }
 
@@ -1168,6 +1181,19 @@ const headersDiscounts = [
   { text: 'Valor fijo', value: 'amount_fix' },
   { text: 'Acciones', value: 'id', width: 60 }
 ]
+
+const headersPT = [
+  { text: 'Nombre', value: 'performance_test_title' },
+  { text: 'Estado', value: 'status', width: 40 },
+  { text: 'Autor', value: 'user_full_name' },
+  { text: 'Creado', value: 'created_at' },
+  { text: 'Actualizado', value: 'updated_at' },
+  { text: 'Acciones', value: 'id', width: 40 }
+]
+
+axios.get(ptVehicleUrl).then((response) => {
+  performanceTests.value = response.data.results
+})
 
 const addExtra = () => {
   if (!extraMode.value) {
@@ -2148,7 +2174,7 @@ onMounted(async () => {
                   <DateInput label="Fecha de compra:" v-model="purchaseDate" />
                 </div>
                 <div v-if="docusignContracts?.length > 0" class="my-8">
-                  <h1 class="text-xl font-medium">Documentos de compra</h1>
+                  <h2 class="text-xl font-medium">Documentos de compra</h2>
                   <div class="divider m-0 p-0"></div>
                   <VehicleTable>
                     <template #content>
@@ -2455,17 +2481,91 @@ onMounted(async () => {
             </div>
             <div
               v-if="tab === 11"
-              class="flex scroll-m-28 flex-col items-center justify-center gap-4 rounded bg-base-100 p-4 text-center lg:scroll-m-20"
+              class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
             >
-              <h2 class="text-xl font-medium">Performance Test</h2>
-              <h3 class="text-base font-medium">
-                No se ha realizado ningún performance test a este vehículo hasta el momento
-              </h3>
-              <span class="text-base">¿Desea realizar un Performance Test?</span>
-              <button class="btn btn-primary w-fit text-white" @click="performTest">
-                Performance Test
-                <Icon icon="mdi:arrow-right" />
-              </button>
+              <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
+                <h2 class="text-xl font-medium">Performance Test</h2>
+                <h3 class="text-base font-medium">
+                  No se ha realizado ningún performance test a este vehículo hasta el momento
+                </h3>
+                <span class="text-base">¿Desea realizar un Performance Test?</span>
+                <button class="btn btn-primary w-fit text-white" @click="ptDrawer(1)">
+                  Performance Test
+                  <Icon icon="mdi:arrow-right" />
+                </button>
+              </div>
+              <div v-else>
+                <div class="flex flex-col">
+                  <div class="flex flex-row justify-between">
+                    <h2 class="text-xl font-medium">Documentos de compra</h2>
+                    <button class="btn btn-outline btn-sm mb-2 self-end" @click="ptDrawer(1)">
+                      <Icon icon="mdi:plus" width="25" />
+                      Nuevo
+                    </button>
+                  </div>
+                  <div class="divider m-0 p-0"></div>
+                </div>
+                <VehicleTable>
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0"
+                      header-class-name="z-0"
+                      hide-footer
+                      border-cell
+                      :headers="headersPT"
+                      :items="performanceTests"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="isFetchingEquip"
+                    >
+                      <template v-slot:item-status="{ status }">
+                        <span
+                          v-if="status === 0"
+                          class="badge badge-warning rounded-md px-3 py-1 text-xs text-white"
+                        >
+                          Pendiente
+                        </span>
+                        <span
+                          v-if="status === 1"
+                          class="badge badge-success rounded-md px-3 py-1 text-xs text-white"
+                        >
+                          Completado
+                        </span>
+                        <span
+                          v-if="status === 2"
+                          class="badge badge-info rounded-md px-3 py-1 text-xs text-white"
+                        >
+                          Validado
+                        </span>
+                        <span
+                          v-if="status === 3"
+                          class="badge badge-warning rounded-md px-3 py-1 text-xs text-white"
+                        >
+                          Editando
+                        </span>
+                      </template>
+                      <template v-slot:item-created_at="{ created_at }">
+                        {{ new Date(created_at).toLocaleString('en-GB') }}
+                      </template>
+                      <template v-slot:item-updated_at="{ updated_at }">
+                        {{ new Date(updated_at).toLocaleString('en-GB') }}
+                      </template>
+                      <template v-slot:item-id="{ id }">
+                        <div class="w-14">
+                          <button class="btn btn-square btn-xs mr-2" @click="ptDrawer(3)">
+                            <Icon icon="mdi:eye" />
+                          </button>
+                          <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                        </div>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
+              </div>
             </div>
             <div
               v-if="tab === 12"
@@ -3362,6 +3462,18 @@ onMounted(async () => {
       >
         <DrawerTitle title="Configuración CochesNet" @toggle="toggleDrawer" />
         <CochesnetDrawer :id="id" :cochesnetBodyOptions="bodyTypeOptions" :toggle="toggleDrawer" />
+      </ul>
+      <ul
+        v-if="drawerSection === 'pt'"
+        class="menu w-screen min-h-full bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <PerformanceTest
+          :url="ptUrl"
+          :toggle="toggleDrawer"
+          :id="id"
+          :step="ptStep"
+          :testId="ptTestId"
+        />
       </ul>
     </div>
   </div>
