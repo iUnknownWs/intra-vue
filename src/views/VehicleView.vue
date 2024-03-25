@@ -189,7 +189,7 @@ const financingMonths = ref(0)
 const financingQ = ref('0')
 const reserve = ref('0')
 const iva = ref(false)
-const error = ref(null)
+const infoModal = ref(null)
 const message = ref('')
 const commInternal = ref(null)
 const commExternal = ref(null)
@@ -461,7 +461,8 @@ const updateData = () => {
   }
   if (payload.chassis_number === null) {
     message.value = 'Debe ingresar el VIN del vehículo, el campo Bastidor es obligatorio'
-    error.value?.modal.showModal()
+    modalTitle.value = 'Error'
+    infoModal.value?.modal.showModal()
     fetch()
     return
   }
@@ -603,12 +604,13 @@ const updateStatus = (status) => {
       fetch()
     })
     .catch((e) => {
+      modalTitle.value = 'Error'
       if (e.response.status === 400) {
         message.value = 'No se ha podido cambiar al estado indicado'
       } else {
         message.value = e.message
       }
-      error.value?.modal.showModal()
+      infoModal.value?.modal.showModal()
     })
 }
 
@@ -653,7 +655,7 @@ axios.get(providersUrl).then((response) => {
 
 const recalculateDistinctive = () => {
   let envLabel = null
-  error.value.modal.focus()
+  infoModal.value.modal.focus()
   axios
     .get(refreshDistinctiveUrl)
     .then((response) => {
@@ -676,9 +678,10 @@ const recalculateDistinctive = () => {
     })
     .catch((e) => {
       console.log(e)
+      modalTitle.value = 'Error'
       message.value =
         'No se encontró una Etiqueta Medioambiental para esta matricula, por favor verifique e intente nuevamente'
-      error.value?.modal.showModal()
+      infoModal.value?.modal.showModal()
     })
 }
 
@@ -1745,6 +1748,13 @@ const calculateFinance = () => {
   axios.post(finCalculateUrl, payload).then(() => {
     toggleDrawer()
     fetch()
+    message.value = 'Contrato Generado'
+    infoModal.value.modal.showModal()
+  }).catch((e) => {
+    toggleDrawer()
+    message.value = e.message
+    modalTitle.value = 'Error'
+    infoModal.value.modal.showModal()
   })
 }
 
@@ -1885,7 +1895,7 @@ onMounted(async () => {
   <div class="drawer drawer-end">
     <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
-      <ModalInfo class="w-full" ref="error" title="Error" :message="message" />
+      <ModalInfo class="w-full" ref="infoModal" :title="modalTitle" :message="message" />
       <ModalConfirm
         class="w-full"
         ref="confirm"
