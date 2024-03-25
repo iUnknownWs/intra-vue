@@ -283,7 +283,7 @@ const monthsReserve = ref(0)
 const paymentType = ref(null)
 const walcuVehicleId = ref(null)
 const docusignEmail = ref(null)
-const docusignComments = ref(null)
+const docusignComments = ref('')
 const docusignTemplate = ref(null)
 const docusignTemplates = ref([])
 const docusignContracts = ref(null)
@@ -1175,7 +1175,19 @@ const voidContract = () => {
     'https://backend-pre.garageclub.es/api/v1/core/docusign_documents/' +
       contractId.value +
       '/void_envelope/'
-  )
+  ).then(() => {
+    modalTitle.value = 'Contrato cancelado'
+    message.value = 'El contrato ha sido cancelado correctamente'
+    infoModal.value.modal.showModal()
+  }).catch((e) => {
+    modalTitle.value = 'Error'
+    if (e.response.status === 400) {
+      message.value = 'El contrato ya ha sido cancelado'
+    } else {
+      message.value = e.message
+    }
+    infoModal.value.modal.showModal()
+  })
 }
 
 const headersEquip = [
