@@ -16,6 +16,7 @@ import DropMobile from '@/components/DropMobile.vue'
 import HeaderMain from '@/components/HeaderMain.vue'
 import IntegrationCard from '@/components/IntegrationCard.vue'
 import MenuLink from '@/components/MenuLink.vue'
+import ModalConfirm from '@/components/ModalConfirm.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import ModalInfo from '@/components/ModalInfo.vue'
 import NavLink from '@/components/NavLink.vue'
@@ -61,6 +62,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('HeaderMain', HeaderMain)
     .component('IntegrationCard', IntegrationCard)
     .component('MenuLink', MenuLink)
+    .component('ModalConfirm', ModalConfirm)
     .component('ModalDialog', ModalDialog)
     .component('ModalInfo', ModalInfo)
     .component('NavLink', NavLink)

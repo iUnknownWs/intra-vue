@@ -303,6 +303,9 @@ const commentAlert = ref(false)
 const performanceTests = ref(null)
 const ptStep = ref(0)
 const ptTestId = ref(null)
+const modalTitle = ref('')
+const confirm = ref(null)
+const contractId = ref(null)
 const params = [
   {
     key: 'vehicle',
@@ -1153,9 +1156,24 @@ const headersDocusign = [
   { text: 'Fecha', value: 'created_at' },
   { text: 'Enviado a', value: 'sent_to' },
   { text: 'Estado', value: 'status', width: 40 },
-  { text: 'Archivos', value: 'files' },
+  { text: 'Archivos', value: 'files', width: 40 },
   { text: 'Eliminar', value: 'id', width: 40 }
 ]
+
+const contractConfirm = (id) => {
+  contractId.value = id
+  modalTitle.value = 'Cancelar contrato'
+  message.value = '¿Seguro que quieres cancelar el contrato?'
+  confirm.value.modal.showModal()
+}
+
+const voidContract = () => {
+  axios.get(
+    'https://backend-pre.garageclub.es/api/v1/core/docusign_documents/' +
+      contractId.value +
+      '/void_envelope/'
+  )
+}
 
 const headersEquip = [
   { text: 'Nombre', value: 'title' },
@@ -1868,6 +1886,13 @@ onMounted(async () => {
     <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
       <ModalInfo class="w-full" ref="error" title="Error" :message="message" />
+      <ModalConfirm
+        class="w-full"
+        ref="confirm"
+        :title="modalTitle"
+        :message="message"
+        @confirm="voidContract()"
+      />
       <dialog ref="edit" id="edit" class="modal">
         <div class="modal-box flex flex-col">
           <form method="dialog flex flex-col" @submit.prevent="edit.close(), reset()">
@@ -2191,15 +2216,17 @@ onMounted(async () => {
                         :loading="isFetchingDocs"
                       >
                         <template v-slot:item-files="{ files }">
-                          <a
-                            v-for="(file, index) in files"
-                            :key="index"
-                            :href="file.file"
-                            target="_blank"
-                            class="btn btn-square btn-xs mr-2"
-                          >
-                            <Icon icon="mdi:eye" />
-                          </a>
+                          <div class="flex gap-2">
+                            <a
+                              v-for="(file, index) in files"
+                              :key="index"
+                              :href="file.file"
+                              target="_blank"
+                              class="btn btn-square btn-xs"
+                            >
+                              <Icon icon="mdi:download" />
+                            </a>
+                          </div>
                         </template>
                         <template v-slot:item-status="{ status }">
                           <span class="badge badge-primary rounded-md px-3 py-1 text-white">
@@ -2207,7 +2234,10 @@ onMounted(async () => {
                           </span>
                         </template>
                         <template v-slot:item-id="{ id }">
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
+                          <button
+                            class="btn btn-square btn-error btn-xs"
+                            @click="contractConfirm(id)"
+                          >
                             <Icon icon="mdi:trash-can-outline" />
                           </button>
                         </template>
@@ -2497,7 +2527,7 @@ onMounted(async () => {
               <div v-else>
                 <div class="flex flex-col">
                   <div class="flex flex-row justify-between">
-                    <h2 class="text-xl font-medium">Documentos de compra</h2>
+                    <h2 class="text-xl font-medium">Performance Test</h2>
                     <button class="btn btn-outline btn-sm mb-2 self-end" @click="ptDrawer(1)">
                       <Icon icon="mdi:plus" width="25" />
                       Nuevo
@@ -2551,11 +2581,23 @@ onMounted(async () => {
                       <template v-slot:item-updated_at="{ updated_at }">
                         {{ new Date(updated_at).toLocaleString('en-GB') }}
                       </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="ptDrawer(3)">
+                      <template v-slot:item-id="{ id, status }">
+                        <div v-if="status === 0" class="w-14">
+                          <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                        </div>
+                        <div v-if="status === 1" class="w-14">
+                          <button class="btn btn-square btn-xs mr-2" @click="ptDrawer(3, id)">
                             <Icon icon="mdi:eye" />
                           </button>
+                        </div>
+                        <div v-if="status === 2" class="w-14">
+                          <button class="btn btn-square btn-xs" @click="editConfirm">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                        </div>
+                        <div v-if="status === 3" class="w-14">
                           <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
                             <Icon icon="mdi:pencil" />
                           </button>
@@ -3465,7 +3507,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'pt'"
-        class="menu w-screen min-h-full bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
         <PerformanceTest
           :url="ptUrl"
@@ -3473,6 +3515,7 @@ onMounted(async () => {
           :id="id"
           :step="ptStep"
           :testId="ptTestId"
+          @created="fetch"
         />
       </ul>
     </div>
