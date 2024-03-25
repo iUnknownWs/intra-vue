@@ -1717,10 +1717,21 @@ const docusignDrawer = (step) => {
       }
     }
 
-    axios.post(docusignUrl, payload).then(() => {
-      fetch()
-      toggleDrawer()
-    })
+    axios
+      .post(docusignUrl, payload)
+      .then(() => {
+        fetch()
+        toggleDrawer()
+        modalTitle.value = 'Contrato Generado'
+        message.value = 'El contrato se ha generado correctamente'
+        infoModal.value.modal.showModal()
+      })
+      .catch((e) => {
+        toggleDrawer()
+        message.value = e.message
+        modalTitle.value = 'Error'
+        infoModal.value.modal.showModal()
+      })
   }
 }
 
@@ -1748,13 +1759,6 @@ const calculateFinance = () => {
   axios.post(finCalculateUrl, payload).then(() => {
     toggleDrawer()
     fetch()
-    message.value = 'Contrato Generado'
-    infoModal.value.modal.showModal()
-  }).catch((e) => {
-    toggleDrawer()
-    message.value = e.message
-    modalTitle.value = 'Error'
-    infoModal.value.modal.showModal()
   })
 }
 
