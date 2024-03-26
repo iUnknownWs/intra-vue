@@ -42,6 +42,60 @@ const color = ref(true)
 const fabrication = ref(true)
 const offer_type = ref(true)
 const version = ref(true)
+const isMobile = ref(window.innerWidth < 1024)
+const info = ref(null)
+const modalMessage = ref('')
+const modalTitle = ref('')
+
+const getModels = () => {
+  axios
+    .post(cochesnetIntegrationUrl + 'models/', {
+      brand: cochesnetBrand.value,
+      category: cochesnetCategory.value,
+      fuel: cochesnetFuel.value,
+      years: cochesnetYear.value
+    })
+    .then((response) => {
+      cochesnetModelsOptions.value = response.data
+      cochesnetModel.value = null
+    }).catch(() => {
+      cochesnetModelsOptions.value = []
+      modalTitle.value = 'Datos inválidos'
+      modalMessage.value = 'No se encontraron modelos con los datos introducidos'
+      info.value.modal.showModal()
+    })
+}
+
+const getVersions = () => {
+  axios
+    .post(cochesnetIntegrationUrl + 'version/', {
+      body_type: cochesnetBody.value,
+      brand: cochesnetBrand.value,
+      category: cochesnetCategory.value,
+      color: cochesnetColor.value,
+      description: cochesnetDescription.value,
+      doors: cochesnetDoors.value,
+      env_label: cochesnetEnv.value,
+      fuel: cochesnetFuel.value,
+      is_metalized: cochesnetMetalized.value,
+      model: cochesnetModel.value,
+      model_id: cochesnetModel.value,
+      offer_type: cochesnetType.value,
+      transmission: cochesnetTrans.value,
+      warranty: cochesnetWarranty.value,
+      years: cochesnetYear.value,
+      youtube_video: cochesnetYoutube.value
+    })
+    .then((response) => {
+      cochesnetVersionOptions.value = response.data
+      cochesnetVersion.value = null
+    }).catch(() => {
+      cochesnetVersionOptions.value = []
+      modalTitle.value = 'Datos inválidos'
+      modalMessage.value = 'No se encontraron versiones con los datos introducidos'
+      info.value.modal.showModal()
+    })
+}
 
 const getFabrication = () => {
   axios
@@ -67,6 +121,11 @@ const getFabrication = () => {
     .then((response) => {
       cochesnetFabricationOptions.value = response.data
       version.value = false
+    }).catch(() => {
+      cochesnetFabricationOptions.value = []
+      modalTitle.value = 'Datos inválidos'
+      modalMessage.value = 'No se encontraron fechas de fabricación con los datos introducidos'
+      info.value.modal.showModal()
     })
 }
 
@@ -143,6 +202,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div class="flex min-h-full w-full flex-col justify-between">
     <div>
       <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
@@ -154,6 +214,7 @@ onMounted(() => {
         :id="id"
         class="my-4 grid h-min grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-4"
         :skeletons="20"
+        :mobile="isMobile"
       />
       <AreaInput label="Descripción:" v-model="cochesnetDescription" />
       <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
@@ -175,13 +236,13 @@ onMounted(() => {
           :options="options.cochesnetCategory"
           v-model="cochesnetCategory"
         />
-        <SelectInput
+        <SearchSelect
           label="Marca"
           :options="cochesnetBrandsOptions"
           v-model="cochesnetBrand"
           optionLabel="value"
           optionValue="key"
-          :initialValue="null"
+          @selected="getModels"
         />
         <SelectInput
           label="Modelo"
@@ -190,21 +251,23 @@ onMounted(() => {
           optionLabel="value"
           optionValue="key"
           :initialValue="null"
+          @selected="getVersions"
         />
         <SelectInput
           label="Carrocería"
           :options="cochesnetBodyOptions"
           v-model="cochesnetBody"
           :initialValue="null"
+          @selected="getVersions"
         />
         <SelectInput
           label="Version"
           :options="cochesnetVersionOptions"
           v-model="cochesnetVersion"
-          @selected="getFabrication"
           optionLabel="value"
           optionValue="key"
           :initialValue="null"
+          @selected="getFabrication"
         />
         <SelectInput
           label="Fabricación"

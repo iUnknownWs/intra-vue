@@ -2,6 +2,8 @@
 defineProps({
   label: { type: String, required: true },
   options: { type: Object, required: true },
+  optionLabel: { type: String, default: 'label' },
+  optionValue: { type: String, default: 'value' },
   disabled: { type: Boolean }
 })
 defineEmits(['selected'])
@@ -15,11 +17,11 @@ const brand = defineModel()
     </div>
     <VueSelect
       v-model="brand"
+      :label="optionLabel"
       :options="options"
+      :reduce="(option) => option[optionValue]"
       :disabled="disabled"
       @option:selected="$emit('selected')"
     />
   </label>
 </template>
-
-<style scoped></style>

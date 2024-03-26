@@ -9,8 +9,8 @@ defineEmits(['addBtn'])
 
 <template>
   <div class="flex flex-col">
-    <div class="flex flex-row justify-between">
-      <span class="mb-4 text-xl font-semibold">{{ title }}</span>
+    <div class="flex flex-row items-center justify-between">
+      <span class="mb-4 text-base font-medium lg:text-xl">{{ title }}</span>
       <label
         v-if="add"
         for="vehicle-drawer"
@@ -18,7 +18,7 @@ defineEmits(['addBtn'])
         @click="$emit('addBtn')"
       >
         <Icon icon="mdi:plus" width="25" />
-        Nuevo
+        <span class="hidden lg:inline"> Nuevo </span>
       </label>
     </div>
     <slot name="content" />

@@ -414,7 +414,7 @@ const ptConfirm = (id) => {
 }
 
 const ptStatus = (status) => {
-  axios.patch(ptUrl + '/answered/' +  ptTestId.value + '/', { status: status }).then(() => {
+  axios.patch(ptUrl + '/answered/' + ptTestId.value + '/', { status: status }).then(() => {
     fetchPT()
   })
 }
@@ -1602,6 +1602,7 @@ const getModelReserve = () => {
         label: option.title
       })
     }
+    carPayModel.value = [{ id: '', label: '' }]
   })
 }
 
@@ -2081,9 +2082,9 @@ onMounted(async () => {
               <li><a class="font-bold" @click="tab = 11">PT</a></li>
             </ul>
           </aside>
-          <section class="flex flex-1 flex-col">
+          <section class="flex w-full flex-1 flex-col">
             <VehicleAlert v-if="commentAlert" :message="commInternal" @btn="commentAlert = false" />
-            <div v-if="tab > 0 && tab < 9" class="flex flex-col gap-8">
+            <div v-if="tab > 0 && tab < 9" class="flex w-full flex-col gap-8">
               <div
                 ref="basic"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
@@ -2367,7 +2368,6 @@ onMounted(async () => {
                       </template>
                     </EasyDataTable>
                   </template>
-                  <template #drawer> </template>
                 </VehicleTable>
               </div>
               <div
@@ -2405,6 +2405,21 @@ onMounted(async () => {
                     </EasyDataTable>
                   </template>
                 </VehicleTable>
+              </div>
+              <div
+                ref="portals"
+                class="flex scroll-m-28 flex-col gap-4 overflow-visible rounded bg-base-100 p-4 lg:w-[180%] lg:scroll-m-20"
+              >
+                <h1 class="text-xl font-medium">Portales Web</h1>
+                <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
+                  <IntegrationCard
+                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                    @settingClick="cochesnetDrawer"
+                  />
+                  <IntegrationCard
+                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+                  />
+                </div>
               </div>
             </div>
             <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
@@ -2462,7 +2477,7 @@ onMounted(async () => {
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
                 <VehicleTable
-                  title="Equipamiento opcional sin coste"
+                  title="Opcional sin coste"
                   @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
                   add
                 >
@@ -2515,7 +2530,7 @@ onMounted(async () => {
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
                 <VehicleTable
-                  title="Equipamiento opcional con coste"
+                  title="Opcional con coste"
                   @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
                   add
                 >
@@ -2560,7 +2575,6 @@ onMounted(async () => {
                       </template>
                     </EasyDataTable>
                   </template>
-                  <template #drawer> </template>
                 </VehicleTable>
               </div>
             </div>
@@ -2581,11 +2595,11 @@ onMounted(async () => {
               </div>
               <div v-else>
                 <div class="flex flex-col">
-                  <div class="flex flex-row justify-between">
+                  <div class="flex flex-row items-center justify-between">
                     <h2 class="text-xl font-medium">Performance Test</h2>
                     <button class="btn btn-outline btn-sm mb-2 self-end" @click="ptDrawer(1)">
                       <Icon icon="mdi:plus" width="25" />
-                      Nuevo
+                      <span class="hidden lg:inline"> Nuevo </span>
                     </button>
                   </div>
                   <div class="divider m-0 p-0"></div>
@@ -2820,7 +2834,6 @@ onMounted(async () => {
                   </div>
                 </div>
               </div>
-              <!-- </div> -->
             </div>
           </section>
           <aside class="hidden h-fit flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
@@ -2961,21 +2974,6 @@ onMounted(async () => {
             </div>
           </aside>
         </main>
-        <div
-          ref="portals"
-          class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-        >
-          <h1 class="text-xl font-medium">Portales Web</h1>
-          <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
-            <IntegrationCard
-              img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-              @settingClick="cochesnetDrawer"
-            />
-            <IntegrationCard
-              img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-            />
-          </div>
-        </div>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50">
         <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
