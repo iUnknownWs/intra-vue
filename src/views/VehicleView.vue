@@ -306,6 +306,7 @@ const ptTestId = ref(null)
 const modalTitle = ref('')
 const confirm = ref(null)
 const contractId = ref(null)
+const confirmPT = ref(null)
 const params = [
   {
     key: 'vehicle',
@@ -402,6 +403,20 @@ const ptDrawer = (step, id) => {
   ptTestId.value = id
   drawerSection.value = 'pt'
   drawer.value = !drawer.value
+}
+
+const ptConfirm = (id) => {
+  ptTestId.value = id
+  modalTitle.value = 'Editar Performance Test'
+  message.value =
+    '¿Seguro que quieres editar el Performance Test?, esto eliminara el progreso actual'
+  confirmPT.value.modal.showModal()
+}
+
+const ptStatus = (status) => {
+  axios.patch(ptUrl + '/answered/' +  ptTestId.value + '/', { status: status }).then(() => {
+    fetchPT()
+  })
 }
 
 const cochesnetDrawer = () => {
@@ -1171,23 +1186,26 @@ const contractConfirm = (id) => {
 }
 
 const voidContract = () => {
-  axios.get(
-    'https://backend-pre.garageclub.es/api/v1/core/docusign_documents/' +
-      contractId.value +
-      '/void_envelope/'
-  ).then(() => {
-    modalTitle.value = 'Contrato cancelado'
-    message.value = 'El contrato ha sido cancelado correctamente'
-    infoModal.value.modal.showModal()
-  }).catch((e) => {
-    modalTitle.value = 'Error'
-    if (e.response.status === 400) {
-      message.value = 'El contrato ya ha sido cancelado'
-    } else {
-      message.value = e.message
-    }
-    infoModal.value.modal.showModal()
-  })
+  axios
+    .get(
+      'https://backend-pre.garageclub.es/api/v1/core/docusign_documents/' +
+        contractId.value +
+        '/void_envelope/'
+    )
+    .then(() => {
+      modalTitle.value = 'Contrato cancelado'
+      message.value = 'El contrato ha sido cancelado correctamente'
+      infoModal.value.modal.showModal()
+    })
+    .catch((e) => {
+      modalTitle.value = 'Error'
+      if (e.response.status === 400) {
+        message.value = 'El contrato ya ha sido cancelado'
+      } else {
+        message.value = e.message
+      }
+      infoModal.value.modal.showModal()
+    })
 }
 
 const headersEquip = [
@@ -1224,9 +1242,13 @@ const headersPT = [
   { text: 'Acciones', value: 'id', width: 40 }
 ]
 
-axios.get(ptVehicleUrl).then((response) => {
-  performanceTests.value = response.data.results
-})
+const fetchPT = () => {
+  axios.get(ptVehicleUrl).then((response) => {
+    performanceTests.value = response.data.results
+  })
+}
+
+fetchPT()
 
 const addExtra = () => {
   if (!extraMode.value) {
@@ -1918,6 +1940,13 @@ onMounted(async () => {
         :title="modalTitle"
         :message="message"
         @confirm="voidContract()"
+      />
+      <ModalConfirm
+        class="w-full"
+        ref="confirmPT"
+        :title="modalTitle"
+        :message="message"
+        @confirm="ptStatus(3)"
       />
       <dialog ref="edit" id="edit" class="modal">
         <div class="modal-box flex flex-col">
@@ -2614,13 +2643,16 @@ onMounted(async () => {
                           </button>
                         </div>
                         <div v-if="status === 1" class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="ptDrawer(3, id)">
+                          <button class="btn btn-square btn-xs mr-2" @click="ptConfirm(id)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-xs" @click="ptDrawer(3, id)">
                             <Icon icon="mdi:eye" />
                           </button>
                         </div>
                         <div v-if="status === 2" class="w-14">
-                          <button class="btn btn-square btn-xs" @click="editConfirm">
-                            <Icon icon="mdi:pencil" />
+                          <button class="btn btn-square btn-xs" @click="ptDrawer(4, id)">
+                            <Icon icon="mdi:eye" />
                           </button>
                         </div>
                         <div v-if="status === 3" class="w-14">
@@ -3542,6 +3574,7 @@ onMounted(async () => {
           :step="ptStep"
           :testId="ptTestId"
           @created="fetch"
+          @validate="fetchPT"
         />
       </ul>
     </div>

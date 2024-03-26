@@ -2,7 +2,7 @@
 import axios from 'axios'
 const props = defineProps({
   question: { type: Object, required: true },
-  order: { type: Number, required: true },
+  order: { type: Number },
   readonly: { type: Boolean, default: false }
 })
 const value = defineModel()
@@ -20,8 +20,18 @@ const updateValue = () => {
 <template>
   <label class="form-control mb-4 w-full">
     <div class="label">
-      <span class="label-text font-medium">{{ order + 1 }}. {{ question.question_title }}</span>
+      <span v-if="order" class="label-text font-medium"
+        >{{ order + 1 }}. {{ question.question_title }}</span
+      >
+      <span v-else class="label-text font-medium">{{ question.question_title }}</span>
     </div>
-    <input :disabled="readonly" type="date" class="input input-bordered w-full" v-model="value" @change="updateValue" required />
+    <input
+      :disabled="readonly"
+      type="date"
+      class="input input-bordered w-full"
+      v-model="value"
+      @change="updateValue"
+      required
+    />
   </label>
 </template>

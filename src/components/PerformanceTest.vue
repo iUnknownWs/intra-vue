@@ -28,13 +28,17 @@ const props = defineProps({
     type: Number
   }
 })
-const emit = defineEmits(['created'])
+const emit = defineEmits(['created', 'validate'])
 const testTemplates = ref([])
 const questions = ref([])
 const templateId = ref(null)
 const sameType = ref(false)
 const nextStep = ref(false)
 const loading = ref(true)
+const validatePT = ref(null)
+const completePT = ref(null)
+const title = ref('')
+const message = ref('')
 
 const create = () => {
   axios
@@ -55,8 +59,32 @@ const create = () => {
     })
 }
 
+const ptValidate = () => {
+  title.value = 'Validar Performance Test'
+  message.value = '¿Seguro que quieres validar este Performance Test?'
+  validatePT.value.modal.showModal()
+}
+
+const ptComplete = () => {
+  title.value = 'Completar Performance Test'
+  message.value = '¿Desea marcar el test como completado?'
+  completePT.value.modal.showModal()
+}
+
+const ptStatus = (status) => {
+  axios
+    .patch(props.url + 'answered/' + props.testId + '/', { status: status })
+    .then(() => {
+      emit('validate')
+      props.toggle()
+    })
+    .catch(() => {
+      sameType.value = true
+    })
+}
+
 onMounted(() => {
-  if (props.step === 2 || props.step === 3) {
+  if (props.step !== 1) {
     loading.value = true
     axios.get(props.url + 'answered/' + props.testId).then((response) => {
       questions.value = response.data.answered_questions
@@ -70,6 +98,20 @@ onMounted(() => {
 </script>
 
 <template>
+  <ModalConfirm
+    class="w-full"
+    ref="validatePT"
+    :title="title"
+    :message="message"
+    @confirm="ptStatus(2)"
+  />
+  <ModalConfirm
+    class="w-full"
+    ref="completePT"
+    :title="title"
+    :message="message"
+    @confirm="ptStatus(1)"
+  />
   <div v-if="step === 1 && !nextStep" class="flex h-[95vh] w-full flex-col justify-between">
     <div class="h-full w-full">
       <DrawerTitle title="Performance Test" @toggle="toggle" />
@@ -93,7 +135,7 @@ onMounted(() => {
     />
   </div>
   <form
-    @submit.prevent="console.log('guardado')"
+    @submit.prevent="ptComplete"
     v-if="step === 2 || nextStep"
     class="flex w-full flex-col justify-between"
   >
@@ -147,7 +189,7 @@ onMounted(() => {
       <button type="submit" class="btn btn-primary w-24 text-white">Guardar</button>
     </li>
   </form>
-  <div v-if="step === 3" class="flex w-full flex-col justify-between">
+  <div v-if="step === 3 || step === 4" class="flex w-full flex-col justify-between">
     <div v-if="loading" class="flex h-screen w-full items-center justify-center">
       <LoadingSpinner class="loading-lg" />
     </div>
@@ -198,5 +240,9 @@ onMounted(() => {
         </span> -->
       </template>
     </div>
+    <li v-if="step === 3" class="mt-8 flex flex-row justify-end gap-4">
+      <button class="btn btn-outline w-28" @click="toggle">Cancelar</button>
+      <button class="btn btn-primary w-24 text-white" @click="ptValidate">Validar</button>
+    </li>
   </div>
 </template>
