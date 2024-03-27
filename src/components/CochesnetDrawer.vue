@@ -46,6 +46,7 @@ const isMobile = ref(window.innerWidth < 1024)
 const info = ref(null)
 const modalMessage = ref('')
 const modalTitle = ref('')
+const loading = ref(false)
 
 const getBrands = () => {
   axios
@@ -167,6 +168,7 @@ const getFabrication = () => {
 }
 
 const publish = () => {
+  loading.value = true
   axios.post(cochesnetIntegrationUrl + 'publish_vehicle/', {
     body_type: cochesnetBody.value,
     brand: cochesnetBrand.value,
@@ -187,6 +189,13 @@ const publish = () => {
     youtube_video: cochesnetYoutube.value,
     unique_vehicle: cochesnetFabrication.value,
     vehicle: props.id
+  }).then(() => {
+    loading.value = false
+  }).catch(() => {
+    modalTitle.value = 'Error'
+    modalMessage.value = 'No se pudo publicar el vehículo'
+    info.value.modal.showModal()
+    loading.value = false
   })
 }
 
@@ -342,9 +351,10 @@ onMounted(() => {
     <DrawerActions
       secondary="Cancelar"
       primary="Guardar"
+      :loading="loading"
+      :disabled="color || fabrication || offer_type"
       @click-secondary="toggle"
       @click-primary="publish"
-      :disabled="color || fabrication || offer_type"
     />
   </div>
 </template>

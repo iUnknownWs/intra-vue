@@ -35,6 +35,7 @@ const templateId = ref(null)
 const sameType = ref(false)
 const nextStep = ref(false)
 const loading = ref(true)
+const validating = ref(false)
 const validatePT = ref(null)
 const completePT = ref(null)
 const title = ref('')
@@ -72,14 +73,17 @@ const ptComplete = () => {
 }
 
 const ptStatus = (status) => {
+  validating.value = true
   axios
     .patch(props.url + 'answered/' + props.testId + '/', { status: status })
     .then(() => {
       emit('validate')
       props.toggle()
+      validating.value = false
     })
     .catch(() => {
       sameType.value = true
+      validating.value = false
     })
 }
 
@@ -186,7 +190,10 @@ onMounted(() => {
     </div>
     <li class="mt-8 flex flex-row justify-end gap-4">
       <button @click="toggle" class="btn btn-outline w-28">Cancelar</button>
-      <button type="submit" class="btn btn-primary w-24 text-white">Guardar</button>
+      <button type="submit" class="btn btn-primary w-24 text-white">
+        <LoadingSpinner v-if="validating" />
+        <span v-else>Guardar</span>
+      </button>
     </li>
   </form>
   <div v-if="step === 3 || step === 4" class="flex w-full flex-col justify-between">
@@ -242,7 +249,10 @@ onMounted(() => {
     </div>
     <li v-if="step === 3" class="mt-8 flex flex-row justify-end gap-4">
       <button class="btn btn-outline w-28" @click="toggle">Cancelar</button>
-      <button class="btn btn-primary w-24 text-white" @click="ptValidate">Validar</button>
+      <button class="btn btn-primary w-24 text-white" @click="ptValidate">
+        <LoadingSpinner v-if="validating" />
+        <span v-else>Validar</span>
+      </button>
     </li>
   </div>
 </template>
