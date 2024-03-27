@@ -1,5 +1,6 @@
 <script setup>
 import axios from 'axios'
+import { ref } from 'vue'
 import NumberPT from './NumberPT.vue'
 import DatePT from './DatePT.vue'
 import AreaPT from './AreaPT.vue'
@@ -11,12 +12,15 @@ const props = defineProps({
 })
 const modelValue = defineModel()
 modelValue.value = props.question.answers[0]?.answer_type
+const isNegative = ref(false)
 
 const updateValue = () => {
   axios.post(import.meta.env.VITE_API + '/performance-tests/answers/', {
     answered_question: props.question.id,
     answer_type: modelValue.value,
     value: ''
+  }).then((response) => {
+    isNegative.value = response.data.is_negative
   })
 }
 </script>
@@ -51,7 +55,7 @@ const updateValue = () => {
           required
         />
       </div>
-      <template v-if="question.answers[0]?.is_negative">
+      <template v-if="isNegative">
         <RadioPT
           v-if="question.negative_answered_questions[0]?.question.answer_types[0].type === 0"
           :question="question.negative_answered_questions[0]"

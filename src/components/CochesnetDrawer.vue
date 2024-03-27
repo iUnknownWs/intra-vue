@@ -47,6 +47,27 @@ const info = ref(null)
 const modalMessage = ref('')
 const modalTitle = ref('')
 
+const getBrands = () => {
+  axios
+    .get(cochesnetIntegrationUrl + 'brands/' + '?category=' + cochesnetCategory.value)
+    .then((response) => {
+      cochesnetBrandsOptions.value = response.data
+      cochesnetBrand.value = null
+      cochesnetModel.value = null
+      cochesnetVersion.value = null
+      cochesnetFabrication.value = null
+      cochesnetModelsOptions.value = []
+      cochesnetVersionOptions.value = []
+      cochesnetFabricationOptions.value = []
+    })
+    .catch(() => {
+      cochesnetBrandsOptions.value = []
+      modalTitle.value = 'Datos inválidos'
+      modalMessage.value = 'No se encontraron marcas con los datos introducidos'
+      info.value.modal.showModal()
+    })
+}
+
 const getModels = () => {
   axios
     .post(cochesnetIntegrationUrl + 'models/', {
@@ -57,9 +78,18 @@ const getModels = () => {
     })
     .then((response) => {
       cochesnetModelsOptions.value = response.data
+      cochesnetVersionOptions.value = []
+      cochesnetFabricationOptions.value = []
       cochesnetModel.value = null
-    }).catch(() => {
+      cochesnetVersion.value = null
+      cochesnetFabrication.value = null
+    })
+    .catch(() => {
       cochesnetModelsOptions.value = []
+      cochesnetVersionOptions.value = []
+      cochesnetFabricationOptions.value = []
+      cochesnetVersion.value = null
+      cochesnetFabrication.value = null
       modalTitle.value = 'Datos inválidos'
       modalMessage.value = 'No se encontraron modelos con los datos introducidos'
       info.value.modal.showModal()
@@ -89,8 +119,13 @@ const getVersions = () => {
     .then((response) => {
       cochesnetVersionOptions.value = response.data
       cochesnetVersion.value = null
-    }).catch(() => {
+      cochesnetFabrication.value = null
+      cochesnetFabricationOptions.value = []
+    })
+    .catch(() => {
       cochesnetVersionOptions.value = []
+      cochesnetFabricationOptions.value = []
+      cochesnetFabrication.value = null
       modalTitle.value = 'Datos inválidos'
       modalMessage.value = 'No se encontraron versiones con los datos introducidos'
       info.value.modal.showModal()
@@ -120,8 +155,10 @@ const getFabrication = () => {
     })
     .then((response) => {
       cochesnetFabricationOptions.value = response.data
+      cochesnetFabrication.value = null
       version.value = false
-    }).catch(() => {
+    })
+    .catch(() => {
       cochesnetFabricationOptions.value = []
       modalTitle.value = 'Datos inválidos'
       modalMessage.value = 'No se encontraron fechas de fabricación con los datos introducidos'
@@ -219,9 +256,15 @@ onMounted(() => {
       <AreaInput label="Descripción:" v-model="cochesnetDescription" />
       <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
       <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
+        <SelectInput
+          label="Categoria"
+          :options="options.cochesnetCategory"
+          v-model="cochesnetCategory"
+          @selected="getBrands"
+        />
         <TextInput label="Año:" v-model="cochesnetYear" />
-        <TextInput label="Puertas:" v-model="cochesnetDoors" />
         <SelectInput label="Combustible" :options="options.combustible" v-model="cochesnetFuel" />
+        <TextInput label="Puertas:" v-model="cochesnetDoors" />
         <SelectInput
           label="Color"
           :options="cochesnetColorsOptions"
@@ -230,11 +273,6 @@ onMounted(() => {
           optionValue="key"
           :initialValue="null"
           @selected="color = false"
-        />
-        <SelectInput
-          label="Categoria"
-          :options="options.cochesnetCategory"
-          v-model="cochesnetCategory"
         />
         <SearchSelect
           label="Marca"
