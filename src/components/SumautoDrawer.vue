@@ -28,6 +28,8 @@ const info = ref(null)
 const modalMessage = ref('')
 const modalTitle = ref('')
 const loading = ref(false)
+const featuredValue = ref(null)
+const premiumValue = ref(null)
 
 const publish = () => {
   loading.value = true
@@ -60,6 +62,52 @@ const publish = () => {
     })
 }
 
+const getAdvertisement = () => {
+  axios
+    .post(sumautoIntegrationUrl + 'get_featured_advertisement_data/', { vehicle: props.id })
+    .then((response) => {
+      featuredValue.value = response.data.is_featured
+      premiumValue.value = response.data.is_premium_featured
+    })
+}
+
+const featured = () => {
+  axios
+    .put(sumautoIntegrationUrl + 'update_featured_advertisement_data/', {
+      is_featured: featuredValue.value,
+      vehicle_id: props.id
+    })
+    .then(() => {
+      modalTitle.value = 'Vehículo destacado'
+      modalMessage.value = 'Se le ha cambiado el estado de destacado al vehiculo correctamente'
+      info.value.modal.showModal()
+      getAdvertisement()
+    })
+    .catch(() => {
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se ha podido destacar el vehículo'
+      info.value.modal.showModal()
+    })
+}
+
+const featuredPremium = () => {
+  axios
+    .put(sumautoIntegrationUrl + 'update_featured_advertisement_data/', {
+      is_premium_featured: premiumValue.value,
+      vehicle_id: props.id
+    })
+    .then(() => {
+      modalTitle.value = 'Vehículo destacado'
+      modalMessage.value = 'Se le ha cambiado el estado de destacado al vehiculo correctamente'
+      info.value.modal.showModal()
+      getAdvertisement()
+    })
+    .catch(() => {
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se ha podido publicar el vehículo'
+      info.value.modal.showModal()
+    })
+}
 onMounted(() => {
   axios.get(sumautoUrl).then((response) => {
     sumautoDescription.value = response.data.description
@@ -91,6 +139,12 @@ onMounted(() => {
   axios.get(sumautoIntegrationUrl + 'labels/').then((response) => {
     sumautoLabelOptions.value = response.data
   })
+  axios
+    .post(sumautoIntegrationUrl + 'get_featured_advertisement_data/', { vehicle: props.id })
+    .then((response) => {
+      featuredValue.value = response.data.is_featured
+      premiumValue.value = response.data.is_premium_featured
+    })
 })
 </script>
 
@@ -164,6 +218,15 @@ onMounted(() => {
         <CheckInput label="IVA Deducible" v-model="sumautoIVA" class="w-fit" />
         <CheckInput label="Metalizado" v-model="sumautoMetalized" class="w-fit" />
         <CheckInput label="Certificado" v-model="sumautoCertified" class="w-fit" />
+      </div>
+      <div class="flex flex-col lg:flex-row lg:gap-4">
+        <ToggleInput label="Destacar" v-model="featuredValue" class="w-fit" @changed="featured" />
+        <ToggleInput
+          label="Destacar Premium"
+          v-model="premiumValue"
+          class="w-fit"
+          @changed="featuredPremium"
+        />
       </div>
     </div>
     <DrawerActions

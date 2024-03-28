@@ -57,6 +57,9 @@ const finProdUrl = `${import.meta.env.VITE_API}/vehicles-financing-products/`
 const ptVehicleUrl = `${import.meta.env.VITE_API}/performance-tests/answered/?vehicle=` + id.value
 const ptUrl = `${import.meta.env.VITE_API}/performance-tests/`
 const finCalculateUrl = `${import.meta.env.VITE_VEHICLES}/calculate_financing/`
+const cochesnetUrl = `${import.meta.env.VITE_INTEGRATIONS}/coches_net/`
+const wallapopUrl = `${import.meta.env.VITE_INTEGRATIONS}/wallapop/`
+const sumautoUrl = `${import.meta.env.VITE_INTEGRATIONS}/sumauto/`
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref(1)
@@ -309,6 +312,14 @@ const modalTitle = ref('')
 const confirm = ref(null)
 const contractId = ref(null)
 const confirmPT = ref(null)
+const wallapop = ref(null)
+const sumauto = ref(null)
+const cochesnet = ref(null)
+const sumautoStats = ref({})
+const wallapopStats = ref({})
+const cochesnetLoading = ref(false)
+const wallapopLoading = ref(false)
+const sumautoLoading = ref(false)
 const params = [
   {
     key: 'vehicle',
@@ -520,8 +531,6 @@ const fetch = () => {
     .get(url)
     .then((response) => {
       vehicle.value = response.data
-    })
-    .then(() => {
       loading.value = false
       category.value = vehicle.value.web_categories[0]?.id || null
       bodyType.value = vehicle.value.body_type?.id || null
@@ -599,6 +608,21 @@ const fetch = () => {
         }
       }
       isFetchingEquip.value = false
+      wallapop.value = typeof vehicle.value?.wallapop_vehicle === 'number' ? true : false
+      sumauto.value = typeof vehicle.value?.sumauto_vehicle === 'number' ? true : false
+      cochesnet.value = typeof vehicle.value?.coches_net_vehicle_id === 'number' ? true : false
+      axios.get(sumautoUrl + 'vehicle_publish_status/').then((response) => {
+        sumautoStats.value = {
+          published: response.data.published_vehicles,
+          pending: response.data.vehicles_to_publish
+        }
+      })
+      axios.get(wallapopUrl + 'vehicle_publish_status/').then((response) => {
+        wallapopStats.value = {
+          published: response.data.published_vehicles,
+          pending: response.data.vehicles_to_publish
+        }
+      })
     })
     .then(() => {
       axios.get(`${modelWebUrl}${webBrand.value.id}`).then((response) => {
@@ -1809,6 +1833,69 @@ const calculateFinance = () => {
   })
 }
 
+const cochesnetRemove = () => {
+  cochesnetLoading.value = true
+  axios
+    .post(cochesnetUrl + 'remove_vehicle_from_coches_net/', {
+      vehicle: id.value
+    })
+    .then(() => {
+      fetch()
+      modalTitle.value = 'Vehiculo removido de Coches.net'
+      message.value = 'El vehiculo ha sido removido de Coches.net correctamente'
+      infoModal.value.modal.showModal() 
+      cochesnetLoading.value = false
+    })
+    .catch((e) => {
+      message.value = e.message
+      modalTitle.value = 'Error'
+      infoModal.value.modal.showModal()
+      cochesnetLoading.value = false
+    })
+}
+
+const wallapopRemove = () => {
+  wallapopLoading.value = true
+  axios
+    .post(wallapopUrl + 'remove_vehicle_wallapop/', {
+      vehicle: id.value
+    })
+    .then(() => {
+      fetch()
+      modalTitle.value = 'Vehiculo removido de Wallapop'
+      message.value = 'El vehiculo ha sido removido de Wallapop correctamente'
+      infoModal.value.modal.showModal()
+      wallapopLoading.value = false
+    })
+    .catch((e) => {
+      wallapopLoading.value = false
+      message.value = e.message
+      modalTitle.value = 'Error'
+      infoModal.value.modal.showModal()
+    })
+}
+
+const sumautoRemove = () => {
+  sumautoLoading.value = true
+  axios
+    .post(sumautoUrl + 'remove_vehicle_sumauto/', {
+      vehicle: id.value
+    })
+    .then(() => {
+      fetch()
+      modalTitle.value = 'Vehiculo removido de Sumauto'
+      message.value = 'El vehiculo ha sido removido de Sumauto correctamente'
+      infoModal.value.modal.showModal()
+      sumautoLoading.value = false
+    })
+    .catch((e) => {
+      sumautoLoading.value = false
+      message.value = e.message
+      modalTitle.value = 'Error'
+      infoModal.value.modal.showModal()
+    })
+}
+
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
@@ -2980,14 +3067,27 @@ onMounted(async () => {
             <IntegrationCard
               img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
               @settingClick="cochesnetDrawer"
+              @primaryClick="cochesnetRemove"
+              :state="cochesnet"
+              :loading="cochesnetLoading"
             />
             <IntegrationCard
               img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
               @settingClick="wallapopDrawer"
+              @primaryClick="wallapopRemove"
+              :state="wallapop"
+              :published="wallapopStats?.published ?? 0"
+              :pending="wallapopStats?.pending ?? 0"
+              :loading="wallapopLoading"
             />
             <IntegrationCard
               img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
               @settingClick="sumautoDrawer"
+              @primaryClick="sumautoRemove"
+              :state="sumauto"
+              :published="sumautoStats?.published ?? 0"
+              :pending="sumautoStats?.pending ?? 0"
+              :loading="sumautoLoading"
             />
           </div>
         </div>
