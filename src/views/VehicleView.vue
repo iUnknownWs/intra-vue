@@ -10,6 +10,8 @@ import options from '@/js/filterOptions'
 import router from '@/router'
 import axios from 'axios'
 import CochesnetDrawer from '@/components/CochesnetDrawer.vue'
+import WallapopDrawer from '@/components/WallapopDrawer.vue'
+import SumautoDrawer from '@/components/SumautoDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -422,6 +424,16 @@ const ptStatus = (status) => {
 const cochesnetDrawer = () => {
   drawer.value = !drawer.value
   drawerSection.value = 'cochesnet'
+}
+
+const wallapopDrawer = () => {
+  drawer.value = !drawer.value
+  drawerSection.value = 'wallapop'
+}
+
+const sumautoDrawer = () => {
+  drawer.value = !drawer.value
+  drawerSection.value = 'sumauto'
 }
 
 const updateData = () => {
@@ -2406,21 +2418,6 @@ onMounted(async () => {
                   </template>
                 </VehicleTable>
               </div>
-              <div
-                ref="portals"
-                class="flex scroll-m-28 flex-col gap-4 overflow-visible rounded bg-base-100 p-4 lg:w-[180%] lg:scroll-m-20"
-              >
-                <h1 class="text-xl font-medium">Portales Web</h1>
-                <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
-                  <IntegrationCard
-                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-                    @settingClick="cochesnetDrawer"
-                  />
-                  <IntegrationCard
-                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-                  />
-                </div>
-              </div>
             </div>
             <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
               <div
@@ -2974,6 +2971,26 @@ onMounted(async () => {
             </div>
           </aside>
         </main>
+        <div
+          ref="portals"
+          class="relative flex scroll-m-28 flex-col gap-4 overflow-visible rounded bg-base-100 p-4 lg:scroll-m-20"
+        >
+          <h1 class="text-xl font-medium">Portales Web</h1>
+          <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
+            <IntegrationCard
+              img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+              @settingClick="cochesnetDrawer"
+            />
+            <IntegrationCard
+              img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+              @settingClick="wallapopDrawer"
+            />
+            <IntegrationCard
+              img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
+              @settingClick="sumautoDrawer"
+            />
+          </div>
+        </div>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50">
         <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
@@ -3556,10 +3573,21 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'cochesnet'"
-        class="menu w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
-        <DrawerTitle title="Configuración CochesNet" @toggle="toggleDrawer" />
         <CochesnetDrawer :id="id" :cochesnetBodyOptions="bodyTypeOptions" :toggle="toggleDrawer" />
+      </ul>
+      <ul
+        v-if="drawerSection === 'wallapop'"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <WallapopDrawer :id="id" :toggle="toggleDrawer" />
+      </ul>
+      <ul
+        v-if="drawerSection === 'sumauto'"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+      >
+        <SumautoDrawer :id="id" :toggle="toggleDrawer" />
       </ul>
       <ul
         v-if="drawerSection === 'pt'"

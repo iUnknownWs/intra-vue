@@ -18,13 +18,12 @@ const props = defineProps({
   },
   updateUrl: {
     type: String,
-    required: true
   },
   updateFunction: {
     type: Function
   },
   deleteUrl: {
-    type: String
+    type: [String],
   },
   params: {
     type: Object

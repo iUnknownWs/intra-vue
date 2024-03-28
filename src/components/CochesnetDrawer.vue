@@ -169,34 +169,37 @@ const getFabrication = () => {
 
 const publish = () => {
   loading.value = true
-  axios.post(cochesnetIntegrationUrl + 'publish_vehicle/', {
-    body_type: cochesnetBody.value,
-    brand: cochesnetBrand.value,
-    category: cochesnetCategory.value,
-    color: cochesnetColor.value,
-    description: cochesnetDescription.value,
-    doors: cochesnetDoors.value,
-    env_label: cochesnetEnv.value,
-    fuel: cochesnetFuel.value,
-    is_metalized: cochesnetMetalized.value,
-    model: cochesnetModel.value,
-    model_id: cochesnetModel.value,
-    offer_type: cochesnetType.value,
-    transmission: cochesnetVersion.value,
-    version: cochesnetVersion.value,
-    warranty: cochesnetWarranty.value,
-    years: cochesnetYear.value,
-    youtube_video: cochesnetYoutube.value,
-    unique_vehicle: cochesnetFabrication.value,
-    vehicle: props.id
-  }).then(() => {
-    loading.value = false
-  }).catch(() => {
-    modalTitle.value = 'Error'
-    modalMessage.value = 'No se pudo publicar el vehículo'
-    info.value.modal.showModal()
-    loading.value = false
-  })
+  axios
+    .post(cochesnetIntegrationUrl + 'publish_vehicle/', {
+      body_type: cochesnetBody.value,
+      brand: cochesnetBrand.value,
+      category: cochesnetCategory.value,
+      color: cochesnetColor.value,
+      description: cochesnetDescription.value,
+      doors: cochesnetDoors.value,
+      env_label: cochesnetEnv.value,
+      fuel: cochesnetFuel.value,
+      is_metalized: cochesnetMetalized.value,
+      model: cochesnetModel.value,
+      model_id: cochesnetModel.value,
+      offer_type: cochesnetType.value,
+      transmission: cochesnetVersion.value,
+      version: cochesnetVersion.value,
+      warranty: cochesnetWarranty.value,
+      years: cochesnetYear.value,
+      youtube_video: cochesnetYoutube.value,
+      unique_vehicle: cochesnetFabrication.value,
+      vehicle: props.id
+    })
+    .then(() => {
+      loading.value = false
+    })
+    .catch(() => {
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo publicar el vehículo'
+      info.value.modal.showModal()
+      loading.value = false
+    })
 }
 
 onMounted(() => {
@@ -251,6 +254,7 @@ onMounted(() => {
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div class="flex min-h-full w-full flex-col justify-between">
     <div>
+      <DrawerTitle title="Configuración CochesNet" @toggle="toggle" />
       <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
       <DraggableGallery
         :url="cochesnetUrl"
