@@ -4,7 +4,7 @@ defineProps({
   vehicle: { type: Object, required: true }
 })
 
-defineEmits(['status', 'reserve'])
+defineEmits(['status', 'reserve', 'delete'])
 
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
@@ -65,22 +65,40 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </div>
         </template>
         <template #content>
-          <button @click="$emit('status', 5)" class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button
+            @click="$emit('status', 5)"
+            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
             Reservado
           </button>
-          <button @click="$emit('status', 0)" class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button
+            @click="$emit('status', 0)"
+            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
             Pte. de Recepción
           </button>
-          <button @click="$emit('status', 3)" class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button
+            @click="$emit('status', 3)"
+            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
             Pte. de Publicación
           </button>
-          <button @click="$emit('status', 4)" class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button
+            @click="$emit('status', 4)"
+            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
             En venta
           </button>
-          <button @click="$emit('status', 8)" class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button
+            @click="$emit('status', 8)"
+            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
             Entregado
           </button>
-          <button @click="$emit('status', 10)" class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          <button
+            @click="$emit('status', 10)"
+            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+          >
             No Disponible
           </button>
         </template>
@@ -99,8 +117,13 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               >
             </div>
             <div class="absolute right-2 top-2 flex gap-4">
-              <label for="vehicle-drawer" class="btn btn-warning" @click="$emit('reserve')">Reservar</label>
-              <button class="btn btn-outline">Acciones</button>
+              <label
+                for="vehicle-drawer"
+                class="btn btn-warning text-white"
+                @click="$emit('reserve')"
+                >Reservar</label
+              >
+              <button class="btn btn-error text-white" @click="$emit('delete')">Eliminar</button>
             </div>
           </div>
           <span class="font-medium text-gray-500">{{ vehicle.version.title }}</span>

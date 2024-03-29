@@ -5,9 +5,10 @@ import options from '@/js/filterOptions.js'
 
 const props = defineProps({
   id: { type: String, required: true },
-  cochesnetBodyOptions: { type: Array, required: true },
   toggle: { type: Function, required: true }
 })
+
+const emits = defineEmits(['published'])
 
 const cochesnetUrl = `${import.meta.env.VITE_VEHICLES}/${props.id}/get_cochesnet_info/`
 const updateUrl = `${import.meta.env.VITE_API}/coches-net-images/update_in_bulk/`
@@ -33,6 +34,7 @@ const cochesnetImages = ref(null)
 const cochesnetTrans = ref(null)
 const cochesnetVersionOptions = ref([])
 const cochesnetBrandsOptions = ref([])
+const cochesnetBodyOptions = ref([])
 const cochesnetColorsOptions = ref([])
 const cochesnetModelsOptions = ref([])
 const cochesnetTypeOptions = ref([])
@@ -47,7 +49,50 @@ const info = ref(null)
 const modalMessage = ref('')
 const modalTitle = ref('')
 const loading = ref(false)
+const charLimit = 3000
+const limitWarning = ref(false)
 
+const limitText = () => {
+  if (cochesnetDescription.value.length > charLimit) {
+    limitWarning.value = true
+  } else {
+    limitWarning.value = false
+  }
+}
+
+const getData = () => {
+  axios
+    .get(cochesnetUrl)
+    .then((response) => {
+      cochesnetBody.value = response.data.body_type
+      cochesnetBodyOptions.value = response.data.body_type_list
+      cochesnetBrand.value = response.data.brand
+      cochesnetCategory.value = response.data.category
+      cochesnetDescription.value = response.data.description
+      cochesnetDoors.value = response.data.doors
+      cochesnetEnv.value = response.data.env_label
+      cochesnetFuel.value = response.data.fuel
+      cochesnetImages.value = response.data.images
+      cochesnetModel.value = response.data.model_id
+      cochesnetType.value = response.data.offer_type
+      cochesnetTrans.value = response.data.transmission
+      cochesnetVersionOptions.value = response.data.versions
+      cochesnetWarranty.value = response.data.warranty
+      cochesnetYear.value = response.data.years
+    })
+    .then(() => {
+      axios
+        .post(cochesnetIntegrationUrl + 'models/', {
+          brand: cochesnetBrand.value,
+          category: cochesnetCategory.value,
+          years: cochesnetYear.value,
+          fuel: cochesnetFuel.value
+        })
+        .then((response) => {
+          cochesnetModelsOptions.value = response.data
+        })
+    })
+}
 const getBrands = () => {
   axios
     .get(cochesnetIntegrationUrl + 'brands/' + '?category=' + cochesnetCategory.value)
@@ -193,6 +238,11 @@ const publish = () => {
     })
     .then(() => {
       loading.value = false
+      modalTitle.value = 'Vehículo publicado'
+      modalMessage.value = 'Vehículo se ha publicado correctamente en Coches.net'
+      emits('published')
+      props.toggle()
+      info.value.modal.showModal()
     })
     .catch(() => {
       modalTitle.value = 'Error'
@@ -207,6 +257,7 @@ onMounted(() => {
     .get(cochesnetUrl)
     .then((response) => {
       cochesnetBody.value = response.data.body_type
+      cochesnetBodyOptions.value = response.data.body_type_list
       cochesnetBrand.value = response.data.brand
       cochesnetCategory.value = response.data.category
       cochesnetDescription.value = response.data.description
@@ -266,7 +317,11 @@ onMounted(() => {
         :skeletons="20"
         :mobile="isMobile"
       />
-      <AreaInput label="Descripción:" v-model="cochesnetDescription" />
+      <a @click="getData" class="link">Actualizar descripción</a>
+      <span v-if="limitWarning" class="block text-error"
+        >Limite de caracteres alcanzado la descripción de tener menos de 3.000</span
+      >
+      <AreaInput label="Descripción:" v-model="cochesnetDescription" @input="limitText" />
       <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
       <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
         <SelectInput
@@ -308,6 +363,8 @@ onMounted(() => {
           label="Carrocería"
           :options="cochesnetBodyOptions"
           v-model="cochesnetBody"
+          optionLabel="value"
+          optionValue="key"
           :initialValue="null"
           @selected="getVersions"
         />
@@ -356,7 +413,7 @@ onMounted(() => {
       secondary="Cancelar"
       primary="Guardar"
       :loading="loading"
-      :disabled="color || fabrication || offer_type"
+      :disabled="color || fabrication || !cochesnetType || limitWarning"
       @click-secondary="toggle"
       @click-primary="publish"
     />

@@ -524,6 +524,17 @@ const updateData = () => {
   })
 }
 
+const deleteVehicle = () => {
+  axios
+    .delete(url)
+    .then(() => {
+      router.go(-1)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
 const fetch = () => {
   isFetchingEquip.value = true
   isFetchingDocs.value = true
@@ -543,7 +554,7 @@ const fetch = () => {
       license1.value = vehicle.value?.date_first_registration
       kms.value = vehicle.value?.kms
       fuel.value = vehicle.value.fuel?.id
-      gearBox.value = vehicle.value?.gear_box.id
+      gearBox.value = vehicle.value.gear_box?.id
       power.value = vehicle.value?.power
       doors.value = vehicle.value?.doors
       distinctive.value = vehicle.value?.maintenance.distinctive
@@ -1843,7 +1854,7 @@ const cochesnetRemove = () => {
       fetch()
       modalTitle.value = 'Vehiculo removido de Coches.net'
       message.value = 'El vehiculo ha sido removido de Coches.net correctamente'
-      infoModal.value.modal.showModal() 
+      infoModal.value.modal.showModal()
       cochesnetLoading.value = false
     })
     .catch((e) => {
@@ -2124,6 +2135,7 @@ onMounted(async () => {
             class="hidden lg:flex"
             @status="updateStatus"
             @reserve="reserveDrawer"
+            @delete="deleteVehicle"
           />
           <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
         </header>
@@ -3675,19 +3687,19 @@ onMounted(async () => {
         v-if="drawerSection === 'cochesnet'"
         class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
-        <CochesnetDrawer :id="id" :cochesnetBodyOptions="bodyTypeOptions" :toggle="toggleDrawer" />
+        <CochesnetDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'wallapop'"
         class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
-        <WallapopDrawer :id="id" :toggle="toggleDrawer" />
+        <WallapopDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'sumauto'"
         class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
       >
-        <SumautoDrawer :id="id" :toggle="toggleDrawer" />
+        <SumautoDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'pt'"

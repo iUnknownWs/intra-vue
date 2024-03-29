@@ -5,6 +5,9 @@ const props = defineProps({
   id: { type: String, required: true },
   toggle: { type: Function, required: true }
 })
+
+const emits = defineEmits(['published'])
+
 const wallapopUrl = `${import.meta.env.VITE_VEHICLES}/${props.id}/get_wallapop_info/`
 const wallapopIntegrationUrl = `${import.meta.env.VITE_INTEGRATIONS}/wallapop/`
 const wallapopDescription = ref(null)
@@ -17,6 +20,24 @@ const info = ref(null)
 const modalMessage = ref('')
 const modalTitle = ref('')
 const loading = ref(false)
+const charLimit = 3000
+const limitWarning = ref(false)
+
+const limitText = () => {
+  if (wallapopDescription.value.length > charLimit) {
+    limitWarning.value = true
+  } else {
+    limitWarning.value = false
+  }
+}
+
+const getData = () => {
+  axios.get(wallapopUrl).then((response) => {
+    wallapopDescription.value = response.data.description
+    wallapopBody.value = response.data.body_type
+    wallapopWarranty.value = response.data.warranty
+  })
+}
 
 const publish = () => {
   loading.value = true
@@ -31,6 +52,7 @@ const publish = () => {
       loading.value = false
       modalTitle.value = 'Vehículo publicado'
       modalMessage.value = 'Vehículo se ha publicado correctamente en Wallapop'
+      emits('published')
       props.toggle()
       info.value.modal.showModal()
     })
@@ -69,7 +91,11 @@ onMounted(() => {
         :skeletons="20"
         :mobile="isMobile"
       />
-      <AreaInput label="Descripción:" v-model="wallapopDescription" />
+      <a @click="getData" class="link">Actualizar descripción</a>
+      <span v-if="limitWarning" class="block text-error"
+        >Limite de caracteres alcanzado la descripción de tener menos de 3.000</span
+      >
+      <AreaInput label="Descripción:" v-model="wallapopDescription" @input="limitText" />
       <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
       <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
         <SelectInput
