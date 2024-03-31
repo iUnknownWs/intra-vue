@@ -869,7 +869,6 @@ onMounted(() => {
           />
           <div ref="vehicleNext2" class="mx-auto w-full">
             <LoadingSpinner v-if="loadingNext" class="loading-lg" />
-            <span v-else>Final de la pagina</span>
           </div>
         </div>
       </div>
