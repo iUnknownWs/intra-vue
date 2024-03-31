@@ -71,7 +71,6 @@ const navBtn5 = ref(null)
 const navs = [navBtn1, navBtn2, navBtn3, navBtn4, navBtn5]
 const tab1 = ref(null)
 const tab2 = ref(null)
-const tab3 = ref(null)
 const tab4 = ref(null)
 const tab5 = ref(null)
 const tab6 = ref(null)
@@ -79,7 +78,7 @@ const tab7 = ref(null)
 const tab8 = ref(null)
 const tab9 = ref(null)
 const tab10 = ref(null)
-const tabs = [tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8]
+const tabs = [tab1, tab2, tab4, tab5, tab6, tab7, tab8]
 const tabs2 = [tab9, tab10]
 const scrollDown = ref(false)
 const scrollTop = ref(true)
@@ -320,6 +319,7 @@ const wallapopStats = ref({})
 const cochesnetLoading = ref(false)
 const wallapopLoading = ref(false)
 const sumautoLoading = ref(false)
+const confirmDelete = ref(null)
 const params = [
   {
     key: 'vehicle',
@@ -510,18 +510,30 @@ const updateData = () => {
   if (vehicle.value.purchase?.vehicle && vehicle.value.price?.vehicle) {
     delete payload.purchase.vehicle
     delete payload.price.vehicle
-  } else if (!vehicle.value.purchase?.vehicle && !vehicle.value.price?.vehicle) {
-    axios.patch(url, {}).then(() => {
-      fetch()
-    })
   } else if (vehicle.value.price?.vehicle) {
     delete payload.price.vehicle
   } else {
     delete payload.purchase.vehicle
   }
-  axios.patch(url, payload).then(() => {
-    fetch()
-  })
+  axios
+    .patch(url, payload)
+    .then(() => {
+      fetch()
+      modalTitle.value = 'Vehículo editado'
+      message.value = 'Vehículo editado correctamente'
+      infoModal.value.modal.showModal()
+    })
+    .catch((e) => {
+      message.value = e.request.response
+      modalTitle.value = 'Error'
+      infoModal.value.modal.showModal()
+    })
+}
+
+const deleteConfirm = () => {
+  modalTitle.value = 'Eliminar Vehículo'
+  message.value = '¿Seguro que quieres eliminar el vehículo?'
+  confirmDelete.value.modal.showModal()
 }
 
 const deleteVehicle = () => {
@@ -583,7 +595,7 @@ const fetch = () => {
       buyerReserve.value = vehicle.value.purchase?.buyer || null
       regimen.value = vehicle.value.purchase?.tax_regime
       purchaseDate.value = vehicle.value.purchase?.purchase_date
-      purchasePrice.value = vehicle.value.purchase?.total_price
+      purchasePrice.value = vehicle.value.purchase?.price
       docusignContracts.value = vehicle.value.purchase?.docusign_contracts || null
       isFetchingDocs.value = false
       price.value = vehicle.value.price?.price_with_discounts
@@ -828,15 +840,6 @@ const tabEvent2 = () => {
   technical.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
-const tabEvent3 = () => {
-  tab.value = 3
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
-  }
-  tab3.value.classList.add('tab-active')
-  portals.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
-}
-
 const tabEvent4 = () => {
   tab.value = 4
   for (let tab of tabs) {
@@ -909,12 +912,11 @@ const navEvent1 = () => {
 }
 
 const navEvent2 = () => {
-  tab.value = 3
+  tab.value = 13
   for (let nav of navs) {
     nav.value.classList.remove('active')
   }
   navBtn2.value.classList.add('active')
-  portals.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const navEvent3 = () => {
@@ -2050,7 +2052,7 @@ onMounted(async () => {
         ref="confirm"
         :title="modalTitle"
         :message="message"
-        @confirm="voidContract()"
+        @confirm="voidContract"
       />
       <ModalConfirm
         class="w-full"
@@ -2058,6 +2060,13 @@ onMounted(async () => {
         :title="modalTitle"
         :message="message"
         @confirm="ptStatus(3)"
+      />
+      <ModalConfirm
+        class="w-full"
+        ref="confirmDelete"
+        :title="modalTitle"
+        :message="message"
+        @confirm="deleteVehicle"
       />
       <dialog ref="edit" id="edit" class="modal">
         <div class="modal-box flex flex-col">
@@ -2135,9 +2144,14 @@ onMounted(async () => {
             class="hidden lg:flex"
             @status="updateStatus"
             @reserve="reserveDrawer"
-            @delete="deleteVehicle"
+            @delete="deleteConfirm"
           />
-          <VehicleMobile v-if="!loading" :vehicle="vehicle" class="my-3 lg:hidden" />
+          <VehicleMobile
+            v-if="!loading"
+            :vehicle="vehicle"
+            class="my-3 lg:hidden"
+            @status="updateStatus"
+          />
         </header>
         <div
           v-if="tab > 0 && tab < 9"
@@ -2151,7 +2165,6 @@ onMounted(async () => {
           <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
           <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
           <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
-          <a ref="tab3" role="tab" class="tab" @click="tabEvent3">Portales web</a>
         </div>
         <div
           v-if="tab > 8 && tab < 11"
@@ -2180,7 +2193,6 @@ onMounted(async () => {
                   <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
                   <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
                   <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
-                  <li><a ref="portalsTab" @click="tabEvent3">Portales web</a></li>
                 </ul>
               </li>
               <li>
@@ -2191,183 +2203,549 @@ onMounted(async () => {
                 </ul>
               </li>
               <li><a class="font-bold" @click="tab = 11">PT</a></li>
+              <li><a class="font-bold" @click="tab = 13">Portales web</a></li>
             </ul>
           </aside>
-          <section class="flex w-full flex-1 flex-col">
-            <VehicleAlert v-if="commentAlert" :message="commInternal" @btn="commentAlert = false" />
-            <div v-if="tab > 0 && tab < 9" class="flex w-full flex-col gap-8">
-              <div
-                ref="basic"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Información Básica</h1>
-                  <DropdownBtn>
-                    <template #btn>
-                      <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
-                      <button class="btn btn-circle btn-ghost lg:hidden">
-                        <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
-                      </button>
-                    </template>
-                    <template #content>
-                      <ul>
-                        <li><a @click="recalculateDistinctive">Recalcular etiqueta</a></li>
-                        <li><a @click="unlinkKey">Liberar llave</a></li>
-                      </ul>
-                    </template>
-                  </DropdownBtn>
+          <template v-if="tab > 0 && tab < 13">
+            <section class="flex w-full flex-1 flex-col">
+              <VehicleAlert
+                v-if="commentAlert"
+                :message="commInternal"
+                @btn="commentAlert = false"
+              />
+              <div v-if="tab > 0 && tab < 9" class="flex w-full flex-col gap-8">
+                <div
+                  ref="basic"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Información Básica</h1>
+                    <DropdownBtn>
+                      <template #btn>
+                        <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
+                        <button class="btn btn-circle btn-ghost lg:hidden">
+                          <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
+                        </button>
+                      </template>
+                      <template #content>
+                        <ul>
+                          <li><a @click="recalculateDistinctive">Recalcular etiqueta</a></li>
+                          <li><a @click="unlinkKey">Liberar llave</a></li>
+                        </ul>
+                      </template>
+                    </DropdownBtn>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SelectInput
+                      label="Categoria web:"
+                      :options="options.categoria"
+                      v-model="category"
+                      :initialValue="null"
+                    />
+                    <SelectInput
+                      label="Carrocería:"
+                      :options="bodyTypeOptions"
+                      v-model="bodyType"
+                      :initialValue="null"
+                    />
+                    <SearchSelect
+                      label="Marca:"
+                      :options="brandOptions"
+                      v-model="brand"
+                      @selected="getModel"
+                    />
+                    <SearchSelect
+                      label="Marca web:"
+                      :options="webBrandOptions"
+                      v-model="webBrand"
+                    />
+                    <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
+                    <SearchSelect
+                      label="Modelo web:"
+                      :options="modelWebOptions"
+                      v-model="modelWeb"
+                    />
+                    <TextInput label="Bastidor:" v-model="chassis" />
+                    <TextInput label="Matricula:" v-model="plate" />
+                    <DateInput label="1º Matriculación:" v-model="license1" />
+                    <TextInput label="Km Actuales:" v-model="kms" />
+                    <SelectInput
+                      label="Combustible:"
+                      :options="options.combustible"
+                      v-model="fuel"
+                      :initialValue="null"
+                    />
+                    <SelectInput
+                      label="Cambio:"
+                      :options="options.cambio"
+                      v-model="gearBox"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Potencia (cv):" v-model="power" />
+                    <TextInput label="Tamaño (cc):" />
+                    <TextInput label="Puertas:" v-model="doors" />
+                    <SelectInput
+                      label="Distintivo:"
+                      :options="options.medioambiental"
+                      v-model="distinctive"
+                      :initialValue="null"
+                    />
+                    <DateInput label="Fabricación:" v-model="fabrication" />
+                    <TextInput label="Matricula Origen:" v-model="licenseOG" />
+                    <TextInput
+                      v-if="vehicle.key_locator"
+                      label="Llave asignada:"
+                      v-model="key"
+                      :disabled="true"
+                    />
+                    <SelectInput
+                      v-else
+                      label="Llave asignada:"
+                      :options="keysOptions"
+                      v-model="key"
+                      @selected="linkKey"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Nº llaves:" v-model="keysQ" />
+                  </div>
                 </div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <SelectInput
-                    label="Categoria web:"
-                    :options="options.categoria"
-                    v-model="category"
-                    :initialValue="null"
-                  />
-                  <SelectInput
-                    label="Carrocería:"
-                    :options="bodyTypeOptions"
-                    v-model="bodyType"
-                    :initialValue="null"
-                  />
-                  <SearchSelect
-                    label="Marca:"
-                    :options="brandOptions"
-                    v-model="brand"
-                    @selected="getModel"
-                  />
-                  <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
-                  <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
-                  <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
-                  <TextInput label="Bastidor:" v-model="chassis" />
-                  <TextInput label="Matricula:" v-model="plate" />
-                  <DateInput label="1º Matriculación:" v-model="license1" />
-                  <TextInput label="Km Actuales:" v-model="kms" />
-                  <SelectInput
-                    label="Combustible:"
-                    :options="options.combustible"
-                    v-model="fuel"
-                    :initialValue="null"
-                  />
-                  <SelectInput
-                    label="Cambio:"
-                    :options="options.cambio"
-                    v-model="gearBox"
-                    :initialValue="null"
-                  />
-                  <TextInput label="Potencia (cv):" v-model="power" />
-                  <TextInput label="Tamaño (cc):" />
-                  <TextInput label="Puertas:" v-model="doors" />
-                  <SelectInput
-                    label="Distintivo:"
-                    :options="options.medioambiental"
-                    v-model="distinctive"
-                    :initialValue="null"
-                  />
-                  <DateInput label="Fabricación:" v-model="fabrication" />
-                  <TextInput label="Matricula Origen:" v-model="licenseOG" />
-                  <TextInput
-                    v-if="vehicle.key_locator"
-                    label="Llave asignada:"
-                    v-model="key"
-                    :disabled="true"
-                  />
-                  <SelectInput
-                    v-else
-                    label="Llave asignada:"
-                    :options="keysOptions"
-                    v-model="key"
-                    @selected="linkKey"
-                    :initialValue="null"
-                  />
-                  <TextInput label="Nº llaves:" v-model="keysQ" />
-                </div>
-              </div>
-              <div
-                ref="technical"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Información Técnica</h1>
-                </div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <SelectInput
-                    label="Tracción:"
-                    :options="driveOptions"
-                    v-model="drives"
-                    :initialValue="null"
-                  />
-                  <TextInput label="Marchas:" v-model="gears" />
-                  <TextInput label="Velocidad Máxima:" v-model="speed" />
-                  <TextInput label="Aceleración 0/100:" v-model="acceleration" />
-                </div>
-                <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
-                <div class="divider m-0 p-0"></div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Consumo ambiente:" v-model="environment" />
-                  <TextInput label="Consumo en carretera:" v-model="road" />
-                  <TextInput label="En ciudad:" v-model="city" />
-                  <TextInput label="Emisiones CO2:" v-model="co2" />
-                </div>
-                <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
-                <div class="divider m-0 p-0"></div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Longitud:" v-model="length" />
-                  <TextInput label="Altura:" v-model="height" />
-                  <TextInput label="Tara:" v-model="tare" />
-                </div>
-              </div>
-              <div
-                ref="maintenance"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <h1 class="text-xl font-medium">Mantenimiento</h1>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Propietarios:" v-model="owners" />
-                  <DateInput label="Vencimiento ITV:" v-model="itvExp" />
-                </div>
-                <h2>Libro de revisiones</h2>
-                <div class="divider m-0 p-0"></div>
-              </div>
-              <div
-                ref="prices"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Información de compra</h1>
-                  <label
-                    v-if="addContract"
-                    for="vehicle-drawer"
-                    class="btn btn-outline btn-sm mb-2"
-                    @click="docusignDrawer()"
-                    >Generar contrato</label
-                  >
-                </div>
-                <CheckInput
-                  label="Gestión de venta:"
-                  v-model="sellManage"
-                  class="flex items-start"
-                />
-                <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <SearchSelect label="Proveedor:" :options="providersOptions" v-model="provider" />
-                  <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
-                  <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-                  <TextInput label="Precio de compra:" v-model="purchasePrice" />
-                  <SelectInput
-                    label="Régimen:"
-                    :options="regimenOptions"
-                    v-model="regimen"
-                    :initialValue="null"
-                  />
-                </div>
-                <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Nombre Completo:" v-model="sellerName" />
-                  <TextInput label="Importe de comisión:" v-model="commission" />
-                  <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-                </div>
-                <div v-if="docusignContracts?.length > 0" class="my-8">
-                  <h2 class="text-xl font-medium">Documentos de compra</h2>
+                <div
+                  ref="technical"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Información Técnica</h1>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SelectInput
+                      label="Tracción:"
+                      :options="driveOptions"
+                      v-model="drives"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Marchas:" v-model="gears" />
+                    <TextInput label="Velocidad Máxima:" v-model="speed" />
+                    <TextInput label="Aceleración 0/100:" v-model="acceleration" />
+                  </div>
+                  <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
                   <div class="divider m-0 p-0"></div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Consumo ambiente:" v-model="environment" />
+                    <TextInput label="Consumo en carretera:" v-model="road" />
+                    <TextInput label="En ciudad:" v-model="city" />
+                    <TextInput label="Emisiones CO2:" v-model="co2" />
+                  </div>
+                  <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
+                  <div class="divider m-0 p-0"></div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Longitud:" v-model="length" />
+                    <TextInput label="Altura:" v-model="height" />
+                    <TextInput label="Tara:" v-model="tare" />
+                  </div>
+                </div>
+                <div
+                  ref="maintenance"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <h1 class="text-xl font-medium">Mantenimiento</h1>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Propietarios:" v-model="owners" />
+                    <DateInput label="Vencimiento ITV:" v-model="itvExp" />
+                  </div>
+                  <h2>Libro de revisiones</h2>
+                  <div class="divider m-0 p-0"></div>
+                </div>
+                <div
+                  ref="prices"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Información de compra</h1>
+                    <label
+                      v-if="addContract"
+                      for="vehicle-drawer"
+                      class="btn btn-outline btn-sm mb-2"
+                      @click="docusignDrawer()"
+                      >Generar contrato</label
+                    >
+                  </div>
+                  <CheckInput
+                    label="Gestión de venta:"
+                    v-model="sellManage"
+                    class="flex items-start"
+                  />
+                  <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SearchSelect
+                      label="Proveedor:"
+                      :options="providersOptions"
+                      v-model="provider"
+                    />
+                    <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
+                    <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                    <TextInput label="Precio de compra:" v-model="purchasePrice" />
+                    <SelectInput
+                      label="Régimen:"
+                      :options="regimenOptions"
+                      v-model="regimen"
+                      :initialValue="null"
+                    />
+                  </div>
+                  <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Nombre Completo:" v-model="sellerName" />
+                    <TextInput label="Importe de comisión:" v-model="commission" />
+                    <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                  </div>
+                  <div v-if="docusignContracts?.length > 0" class="my-8">
+                    <h2 class="text-xl font-medium">Documentos de compra</h2>
+                    <div class="divider m-0 p-0"></div>
+                    <VehicleTable>
+                      <template #content>
+                        <EasyDataTable
+                          class="table-dark table-striped"
+                          table-class-name="z-0"
+                          header-class-name="z-0"
+                          hide-footer
+                          border-cell
+                          :headers="headersDocusign"
+                          :items="docusignContracts"
+                          v-model:server-options="serverOptions"
+                          :server-items-length="serverItemsLength"
+                          :loading="isFetchingDocs"
+                        >
+                          <template v-slot:item-files="{ files }">
+                            <div class="flex gap-2">
+                              <a
+                                v-for="(file, index) in files"
+                                :key="index"
+                                :href="file.file"
+                                target="_blank"
+                                class="btn btn-square btn-xs"
+                              >
+                                <Icon icon="mdi:download" />
+                              </a>
+                            </div>
+                          </template>
+                          <template v-slot:item-status="{ status }">
+                            <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                              {{ status.toUpperCase() }}
+                            </span>
+                          </template>
+                          <template v-slot:item-id="{ id }">
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="contractConfirm(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </template>
+                        </EasyDataTable>
+                      </template>
+                      <template #drawer> </template>
+                    </VehicleTable>
+                  </div>
+                  <div class="mt-4 flex flex-col">
+                    <div class="flex flex-row justify-between">
+                      <h1 class="text-xl font-medium">Configuración de precio</h1>
+                      <label
+                        for="vehicle-drawer"
+                        class="btn btn-outline btn-sm"
+                        @click="drawerFinance"
+                        >Conf. Financiera
+                      </label>
+                    </div>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Precio de venta:" v-model="price" />
+                    <TextInput label="Precio financiado:" v-model="financed" />
+                    <TextInput label="Meses de financiación:" v-model="financingMonths" />
+                    <TextInput label="Cuota financiación:" v-model="financingQ" />
+                    <TextInput label="Reserva:" v-model="reserve" />
+                    <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
+                  </div>
+                </div>
+                <div
+                  ref="comments"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div>
+                    <h2 class="text-xl font-medium">Comentarios Internos</h2>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
+                  <AreaInput v-model="commInternal" />
+                  <div class="mt-8">
+                    <h2 class="text-xl font-medium">Comentarios Externos</h2>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
+                  <AreaInput v-model="commExternal" />
+                </div>
+                <div
+                  ref="extras"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
+                    <template #content>
+                      <EasyDataTable
+                        class="table-dark table-striped"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        :headers="headersExtra"
+                        :items="itemsExtra"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingExtras"
+                      >
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeExtra(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                  </VehicleTable>
+                </div>
+                <div
+                  ref="discounts"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
+                    <template #content>
+                      <EasyDataTable
+                        class="z-0"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        buttons-pagination
+                        :headers="headersDiscounts"
+                        :items="itemsDiscount"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingDiscounts"
+                      >
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeDiscount(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                  </VehicleTable>
+                </div>
+              </div>
+              <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
+                <div
+                  ref="serialEquip"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable
+                    title="Equipamiento de serie"
+                    @addBtn="drawerSection = 'SERIAL'"
+                    add
+                  >
+                    <template #content>
+                      <EasyDataTable
+                        class="table-dark table-striped"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        :headers="headersEquip"
+                        :items="serialEquipItems"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingEquip"
+                      >
+                        <template v-slot:item-web="{ id, show_in_web }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="show_in_web"
+                            @click="webEquip(id, show_in_web, 0)"
+                          />
+                        </template>
+                        <template v-slot:item-featured="{ id, is_featured }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="is_featured"
+                            @click="webEquip(id, is_featured, 1)"
+                          />
+                        </template>
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeEquip(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                    <template #drawer> </template>
+                  </VehicleTable>
+                </div>
+                <div
+                  ref="optionalEquip"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable
+                    title="Opcional sin coste"
+                    @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
+                    add
+                  >
+                    <template #content>
+                      <EasyDataTable
+                        class="table-dark table-striped"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        :headers="headersEquip"
+                        :items="freeEquipItems"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingEquip"
+                      >
+                        <template v-slot:item-web="{ id, show_in_web }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="show_in_web"
+                            @click="webEquip(id, show_in_web, 0)"
+                          />
+                        </template>
+                        <template v-slot:item-featured="{ id, is_featured }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="is_featured"
+                            @click="webEquip(id, is_featured, 1)"
+                          />
+                        </template>
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeEquip(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                    <template #drawer> </template>
+                  </VehicleTable>
+                </div>
+                <div
+                  ref="paidEquip"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable
+                    title="Opcional con coste"
+                    @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
+                    add
+                  >
+                    <template #content>
+                      <EasyDataTable
+                        class="table-dark table-striped"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        :headers="headersEquip"
+                        :items="paidEquipItems"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingEquip"
+                      >
+                        <template v-slot:item-web="{ id, show_in_web }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="show_in_web"
+                            @click="webEquip(id, show_in_web, 0)"
+                          />
+                        </template>
+                        <template v-slot:item-featured="{ id, is_featured }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="is_featured"
+                            @click="webEquip(id, is_featured, 1)"
+                          />
+                        </template>
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeEquip(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                  </VehicleTable>
+                </div>
+              </div>
+              <div
+                v-if="tab === 11"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
+                <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
+                  <h2 class="text-xl font-medium">Performance Test</h2>
+                  <h3 class="text-base font-medium">
+                    No se ha realizado ningún performance test a este vehículo hasta el momento
+                  </h3>
+                  <span class="text-base">¿Desea realizar un Performance Test?</span>
+                  <button class="btn btn-primary w-fit text-white" @click="ptDrawer(1)">
+                    Performance Test
+                    <Icon icon="mdi:arrow-right" />
+                  </button>
+                </div>
+                <div v-else>
+                  <div class="flex flex-col">
+                    <div class="flex flex-row items-center justify-between">
+                      <h2 class="text-xl font-medium">Performance Test</h2>
+                      <button class="btn btn-outline btn-sm mb-2 self-end" @click="ptDrawer(1)">
+                        <Icon icon="mdi:plus" width="25" />
+                        <span class="hidden lg:inline"> Nuevo </span>
+                      </button>
+                    </div>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
                   <VehicleTable>
                     <template #content>
                       <EasyDataTable
@@ -2376,439 +2754,270 @@ onMounted(async () => {
                         header-class-name="z-0"
                         hide-footer
                         border-cell
-                        :headers="headersDocusign"
-                        :items="docusignContracts"
+                        :headers="headersPT"
+                        :items="performanceTests"
                         v-model:server-options="serverOptions"
                         :server-items-length="serverItemsLength"
-                        :loading="isFetchingDocs"
+                        :loading="isFetchingEquip"
                       >
-                        <template v-slot:item-files="{ files }">
-                          <div class="flex gap-2">
-                            <a
-                              v-for="(file, index) in files"
-                              :key="index"
-                              :href="file.file"
-                              target="_blank"
-                              class="btn btn-square btn-xs"
-                            >
-                              <Icon icon="mdi:download" />
-                            </a>
-                          </div>
-                        </template>
                         <template v-slot:item-status="{ status }">
-                          <span class="badge badge-primary rounded-md px-3 py-1 text-white">
-                            {{ status.toUpperCase() }}
+                          <span
+                            v-if="status === 0"
+                            class="badge badge-warning rounded-md px-3 py-1 text-xs text-white"
+                          >
+                            Pendiente
+                          </span>
+                          <span
+                            v-if="status === 1"
+                            class="badge badge-success rounded-md px-3 py-1 text-xs text-white"
+                          >
+                            Completado
+                          </span>
+                          <span
+                            v-if="status === 2"
+                            class="badge badge-info rounded-md px-3 py-1 text-xs text-white"
+                          >
+                            Validado
+                          </span>
+                          <span
+                            v-if="status === 3"
+                            class="badge badge-warning rounded-md px-3 py-1 text-xs text-white"
+                          >
+                            Editando
                           </span>
                         </template>
-                        <template v-slot:item-id="{ id }">
-                          <button
-                            class="btn btn-square btn-error btn-xs"
-                            @click="contractConfirm(id)"
-                          >
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
+                        <template v-slot:item-created_at="{ created_at }">
+                          {{ new Date(created_at).toLocaleString('en-GB') }}
+                        </template>
+                        <template v-slot:item-updated_at="{ updated_at }">
+                          {{ new Date(updated_at).toLocaleString('en-GB') }}
+                        </template>
+                        <template v-slot:item-id="{ id, status }">
+                          <div v-if="status === 0" class="w-14">
+                            <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                          </div>
+                          <div v-if="status === 1" class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="ptConfirm(id)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button class="btn btn-square btn-xs" @click="ptDrawer(3, id)">
+                              <Icon icon="mdi:eye" />
+                            </button>
+                          </div>
+                          <div v-if="status === 2" class="w-14">
+                            <button class="btn btn-square btn-xs" @click="ptDrawer(4, id)">
+                              <Icon icon="mdi:eye" />
+                            </button>
+                          </div>
+                          <div v-if="status === 3" class="w-14">
+                            <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                          </div>
                         </template>
                       </EasyDataTable>
                     </template>
                     <template #drawer> </template>
                   </VehicleTable>
                 </div>
-                <div class="mt-4 flex flex-col">
-                  <div class="flex flex-row justify-between">
-                    <h1 class="text-xl font-medium">Configuración de precio</h1>
-                    <label
-                      for="vehicle-drawer"
-                      class="btn btn-outline btn-sm"
-                      @click="drawerFinance"
-                      >Conf. Financiera
-                    </label>
+              </div>
+              <div
+                v-if="tab === 12"
+                ref="gallery"
+                class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden"
+              >
+                <h2 class="text-xl font-medium">Galería Multimedia</h2>
+                <!-- <div role="tablist" class="tabs tabs-bordered tabs-md overflow-x-hidden"> -->
+                <input
+                  type="radio"
+                  name="galeria"
+                  role="tab"
+                  class="tab"
+                  aria-label="Fotos"
+                  checked
+                />
+                <div role="tabpanel" class="tab-content px-3 pt-0">
+                  <div class="flex flex-col items-center">
+                    <DraggableGallery
+                      :url="galleryUrl"
+                      dataKey="results"
+                      :params="{ key: 'gallery_type', value: 'main' }"
+                      :updateUrl="updateGalleryUrl"
+                      :deleteUrl="galleryDeleteUrl"
+                      :updateFunction="fetch"
+                      class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                      mobile
+                    />
                   </div>
-                  <div class="divider m-0 p-0"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Precio de venta:" v-model="price" />
-                  <TextInput label="Precio financiado:" v-model="financed" />
-                  <TextInput label="Meses de financiación:" v-model="financingMonths" />
-                  <TextInput label="Cuota financiación:" v-model="financingQ" />
-                  <TextInput label="Reserva:" v-model="reserve" />
-                  <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
+                <input
+                  type="radio"
+                  name="galeria"
+                  role="tab"
+                  class="tab"
+                  aria-label="Desperfectos"
+                />
+                <div role="tabpanel" class="tab-content px-3 pt-0">
+                  <div class="flex flex-col items-center">
+                    <DraggableGallery
+                      :url="galleryFaultyUrl"
+                      dataKey="results"
+                      :id="id"
+                      :params="{ key: 'gallery_type', value: 'faulty' }"
+                      :updateUrl="updateGalleryUrl"
+                      :deleteUrl="galleryDeleteUrl"
+                      :updateFunction="fetch"
+                      class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                      mobile
+                    />
+                  </div>
                 </div>
-              </div>
-              <div
-                ref="comments"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div>
-                  <h2 class="text-xl font-medium">Comentarios Internos</h2>
-                  <div class="divider m-0 p-0"></div>
-                </div>
-                <AreaInput v-model="commInternal" />
-                <div class="mt-8">
-                  <h2 class="text-xl font-medium">Comentarios Externos</h2>
-                  <div class="divider m-0 p-0"></div>
-                </div>
-                <AreaInput v-model="commExternal" />
-              </div>
-              <div
-                ref="extras"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersExtra"
-                      :items="itemsExtra"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingExtras"
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
+                <div role="tabpanel" class="tab-content px-3 pt-0">
+                  <div class="flex flex-col items-center">
+                    <DropMobile
+                      type="video"
+                      :url="galleryVideoUrl"
+                      :fetch="fetchingVideo"
+                      format=".mp4"
+                      :params="params"
+                    />
+                    <div
+                      v-if="skeletonGallery"
+                      class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                     >
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="discounts"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
-                  <template #content>
-                    <EasyDataTable
-                      class="z-0"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      buttons-pagination
-                      :headers="headersDiscounts"
-                      :items="itemsDiscount"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingDiscounts"
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                      <div class="skeleton h-28 w-28"></div>
+                    </div>
+                    <Sortable
+                      v-else
+                      :list="galleryVideo"
+                      item-key="id"
+                      :options="optionsDrag"
+                      class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                      @sort="updateImages"
                     >
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button
-                            class="btn btn-square btn-error btn-xs"
-                            @click="removeDiscount(id)"
+                      <template #item="{ element, index }">
+                        <div
+                          @mouseover="galleryHover = index"
+                          @mouseleave="galleryHover = null"
+                          class="relative aspect-square w-28 rounded bg-cover bg-center"
+                        >
+                          <video class="h-full w-full object-cover">
+                            <source :src="element.video" type="video/mp4" />
+                            Tu navegador no soporta el elemento de video.
+                          </video>
+                          <div
+                            class="absolute inset-0 flex items-center justify-center gap-3 rounded"
+                            :class="{
+                              hidden: galleryHover !== index,
+                              'bg-black/30': galleryHover === index
+                            }"
                           >
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
+                            <a :href="element.video" target="_blank" class="btn btn-square btn-sm">
+                              <Icon icon="mdi:eye" width="20" />
+                            </a>
+                            <button
+                              class="btn btn-square btn-error btn-sm"
+                              @click="deleteVideo(element.id)"
+                            >
+                              <Icon icon="mdi:delete" width="20" />
+                            </button>
+                          </div>
                         </div>
                       </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-            </div>
-            <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
-              <div
-                ref="serialEquip"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Equipamiento de serie" @addBtn="drawerSection = 'SERIAL'" add>
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersEquip"
-                      :items="serialEquipItems"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
-                    >
-                      <template v-slot:item-web="{ id, show_in_web }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="show_in_web"
-                          @click="webEquip(id, show_in_web, 0)"
-                        />
-                      </template>
-                      <template v-slot:item-featured="{ id, is_featured }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="is_featured"
-                          @click="webEquip(id, is_featured, 1)"
-                        />
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                  <template #drawer> </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="optionalEquip"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable
-                  title="Opcional sin coste"
-                  @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
-                  add
-                >
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersEquip"
-                      :items="freeEquipItems"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
-                    >
-                      <template v-slot:item-web="{ id, show_in_web }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="show_in_web"
-                          @click="webEquip(id, show_in_web, 0)"
-                        />
-                      </template>
-                      <template v-slot:item-featured="{ id, is_featured }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="is_featured"
-                          @click="webEquip(id, is_featured, 1)"
-                        />
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                  <template #drawer> </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="paidEquip"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable
-                  title="Opcional con coste"
-                  @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
-                  add
-                >
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersEquip"
-                      :items="paidEquipItems"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
-                    >
-                      <template v-slot:item-web="{ id, show_in_web }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="show_in_web"
-                          @click="webEquip(id, show_in_web, 0)"
-                        />
-                      </template>
-                      <template v-slot:item-featured="{ id, is_featured }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="is_featured"
-                          @click="webEquip(id, is_featured, 1)"
-                        />
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-            </div>
-            <div
-              v-if="tab === 11"
-              class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-            >
-              <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
-                <h2 class="text-xl font-medium">Performance Test</h2>
-                <h3 class="text-base font-medium">
-                  No se ha realizado ningún performance test a este vehículo hasta el momento
-                </h3>
-                <span class="text-base">¿Desea realizar un Performance Test?</span>
-                <button class="btn btn-primary w-fit text-white" @click="ptDrawer(1)">
-                  Performance Test
-                  <Icon icon="mdi:arrow-right" />
-                </button>
-              </div>
-              <div v-else>
-                <div class="flex flex-col">
-                  <div class="flex flex-row items-center justify-between">
-                    <h2 class="text-xl font-medium">Performance Test</h2>
-                    <button class="btn btn-outline btn-sm mb-2 self-end" @click="ptDrawer(1)">
-                      <Icon icon="mdi:plus" width="25" />
-                      <span class="hidden lg:inline"> Nuevo </span>
-                    </button>
+                    </Sortable>
                   </div>
-                  <div class="divider m-0 p-0"></div>
                 </div>
-                <VehicleTable>
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersPT"
-                      :items="performanceTests"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
+                <div role="tabpanel" class="tab-content px-3 pt-0">
+                  <div class="flex flex-col items-center">
+                    <DraggableGallery
+                      :url="gallery360Url"
+                      :id="id"
+                      dataKey="results"
+                      :updateUrl="updateGalleryUrl"
+                      :deleteUrl="galleryDelete360Url"
+                      mobile
+                      class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                    />
+                  </div>
+                </div>
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
+                <div role="tabpanel" class="tab-content pt-0">
+                  <div class="flex flex-col items-center">
+                    <DropMobile
+                      format=""
+                      type="file"
+                      file_name="file_name"
+                      :url="galleryDocsUrl"
+                      :fetch="fetchingDocs"
+                      :params="params"
+                    />
+                    <div
+                      v-for="(doc, index) in galleryDocs"
+                      :key="index"
+                      class="card card-side m-3 bg-base-100 shadow-xl"
                     >
-                      <template v-slot:item-status="{ status }">
-                        <span
-                          v-if="status === 0"
-                          class="badge badge-warning rounded-md px-3 py-1 text-xs text-white"
-                        >
-                          Pendiente
-                        </span>
-                        <span
-                          v-if="status === 1"
-                          class="badge badge-success rounded-md px-3 py-1 text-xs text-white"
-                        >
-                          Completado
-                        </span>
-                        <span
-                          v-if="status === 2"
-                          class="badge badge-info rounded-md px-3 py-1 text-xs text-white"
-                        >
-                          Validado
-                        </span>
-                        <span
-                          v-if="status === 3"
-                          class="badge badge-warning rounded-md px-3 py-1 text-xs text-white"
-                        >
-                          Editando
-                        </span>
-                      </template>
-                      <template v-slot:item-created_at="{ created_at }">
-                        {{ new Date(created_at).toLocaleString('en-GB') }}
-                      </template>
-                      <template v-slot:item-updated_at="{ updated_at }">
-                        {{ new Date(updated_at).toLocaleString('en-GB') }}
-                      </template>
-                      <template v-slot:item-id="{ id, status }">
-                        <div v-if="status === 0" class="w-14">
-                          <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
-                            <Icon icon="mdi:pencil" />
+                      <div class="card-body flex-row justify-between p-4">
+                        <div class="flex gap-2">
+                          <Icon icon="mdi:file-document" width="40" />
+                          <h2 class="card-title text-sm">{{ doc.file_name }}</h2>
+                        </div>
+                        <div class="self flex gap-2">
+                          <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
+                            <Icon icon="mdi:eye" width="20" />
+                          </a>
+                          <button
+                            class="btn btn-square btn-error btn-sm"
+                            @click="deleteDoc(doc.id)"
+                          >
+                            <Icon icon="mdi:delete" width="20" />
                           </button>
                         </div>
-                        <div v-if="status === 1" class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="ptConfirm(id)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-xs" @click="ptDrawer(3, id)">
-                            <Icon icon="mdi:eye" />
-                          </button>
-                        </div>
-                        <div v-if="status === 2" class="w-14">
-                          <button class="btn btn-square btn-xs" @click="ptDrawer(4, id)">
-                            <Icon icon="mdi:eye" />
-                          </button>
-                        </div>
-                        <div v-if="status === 3" class="w-14">
-                          <button class="btn btn-square btn-xs" @click="ptDrawer(2, id)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                  <template #drawer> </template>
-                </VehicleTable>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div
-              v-if="tab === 12"
-              ref="gallery"
-              class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden"
-            >
+            </section>
+            <aside class="hidden h-fit flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
               <h2 class="text-xl font-medium">Galería Multimedia</h2>
-              <!-- <div role="tablist" class="tabs tabs-bordered tabs-md overflow-x-hidden"> -->
-              <input
-                type="radio"
-                name="galeria"
-                role="tab"
-                class="tab"
-                aria-label="Fotos"
-                checked
-              />
-              <div role="tabpanel" class="tab-content px-3 pt-0">
-                <div class="flex flex-col items-center">
+              <div role="tablist" class="tabs tabs-bordered tabs-md">
+                <input
+                  type="radio"
+                  name="galeria"
+                  role="tab"
+                  class="tab"
+                  aria-label="Fotos"
+                  checked
+                />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
                   <DraggableGallery
                     :url="galleryUrl"
                     dataKey="results"
+                    :id="id"
                     :params="{ key: 'gallery_type', value: 'main' }"
                     :updateUrl="updateGalleryUrl"
                     :deleteUrl="galleryDeleteUrl"
                     :updateFunction="fetch"
                     class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                    mobile
                   />
                 </div>
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
-              <div role="tabpanel" class="tab-content px-3 pt-0">
-                <div class="flex flex-col items-center">
+                <input
+                  type="radio"
+                  name="galeria"
+                  role="tab"
+                  class="tab"
+                  aria-label="Desperfectos"
+                />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
                   <DraggableGallery
                     :url="galleryFaultyUrl"
                     dataKey="results"
@@ -2818,24 +3027,18 @@ onMounted(async () => {
                     :deleteUrl="galleryDeleteUrl"
                     :updateFunction="fetch"
                     class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                    mobile
                   />
                 </div>
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
-              <div role="tabpanel" class="tab-content px-3 pt-0">
-                <div class="flex flex-col items-center">
-                  <DropMobile
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
+                  <DragDrop
                     type="video"
                     :url="galleryVideoUrl"
                     :fetch="fetchingVideo"
                     format=".mp4"
                     :params="params"
                   />
-                  <div
-                    v-if="skeletonGallery"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                  >
+                  <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
                     <div class="skeleton h-28 w-28"></div>
@@ -2848,7 +3051,7 @@ onMounted(async () => {
                     :list="galleryVideo"
                     item-key="id"
                     :options="optionsDrag"
-                    class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
+                    class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
                     @sort="updateImages"
                   >
                     <template #item="{ element, index }">
@@ -2882,25 +3085,20 @@ onMounted(async () => {
                     </template>
                   </Sortable>
                 </div>
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
-              <div role="tabpanel" class="tab-content px-3 pt-0">
-                <div class="flex flex-col items-center">
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
                   <DraggableGallery
                     :url="gallery360Url"
-                    :id="id"
                     dataKey="results"
+                    :id="id"
                     :updateUrl="updateGalleryUrl"
                     :deleteUrl="galleryDelete360Url"
-                    mobile
                     class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
                   />
                 </div>
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
-              <div role="tabpanel" class="tab-content pt-0">
-                <div class="flex flex-col items-center">
-                  <DropMobile
+                <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
+                <div role="tabpanel" class="tab-content min-w-96 p-3">
+                  <DragDrop
                     format=""
                     type="file"
                     file_name="file_name"
@@ -2915,8 +3113,8 @@ onMounted(async () => {
                   >
                     <div class="card-body flex-row justify-between p-4">
                       <div class="flex gap-2">
-                        <Icon icon="mdi:file-document" width="40" />
-                        <h2 class="card-title text-sm">{{ doc.file_name }}</h2>
+                        <Icon icon="mdi:file-document" width="50" />
+                        <h2 class="card-title text-lg">{{ doc.file_name }}</h2>
                       </div>
                       <div class="self flex gap-2">
                         <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
@@ -2930,187 +3128,54 @@ onMounted(async () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-          <aside class="hidden h-fit flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
-            <h2 class="text-xl font-medium">Galería Multimedia</h2>
-            <div role="tablist" class="tabs tabs-bordered tabs-md">
-              <input
-                type="radio"
-                name="galeria"
-                role="tab"
-                class="tab"
-                aria-label="Fotos"
-                checked
+            </aside>
+          </template>
+          <div
+            v-else
+            ref="portals"
+            class="flex w-full scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+          >
+            <h1 class="text-xl font-medium">Portales Web</h1>
+            <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
+              <IntegrationCard
+                img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                @settingClick="cochesnetDrawer"
+                @primaryClick="cochesnetRemove"
+                :state="cochesnet"
+                :loading="cochesnetLoading"
               />
-              <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DraggableGallery
-                  :url="galleryUrl"
-                  dataKey="results"
-                  :id="id"
-                  :params="{ key: 'gallery_type', value: 'main' }"
-                  :updateUrl="updateGalleryUrl"
-                  :deleteUrl="galleryDeleteUrl"
-                  :updateFunction="fetch"
-                  class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                />
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Desperfectos" />
-              <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DraggableGallery
-                  :url="galleryFaultyUrl"
-                  dataKey="results"
-                  :id="id"
-                  :params="{ key: 'gallery_type', value: 'faulty' }"
-                  :updateUrl="updateGalleryUrl"
-                  :deleteUrl="galleryDeleteUrl"
-                  :updateFunction="fetch"
-                  class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                />
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
-              <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DragDrop
-                  type="video"
-                  :url="galleryVideoUrl"
-                  :fetch="fetchingVideo"
-                  format=".mp4"
-                  :params="params"
-                />
-                <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                  <div class="skeleton h-28 w-28"></div>
-                </div>
-                <Sortable
-                  v-else
-                  :list="galleryVideo"
-                  item-key="id"
-                  :options="optionsDrag"
-                  class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3"
-                  @sort="updateImages"
-                >
-                  <template #item="{ element, index }">
-                    <div
-                      @mouseover="galleryHover = index"
-                      @mouseleave="galleryHover = null"
-                      class="relative aspect-square w-28 rounded bg-cover bg-center"
-                    >
-                      <video autoplay muted loop class="h-full w-full object-cover">
-                        <source :src="element.video" type="video/mp4" />
-                        Tu navegador no soporta el elemento de video.
-                      </video>
-
-                      <div
-                        class="absolute inset-0 flex items-center justify-center gap-3 rounded"
-                        :class="{
-                          hidden: galleryHover !== index,
-                          'bg-black/30': galleryHover === index
-                        }"
-                      >
-                        <a :href="element.video" target="_blank" class="btn btn-square btn-sm">
-                          <Icon icon="mdi:eye" width="20" />
-                        </a>
-                        <button
-                          class="btn btn-square btn-error btn-sm"
-                          @click="deleteVideo(element.id)"
-                        >
-                          <Icon icon="mdi:delete" width="20" />
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </Sortable>
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
-              <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DraggableGallery
-                  :url="gallery360Url"
-                  dataKey="results"
-                  :id="id"
-                  :updateUrl="updateGalleryUrl"
-                  :deleteUrl="galleryDelete360Url"
-                  class="grid grid-cols-2 gap-2 lg:grid-cols-3 lg:gap-4"
-                />
-              </div>
-              <input type="radio" name="galeria" role="tab" class="tab" aria-label="Documentos" />
-              <div role="tabpanel" class="tab-content min-w-96 p-3">
-                <DragDrop
-                  format=""
-                  type="file"
-                  file_name="file_name"
-                  :url="galleryDocsUrl"
-                  :fetch="fetchingDocs"
-                  :params="params"
-                />
-                <div
-                  v-for="(doc, index) in galleryDocs"
-                  :key="index"
-                  class="card card-side m-3 bg-base-100 shadow-xl"
-                >
-                  <div class="card-body flex-row justify-between p-4">
-                    <div class="flex gap-2">
-                      <Icon icon="mdi:file-document" width="50" />
-                      <h2 class="card-title text-lg">{{ doc.file_name }}</h2>
-                    </div>
-                    <div class="self flex gap-2">
-                      <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
-                        <Icon icon="mdi:eye" width="20" />
-                      </a>
-                      <button class="btn btn-square btn-error btn-sm" @click="deleteDoc(doc.id)">
-                        <Icon icon="mdi:delete" width="20" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <IntegrationCard
+                img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+                @settingClick="wallapopDrawer"
+                @primaryClick="wallapopRemove"
+                :state="wallapop"
+                :published="wallapopStats?.published ?? 0"
+                :pending="wallapopStats?.pending ?? 0"
+                :loading="wallapopLoading"
+              />
+              <IntegrationCard
+                img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
+                @settingClick="sumautoDrawer"
+                @primaryClick="sumautoRemove"
+                :state="sumauto"
+                :published="sumautoStats?.published ?? 0"
+                :pending="sumautoStats?.pending ?? 0"
+                :loading="sumautoLoading"
+              />
             </div>
-          </aside>
-        </main>
-        <div
-          ref="portals"
-          class="relative flex scroll-m-28 flex-col gap-4 overflow-visible rounded bg-base-100 p-4 lg:scroll-m-20"
-        >
-          <h1 class="text-xl font-medium">Portales Web</h1>
-          <div class="mt-6 flex flex-col items-center justify-center gap-4 lg:flex-row">
-            <IntegrationCard
-              img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-              @settingClick="cochesnetDrawer"
-              @primaryClick="cochesnetRemove"
-              :state="cochesnet"
-              :loading="cochesnetLoading"
-            />
-            <IntegrationCard
-              img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-              @settingClick="wallapopDrawer"
-              @primaryClick="wallapopRemove"
-              :state="wallapop"
-              :published="wallapopStats?.published ?? 0"
-              :pending="wallapopStats?.pending ?? 0"
-              :loading="wallapopLoading"
-            />
-            <IntegrationCard
-              img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
-              @settingClick="sumautoDrawer"
-              @primaryClick="sumautoRemove"
-              :state="sumauto"
-              :published="sumautoStats?.published ?? 0"
-              :pending="sumautoStats?.pending ?? 0"
-              :loading="sumautoLoading"
-            />
           </div>
-        </div>
+        </main>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50">
-        <div @click="updateData" class="btm-nav z-10 hidden lg:flex">
-          <div class="flex max-w-md flex-row justify-end">
-            <button class="btn btn-primary max-w-24 text-white">Guardar</button>
+        <div class="btm-nav z-10 hidden lg:flex">
+          <div class="mr-4 flex flex-row justify-end">
+            <button class="btn btn-primary max-w-24 text-white" @click="updateData">
+              <LoadingSpinner v-if="loading" />
+              <span v-else class="font-semibold">Guardar</span>
+            </button>
           </div>
         </div>
-        <div v-if="scrollTop" class="btm-nav lg:hidden">
+        <div v-show="scrollTop" class="btm-nav lg:hidden">
           <button ref="navBtn1" @click="navEvent1" class="active">
             <Icon icon="mdi:car" width="30" />
             <span class="btm-nav-label">I. Admin</span>
@@ -3132,12 +3197,7 @@ onMounted(async () => {
             <span class="btm-nav-label">Galeria</span>
           </button>
         </div>
-        <div v-if="scrollDown" class="btm-nav lg:hidden">
-          <div>
-            <button class="btn w-36" ref="navBtn6" @click="1">
-              <span class="btm-nav-label">Cambiar Estado</span>
-            </button>
-          </div>
+        <div v-show="scrollDown" class="btm-nav lg:hidden">
           <div>
             <label
               for="vehicle-drawer"
@@ -3145,8 +3205,13 @@ onMounted(async () => {
               ref="navBtn6"
               @click="drawerSection = 'reserve'"
             >
-              <span class="btm-nav-label">Reservar</span>
+              <span class="btm-nav-label font-medium">Reservar</span>
             </label>
+          </div>
+          <div>
+            <button class="btn btn-primary w-36 text-white" ref="navBtn6" @click="updateData">
+              <span class="btm-nav-label font-medium">Guardar</span>
+            </button>
           </div>
         </div>
       </footer>

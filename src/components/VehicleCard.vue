@@ -119,11 +119,11 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             <div class="absolute right-2 top-2 flex gap-4">
               <label
                 for="vehicle-drawer"
-                class="btn btn-warning text-white"
+                class="btn btn-warning"
                 @click="$emit('reserve')"
                 >Reservar</label
               >
-              <button class="btn btn-error text-white" @click="$emit('delete')">Eliminar</button>
+              <button class="btn btn-ghost" @click="$emit('delete')">Eliminar</button>
             </div>
           </div>
           <span class="font-medium text-gray-500">{{ vehicle.version.title }}</span>
