@@ -265,6 +265,43 @@ const cochesnetCategory = [
     }
 ]
 
+const sources = [
+    {
+        id: 'web',
+        title: 'Web'
+    },
+    {
+        id: 'manual',
+        title: 'Intranet'
+    }
+]
+
+const warrantyBookings = [
+    {
+        id: '2',
+        title: 'Garantía Premium'
+    },
+    {
+        id: '12',
+        title: 'Garantía Standard'
+    },
+    {
+        id: '24',
+        title: 'Sin Garantía'
+    },
+]
+
+const delivery = [
+    {
+        id: '1',
+        title: 'Entrega a domicilio'
+    },
+    {
+        id: '2',
+        title: 'Entrega en tienda'
+    }
+]
+
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
 const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
@@ -283,7 +320,10 @@ const options = {
     paymentMethods,
     paymentType,
     financingMonths,
-    cochesnetCategory
+    cochesnetCategory,
+    sources,
+    warrantyBookings,
+    delivery
 }
 
 export default options

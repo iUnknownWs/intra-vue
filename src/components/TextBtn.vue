@@ -3,7 +3,7 @@ defineProps({
   placeholder: { type: String, default: 'Introducir' },
   disabled: { type: Boolean }
 })
-defineEmits(['btn-click'], ['change'])
+defineEmits(['btn-click', 'change'])
 const value = defineModel()
 </script>
 

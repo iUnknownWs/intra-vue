@@ -1,7 +1,7 @@
 import HomeViewVue from '@/views/HomeView.vue'
 import LoginViewVue from '@/views/LoginView.vue'
 import VehicleView from '@/views/VehicleView.vue'
-import ReserveView from '@/views/ReserveView.vue'
+import BookingsView from '@/views/BookingsView.vue'
 import ValuationView from '@/views/ValuationView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
 import UsersView from '@/views/UsersView.vue'
@@ -33,8 +33,13 @@ const router = createRouter({
     },
     {
       path: '/reservas',
-      name: 'reserve',
-      component: ReserveView
+      name: 'bookings',
+      component: BookingsView
+    },
+    {
+      path: '/reservas/:id',
+      name: 'reserve-detail',
+      component: VehicleView
     },
     {
       path: '/tasaciones',

@@ -13,6 +13,7 @@ const url = `${import.meta.env.VITE_VEHICLES}/?`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 let scrollNextUrl = ''
+const drawer = ref('')
 const vehiclesFilter = ref([])
 const params = ref('')
 const filterParams = {}
@@ -34,7 +35,6 @@ const itv = ref(false)
 const pitv = ref(false)
 const pVideo = ref(false)
 const searchValue = ref('')
-const drawer = ref('')
 const toggleDrawer = ref(false)
 const menu = ref(null)
 const info = ref(null)
