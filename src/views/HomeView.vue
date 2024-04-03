@@ -712,10 +712,10 @@ onMounted(() => {
               </button>
             </li>
           </div>
-          <div class="flex flex-col items-center justify-center">
+          <div class="flex flex-col items-start justify-center">
             <div
               role="tablist"
-              class="tabs tabs-bordered ml-20 mt-8 hidden justify-items-start bg-white font-medium lg:grid"
+              class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid"
             >
               <input
                 type="radio"
@@ -800,8 +800,8 @@ onMounted(() => {
                 @change="na"
               />
             </div>
-            <div class="flex min-h-[150vh] flex-col justify-between">
-              <LoadingSpinner v-if="loading" class="loading-lg" />
+            <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
+              <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
               <CardDesktop
                 v-else
                 v-for="(vehicle, index) in vehiclesFilter"

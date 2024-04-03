@@ -1,7 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
 import phonePrefix from '@/js/phone_prefixes.json'
 import PerformanceTest from '@/components/PerformanceTest.vue'
 import VehicleCard from '@/components/VehicleCard.vue'
@@ -161,7 +161,6 @@ const optionalEquip = ref(null)
 const paidEquip = ref(null)
 const basicTab = ref(null)
 const technicalTab = ref(null)
-const portalsTab = ref(null)
 const maintenanceTab = ref(null)
 const pricesTab = ref(null)
 const commentsTab = ref(null)
@@ -169,18 +168,6 @@ const extrasTab = ref(null)
 const discountsTab = ref(null)
 const serialEquipTab = ref(null)
 const optionalEquipTab = ref(null)
-const asideTabs = [
-  basicTab,
-  technicalTab,
-  portalsTab,
-  maintenanceTab,
-  pricesTab,
-  commentsTab,
-  extrasTab,
-  discountsTab,
-  serialEquipTab,
-  optionalEquipTab
-]
 const regimen = ref(null)
 const purchaseDate = ref(null)
 const purchasePrice = ref(0)
@@ -1909,10 +1896,58 @@ const sumautoRemove = () => {
     })
 }
 
+let observer
+
+if (tab.value >= 9 && tab.value < 11) {
+  observer.observe(serialEquip.value)
+  observer.observe(optionalEquip.value)
+}
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
   let prev = window.scrollY
+  const asideTabs = [
+    { element: basicTab.value, id: basic.value },
+    { element: pricesTab.value, id: prices.value },
+    { element: commentsTab.value, id: comments.value },
+    { element: maintenanceTab.value, id: maintenance.value },
+    { element: extrasTab.value, id: extras.value },
+    { element: discountsTab.value, id: discounts.value },
+    { element: serialEquipTab.value, id: serialEquip.value },
+    { element: optionalEquipTab.value, id: optionalEquip.value },
+    { element: technicalTab.value, id: technical.value }
+  ]
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          asideTabs.forEach((tab) => {
+            if (tab.id === entry.target) {
+              tab.element.classList.add('activeSection')
+            } else {
+              tab.element.classList.remove('activeSection')
+            }
+          })
+        }
+      })
+    },
+    { threshold: [0.8] }
+  )
+
+  if (tab.value > 0 && tab.value < 9) {
+    observer.observe(basic.value)
+    observer.observe(prices.value)
+    observer.observe(comments.value)
+    observer.observe(maintenance.value)
+    observer.observe(extras.value)
+    observer.observe(discounts.value)
+    observer.observe(technical.value)
+  } else {
+    observer.observe(serialEquip.value)
+    observer.observe(optionalEquip.value)
+  }
+
   window.addEventListener('scroll', () => {
     let current = window.scrollY
     if (prev > current) {
@@ -1923,122 +1958,11 @@ onMounted(async () => {
       scrollTop.value = false
     }
     prev = current
-    if (tab.value > 0 && tab.value < 9) {
-      if (discounts.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.add('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else if (extras.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.add('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else if (comments.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.add('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else if (prices.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.add('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else if (maintenance.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.add('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else if (portals.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.add('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else if (technical.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.add('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      } else {
-        asideTabs[0].value.classList.add('activeSection')
-        asideTabs[1].value.classList.remove('activeSection')
-        asideTabs[2].value.classList.remove('activeSection')
-        asideTabs[3].value.classList.remove('activeSection')
-        asideTabs[4].value.classList.remove('activeSection')
-        asideTabs[5].value.classList.remove('activeSection')
-        asideTabs[6].value.classList.remove('activeSection')
-        asideTabs[7].value.classList.remove('activeSection')
-        asideTabs[8].value.classList.remove('activeSection')
-        asideTabs[9].value.classList.remove('activeSection')
-      }
-    } else {
-      if (optionalEquip.value?.getBoundingClientRect().top < 200) {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.remove('activeSection')
-        asideTabs[9].value.classList?.add('activeSection')
-      } else {
-        asideTabs[0].value.classList?.remove('activeSection')
-        asideTabs[1].value.classList?.remove('activeSection')
-        asideTabs[2].value.classList?.remove('activeSection')
-        asideTabs[3].value.classList?.remove('activeSection')
-        asideTabs[4].value.classList?.remove('activeSection')
-        asideTabs[5].value.classList?.remove('activeSection')
-        asideTabs[6].value.classList?.remove('activeSection')
-        asideTabs[7].value.classList?.remove('activeSection')
-        asideTabs[8].value.classList?.add('activeSection')
-        asideTabs[9].value.classList?.remove('activeSection')
-      }
-    }
   })
+})
+
+onUnmounted(() => {
+  observer.disconnect()
 })
 </script>
 
@@ -2158,13 +2082,13 @@ onMounted(async () => {
           role="tablist"
           class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
-          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
-          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
-          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
+          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información básica</a>
           <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Compra y precio</a>
           <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
+          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
           <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
           <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
+          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Mas información</a>
         </div>
         <div
           v-if="tab > 8 && tab < 11"
@@ -2181,18 +2105,18 @@ onMounted(async () => {
                 <a class="font-bold" @click="tabEvent1">Admin</a>
                 <ul>
                   <li>
-                    <a id="basicTab" ref="basicTab" class="activeSection" @click="tabEvent1"
-                      >Información Básica</a
+                    <a ref="basicTab" class="activeSection" @click="tabEvent1"
+                      >Información básica</a
                     >
                   </li>
-                  <li>
-                    <a ref="technicalTab" @click="tabEvent2">Información Técnica</a>
-                  </li>
-                  <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
                   <li><a ref="pricesTab" @click="tabEvent5">Compra y precio</a></li>
                   <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
+                  <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
                   <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
                   <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
+                  <li>
+                    <a ref="technicalTab" @click="tabEvent2">Mas información</a>
+                  </li>
                 </ul>
               </li>
               <li>
@@ -2308,52 +2232,6 @@ onMounted(async () => {
                     />
                     <TextInput label="Nº llaves:" v-model="keysQ" />
                   </div>
-                </div>
-                <div
-                  ref="technical"
-                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-                >
-                  <div class="flex flex-row justify-between">
-                    <h1 class="text-xl font-medium">Información Técnica</h1>
-                  </div>
-                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                    <SelectInput
-                      label="Tracción:"
-                      :options="driveOptions"
-                      v-model="drives"
-                      :initialValue="null"
-                    />
-                    <TextInput label="Marchas:" v-model="gears" />
-                    <TextInput label="Velocidad Máxima:" v-model="speed" />
-                    <TextInput label="Aceleración 0/100:" v-model="acceleration" />
-                  </div>
-                  <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
-                  <div class="divider m-0 p-0"></div>
-                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                    <TextInput label="Consumo ambiente:" v-model="environment" />
-                    <TextInput label="Consumo en carretera:" v-model="road" />
-                    <TextInput label="En ciudad:" v-model="city" />
-                    <TextInput label="Emisiones CO2:" v-model="co2" />
-                  </div>
-                  <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
-                  <div class="divider m-0 p-0"></div>
-                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                    <TextInput label="Longitud:" v-model="length" />
-                    <TextInput label="Altura:" v-model="height" />
-                    <TextInput label="Tara:" v-model="tare" />
-                  </div>
-                </div>
-                <div
-                  ref="maintenance"
-                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-                >
-                  <h1 class="text-xl font-medium">Mantenimiento</h1>
-                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                    <TextInput label="Propietarios:" v-model="owners" />
-                    <DateInput label="Vencimiento ITV:" v-model="itvExp" />
-                  </div>
-                  <h2>Libro de revisiones</h2>
-                  <div class="divider m-0 p-0"></div>
                 </div>
                 <div
                   ref="prices"
@@ -2480,6 +2358,18 @@ onMounted(async () => {
                   <AreaInput v-model="commExternal" />
                 </div>
                 <div
+                  ref="maintenance"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <h1 class="text-xl font-medium">Mantenimiento</h1>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Propietarios:" v-model="owners" />
+                    <DateInput label="Vencimiento ITV:" v-model="itvExp" />
+                  </div>
+                  <h2>Libro de revisiones</h2>
+                  <div class="divider m-0 p-0"></div>
+                </div>
+                <div
                   ref="extras"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
@@ -2549,6 +2439,40 @@ onMounted(async () => {
                       </EasyDataTable>
                     </template>
                   </VehicleTable>
+                </div>
+                <div
+                  ref="technical"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Más información</h1>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SelectInput
+                      label="Tracción:"
+                      :options="driveOptions"
+                      v-model="drives"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Marchas:" v-model="gears" />
+                    <TextInput label="Velocidad Máxima:" v-model="speed" />
+                    <TextInput label="Aceleración 0/100:" v-model="acceleration" />
+                  </div>
+                  <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
+                  <div class="divider m-0 p-0"></div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Consumo ambiente:" v-model="environment" />
+                    <TextInput label="Consumo en carretera:" v-model="road" />
+                    <TextInput label="En ciudad:" v-model="city" />
+                    <TextInput label="Emisiones CO2:" v-model="co2" />
+                  </div>
+                  <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
+                  <div class="divider m-0 p-0"></div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Longitud:" v-model="length" />
+                    <TextInput label="Altura:" v-model="height" />
+                    <TextInput label="Tara:" v-model="tare" />
+                  </div>
                 </div>
               </div>
               <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
@@ -3783,7 +3707,6 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
 <style>
 .activeSection {
   background-color: #dcdddf;

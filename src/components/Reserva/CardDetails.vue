@@ -1,15 +1,12 @@
 <script setup>
-import { Icon } from '@iconify/vue'
 defineProps({
   reserve: { Object, required: true }
 })
-
-defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
 </script>
 
 <template>
-  <div class="card card-side mt-4 h-[225px] w-full bg-base-100 text-xs font-normal">
-    <RouterLink :to="'/reservas/' + reserve.id" class="relative z-0">
+  <div class="card card-side mt-4 h-[225px] w-fit bg-base-100 text-xs font-normal">
+    <span class="relative z-0">
       <div
         class="cover z-0 h-full w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
         :style="{
@@ -51,15 +48,13 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
           </span>
         </div>
       </div>
-    </RouterLink>
+    </span>
     <div class="card-body flex-row justify-between p-4">
       <div class="relative flex w-full flex-row">
         <div class="w-full flex-col pl-4">
           <div class="mb-1 flex min-w-[400px] flex-row justify-between gap-2 *:text-nowrap">
             <div class="flex gap-2">
-              <RouterLink :to="'/reservas/' + reserve.id" class="font-semibold">{{
-                reserve.vehicle.license_plate
-              }}</RouterLink>
+              <span class="font-semibold">{{ reserve.vehicle.license_plate }}</span>
               <span class="font-semibold capitalize">{{ reserve.vehicle.model.brand.title }}</span>
               <span class="font-semibold capitalize">{{
                 reserve.vehicle.model.model_web?.title
@@ -127,32 +122,9 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
         </div>
       </div>
       <div class="divider divider-horizontal"></div>
-      <div class="flex w-full flex-row justify-between">
-        <div class="flex flex-col justify-around">
-          <span class="font-bold">
-            {{ reserve.contact_first_name }} {{ reserve.contact_last_name }}
-          </span>
-          <span class="font-medium">ID: {{ reserve.contact_document_id }}</span>
-          <span>{{ reserve.contact_address }}</span>
-          <span>{{ reserve.contact_city }}, {{ reserve.contact_country }}</span>
-          <span>{{ reserve.contact_email }}</span>
-          <span>{{ reserve.contact_phone_prefix }} {{ reserve.contact_phone }}</span>
-        </div>
-        <div class="dropdown dropdown-end menu-xs">
-          <div tabindex="0" role="button" class="btn btn-square btn-ghost">
-            <Icon icon="mdi:dots-vertical" width="30" />
-          </div>
-          <ul
-            tabindex="0"
-            class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
-          >
-            <li><RouterLink :to="'/reservas/' + reserve.id">Ver/Editar</RouterLink></li>
-            <li><a @click="$emit('menu-btn2')">Ver anuncio</a></li>
-            <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
-            <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
-            <li><a @click="$emit('menu-btn5', reserve.id)">Eliminar</a></li>
-          </ul>
-        </div>
+      <div class="flex w-full flex-row gap-4">
+        <button class="btn btn-accent text-white" @click="reserveClick">Entregar</button>
+        <button class="btn btn-outline" @click="cancelClick">Opciones</button>
       </div>
     </div>
   </div>

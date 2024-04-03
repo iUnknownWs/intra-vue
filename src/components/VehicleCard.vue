@@ -117,10 +117,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               >
             </div>
             <div class="absolute right-2 top-2 flex gap-4">
-              <label
-                for="vehicle-drawer"
-                class="btn btn-warning"
-                @click="$emit('reserve')"
+              <label for="vehicle-drawer" class="btn btn-warning" @click="$emit('reserve')"
                 >Reservar</label
               >
               <button class="btn btn-ghost" @click="$emit('delete')">Eliminar</button>
@@ -159,7 +156,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           <div class="mt-3 flex flex-row gap-6 [&>_div]:rounded [&>_div]:bg-base-200 [&>_div]:p-2">
             <div v-if="vehicle.price?.financed_price" class="flex flex-col items-start">
               <span class="font-bold">Precio</span>
-              <span>{{ vehicle.price.price_with_discount }}€</span>
+              <span>{{ vehicle.price.financed_price }}€</span>
               <span>Desde {{ vehicle.price.financing_fee }}€</span>
             </div>
             <div v-else class="flex flex-col items-start">

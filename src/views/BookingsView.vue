@@ -51,7 +51,7 @@ const getVehiclesFilter = () => {
     filterParams.search = search.value
   }
   if (warranty.value) {
-    filterParams.vehicle__extras__extra = warranty.value
+    filterParams.vehicle__extras__object_id = warranty.value
   }
   if (delivery.value) {
     filterParams.delivery_province = delivery.value
@@ -164,10 +164,10 @@ onMounted(() => {
               </button>
             </div>
           </aside>
-          <div class="mx-auto flex flex-col items-center justify-center px-8">
+          <div class="flex flex-col items-start justify-center px-8">
             <div
               role="tablist"
-              class="tabs tabs-bordered ml-20 mt-8 hidden justify-items-start bg-white font-medium lg:grid"
+              class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid"
             >
               <input
                 type="radio"
@@ -211,7 +211,7 @@ onMounted(() => {
                 @change="getVehiclesTabs(3)"
               />
             </div>
-            <div class="flex min-h-[150vh] flex-col justify-between">
+            <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
               <LoadingSpinner v-if="loading" class="loading-lg mt-4" />
               <CardDesktop
                 v-for="(vehicle, index) in bookings"

@@ -1,17 +1,18 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import BookingsView from '@/views/BookingsView.vue'
+import DiscountsView from '@/views/DiscountsView.vue'
 import HomeViewVue from '@/views/HomeView.vue'
 import LoginViewVue from '@/views/LoginView.vue'
-import VehicleView from '@/views/VehicleView.vue'
-import BookingsView from '@/views/BookingsView.vue'
-import ValuationView from '@/views/ValuationView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
+import VehicleView from '@/views/VehicleView.vue'
+import ValuationView from '@/views/ValuationView.vue'
 import UsersView from '@/views/UsersView.vue'
-import DiscountsView from '@/views/DiscountsView.vue'
 import WarrantsView from '@/views/WarrantsView.vue'
 import DeliveriesView from '@/views/DeliveriesView.vue'
 import DocsView from '@/views/DocsView.vue'
 import ExtrasView from '@/views/ExtrasView.vue'
 import IntegrationsView from '@/views/IntegrationsView.vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import ReserveView from '@/views/ReserveView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,7 +40,7 @@ const router = createRouter({
     {
       path: '/reservas/:id',
       name: 'reserve-detail',
-      component: VehicleView
+      component: ReserveView
     },
     {
       path: '/tasaciones',
