@@ -1,20 +1,28 @@
 <script setup>
+import { Icon } from '@iconify/vue'
 defineProps({
   placeholder: { type: String, default: 'Introducir' },
   disabled: { type: Boolean }
 })
-defineEmits(['btn-click', 'change'])
+defineEmits(['btn-click', 'change', 'icon-click'])
 const value = defineModel()
 </script>
 
+class="input join-item input-bordered w-full"
 <template>
   <div class="join w-full">
-    <input
-      class="input join-item input-bordered w-full"
-      :placeholder="placeholder"
-      v-model="value"
-      @input="$emit('change')"
-    />
+    <label class="input join-item input-bordered flex items-center gap-2">
+      <input
+        type="text"
+        class="grow"
+        placeholder="Buscar"
+        v-model="value"
+        @input="$emit('change')"
+      />
+      <a @click="$emit('icon-click')" class="btn btn-square btn-ghost btn-xs">
+        <Icon icon="mdi:times" width="25" />
+      </a>
+    </label>
     <button
       class="btn btn-primary join-item text-white"
       @click="$emit('btn-click')"

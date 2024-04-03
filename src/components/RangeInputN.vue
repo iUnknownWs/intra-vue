@@ -3,6 +3,8 @@ defineProps({
   label: { type: String, required: true },
   max: { type: Number, required: true }
 })
+defineEmits(['change-gte', 'change-lte'])
+
 const gte = defineModel('gte')
 const lte = defineModel('lte')
 </script>

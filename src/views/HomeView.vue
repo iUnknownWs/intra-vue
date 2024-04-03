@@ -9,15 +9,13 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
-const url = `${import.meta.env.VITE_VEHICLES}/?`
+const url = `${import.meta.env.VITE_VEHICLES}/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 let scrollNextUrl = ''
 const drawer = ref('')
 const vehiclesFilter = ref([])
-const params = ref('')
-const filterParams = {}
-const urlParams = ref(url)
+let filterParams = {}
 const refresh = ref(0)
 const tab = ref('0')
 const yearGte = ref('1970')
@@ -164,9 +162,8 @@ const filter = () => {
   if (pVideo.value) {
     filterParams.pvideo = 'true'
   }
-  const filterUrl = `${urlParams.value}${new URLSearchParams(filterParams)}`
   window.scrollTo({ top: 0, behavior: 'smooth' })
-  axios.get(filterUrl).then((response) => {
+  axios.get(url, { params: filterParams }).then((response) => {
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
@@ -188,21 +185,26 @@ const reset = () => {
   itv.value = false
   pitv.value = false
   pVideo.value = false
-  all()
+  filterParams = {}
   toggleDrawer.value = ref(false)
+  filter()
 }
 
 const search = () => {
   loading.value = true
-  const searchParams = {
-    search: searchValue.value
-  }
-  const searchUrl = `${urlParams.value}${new URLSearchParams(searchParams)}`
-  axios.get(searchUrl).then((response) => {
+  filterParams.search = searchValue.value
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
+}
+
+const searchReset = () => {
+  searchValue.value = null
+  disSearch.value = true
+  delete filterParams.search
+  filter()
 }
 
 const selected = () => {
@@ -210,16 +212,16 @@ const selected = () => {
     all()
   }
   if (tab.value === '1') {
-    pr()
+    vehicleStatus(0)
   }
   if (tab.value === '2') {
-    pp()
+    vehicleStatus(3)
   }
   if (tab.value === '3') {
-    venta()
+    vehicleStatus(4)
   }
   if (tab.value === '4') {
-    reserva()
+    vehicleStatus(5)
   }
   if (tab.value === '5') {
     ppt()
@@ -234,24 +236,50 @@ const selected = () => {
     entrega()
   }
   if (tab.value === '9') {
-    na()
+    vehicleStatus(10)
   }
 }
 
 const all = () => {
   loading.value = true
-  axios.get(url).then((response) => {
+  if (filterParams.status || filterParams.status === 0) {
+    delete filterParams.status
+  }
+  if (filterParams.ppt) {
+    delete filterParams.ppt
+  }
+  if (filterParams.vpt) {
+    delete filterParams.vpt
+  }
+  if (filterParams.no_web) {
+    delete filterParams.no_web
+  }
+  if (filterParams.inmediate_delivery) {
+    delete filterParams.inmediate_delivery
+  }
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
 }
 
-const pr = () => {
+const vehicleStatus = (status) => {
   loading.value = true
-  params.value = 'status=0'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
+  if (filterParams.ppt) {
+    delete filterParams.ppt
+  }
+  if (filterParams.vpt) {
+    delete filterParams.vpt
+  }
+  if (filterParams.no_web) {
+    delete filterParams.no_web
+  }
+  if (filterParams.inmediate_delivery) {
+    delete filterParams.inmediate_delivery
+  }
+  filterParams.status = status
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
@@ -260,9 +288,20 @@ const pr = () => {
 
 const ppt = () => {
   loading.value = true
-  params.value = 'ppt=true'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
+  if (filterParams.status || filterParams.status === 0) {
+    delete filterParams.status
+  }
+  if (filterParams.vpt) {
+    delete filterParams.vpt
+  }
+  if (filterParams.no_web) {
+    delete filterParams.no_web
+  }
+  if (filterParams.inmediate_delivery) {
+    delete filterParams.inmediate_delivery
+  }
+  filterParams.ppt = true
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
@@ -271,42 +310,20 @@ const ppt = () => {
 
 const vpt = () => {
   loading.value = true
-  params.value = 'vpt=true'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
-    scrollNextUrl = response.data.next
-    vehiclesFilter.value = response.data.results
-    loading.value = false
-  })
-}
-
-const pp = () => {
-  loading.value = true
-  params.value = 'status=3'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
-    scrollNextUrl = response.data.next
-    vehiclesFilter.value = response.data.results
-    loading.value = false
-  })
-}
-
-const venta = () => {
-  loading.value = true
-  params.value = 'status=4'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
-    scrollNextUrl = response.data.next
-    vehiclesFilter.value = response.data.results
-    loading.value = false
-  })
-}
-
-const reserva = () => {
-  loading.value = true
-  params.value = 'status=5'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
+  if (filterParams.status || filterParams.status === 0) {
+    delete filterParams.status
+  }
+  if (filterParams.ppt) {
+    delete filterParams.ppt
+  }
+  if (filterParams.no_web) {
+    delete filterParams.no_web
+  }
+  if (filterParams.inmediate_delivery) {
+    delete filterParams.inmediate_delivery
+  }
+  filterParams.vpt = true
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
@@ -315,9 +332,20 @@ const reserva = () => {
 
 const web = () => {
   loading.value = true
-  params.value = 'no_web=true'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
+  if (filterParams.status || filterParams.status === 0) {
+    delete filterParams.status
+  }
+  if (filterParams.ppt) {
+    delete filterParams.ppt
+  }
+  if (filterParams.vpt) {
+    delete filterParams.vpt
+  }
+  if (filterParams.inmediate_delivery) {
+    delete filterParams.inmediate_delivery
+  }
+  filterParams.no_web = true
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
@@ -326,20 +354,20 @@ const web = () => {
 
 const entrega = () => {
   loading.value = true
-  params.value = 'inmediate_delivery=true'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
-    scrollNextUrl = response.data.next
-    vehiclesFilter.value = response.data.results
-    loading.value = false
-  })
-}
-
-const na = () => {
-  loading.value = true
-  params.value = 'status=10'
-  urlParams.value = url + params.value + '&'
-  axios.get(urlParams.value).then((response) => {
+  if (filterParams.status || filterParams.status === 0) {
+    delete filterParams.status
+  }
+  if (filterParams.ppt) {
+    delete filterParams.ppt
+  }
+  if (filterParams.vpt) {
+    delete filterParams.vpt
+  }
+  if (filterParams.no_web) {
+    delete filterParams.no_web
+  }
+  filterParams.inmediate_delivery = true
+  axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
@@ -590,6 +618,7 @@ onMounted(() => {
             v-model="searchValue"
             :disabled="disSearch"
             @btn-click="search"
+            @icon-click="searchReset"
             @change="searchReact"
           >
             <Icon icon="mdi:magnify" width="25" />
@@ -727,13 +756,12 @@ onMounted(() => {
                 @change="all"
               />
               <input
-                ref="pr"
                 type="radio"
                 name="class"
                 role="tab"
                 class="tab"
                 aria-label="Recepción"
-                @change="pr"
+                @change="vehicleStatus(0)"
               />
               <input
                 type="radio"
@@ -741,7 +769,7 @@ onMounted(() => {
                 role="tab"
                 class="tab"
                 aria-label="Publicación"
-                @change="pp"
+                @change="vehicleStatus(3)"
               />
               <input
                 type="radio"
@@ -749,7 +777,7 @@ onMounted(() => {
                 role="tab"
                 class="tab"
                 aria-label="En venta"
-                @change="venta"
+                @change="vehicleStatus(4)"
               />
               <input
                 type="radio"
@@ -757,7 +785,7 @@ onMounted(() => {
                 role="tab"
                 class="tab"
                 aria-label="Reservados"
-                @change="reserva"
+                @change="vehicleStatus(5)"
               />
               <input
                 type="radio"
@@ -797,39 +825,40 @@ onMounted(() => {
                 role="tab"
                 class="tab"
                 aria-label="No disponible"
-                @change="na"
+                @change="vehicleStatus(10)"
               />
             </div>
             <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
               <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
-              <CardDesktop
-                v-else
-                v-for="(vehicle, index) in vehiclesFilter"
-                :key="index"
-                :id="vehicle.id"
-                :slug="vehicle.slug || 'No disponible'"
-                :placa="vehicle.license_plate || 'Sin matricula'"
-                :modelo="vehicle.model?.model_web?.title || 'No disponible'"
-                :marca="vehicle.model?.brand?.title || 'No disponible'"
-                :version="vehicle.version?.title || 'No disponible'"
-                :estado="vehicle.status"
-                :contado="vehicle.price?.price_with_discounts || 0"
-                :financiado="vehicle.price?.financed_price || '0'"
-                :quotes="vehicle.price?.financing_fee || '0'"
-                :stock="vehicle.days_in_stock || 0"
-                :img="
-                  vehicle.image ||
-                  'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
-                "
-                :combustible="vehicle.fuel?.description || 'No disponible'"
-                :año="vehicle.year || 0"
-                :cambios="vehicle.gear_box?.description || 'No disponible'"
-                :keys="vehicle.key_locator"
-                :kms="vehicle.kms || 0"
-                :distinctive="vehicle.maintenance?.distinctive"
-                @menu-btn2="vehicleWeb"
-                @menu-btn5="deleteVehicle"
-              />
+              <div v-else>
+                <CardDesktop
+                  v-for="(vehicle, index) in vehiclesFilter"
+                  :key="index"
+                  :id="vehicle.id"
+                  :slug="vehicle.slug || 'No disponible'"
+                  :placa="vehicle.license_plate || 'Sin matricula'"
+                  :modelo="vehicle.model?.model_web?.title || 'No disponible'"
+                  :marca="vehicle.model?.brand?.title || 'No disponible'"
+                  :version="vehicle.version?.title || 'No disponible'"
+                  :estado="vehicle.status"
+                  :contado="vehicle.price?.price_with_discounts || 0"
+                  :financiado="vehicle.price?.financed_price || '0'"
+                  :quotes="vehicle.price?.financing_fee || '0'"
+                  :stock="vehicle.days_in_stock || 0"
+                  :img="
+                    vehicle.image ||
+                    'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
+                  "
+                  :combustible="vehicle.fuel?.description || 'No disponible'"
+                  :año="vehicle.year || 0"
+                  :cambios="vehicle.gear_box?.description || 'No disponible'"
+                  :keys="vehicle.key_locator"
+                  :kms="vehicle.kms || 0"
+                  :distinctive="vehicle.maintenance?.distinctive"
+                  @menu-btn2="vehicleWeb"
+                  @menu-btn5="deleteVehicle"
+                />
+              </div>
               <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
                 <LoadingSpinner v-if="loadingNext" class="loading-lg" />
               </div>
@@ -841,32 +870,34 @@ onMounted(() => {
           :key="refresh"
         >
           <LoadingSpinner v-if="loading" class="loading-lg" />
-          <CardMobile
-            v-else
-            v-for="(vehicle, index) in vehiclesFilter"
-            @menu="vehicleMenu"
-            :key="index"
-            :id="vehicle.id"
-            :slug="vehicle.slug || 'No disponible'"
-            :placa="vehicle.license_plate || 'Sin matricula'"
-            :modelo="vehicle.model?.model_web?.title || 'No disponible'"
-            :marca="vehicle.model?.brand?.title || 'No disponible'"
-            :version="vehicle.version?.title || 'No disponible'"
-            :estado="vehicle.status"
-            :contado="vehicle.price?.price_with_discounts || 0"
-            :financiado="vehicle.price?.financed_price || '0'"
-            :quotes="vehicle.price?.financing_fee || '0'"
-            :stock="vehicle.days_in_stock || 0"
-            :img="
-              vehicle.image || 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
-            "
-            :combustible="vehicle.fuel?.description || 'No disponible'"
-            :año="vehicle.year || 0"
-            :cambios="vehicle.gear_box?.description || 'No disponible'"
-            :keys="vehicle.key_locator"
-            :kms="vehicle.kms || 0"
-            :distinctive="vehicle.maintenance?.distinctive"
-          />
+          <div v-else>
+            <CardMobile
+              v-for="(vehicle, index) in vehiclesFilter"
+              @menu="vehicleMenu"
+              :key="index"
+              :id="vehicle.id"
+              :slug="vehicle.slug || 'No disponible'"
+              :placa="vehicle.license_plate || 'Sin matricula'"
+              :modelo="vehicle.model?.model_web?.title || 'No disponible'"
+              :marca="vehicle.model?.brand?.title || 'No disponible'"
+              :version="vehicle.version?.title || 'No disponible'"
+              :estado="vehicle.status"
+              :contado="vehicle.price?.price_with_discounts || 0"
+              :financiado="vehicle.price?.financed_price || '0'"
+              :quotes="vehicle.price?.financing_fee || '0'"
+              :stock="vehicle.days_in_stock || 0"
+              :img="
+                vehicle.image ||
+                'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
+              "
+              :combustible="vehicle.fuel?.description || 'No disponible'"
+              :año="vehicle.year || 0"
+              :cambios="vehicle.gear_box?.description || 'No disponible'"
+              :keys="vehicle.key_locator"
+              :kms="vehicle.kms || 0"
+              :distinctive="vehicle.maintenance?.distinctive"
+            />
+          </div>
           <div ref="vehicleNext2" class="mx-auto w-full">
             <LoadingSpinner v-if="loadingNext" class="loading-lg" />
           </div>

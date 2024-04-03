@@ -7,7 +7,7 @@ import CardDesktop from '@/components/Reserva/CardDesktop.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
-const url = `${import.meta.env.VITE_SALES}/bookings/`
+let url = `${import.meta.env.VITE_SALES}/bookings/`
 const loading = ref(null)
 const loadingNext = ref(false)
 const drawer = ref(false)
@@ -23,7 +23,10 @@ const bookings = ref([])
 
 const getVehicles = () => {
   loading.value = true
-  axios.get(url).then((response) => {
+  if (filterParams.status || filterParams.status === 0) {
+    delete filterParams.status
+  }
+  axios.get(url, { params: filterParams }).then((response) => {
     bookings.value = response.data.results
     nextUrl.value = response.data.next
     loading.value = false
@@ -36,17 +39,25 @@ const source = ref(null)
 const warranty = ref(null)
 const delivery = ref(null)
 
+let filterParams = {}
+
 const searchReact = () => {
-  if (search.value !== '') {
+  if (search.value.length > 2) {
     disSearch.value = false
   } else {
     disSearch.value = true
   }
 }
 
+const searchReset = () => {
+  search.value = null
+  disSearch.value = true
+  delete filterParams.search
+  getVehiclesFilter()
+}
+
 const getVehiclesFilter = () => {
   loading.value = true
-  let filterParams = {}
   if (search.value) {
     filterParams.search = search.value
   }
@@ -59,8 +70,7 @@ const getVehiclesFilter = () => {
   if (source.value) {
     filterParams.source__iexact = source.value
   }
-  const filterUrl = `${url}?${new URLSearchParams(filterParams)}`
-  axios.get(filterUrl).then((response) => {
+  axios.get(url, { params: filterParams }).then((response) => {
     bookings.value = response.data.results
     nextUrl.value = response.data.next
     loading.value = false
@@ -68,16 +78,24 @@ const getVehiclesFilter = () => {
 }
 
 const reset = () => {
+  if (filterParams.status || filterParams.status === 0) {
+    let status = filterParams.status
+    filterParams = {}
+    filterParams.status = status
+  } else {
+    filterParams = {}
+  }
   search.value = null
   source.value = null
   warranty.value = null
   delivery.value = null
-  getVehicles()
+  getVehiclesFilter()
 }
 
 const getVehiclesTabs = (status) => {
   loading.value = true
-  axios.get(url + 'status=' + status).then((response) => {
+  filterParams.status = status
+  axios.get(url, { params: filterParams }).then((response) => {
     bookings.value = response.data.results
     nextUrl.value = response.data.next
     loading.value = false
@@ -123,6 +141,7 @@ onMounted(() => {
             v-model="search"
             :disabled="disSearch"
             @btn-click="getVehiclesFilter"
+            @icon-click="searchReset"
             @change="searchReact"
           >
             <Icon icon="mdi:magnify" width="25" />
@@ -213,12 +232,9 @@ onMounted(() => {
             </div>
             <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
               <LoadingSpinner v-if="loading" class="loading-lg mt-4" />
-              <CardDesktop
-                v-for="(vehicle, index) in bookings"
-                :key="index"
-                v-else
-                :reserve="vehicle"
-              />
+              <div v-else>
+                <CardDesktop v-for="(vehicle, index) in bookings" :key="index" :reserve="vehicle" />
+              </div>
               <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
                 <LoadingSpinner v-if="loadingNext" class="loading-lg" />
               </div>
