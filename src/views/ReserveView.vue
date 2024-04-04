@@ -3,18 +3,20 @@ import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import options from '@/js/filterOptions'
-import router from '@/router'
+import phonesPrefix from '@/js/phone_prefixes.json'
 import axios from 'axios'
 import CardDetails from '@/components/Reserva/CardDetails.vue'
+import TextInput from '@/components/TextInput.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 const route = useRoute()
 const id = ref(route.params.id)
 const url = `${import.meta.env.VITE_SALES}/bookings/${id.value}`
-const masterDataUrl = `${import.meta.env.VITE_DATA}`
+const buyersUrl = `${import.meta.env.VITE_API}/buyers/`
 const loading = ref(true)
 const vehicle = ref({})
+const tab = ref('details')
 
 const edit = ref(null)
 const infoModal = ref(null)
@@ -24,10 +26,34 @@ const modalMessage = ref('')
 
 const getVehicle = () => {
   loading.value = true
+  isFetchingExtras.value = true
   axios
     .get(url)
     .then((response) => {
       vehicle.value = response.data
+      seller.value = vehicle.value.seller
+      contactId.value = vehicle.value.contact_document_type
+      contactIdNumber.value = vehicle.value.contact_document_id
+      contactName.value = vehicle.value.contact_first_name
+      contactLastName.value = vehicle.value.contact_last_name
+      contactEmail.value = vehicle.value.contact_email
+      contactPrefix.value = vehicle.value.contact_phone_prefix
+      contactPhone.value = vehicle.value.contact_phone
+      contactCity.value = vehicle.value.contact_city
+      contactRegion.value = vehicle.value.contact_region
+      contactCountry.value = vehicle.value.contact_country
+      contactZip.value = vehicle.value.contact_postal_code
+      companyVat.value = vehicle.value.buyer_company.vat
+      companyName.value = vehicle.value.buyer_company.name
+      companyEmail.value = vehicle.value.buyer_company.email
+      companyPrefix.value = vehicle.value.buyer_company.phone_prefix
+      companyPhone.value = vehicle.value.buyer_company.phone
+      companyCity.value = vehicle.value.buyer_company.address.city
+      companyRegion.value = vehicle.value.buyer_company.address.region
+      companyCountry.value = vehicle.value.buyer_company.address.country
+      companyZip.value = vehicle.value.buyer_company.address.postal_code
+      extras.value = vehicle.value.extras
+      isFetchingExtras.value = false
     })
     .catch((error) => {
       console.error(error)
@@ -47,6 +73,52 @@ const toggleDrawer = () => {
 }
 
 const isCompany = ref(false)
+const sellerOptions = ref([])
+const seller = ref(null)
+const contactId = ref(null)
+const contactIdNumber = ref(null)
+const contactName = ref(null)
+const contactLastName = ref(null)
+const contactEmail = ref(null)
+const prefixOptions = ref([])
+const contactPrefix = ref(null)
+const contactPhone = ref(null)
+const contactCity = ref(null)
+const contactRegion = ref(null)
+const contactCountry = ref(null)
+const contactZip = ref(null)
+const companyVat = ref(null)
+const companyName = ref(null)
+const companyEmail = ref(null)
+const companyPrefix = ref(null)
+const companyPhone = ref(null)
+const companyCity = ref(null)
+const companyRegion = ref(null)
+const companyCountry = ref(null)
+const companyZip = ref(null)
+
+axios.get(buyersUrl).then((response) => {
+  sellerOptions.value = response.data.results
+})
+
+for (let prefix of phonesPrefix) {
+  prefixOptions.value.push({ id: prefix.dial_code, label: `${prefix.code} ${prefix.dial_code}` })
+}
+
+const extras = ref([])
+const isFetchingExtras = ref(true)
+const serverItemsLength = ref(0)
+const headersDocusign = [
+  { text: 'Nombre', value: 'title' },
+  { text: 'Descripción', value: 'description' },
+  { text: 'Precio', value: 'price' },
+  { text: 'Acciones', value: 'id', width: 40 }
+]
+
+const serverOptions = ref({
+  page: 1,
+  rowsPerPage: 20
+})
 
 onMounted(() => {
   getVehicle()
@@ -112,7 +184,7 @@ onMounted(() => {
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
               <li>
-                <a class="font-bold">Detalles</a>
+                <a class="font-bold" @click="tab = 'details'">Detalles</a>
                 <ul>
                   <li><a>Info. Comprador</a></li>
                   <li><a>Extras</a></li>
@@ -120,14 +192,20 @@ onMounted(() => {
                   <li><a>Más info</a></li>
                 </ul>
               </li>
-              <li><a class="font-bold">Pagos</a></li>
+              <li><a class="font-bold" @click="tab = 'payments'">Pagos</a></li>
             </ul>
           </aside>
           <section class="flex w-full flex-1 flex-col">
-            <div class="flex w-full flex-col gap-8">
+            <div v-if="tab === 'details'" class="flex w-full flex-col gap-8">
               <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h1 class="text-xl font-medium">Información de la venta</h1>
-                <SelectInput label="Vendedor:" :options="[]" />
+                <h2 class="text-xl font-medium">Información de la venta</h2>
+                <SelectInput
+                  label="Vendedor:"
+                  :options="sellerOptions"
+                  :initialValue="null"
+                  optionLabel="name"
+                  v-model="seller"
+                />
                 <div>
                   <ToggleInput
                     label="Particular"
@@ -140,22 +218,27 @@ onMounted(() => {
                     <SelectInput
                       label="Tipo de documento:"
                       :options="options.idTypes"
-                      v-model="idType"
+                      v-model="contactId"
                     />
-                    <TextInput label="Numero de documento:" v-model="idNumber" required />
-                    <TextInput label="Nombre:" v-model="buyerName" />
-                    <TextInput label="Apellido:" v-model="buyerLastName" />
-                    <TextInput label="Email:" v-model="buyerEmail" required />
+                    <TextInput label="Numero de documento:" v-model="contactIdNumber" required />
+                    <TextInput label="Nombre:" v-model="contactName" />
+                    <TextInput label="Apellido:" v-model="contactLastName" />
+                    <TextInput label="Email:" v-model="contactEmail" required />
                     <label class="form-control w-full">
                       <div class="label">
                         <span class="label-text font-medium">Teléfono:</span>
                       </div>
                       <div class="flex flex-row gap-2">
-                        <VueSelect v-model="prefixBuyer" :options="phonesPre" class="w-60" />
+                        <VueSelect
+                          v-model="contactPrefix"
+                          :reduce="(prefix) => prefix.id"
+                          :options="prefixOptions"
+                          class="w-60"
+                        />
                         <input
                           type="text"
                           class="input input-bordered w-full"
-                          v-model="buyerPhone"
+                          v-model="contactPhone"
                           required
                         />
                       </div>
@@ -172,10 +255,10 @@ onMounted(() => {
                     </GMapAutocomplete>
                   </label>
                   <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-                    <TextInput label="Ciudad:" v-model="buyerCity" />
-                    <TextInput label="Provincia:" v-model="buyerProvince" />
-                    <TextInput label="País:" v-model="buyerCountry" />
-                    <TextInput label="Código Postal:" v-model="buyerZip" />
+                    <TextInput label="Ciudad:" v-model="contactCity" />
+                    <TextInput label="Provincia:" v-model="contactRegion" />
+                    <TextInput label="País:" v-model="contactCountry" />
+                    <TextInput label="Código Postal:" v-model="contactZip" />
                   </div>
                   <div v-if="isCompany" class="mt-8">
                     <h2 class="text-xl font-semibold">Información de la empresa</h2>
@@ -188,7 +271,7 @@ onMounted(() => {
                           <span class="label-text font-medium">Teléfono:</span>
                         </div>
                         <div class="flex flex-row gap-2">
-                          <VueSelect v-model="prefixCompany" :options="phonesPre" class="w-60" />
+                          <VueSelect v-model="companyPrefix" :options="phonesPre" class="w-60" />
                           <input
                             type="text"
                             class="input input-bordered w-full"
@@ -209,21 +292,208 @@ onMounted(() => {
                     </label>
                     <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
                       <TextInput label="Ciudad:" v-model="companyCity" />
-                      <TextInput label="Provincia:" v-model="companyProvince" />
+                      <TextInput label="Provincia:" v-model="companyRegion" />
                       <TextInput label="País:" v-model="companyCountry" />
                       <TextInput label="Código Postal:" v-model="companyZip" />
                     </div>
                   </div>
                 </div>
               </div>
+              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <h2 class="text-xl font-medium">Vehículos</h2>
+                <div role="tablist" class="tabs tabs-bordered mx-auto">
+                  <input
+                    type="radio"
+                    name="vehicles-tabs"
+                    role="tab"
+                    class="tab"
+                    aria-label="Venta"
+                    checked
+                  />
+                  <div role="tabpanel" class="tab-content p-10">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <TextInput label="Bastidor:" v-model="Vehicle" />
+                      <TextInput label="Matrícula:" v-model="Vehicle" />
+                      <TextInput label="Marca:" v-model="Vehicle" />
+                      <TextInput label="Modelo:" v-model="Vehicle" />
+                      <TextInput label="Versión:" v-model="Vehicle" />
+                      <TextInput label="Matriculación:" v-model="Vehicle" />
+                      <TextInput label="Combustible:" v-model="Vehicle" />
+                      <TextInput label="Kms:" v-model="Vehicle" />
+                    </div>
+                  </div>
+
+                  <input
+                    type="radio"
+                    name="vehicles-tabs"
+                    role="tab"
+                    class="tab"
+                    aria-label="Compra"
+                  />
+                  <div role="tabpanel" class="tab-content p-10">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <TextInput label="Bastidor:" v-model="Vehicle" />
+                      <TextInput label="Matrícula:" v-model="Vehicle" />
+                      <TextInput label="Marca:" v-model="Vehicle" />
+                      <TextInput label="Modelo:" v-model="Vehicle" />
+                      <TextInput label="Versión:" v-model="Vehicle" />
+                      <TextInput label="Matriculación:" v-model="Vehicle" />
+                      <TextInput label="Combustible:" v-model="Vehicle" />
+                      <TextInput label="Kms:" v-model="Vehicle" />
+                    </div>
+                  </div>
+
+                  <input
+                    type="radio"
+                    name="vehicles-tabs"
+                    role="tab"
+                    class="tab"
+                    aria-label="Compra"
+                  />
+                  <div role="tabpanel" class="tab-content p-10">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <TextInput label="Bastidor:" v-model="Vehicle" />
+                      <TextInput label="Matrícula:" v-model="Vehicle" />
+                      <TextInput label="Marca:" v-model="Vehicle" />
+                      <TextInput label="Modelo:" v-model="Vehicle" />
+                      <TextInput label="Versión:" v-model="Vehicle" />
+                      <TextInput label="Matriculación:" v-model="Vehicle" />
+                      <TextInput label="Combustible:" v-model="Vehicle" />
+                      <TextInput label="Kms:" v-model="Vehicle" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <h2 class="text-xl font-medium">Extras</h2>
+                <VehicleTable>
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0"
+                      header-class-name="z-0"
+                      hide-footer
+                      border-cell
+                      :headers="headersDocusign"
+                      :items="extras"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="isFetchingExtras"
+                    >
+                      <template v-slot:item-files="{ files }">
+                        <div class="flex gap-2">
+                          <a
+                            v-for="(file, index) in files"
+                            :key="index"
+                            :href="file.file"
+                            target="_blank"
+                            class="btn btn-square btn-xs"
+                          >
+                            <Icon icon="mdi:download" />
+                          </a>
+                        </div>
+                      </template>
+                      <template v-slot:item-status="{ status }">
+                        <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                          {{ status.toUpperCase() }}
+                        </span>
+                      </template>
+                      <template v-slot:item-id="{ id }">
+                        <button
+                          class="btn btn-square btn-error btn-xs"
+                          @click="contractConfirm(id)"
+                        >
+                          <Icon icon="mdi:trash-can-outline" />
+                        </button>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
+              </div>
+              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <h2 class="text-xl font-medium">Más información</h2>
+                <AreaInput label="Comentarios Comerciales:" v-model="comments" />
+                <label class="form-control w-full">
+                  <div class="label">
+                    <span class="label-text font-medium">Dirección:</span>
+                  </div>
+                  <GMapAutocomplete
+                    @place_changed="setBuyerPlace"
+                    class="input input-bordered w-full"
+                  >
+                  </GMapAutocomplete>
+                </label>
+                <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                  <TextInput label="Ciudad:" v-model="contactCity" />
+                  <TextInput label="Provincia:" v-model="contactRegion" />
+                  <TextInput label="País:" v-model="contactCountry" />
+                  <TextInput label="Código Postal:" v-model="contactZip" />
+                </div>
+              </div>
+            </div>
+            <div v-else class="flex w-full flex-col gap-8">
+              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <h2 class="text-xl font-medium">Forma de pago</h2>
+                <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <SelectInput label="Método de Pago:" v-model="Payment" />
+                  <TextInput label="Importe a financiar:" v-model="Payment" />
+                  <TextInput label="Meses de financiación:" v-model="Payment" />
+                  <TextInput label="Cuotas mensuales:" v-model="Payment" />
+                </div>
+                <VehicleTable add title="Pagos">
+                  <template #content>
+                    <EasyDataTable
+                      class="table-dark table-striped"
+                      table-class-name="z-0"
+                      header-class-name="z-0"
+                      hide-footer
+                      border-cell
+                      :headers="headersDocusign"
+                      :items="extras"
+                      v-model:server-options="serverOptions"
+                      :server-items-length="serverItemsLength"
+                      :loading="isFetchingExtras"
+                    >
+                      <template v-slot:item-files="{ files }">
+                        <div class="flex gap-2">
+                          <a
+                            v-for="(file, index) in files"
+                            :key="index"
+                            :href="file.file"
+                            target="_blank"
+                            class="btn btn-square btn-xs"
+                          >
+                            <Icon icon="mdi:download" />
+                          </a>
+                        </div>
+                      </template>
+                      <template v-slot:item-status="{ status }">
+                        <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                          {{ status.toUpperCase() }}
+                        </span>
+                      </template>
+                      <template v-slot:item-id="{ id }">
+                        <button
+                          class="btn btn-square btn-error btn-xs"
+                          @click="contractConfirm(id)"
+                        >
+                          <Icon icon="mdi:trash-can-outline" />
+                        </button>
+                      </template>
+                    </EasyDataTable>
+                  </template>
+                  <template #drawer> </template>
+                </VehicleTable>
+              </div>
             </div>
           </section>
-          <aside class="hidden h-fit max-w-sm flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
+          <aside class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
             <div>
               <h2 class="text-xl font-medium">Resumen de compra</h2>
               <div class="divider m-0"></div>
             </div>
-            <div class="[&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+            <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
               <div v-if="vehicle.form_of_payment_type === 1">
                 <span> Precio de compra: </span>
                 <span class="mr-2 text-right"> {{ vehicle.price }} </span>
@@ -249,7 +519,9 @@ onMounted(() => {
                 <span class="mr-2 text-right font-bold">{{ vehicle.final_price }}</span>
                 <span></span>
               </div>
-              <div class="divider m-0"></div>
+            </div>
+            <div class="divider m-0"></div>
+            <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
               <div v-for="payment of vehicle.payments" :key="payment.id">
                 <span> Importe de reserva: </span>
                 <span class="mr-2 text-right"> {{ payment.amount }} € </span>

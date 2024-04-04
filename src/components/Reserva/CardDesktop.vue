@@ -33,7 +33,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
           </span>
           <span
             v-if="reserve.status == 1"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
           >
             Confirmado
           </span>
@@ -45,7 +45,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
           </span>
           <span
             v-if="reserve.status == 3"
-            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            class="badge badge-accent mr-2 mt-2 rounded-md px-3 pb-1 text-white"
           >
             Entregado
           </span>
