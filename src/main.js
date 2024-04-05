@@ -41,11 +41,13 @@ import Vue3EasyDataTable from 'vue3-easy-data-table'
 import VueSelect from "vue-select"
 import VueGoogleMaps from 'vue-google-maps-community-fork'
 import { Sortable } from 'sortablejs-vue3'
+import { registerScrollSpy } from 'vue3-scroll-spy'
 import 'vue3-easy-data-table/dist/style.css'
 import 'vue-select/dist/vue-select.css'
 
 
 const app = createApp(App)
+registerScrollSpy(app)
 app.component('EasyDataTable', Vue3EasyDataTable)
     .component('AreaInput', AreaInput)
     .component('CheckInput', CheckInput)

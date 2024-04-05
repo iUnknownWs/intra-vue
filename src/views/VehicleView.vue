@@ -1,7 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
-import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import phonePrefix from '@/js/phone_prefixes.json'
 import PerformanceTest from '@/components/PerformanceTest.vue'
 import VehicleCard from '@/components/VehicleCard.vue'
@@ -158,15 +158,6 @@ const discounts = ref(null)
 const serialEquip = ref(null)
 const optionalEquip = ref(null)
 const paidEquip = ref(null)
-const basicTab = ref(null)
-const technicalTab = ref(null)
-const maintenanceTab = ref(null)
-const pricesTab = ref(null)
-const commentsTab = ref(null)
-const extrasTab = ref(null)
-const discountsTab = ref(null)
-const serialEquipTab = ref(null)
-const optionalEquipTab = ref(null)
 const regimen = ref(null)
 const purchaseDate = ref(null)
 const purchasePrice = ref(0)
@@ -810,7 +801,6 @@ const tabEvent1 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab1.value.classList.add('tab-active')
-  basic.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent2 = () => {
@@ -819,7 +809,6 @@ const tabEvent2 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab2.value.classList.add('tab-active')
-  technical.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent4 = () => {
@@ -828,7 +817,6 @@ const tabEvent4 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab4.value.classList.add('tab-active')
-  maintenance.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent5 = () => {
@@ -837,7 +825,6 @@ const tabEvent5 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab5.value.classList.add('tab-active')
-  prices.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent6 = () => {
@@ -846,7 +833,6 @@ const tabEvent6 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab6.value.classList.add('tab-active')
-  comments.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent7 = () => {
@@ -855,7 +841,6 @@ const tabEvent7 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab7.value.classList.add('tab-active')
-  extras.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent8 = () => {
@@ -864,7 +849,6 @@ const tabEvent8 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab8.value.classList.add('tab-active')
-  discounts.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent9 = () => {
@@ -873,7 +857,6 @@ const tabEvent9 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab9.value.classList.add('tab-active')
-  serialEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const tabEvent10 = () => {
@@ -882,7 +865,6 @@ const tabEvent10 = () => {
     tab.value.classList.remove('tab-active')
   }
   tab10.value.classList.add('tab-active')
-  optionalEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
 }
 
 const navEvent1 = () => {
@@ -1891,57 +1873,10 @@ const sumautoRemove = () => {
     })
 }
 
-let observer
-
-if (tab.value >= 9 && tab.value < 11) {
-  observer.observe(serialEquip.value)
-  observer.observe(optionalEquip.value)
-}
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
   let prev = window.scrollY
-  const asideTabs = [
-    { element: basicTab.value, id: basic.value },
-    { element: pricesTab.value, id: prices.value },
-    { element: commentsTab.value, id: comments.value },
-    { element: maintenanceTab.value, id: maintenance.value },
-    { element: extrasTab.value, id: extras.value },
-    { element: discountsTab.value, id: discounts.value },
-    { element: serialEquipTab.value, id: serialEquip.value },
-    { element: optionalEquipTab.value, id: optionalEquip.value },
-    { element: technicalTab.value, id: technical.value }
-  ]
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          asideTabs.forEach((tab) => {
-            if (tab.id === entry.target) {
-              tab.element.classList.add('activeSection')
-            } else {
-              tab.element.classList.remove('activeSection')
-            }
-          })
-        }
-      })
-    },
-    { threshold: [0.8] }
-  )
-
-  if (tab.value > 0 && tab.value < 9) {
-    observer.observe(basic.value)
-    observer.observe(prices.value)
-    observer.observe(comments.value)
-    observer.observe(maintenance.value)
-    observer.observe(extras.value)
-    observer.observe(discounts.value)
-    observer.observe(technical.value)
-  } else {
-    observer.observe(serialEquip.value)
-    observer.observe(optionalEquip.value)
-  }
 
   window.addEventListener('scroll', () => {
     let current = window.scrollY
@@ -1954,10 +1889,6 @@ onMounted(async () => {
     }
     prev = current
   })
-})
-
-onUnmounted(() => {
-  observer.disconnect()
 })
 </script>
 
@@ -2098,19 +2029,17 @@ onUnmounted(() => {
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
               <li>
                 <a class="font-bold" @click="tabEvent1">Admin</a>
-                <ul>
+                <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a' }">
                   <li>
-                    <a ref="basicTab" class="activeSection" @click="tabEvent1"
-                      >Información básica</a
-                    >
+                    <a @click="tabEvent1">Información básica</a>
                   </li>
-                  <li><a ref="pricesTab" @click="tabEvent5">Compra y precio</a></li>
-                  <li><a ref="commentsTab" @click="tabEvent6">Comentarios</a></li>
-                  <li><a ref="maintenanceTab" @click="tabEvent4">Mantenimiento</a></li>
-                  <li><a ref="extrasTab" @click="tabEvent7">Extras</a></li>
-                  <li><a ref="discountsTab" @click="tabEvent8">Descuentos</a></li>
+                  <li><a @click="tabEvent5">Compra y precio</a></li>
+                  <li><a @click="tabEvent6">Comentarios</a></li>
+                  <li><a @click="tabEvent4">Mantenimiento</a></li>
+                  <li><a @click="tabEvent7">Extras</a></li>
+                  <li><a @click="tabEvent8">Descuentos</a></li>
                   <li>
-                    <a ref="technicalTab" @click="tabEvent2">Mas información</a>
+                    <a @click="tabEvent2">Mas información</a>
                   </li>
                 </ul>
               </li>
@@ -2127,7 +2056,11 @@ onUnmounted(() => {
           </aside>
           <section class="flex w-full flex-1 flex-col">
             <VehicleAlert v-if="commentAlert" :message="commInternal" @btn="commentAlert = false" />
-            <div v-if="tab > 0 && tab < 9" class="flex w-full flex-col gap-8">
+            <div
+              v-scroll-spy="{ offset: 120 }"
+              v-if="tab > 0 && tab < 9"
+              class="flex w-full flex-col gap-8"
+            >
               <div
                 ref="basic"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
@@ -3653,9 +3586,10 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-<style>
-.activeSection {
-  background-color: #dcdddf;
+<style scoped>
+.active {
+  background-color: #dcdddf !important;
+  color: black !important;
   font-weight: 600;
 }
 </style>

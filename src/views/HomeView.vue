@@ -65,7 +65,7 @@ const vehicleNext = ref(null)
 const loadingNext = ref(false)
 
 const searchReact = () => {
-  if (searchValue.value !== '') {
+  if (searchValue.value.length > 2) {
     disSearch.value = false
   } else {
     disSearch.value = true
@@ -192,6 +192,7 @@ const reset = () => {
 
 const search = () => {
   loading.value = true
+  disSearch.value = true
   filterParams.search = searchValue.value
   axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next

@@ -60,6 +60,7 @@ const getVehiclesFilter = () => {
   loading.value = true
   if (search.value) {
     filterParams.search = search.value
+    disSearch.value = true
   }
   if (warranty.value) {
     filterParams.vehicle__extras__object_id = warranty.value

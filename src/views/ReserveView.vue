@@ -7,6 +7,7 @@ import phonesPrefix from '@/js/phone_prefixes.json'
 import axios from 'axios'
 import CardDetails from '@/components/Reserva/CardDetails.vue'
 import TextInput from '@/components/TextInput.vue'
+import ExtrasDrawer from '@/components/Reserva/ExtrasDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -14,6 +15,7 @@ const route = useRoute()
 const id = ref(route.params.id)
 const url = `${import.meta.env.VITE_SALES}/bookings/${id.value}`
 const buyersUrl = `${import.meta.env.VITE_API}/buyers/`
+const galleryDocs = ref([])
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref('details')
@@ -54,6 +56,16 @@ const getVehicle = () => {
       companyZip.value = vehicle.value.buyer_company.address.postal_code
       extras.value = vehicle.value.extras
       isFetchingExtras.value = false
+      deliveryCity.value = vehicle.value.delivery_city
+      deliveryRegion.value = vehicle.value.delivery_province
+      deliveryCountry.value = vehicle.value.delivery_country
+      deliveryZip.value = vehicle.value.delivery_postal_code
+      payments.value = vehicle.value.payments
+      isFetchingPayments.value = false
+      paymentType.value = vehicle.value.form_of_payment_type
+      paymentAmount.value = vehicle.value.form_of_payment_financed_price
+      paymentMonths.value = vehicle.value.form_of_payment_financed_amount_fees
+      paymentDues.value = vehicle.value.form_of_payment_financed_fee
     })
     .catch((error) => {
       console.error(error)
@@ -105,23 +117,124 @@ for (let prefix of phonesPrefix) {
   prefixOptions.value.push({ id: prefix.dial_code, label: `${prefix.code} ${prefix.dial_code}` })
 }
 
+const serverOptions = ref({
+  page: 1,
+  rowsPerPage: 20
+})
+
 const extras = ref([])
 const isFetchingExtras = ref(true)
 const serverItemsLength = ref(0)
-const headersDocusign = [
+const headersExtras = [
   { text: 'Nombre', value: 'title' },
   { text: 'Descripción', value: 'description' },
   { text: 'Precio', value: 'price' },
   { text: 'Acciones', value: 'id', width: 40 }
 ]
 
-const serverOptions = ref({
-  page: 1,
-  rowsPerPage: 20
-})
+const payments = ref([])
+const paymentAmount = ref(null)
+const paymentMonths = ref(null)
+const paymentDues = ref(null)
+const isFetchingPayments = ref(true)
+const paymentType = ref(null)
+
+const headersPayments = [
+  { text: 'Forma de Pago', value: 'payment_type' },
+  { text: 'Método de Pago', value: 'payment_method' },
+  { text: 'Importe', value: 'amount' },
+  { text: 'Acciones', value: 'id', width: 40 }
+]
+
+const comments = ref('')
+const deliveryCity = ref(null)
+const deliveryRegion = ref(null)
+const deliveryCountry = ref(null)
+const deliveryZip = ref(null)
+
+const editMode = ref('')
+const extraTitle = ref('')
+const extraPrice = ref('')
+const extraDescription = ref('')
+const extraId = ref(null)
+const modalId = ref(null)
+const editModal = (id, mode) => {
+  modalId.value = id
+  if (mode === 0) {
+    editMode.value = 'extras'
+    axios
+    .get(`${import.meta.env.VITE_SALES}/booking-extras/${id}/`)
+    .then((response) => {
+      extraTitle.value = response.data.title
+      extraPrice.value = response.data.price
+      extraDescription.value = response.data.description
+      extraId.value = response.data.extra
+      })
+      .then(() => {
+        edit.value.showModal()
+      })
+  }
+  if (mode === 1) {
+    editMode.value = 'extras'
+    axios
+      .get(`${import.meta.env.VITE_SALES}/payments/${id}/`)
+      .then((response) => {
+        console.log(response.data)
+      })
+      .then(() => {
+        edit.value.showModal()
+      })
+  }
+  edit.value.showModal()
+}
+
+const updateExtra = () => {
+  axios
+    .put(`${import.meta.env.VITE_SALES}/booking-extras/${modalId.value}/`, {
+      title: extraTitle.value,
+      price: extraPrice.value,
+      description: extraDescription.value,
+      booking: id.value,
+      extra: extraId.value
+    })
+    .then(() => {
+      getVehicle()
+      edit.value.close()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const removeExtra = (id) => {
+  axios
+    .delete(`${import.meta.env.VITE_SALES}/booking-extras/${id}/`)
+    .then(() => {
+      getVehicle()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const removePayment = (id) => {
+  axios
+    .delete(`${import.meta.env.VITE_SALES}/payments/${id}/`)
+    .then(() => {
+      getVehicle()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
 
 onMounted(() => {
   getVehicle()
+  axios
+    .get(`${import.meta.env.VITE_SALES}/sale_documents/?booking=${id.value}`)
+    .then((response) => {
+      galleryDocs.value = response.data.results
+    })
 })
 </script>
 
@@ -142,10 +255,13 @@ onMounted(() => {
           <form method="dialog flex flex-col" @submit.prevent="edit.close(), reset()">
             <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
           </form>
-          <div>
-            <h3 class="text-lg font-bold">Editar Descuento</h3>
+          <div v-if="editMode === 'extras'">
+            <h3 class="text-lg font-bold">Editar Extra</h3>
             <div class="divider m-0"></div>
-            <form @submit.prevent="console.log('extras')" class="flex flex-col">
+            <form @submit.prevent="updateExtra" class="flex flex-col">
+              <TextInput label="Titulo:" v-model="extraTitle" />
+              <TextInput label="Precio:" v-model="extraPrice" />
+              <TextInput label="Descripción:" v-model="extraDescription" />
               <button type="submit" class="btn btn-primary mt-4 self-end text-white">
                 <LoadingSpinner v-if="loadingSpinner" />
                 Guardar
@@ -185,20 +301,23 @@ onMounted(() => {
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
               <li>
                 <a class="font-bold" @click="tab = 'details'">Detalles</a>
-                <ul>
-                  <li><a>Info. Comprador</a></li>
-                  <li><a>Extras</a></li>
-                  <li><a>Documentación</a></li>
-                  <li><a>Más info</a></li>
+                <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a' }">
+                  <li><a @click="tab = 'details'">Info. facturación</a></li>
+                  <li><a @click="tab = 'details'">Extras</a></li>
+                  <li><a @click="tab = 'details'">Más info</a></li>
                 </ul>
               </li>
               <li><a class="font-bold" @click="tab = 'payments'">Pagos</a></li>
             </ul>
           </aside>
           <section class="flex w-full flex-1 flex-col">
-            <div v-if="tab === 'details'" class="flex w-full flex-col gap-8">
-              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h2 class="text-xl font-medium">Información de la venta</h2>
+            <div
+              v-scroll-spy="{ offset: 120 }"
+              v-if="tab === 'details'"
+              class="flex w-full flex-col gap-8"
+            >
+              <div class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <h1 class="text-xl font-medium">Información de facturación</h1>
                 <SelectInput
                   label="Vendedor:"
                   :options="sellerOptions"
@@ -212,7 +331,6 @@ onMounted(() => {
                     option="Empresa"
                     v-model="isCompany"
                     class="my-4 w-fit"
-                    @changed="toggleReserve"
                   />
                   <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
                     <SelectInput
@@ -249,7 +367,7 @@ onMounted(() => {
                       <span class="label-text font-medium">Dirección:</span>
                     </div>
                     <GMapAutocomplete
-                      @place_changed="setBuyerPlace"
+                      @place_changed="console.log('si')"
                       class="input input-bordered w-full"
                     >
                     </GMapAutocomplete>
@@ -299,74 +417,8 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h2 class="text-xl font-medium">Vehículos</h2>
-                <div role="tablist" class="tabs tabs-bordered mx-auto">
-                  <input
-                    type="radio"
-                    name="vehicles-tabs"
-                    role="tab"
-                    class="tab"
-                    aria-label="Venta"
-                    checked
-                  />
-                  <div role="tabpanel" class="tab-content p-10">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                      <TextInput label="Bastidor:" v-model="Vehicle" />
-                      <TextInput label="Matrícula:" v-model="Vehicle" />
-                      <TextInput label="Marca:" v-model="Vehicle" />
-                      <TextInput label="Modelo:" v-model="Vehicle" />
-                      <TextInput label="Versión:" v-model="Vehicle" />
-                      <TextInput label="Matriculación:" v-model="Vehicle" />
-                      <TextInput label="Combustible:" v-model="Vehicle" />
-                      <TextInput label="Kms:" v-model="Vehicle" />
-                    </div>
-                  </div>
-
-                  <input
-                    type="radio"
-                    name="vehicles-tabs"
-                    role="tab"
-                    class="tab"
-                    aria-label="Compra"
-                  />
-                  <div role="tabpanel" class="tab-content p-10">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                      <TextInput label="Bastidor:" v-model="Vehicle" />
-                      <TextInput label="Matrícula:" v-model="Vehicle" />
-                      <TextInput label="Marca:" v-model="Vehicle" />
-                      <TextInput label="Modelo:" v-model="Vehicle" />
-                      <TextInput label="Versión:" v-model="Vehicle" />
-                      <TextInput label="Matriculación:" v-model="Vehicle" />
-                      <TextInput label="Combustible:" v-model="Vehicle" />
-                      <TextInput label="Kms:" v-model="Vehicle" />
-                    </div>
-                  </div>
-
-                  <input
-                    type="radio"
-                    name="vehicles-tabs"
-                    role="tab"
-                    class="tab"
-                    aria-label="Compra"
-                  />
-                  <div role="tabpanel" class="tab-content p-10">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                      <TextInput label="Bastidor:" v-model="Vehicle" />
-                      <TextInput label="Matrícula:" v-model="Vehicle" />
-                      <TextInput label="Marca:" v-model="Vehicle" />
-                      <TextInput label="Modelo:" v-model="Vehicle" />
-                      <TextInput label="Versión:" v-model="Vehicle" />
-                      <TextInput label="Matriculación:" v-model="Vehicle" />
-                      <TextInput label="Combustible:" v-model="Vehicle" />
-                      <TextInput label="Kms:" v-model="Vehicle" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h2 class="text-xl font-medium">Extras</h2>
-                <VehicleTable>
+              <div class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <VehicleTable title="Extras" add @addBtn="drawerSection = 'extras'">
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
@@ -374,7 +426,7 @@ onMounted(() => {
                       header-class-name="z-0"
                       hide-footer
                       border-cell
-                      :headers="headersDocusign"
+                      :headers="headersExtras"
                       :items="extras"
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
@@ -399,19 +451,20 @@ onMounted(() => {
                         </span>
                       </template>
                       <template v-slot:item-id="{ id }">
-                        <button
-                          class="btn btn-square btn-error btn-xs"
-                          @click="contractConfirm(id)"
-                        >
-                          <Icon icon="mdi:trash-can-outline" />
-                        </button>
+                        <div class="w-14">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
                       </template>
                     </EasyDataTable>
                   </template>
-                  <template #drawer> </template>
                 </VehicleTable>
               </div>
-              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+              <div class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
                 <h2 class="text-xl font-medium">Más información</h2>
                 <AreaInput label="Comentarios Comerciales:" v-model="comments" />
                 <label class="form-control w-full">
@@ -419,16 +472,16 @@ onMounted(() => {
                     <span class="label-text font-medium">Dirección:</span>
                   </div>
                   <GMapAutocomplete
-                    @place_changed="setBuyerPlace"
+                    @place_changed="console.log('si')"
                     class="input input-bordered w-full"
                   >
                   </GMapAutocomplete>
                 </label>
                 <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-                  <TextInput label="Ciudad:" v-model="contactCity" />
-                  <TextInput label="Provincia:" v-model="contactRegion" />
-                  <TextInput label="País:" v-model="contactCountry" />
-                  <TextInput label="Código Postal:" v-model="contactZip" />
+                  <TextInput label="Ciudad:" v-model="deliveryCity" />
+                  <TextInput label="Provincia:" v-model="deliveryRegion" />
+                  <TextInput label="País:" v-model="deliveryCountry" />
+                  <TextInput label="Código Postal:" v-model="deliveryZip" />
                 </div>
               </div>
             </div>
@@ -436,10 +489,14 @@ onMounted(() => {
               <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
                 <h2 class="text-xl font-medium">Forma de pago</h2>
                 <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  <SelectInput label="Método de Pago:" v-model="Payment" />
-                  <TextInput label="Importe a financiar:" v-model="Payment" />
-                  <TextInput label="Meses de financiación:" v-model="Payment" />
-                  <TextInput label="Cuotas mensuales:" v-model="Payment" />
+                  <SelectInput
+                    label="Método de Pago:"
+                    v-model="paymentType"
+                    :options="options.paymentType"
+                  />
+                  <TextInput label="Importe a financiar:" v-model="paymentAmount" />
+                  <TextInput label="Meses de financiación:" v-model="paymentMonths" />
+                  <TextInput label="Cuotas mensuales:" v-model="paymentDues" />
                 </div>
                 <VehicleTable add title="Pagos">
                   <template #content>
@@ -449,95 +506,190 @@ onMounted(() => {
                       header-class-name="z-0"
                       hide-footer
                       border-cell
-                      :headers="headersDocusign"
-                      :items="extras"
+                      :headers="headersPayments"
+                      :items="payments"
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
-                      :loading="isFetchingExtras"
+                      :loading="isFetchingPayments"
                     >
-                      <template v-slot:item-files="{ files }">
-                        <div class="flex gap-2">
-                          <a
-                            v-for="(file, index) in files"
-                            :key="index"
-                            :href="file.file"
-                            target="_blank"
-                            class="btn btn-square btn-xs"
-                          >
-                            <Icon icon="mdi:download" />
-                          </a>
-                        </div>
+                      <template v-slot:item-payment_type="{ payment_type }">
+                        <span v-if="payment_type == 'counted'"> Contado </span>
+                        <span v-else> Financiado </span>
                       </template>
-                      <template v-slot:item-status="{ status }">
-                        <span class="badge badge-primary rounded-md px-3 py-1 text-white">
-                          {{ status.toUpperCase() }}
-                        </span>
+                      <template v-slot:item-payment_method="{ payment_method }">
+                        <span v-if="payment_method == 'cash'"> Efectivo </span>
+                        <span v-if="payment_method == 'card'"> Tarjeta </span>
+                        <span v-if="payment_method == 'transfer'"> Transferencia </span>
+                        <span v-if="payment_method == 'vehicle_exchange'"> Vehículo a cambio </span>
+                      </template>
+                      <template v-slot:item-amount="{ amount }">
+                        <span> {{ amount }} € </span>
                       </template>
                       <template v-slot:item-id="{ id }">
-                        <button
-                          class="btn btn-square btn-error btn-xs"
-                          @click="contractConfirm(id)"
-                        >
-                          <Icon icon="mdi:trash-can-outline" />
-                        </button>
+                        <div class="w-14">
+                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
+                            <Icon icon="mdi:pencil" />
+                          </button>
+                          <button
+                            class="btn btn-square btn-error btn-xs"
+                            @click="removePayment(id)"
+                          >
+                            <Icon icon="mdi:trash-can-outline" />
+                          </button>
+                        </div>
                       </template>
                     </EasyDataTable>
                   </template>
-                  <template #drawer> </template>
                 </VehicleTable>
               </div>
             </div>
           </section>
-          <aside class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
-            <div>
-              <h2 class="text-xl font-medium">Resumen de compra</h2>
+          <aside class="flex flex-col gap-8">
+            <div class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
+              <div>
+                <h2 class="text-xl font-medium">Resumen de compra</h2>
+                <div class="divider m-0"></div>
+              </div>
+              <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                <div v-if="vehicle.form_of_payment_type === 1">
+                  <span> Precio de compra: </span>
+                  <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                  <span> Financiado </span>
+                </div>
+                <div v-else>
+                  <span> Precio de compra: </span>
+                  <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                  <span> Contado </span>
+                </div>
+                <div v-for="extra of vehicle.extras" :key="extra.id">
+                  <span> Extra: </span>
+                  <span class="mr-2 text-right"> {{ extra.price }} € </span>
+                  <span> {{ extra.title }} </span>
+                </div>
+                <div v-for="discount of vehicle.discounts" :key="discount.id">
+                  <span> Descuento: </span>
+                  <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
+                    {{ discount.amount_fix }} €
+                  </span>
+                  <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
+                    {{ discount.amount_percent }} %
+                  </span>
+                  <span> {{ discount.title }} </span>
+                </div>
+                <div>
+                  <span class="font-bold"> Precio final: </span>
+                  <span class="mr-2 text-right font-bold">{{ vehicle.final_price }}</span>
+                  <span></span>
+                </div>
+              </div>
               <div class="divider m-0"></div>
-            </div>
-            <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
-              <div v-if="vehicle.form_of_payment_type === 1">
-                <span> Precio de compra: </span>
-                <span class="mr-2 text-right"> {{ vehicle.price }} </span>
-                <span> Financiado </span>
-              </div>
-              <div v-for="extra of vehicle.extras" :key="extra.id">
-                <span> Extra: </span>
-                <span class="mr-2 text-right"> {{ extra.price }} € </span>
-                <span> {{ extra.title }} </span>
-              </div>
-              <div v-for="discount of vehicle.discounts" :key="discount.id">
-                <span> Descuento: </span>
-                <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
-                  {{ discount.amount_fix }} €
-                </span>
-                <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
-                  {{ discount.amount_percent }} %
-                </span>
-                <span> {{ discount.title }} </span>
-              </div>
-              <div>
-                <span class="font-bold"> Precio final: </span>
-                <span class="mr-2 text-right font-bold">{{ vehicle.final_price }}</span>
-                <span></span>
+              <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                <div v-for="payment of vehicle.payments" :key="payment.id">
+                  <span> Importe de reserva: </span>
+                  <span class="mr-2 text-right"> {{ payment.amount }} € </span>
+                  <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
+                  <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
+                  <span v-if="payment.payment_method === 'cash'"> Contado </span>
+                  <span v-if="payment.payment_method === 'vehicle_exchange'">
+                    Vehiculo a cambio
+                  </span>
+                </div>
+                <div>
+                  <span class="font-bold"> Importe pendiente: </span>
+                  <span class="mr-2 text-right font-bold">
+                    {{ vehicle.pending_booking_amount }} €
+                  </span>
+                  <span></span>
+                </div>
               </div>
             </div>
-            <div class="divider m-0"></div>
-            <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
-              <div v-for="payment of vehicle.payments" :key="payment.id">
-                <span> Importe de reserva: </span>
-                <span class="mr-2 text-right"> {{ payment.amount }} € </span>
-                <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
-                <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
-                <span v-if="payment.payment_method === 'cash'"> Contado </span>
-                <span v-if="payment.payment_method === 'vehicle_exchange'">
-                  Vehiculo a cambio
-                </span>
+            <template v-for="payment of vehicle.payments" :key="payment.id">
+              <div
+                v-if="
+                  payment.payment_method === 'vehicle_exchange' && payment.form_of_payment_vehicle
+                "
+                class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex"
+              >
+                <div>
+                  <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
+                  <div class="divider m-0"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-base">
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Marca: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.brand_details }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Modelo: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.model_details }}
+                    </span>
+                  </div>
+                  <!-- <div class="flex flex-col">
+                    <span class="font-bold"> Versión: </span>
+                    <span> falta en la api </span>
+                  </div> -->
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Bastidor: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.vin }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Matricula: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.plate }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Kms: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.kms }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Cambios: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.gearbox_details }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Combustible: </span>
+                    <span>
+                      {{ payment.form_of_payment_vehicle.fuel_details }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-bold"> Valoración: </span>
+                    <span> {{ payment.form_of_payment_vehicle.price }} € </span>
+                  </div>
+                </div>
               </div>
+            </template>
+            <div class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
               <div>
-                <span class="font-bold"> Importe pendiente: </span>
-                <span class="mr-2 text-right font-bold">
-                  {{ vehicle.pending_booking_amount }} €
-                </span>
-                <span></span>
+                <h2 class="text-xl font-medium">Documentos</h2>
+                <div class="divider m-0"></div>
+              </div>
+              <div
+                v-for="doc in galleryDocs"
+                :key="doc.id"
+                class="card card-side m-3 bg-base-100 shadow-xl"
+              >
+                <div class="card-body flex-row justify-between p-4">
+                  <div class="flex gap-2">
+                    <span class="badge badge-primary capitalize">{{ doc.status }}</span>
+                    <span class="text-sm">{{ doc.date_parsed }}</span>
+                    <span class="text-sm">{{ doc.sent_to }}</span>
+                  </div>
+                  <div class="self flex gap-2">
+                    <button class="btn btn-square btn-error btn-sm" @click="console.log(doc.id)">
+                      <Icon icon="mdi:delete" width="20" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
@@ -595,24 +747,17 @@ onMounted(() => {
     </div>
     <div class="drawer-side z-50 h-full w-full">
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
-      <ul class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]">
-        <PerformanceTest
-          :url="ptUrl"
-          :toggle="toggleDrawer"
-          :id="id"
-          :step="ptStep"
-          :testId="ptTestId"
-          @created="fetch"
-          @validate="fetchPT"
-        />
+      <ul class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-96 justify-between">
+        <ExtrasDrawer v-if="drawerSection === 'extras'" :toggle="toggleDrawer" />
       </ul>
     </div>
   </div>
 </template>
 
-<style>
-.activeSection {
-  background-color: #dcdddf;
+<style scoped>
+.active {
+  background-color: #dcdddf !important;
+  color: black !important;
   font-weight: 600;
 }
 </style>

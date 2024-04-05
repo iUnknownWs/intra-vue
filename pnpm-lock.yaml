@@ -41,6 +41,9 @@ dependencies:
   vue3-easy-data-table:
     specifier: ^1.5.47
     version: 1.5.47
+  vue3-scroll-spy:
+    specifier: ^1.0.8
+    version: 1.0.8
 
 devDependencies:
   '@iconify/vue':
@@ -607,6 +610,10 @@ packages:
   /@rushstack/eslint-patch@1.7.2:
     resolution: {integrity: sha512-RbhOOTCNoCrbfkRyoXODZp75MlpiHMgbE5MEBZAnnnLyQNgrigEj4p0lzsMDyc1zVsJDLrivB58tgg3emX0eEA==}
     dev: true
+
+  /@tweenjs/tween.js@18.6.4:
+    resolution: {integrity: sha512-lB9lMjuqjtuJrx7/kOkqQBtllspPIN+96OvTCeJ2j5FEzinoAXTdAMFnDAQT1KVPRlnYfBrqxtqP66vDM40xxQ==}
+    dev: false
 
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
@@ -3643,6 +3650,15 @@ packages:
   /vue3-easy-data-table@1.5.47:
     resolution: {integrity: sha512-q0bZBlWIwQ3FIhB+F98ylFPfBJWiS3Xv7QqBe3xS5MbRNZP96RFjaQn7C0Pi0J/aaucNW8gFWxPyh9NESS1ehw==}
     dependencies:
+      vue: 3.4.21
+    transitivePeerDependencies:
+      - typescript
+    dev: false
+
+  /vue3-scroll-spy@1.0.8:
+    resolution: {integrity: sha512-7MBIteXsisL40ZIueHxYZL8OJTqMUO0jx/2N7R1pWMs8pIgNvyVbzuxlDvcwRtOvJxtyeuylg9fWAmLqxPnR4A==}
+    dependencies:
+      '@tweenjs/tween.js': 18.6.4
       vue: 3.4.21
     transitivePeerDependencies:
       - typescript
