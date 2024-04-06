@@ -1,12 +1,20 @@
 <script setup>
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import options from '@/js/filterOptions'
 const props = defineProps({
   toggle: { type: Function, required: true },
   extras: { type: Array, required: true },
   id: { type: String, required: true }
 })
+
+const loading = ref(false)
+
+const emits = defineEmits(['added'])
+
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
 
 const extraCategory = ref(null)
 const extraValue = ref(null)
@@ -59,6 +67,7 @@ const extraSelected = () => {
 }
 
 const addExtra = () => {
+  loading.value = true
   axios
     .post(`${import.meta.env.VITE_SALES}/booking-extras/`, {
       booking: props.id,
@@ -66,11 +75,25 @@ const addExtra = () => {
     })
     .then(() => {
       props.toggle()
+      modalTitle.value = 'Extra añadido'
+      modalMessage.value = 'El extra ha sido añadido con éxito'
+      emits('added')
+      info.value.modal.showModal()
+    })
+    .catch((error) => {
+      console.error(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo añadir el extra'
+      info.value.modal.showModal()
+    })
+    .finally(() => {
+      loading.value = false
     })
 }
 </script>
 
 <template>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div>
     <DrawerTitle title="Añadir Extra" @toggle="toggle" />
     <SelectInput
@@ -92,6 +115,7 @@ const addExtra = () => {
     secondary="Cancelar"
     primary="Guardar"
     :disabled="!extraValue"
+    :loading="loading"
     @click-secondary="toggle"
     @click-primary="addExtra"
   />

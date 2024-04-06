@@ -4,10 +4,15 @@ import { ref, onMounted } from 'vue'
 import options from '@/js/filterOptions'
 const props = defineProps({
   toggle: { type: Function, required: true },
-  id: { type: Number, required: true }
+  id: { type: String, required: true }
 })
 
 const emits = defineEmits(['added'])
+
+const loading = ref(false)
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
 
 const paymentType = ref('counted')
 const paymentMethod = ref(null)
@@ -31,7 +36,21 @@ const typeSelected = () => {
   }
 }
 
+const reset = () => {
+  paymentType.value = 'counted'
+  paymentMethod.value = null
+  paymentAmount.value = null
+  vehicleVin.value = null
+  vehiclePlate.value = null
+  vehicleBrand.value = null
+  vehicleModel.value = null
+  vehicleFuel.value = null
+  vehicleGearbox.value = null
+  vehicleKms.value = null
+}
+
 const addPayment = () => {
+  loading.value = true
   const payload = {
     booking: props.id,
     payment_method: paymentMethod.value,
@@ -51,10 +70,25 @@ const addPayment = () => {
     }
   }
 
-  axios.post(`${import.meta.env.VITE_SALES}/payments/`, payload).then(() => {
-    props.toggle()
-    emits('added')
-  })
+  axios
+    .post(`${import.meta.env.VITE_SALES}/payments/`, payload)
+    .then(() => {
+      props.toggle()
+      emits('added')
+      modalTitle.value = 'Pago añadido'
+      modalMessage.value = 'El pago ha sido añadido con éxito'
+      info.value.modal.showModal()
+    })
+    .catch((error) => {
+      console.log(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'Se ha producido un error al intentar añadir el pago'
+      info.value.modal.showModal()
+    })
+    .finally(() => {
+      loading.value = false
+      reset()
+    })
 }
 
 const getModels = () => {
@@ -80,6 +114,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div>
     <DrawerTitle title="Añadir Pago" @toggle="toggle" />
     <SelectInput
@@ -146,6 +181,7 @@ onMounted(() => {
   <DrawerActions
     secondary="Cancelar"
     primary="Guardar"
+    :loading="loading"
     @click-secondary="toggle"
     @click-primary="addPayment"
   />

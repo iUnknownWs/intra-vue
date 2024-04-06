@@ -71,15 +71,15 @@ const navBtn5 = ref(null)
 const navs = [navBtn1, navBtn2, navBtn3, navBtn4, navBtn5]
 const tab1 = ref(null)
 const tab2 = ref(null)
+const tab3 = ref(null)
 const tab4 = ref(null)
 const tab5 = ref(null)
 const tab6 = ref(null)
 const tab7 = ref(null)
 const tab8 = ref(null)
 const tab9 = ref(null)
-const tab10 = ref(null)
-const tabs = [tab1, tab2, tab4, tab5, tab6, tab7, tab8]
-const tabs2 = [tab9, tab10]
+const tabs = [tab1, tab2, tab3, tab4, tab5, tab6, tab7]
+const tabs2 = [tab8, tab9]
 const scrollDown = ref(false)
 const scrollTop = ref(true)
 const category = ref([])
@@ -795,76 +795,61 @@ axios.get(bodyTypeUrl).then((response) => {
   }
 })
 
-const tabEvent1 = () => {
-  tab.value = 1
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+const tabEvent = (tabSelected) => {
+  if (tabSelected >= 1 && tabSelected <= 7) {
+    for (let tab of tabs) {
+      tab.value.classList.remove('tab-active')
+    }
+  } else {
+    for (let tab of tabs2) {
+      tab.value.classList.remove('tab-active')
+    }
   }
-  tab1.value.classList.add('tab-active')
-}
-
-const tabEvent2 = () => {
-  tab.value = 2
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 1) {
+    tab.value = 1
+    tab1.value.classList.add('tab-active')
+    basic.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab2.value.classList.add('tab-active')
-}
-
-const tabEvent4 = () => {
-  tab.value = 4
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 2) {
+    tab.value = 2
+    tab2.value.classList.add('tab-active')
+    prices.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab4.value.classList.add('tab-active')
-}
-
-const tabEvent5 = () => {
-  tab.value = 5
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 3) {
+    tab.value = 3
+    tab3.value.classList.add('tab-active')
+    comments.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab5.value.classList.add('tab-active')
-}
-
-const tabEvent6 = () => {
-  tab.value = 6
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 4) {
+    tab.value = 4
+    tab4.value.classList.add('tab-active')
+    maintenance.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab6.value.classList.add('tab-active')
-}
-
-const tabEvent7 = () => {
-  tab.value = 7
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 5) {
+    tab.value = 5
+    tab5.value.classList.add('tab-active')
+    extras.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab7.value.classList.add('tab-active')
-}
-
-const tabEvent8 = () => {
-  tab.value = 8
-  for (let tab of tabs) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 6) {
+    tab.value = 6
+    tab6.value.classList.add('tab-active')
+    discounts.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab8.value.classList.add('tab-active')
-}
-
-const tabEvent9 = () => {
-  tab.value = 9
-  for (let tab of tabs2) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 7) {
+    tab.value = 7
+    tab7.value.classList.add('tab-active')
+    technical.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab9.value.classList.add('tab-active')
-}
-
-const tabEvent10 = () => {
-  tab.value = 10
-  for (let tab of tabs2) {
-    tab.value.classList.remove('tab-active')
+  if (tabSelected === 8) {
+    tab.value = 8
+    tab8.value.classList.add('tab-active')
+    serialEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
-  tab10.value.classList.add('tab-active')
+  if (tabSelected === 9) {
+    tab.value = 9
+    tab9.value.classList.add('tab-active')
+    optionalEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+  }
 }
 
 const navEvent1 = () => {
@@ -1011,7 +996,6 @@ const fetchingExtras = () => {
       isFetchingExtras.value = false
     }
   }
-
   fetchData()
 }
 
@@ -1873,6 +1857,22 @@ const sumautoRemove = () => {
     })
 }
 
+const vehicleTab = ref('admin')
+const isAdmin = ref(true)
+const isEquip = ref(false)
+
+const adminActive = () => {
+  vehicleTab.value = 'admin'
+  isAdmin.value = true
+  isEquip.value = false
+}
+
+const equipActive = () => {
+  vehicleTab.value = 'equip'
+  isAdmin.value = false
+  isEquip.value = true
+}
+
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
@@ -2008,46 +2008,64 @@ onMounted(async () => {
           role="tablist"
           class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
-          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información básica</a>
-          <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Compra y precio</a>
-          <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
-          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
-          <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
-          <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
-          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Mas información</a>
+          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent(1)"
+            >Información básica</a
+          >
+          <a ref="tab2" role="tab" class="tab" @click="tabEvent(2)">Compra y precio</a>
+          <a ref="tab3" role="tab" class="tab" @click="tabEvent(3)">Comentarios</a>
+          <a ref="tab4" role="tab" class="tab" @click="tabEvent(4)">Mantenimiento</a>
+          <a ref="tab5" role="tab" class="tab" @click="tabEvent(5)">Extras</a>
+          <a ref="tab6" role="tab" class="tab" @click="tabEvent(6)">Descuentos</a>
+          <a ref="tab7" role="tab" class="tab" @click="tabEvent(7)">Mas información</a>
         </div>
         <div
           v-if="tab > 8 && tab < 11"
           role="tablist"
           class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
-          <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9">Equip de serie</a>
-          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equip opcional</a>
+          <a ref="tab8" role="tab" class="tab tab-active" @click="tabEvent(8)">Equip de serie</a>
+          <a ref="tab9" role="tab" class="tab" @click="tabEvent(8)">Equip opcional</a>
         </div>
         <main class="flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
-            <ul class="menu menu-sm w-56 rounded-box bg-base-100">
+            <ul
+              v-scroll-spy-link="{ selector: 'ul>li>a.menu-item' }"
+              v-scroll-spy-active="{ selector: 'ul>li>a.menu-item' }"
+              class="menu menu-sm w-56 rounded-box bg-base-100"
+            >
               <li>
-                <a class="font-bold" @click="tabEvent1">Admin</a>
-                <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a' }">
+                <a @click="adminActive" class="font-bold">Admin</a>
+                <ul>
                   <li>
-                    <a @click="tabEvent1">Información básica</a>
+                    <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Información básica</a>
                   </li>
-                  <li><a @click="tabEvent5">Compra y precio</a></li>
-                  <li><a @click="tabEvent6">Comentarios</a></li>
-                  <li><a @click="tabEvent4">Mantenimiento</a></li>
-                  <li><a @click="tabEvent7">Extras</a></li>
-                  <li><a @click="tabEvent8">Descuentos</a></li>
                   <li>
-                    <a @click="tabEvent2">Mas información</a>
+                    <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Compra y precio</a>
+                  </li>
+                  <li><a :class="{ 'menu-item': isAdmin }" @click="adminActive">Comentarios</a></li>
+                  <li>
+                    <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Mantenimiento</a>
+                  </li>
+                  <li><a :class="{ 'menu-item': isAdmin }" @click="adminActive">Extras</a></li>
+                  <li><a :class="{ 'menu-item': isAdmin }" @click="adminActive">Descuentos</a></li>
+                  <li>
+                    <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Mas información</a>
                   </li>
                 </ul>
               </li>
               <li>
-                <a class="font-bold" @click="tabEvent9">Equipamiento</a>
+                <a @click="equipActive" class="font-bold">Equipamiento</a>
                 <ul>
-                  <li><a ref="serialEquipTab" @click="tabEvent9">Equipamiento de serie</a></li>
-                  <li><a ref="optionalEquipTab" @click="tabEvent10">Equipamiento opcional</a></li>
+                  <li>
+                    <a :class="{ 'menu-item': isEquip }" @click="equipActive"
+                      >Equipamiento de serie</a
+                    >
+                  </li>
+                  <li>
+                    <a :class="{ 'menu-item': isEquip }" @click="equipActive"
+                      >Equipamiento opcional</a
+                    >
+                  </li>
                 </ul>
               </li>
               <li><a class="font-bold" @click="tab = 11">PT</a></li>
@@ -2056,138 +2074,249 @@ onMounted(async () => {
           </aside>
           <section class="flex w-full flex-1 flex-col">
             <VehicleAlert v-if="commentAlert" :message="commInternal" @btn="commentAlert = false" />
-            <div
-              v-scroll-spy="{ offset: 120 }"
-              v-if="tab > 0 && tab < 9"
-              class="flex w-full flex-col gap-8"
-            >
-              <div
-                ref="basic"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Información Básica</h1>
-                  <DropdownBtn>
-                    <template #btn>
-                      <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
-                      <button class="btn btn-circle btn-ghost lg:hidden">
-                        <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
-                      </button>
-                    </template>
-                    <template #content>
-                      <ul>
-                        <li><a @click="recalculateDistinctive">Recalcular etiqueta</a></li>
-                        <li><a @click="unlinkKey">Liberar llave</a></li>
-                      </ul>
-                    </template>
-                  </DropdownBtn>
+            <div v-scroll-spy="{ offset: 120 }" class="flex w-full flex-col gap-8">
+              <template v-if="vehicleTab === 'admin'">
+                <div
+                  ref="basic"
+                  v-if="tab >= 1 && tab <= 7"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Información Básica</h1>
+                    <DropdownBtn>
+                      <template #btn>
+                        <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
+                        <button class="btn btn-circle btn-ghost lg:hidden">
+                          <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
+                        </button>
+                      </template>
+                      <template #content>
+                        <ul>
+                          <li><a @click="recalculateDistinctive">Recalcular etiqueta</a></li>
+                          <li><a @click="unlinkKey">Liberar llave</a></li>
+                        </ul>
+                      </template>
+                    </DropdownBtn>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SelectInput
+                      label="Categoria web:"
+                      :options="options.categoria"
+                      v-model="category"
+                      :initialValue="null"
+                    />
+                    <SelectInput
+                      label="Carrocería:"
+                      :options="bodyTypeOptions"
+                      v-model="bodyType"
+                      :initialValue="null"
+                    />
+                    <SearchSelect
+                      label="Marca:"
+                      :options="brandOptions"
+                      v-model="brand"
+                      @selected="getModel"
+                    />
+                    <SearchSelect
+                      label="Marca web:"
+                      :options="webBrandOptions"
+                      v-model="webBrand"
+                    />
+                    <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
+                    <SearchSelect
+                      label="Modelo web:"
+                      :options="modelWebOptions"
+                      v-model="modelWeb"
+                    />
+                    <TextInput label="Bastidor:" v-model="chassis" />
+                    <TextInput label="Matricula:" v-model="plate" />
+                    <DateInput label="1º Matriculación:" v-model="license1" />
+                    <TextInput label="Km Actuales:" v-model="kms" />
+                    <SelectInput
+                      label="Combustible:"
+                      :options="options.combustible"
+                      v-model="fuel"
+                      :initialValue="null"
+                    />
+                    <SelectInput
+                      label="Cambio:"
+                      :options="options.cambio"
+                      v-model="gearBox"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Potencia (cv):" v-model="power" />
+                    <TextInput label="Tamaño (cc):" />
+                    <TextInput label="Puertas:" v-model="doors" />
+                    <SelectInput
+                      label="Distintivo:"
+                      :options="options.medioambiental"
+                      v-model="distinctive"
+                      :initialValue="null"
+                    />
+                    <DateInput label="Fabricación:" v-model="fabrication" />
+                    <TextInput label="Matricula Origen:" v-model="licenseOG" />
+                    <TextInput
+                      v-if="vehicle.key_locator"
+                      label="Llave asignada:"
+                      v-model="key"
+                      :disabled="true"
+                    />
+                    <SelectInput
+                      v-else
+                      label="Llave asignada:"
+                      :options="keysOptions"
+                      v-model="key"
+                      @selected="linkKey"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Nº llaves:" v-model="keysQ" />
+                  </div>
                 </div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <SelectInput
-                    label="Categoria web:"
-                    :options="options.categoria"
-                    v-model="category"
-                    :initialValue="null"
+                <div
+                  ref="prices"
+                  v-if="tab >= 1 && tab <= 7"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Información de compra</h1>
+                    <label
+                      v-if="addContract"
+                      for="vehicle-drawer"
+                      class="btn btn-outline btn-sm mb-2"
+                      @click="docusignDrawer()"
+                      >Generar contrato</label
+                    >
+                  </div>
+                  <CheckInput
+                    label="Gestión de venta:"
+                    v-model="sellManage"
+                    class="flex items-start"
                   />
-                  <SelectInput
-                    label="Carrocería:"
-                    :options="bodyTypeOptions"
-                    v-model="bodyType"
-                    :initialValue="null"
-                  />
-                  <SearchSelect
-                    label="Marca:"
-                    :options="brandOptions"
-                    v-model="brand"
-                    @selected="getModel"
-                  />
-                  <SearchSelect label="Marca web:" :options="webBrandOptions" v-model="webBrand" />
-                  <SearchSelect label="Modelo:" :options="modelOptions" v-model="model" />
-                  <SearchSelect label="Modelo web:" :options="modelWebOptions" v-model="modelWeb" />
-                  <TextInput label="Bastidor:" v-model="chassis" />
-                  <TextInput label="Matricula:" v-model="plate" />
-                  <DateInput label="1º Matriculación:" v-model="license1" />
-                  <TextInput label="Km Actuales:" v-model="kms" />
-                  <SelectInput
-                    label="Combustible:"
-                    :options="options.combustible"
-                    v-model="fuel"
-                    :initialValue="null"
-                  />
-                  <SelectInput
-                    label="Cambio:"
-                    :options="options.cambio"
-                    v-model="gearBox"
-                    :initialValue="null"
-                  />
-                  <TextInput label="Potencia (cv):" v-model="power" />
-                  <TextInput label="Tamaño (cc):" />
-                  <TextInput label="Puertas:" v-model="doors" />
-                  <SelectInput
-                    label="Distintivo:"
-                    :options="options.medioambiental"
-                    v-model="distinctive"
-                    :initialValue="null"
-                  />
-                  <DateInput label="Fabricación:" v-model="fabrication" />
-                  <TextInput label="Matricula Origen:" v-model="licenseOG" />
-                  <TextInput
-                    v-if="vehicle.key_locator"
-                    label="Llave asignada:"
-                    v-model="key"
-                    :disabled="true"
-                  />
-                  <SelectInput
-                    v-else
-                    label="Llave asignada:"
-                    :options="keysOptions"
-                    v-model="key"
-                    @selected="linkKey"
-                    :initialValue="null"
-                  />
-                  <TextInput label="Nº llaves:" v-model="keysQ" />
+                  <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SearchSelect
+                      label="Proveedor:"
+                      :options="providersOptions"
+                      v-model="provider"
+                    />
+                    <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
+                    <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                    <TextInput label="Precio de compra:" v-model="purchasePrice" />
+                    <SelectInput
+                      label="Régimen:"
+                      :options="regimenOptions"
+                      v-model="regimen"
+                      :initialValue="null"
+                    />
+                  </div>
+                  <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Nombre Completo:" v-model="sellerName" />
+                    <TextInput label="Importe de comisión:" v-model="commission" />
+                    <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                  </div>
+                  <div v-if="docusignContracts?.length > 0" class="my-8">
+                    <h2 class="text-xl font-medium">Documentos de compra</h2>
+                    <div class="divider m-0 p-0"></div>
+                    <VehicleTable>
+                      <template #content>
+                        <EasyDataTable
+                          class="table-dark table-striped"
+                          table-class-name="z-0"
+                          header-class-name="z-0"
+                          hide-footer
+                          border-cell
+                          :headers="headersDocusign"
+                          :items="docusignContracts"
+                          v-model:server-options="serverOptions"
+                          :server-items-length="serverItemsLength"
+                          :loading="isFetchingDocs"
+                        >
+                          <template v-slot:item-files="{ files }">
+                            <div class="flex gap-2">
+                              <a
+                                v-for="(file, index) in files"
+                                :key="index"
+                                :href="file.file"
+                                target="_blank"
+                                class="btn btn-square btn-xs"
+                              >
+                                <Icon icon="mdi:download" />
+                              </a>
+                            </div>
+                          </template>
+                          <template v-slot:item-status="{ status }">
+                            <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                              {{ status.toUpperCase() }}
+                            </span>
+                          </template>
+                          <template v-slot:item-id="{ id }">
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="contractConfirm(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </template>
+                        </EasyDataTable>
+                      </template>
+                      <template #drawer> </template>
+                    </VehicleTable>
+                  </div>
+                  <div class="mt-4 flex flex-col">
+                    <div class="flex flex-row justify-between">
+                      <h1 class="text-xl font-medium">Configuración de precio</h1>
+                      <label
+                        for="vehicle-drawer"
+                        class="btn btn-outline btn-sm"
+                        @click="drawerFinance"
+                        >Conf. Financiera
+                      </label>
+                    </div>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Precio de venta:" v-model="price" />
+                    <TextInput label="Precio financiado:" v-model="financed" />
+                    <TextInput label="Meses de financiación:" v-model="financingMonths" />
+                    <TextInput label="Cuota financiación:" v-model="financingQ" />
+                    <TextInput label="Reserva:" v-model="reserve" />
+                    <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
+                  </div>
                 </div>
-              </div>
-              <div
-                ref="prices"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Información de compra</h1>
-                  <label
-                    v-if="addContract"
-                    for="vehicle-drawer"
-                    class="btn btn-outline btn-sm mb-2"
-                    @click="docusignDrawer()"
-                    >Generar contrato</label
-                  >
+                <div
+                  v-if="tab >= 1 && tab <= 7"
+                  ref="comments"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div>
+                    <h2 class="text-xl font-medium">Comentarios Internos</h2>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
+                  <AreaInput v-model="commInternal" />
+                  <div class="mt-8">
+                    <h2 class="text-xl font-medium">Comentarios Externos</h2>
+                    <div class="divider m-0 p-0"></div>
+                  </div>
+                  <AreaInput v-model="commExternal" />
                 </div>
-                <CheckInput
-                  label="Gestión de venta:"
-                  v-model="sellManage"
-                  class="flex items-start"
-                />
-                <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <SearchSelect label="Proveedor:" :options="providersOptions" v-model="provider" />
-                  <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
-                  <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-                  <TextInput label="Precio de compra:" v-model="purchasePrice" />
-                  <SelectInput
-                    label="Régimen:"
-                    :options="regimenOptions"
-                    v-model="regimen"
-                    :initialValue="null"
-                  />
-                </div>
-                <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Nombre Completo:" v-model="sellerName" />
-                  <TextInput label="Importe de comisión:" v-model="commission" />
-                  <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-                </div>
-                <div v-if="docusignContracts?.length > 0" class="my-8">
-                  <h2 class="text-xl font-medium">Documentos de compra</h2>
+                <div
+                  ref="maintenance"
+                  v-if="tab >= 1 && tab <= 7"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <h1 class="text-xl font-medium">Mantenimiento</h1>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Propietarios:" v-model="owners" />
+                    <DateInput label="Vencimiento ITV:" v-model="itvExp" />
+                  </div>
+                  <h2>Libro de revisiones</h2>
                   <div class="divider m-0 p-0"></div>
-                  <VehicleTable>
+                </div>
+                <div
+                  ref="extras"
+                  v-if="tab >= 1 && tab <= 7"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
                     <template #content>
                       <EasyDataTable
                         class="table-dark table-striped"
@@ -2195,349 +2324,273 @@ onMounted(async () => {
                         header-class-name="z-0"
                         hide-footer
                         border-cell
-                        :headers="headersDocusign"
-                        :items="docusignContracts"
+                        :headers="headersExtra"
+                        :items="itemsExtra"
                         v-model:server-options="serverOptions"
                         :server-items-length="serverItemsLength"
-                        :loading="isFetchingDocs"
+                        :loading="isFetchingExtras"
                       >
-                        <template v-slot:item-files="{ files }">
-                          <div class="flex gap-2">
-                            <a
-                              v-for="(file, index) in files"
-                              :key="index"
-                              :href="file.file"
-                              target="_blank"
-                              class="btn btn-square btn-xs"
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeExtra(id)"
                             >
-                              <Icon icon="mdi:download" />
-                            </a>
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
                           </div>
                         </template>
-                        <template v-slot:item-status="{ status }">
-                          <span class="badge badge-primary rounded-md px-3 py-1 text-white">
-                            {{ status.toUpperCase() }}
-                          </span>
+                      </EasyDataTable>
+                    </template>
+                  </VehicleTable>
+                </div>
+                <div
+                  ref="discounts"
+                  v-if="tab >= 1 && tab <= 7"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
+                    <template #content>
+                      <EasyDataTable
+                        class="z-0"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        buttons-pagination
+                        :headers="headersDiscounts"
+                        :items="itemsDiscount"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingDiscounts"
+                      >
+                        <template v-slot:item-id="{ id }">
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeDiscount(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
+                        </template>
+                      </EasyDataTable>
+                    </template>
+                  </VehicleTable>
+                </div>
+                <div
+                  ref="technical"
+                  v-if="tab >= 1 && tab <= 7"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <div class="flex flex-row justify-between">
+                    <h1 class="text-xl font-medium">Más información</h1>
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <SelectInput
+                      label="Tracción:"
+                      :options="driveOptions"
+                      v-model="drives"
+                      :initialValue="null"
+                    />
+                    <TextInput label="Marchas:" v-model="gears" />
+                    <TextInput label="Velocidad Máxima:" v-model="speed" />
+                    <TextInput label="Aceleración 0/100:" v-model="acceleration" />
+                  </div>
+                  <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
+                  <div class="divider m-0 p-0"></div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Consumo ambiente:" v-model="environment" />
+                    <TextInput label="Consumo en carretera:" v-model="road" />
+                    <TextInput label="En ciudad:" v-model="city" />
+                    <TextInput label="Emisiones CO2:" v-model="co2" />
+                  </div>
+                  <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
+                  <div class="divider m-0 p-0"></div>
+                  <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                    <TextInput label="Longitud:" v-model="length" />
+                    <TextInput label="Altura:" v-model="height" />
+                    <TextInput label="Tara:" v-model="tare" />
+                  </div>
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  ref="serialEquip"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                >
+                  <VehicleTable
+                    title="Equipamiento de serie"
+                    @addBtn="drawerSection = 'SERIAL'"
+                    add
+                  >
+                    <template #content>
+                      <EasyDataTable
+                        class="table-dark table-striped"
+                        table-class-name="z-0"
+                        header-class-name="z-0"
+                        hide-footer
+                        border-cell
+                        :headers="headersEquip"
+                        :items="serialEquipItems"
+                        v-model:server-options="serverOptions"
+                        :server-items-length="serverItemsLength"
+                        :loading="isFetchingEquip"
+                      >
+                        <template v-slot:item-web="{ id, show_in_web }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="show_in_web"
+                            @click="webEquip(id, show_in_web, 0)"
+                          />
+                        </template>
+                        <template v-slot:item-featured="{ id, is_featured }">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            :checked="is_featured"
+                            @click="webEquip(id, is_featured, 1)"
+                          />
                         </template>
                         <template v-slot:item-id="{ id }">
-                          <button
-                            class="btn btn-square btn-error btn-xs"
-                            @click="contractConfirm(id)"
-                          >
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
+                          <div class="w-14">
+                            <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                              <Icon icon="mdi:pencil" />
+                            </button>
+                            <button
+                              class="btn btn-square btn-error btn-xs"
+                              @click="removeEquip(id)"
+                            >
+                              <Icon icon="mdi:trash-can-outline" />
+                            </button>
+                          </div>
                         </template>
                       </EasyDataTable>
                     </template>
                     <template #drawer> </template>
                   </VehicleTable>
                 </div>
-                <div class="mt-4 flex flex-col">
-                  <div class="flex flex-row justify-between">
-                    <h1 class="text-xl font-medium">Configuración de precio</h1>
-                    <label
-                      for="vehicle-drawer"
-                      class="btn btn-outline btn-sm"
-                      @click="drawerFinance"
-                      >Conf. Financiera
-                    </label>
-                  </div>
-                  <div class="divider m-0 p-0"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Precio de venta:" v-model="price" />
-                  <TextInput label="Precio financiado:" v-model="financed" />
-                  <TextInput label="Meses de financiación:" v-model="financingMonths" />
-                  <TextInput label="Cuota financiación:" v-model="financingQ" />
-                  <TextInput label="Reserva:" v-model="reserve" />
-                  <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
-                </div>
-              </div>
-              <div
-                ref="comments"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
                 <div>
-                  <h2 class="text-xl font-medium">Comentarios Internos</h2>
-                  <div class="divider m-0 p-0"></div>
-                </div>
-                <AreaInput v-model="commInternal" />
-                <div class="mt-8">
-                  <h2 class="text-xl font-medium">Comentarios Externos</h2>
-                  <div class="divider m-0 p-0"></div>
-                </div>
-                <AreaInput v-model="commExternal" />
-              </div>
-              <div
-                ref="maintenance"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <h1 class="text-xl font-medium">Mantenimiento</h1>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Propietarios:" v-model="owners" />
-                  <DateInput label="Vencimiento ITV:" v-model="itvExp" />
-                </div>
-                <h2>Libro de revisiones</h2>
-                <div class="divider m-0 p-0"></div>
-              </div>
-              <div
-                ref="extras"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersExtra"
-                      :items="itemsExtra"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingExtras"
+                  <div
+                    ref="optionalEquip"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                  >
+                    <VehicleTable
+                      title="Opcional sin coste"
+                      @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
+                      add
                     >
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
+                      <template #content>
+                        <EasyDataTable
+                          class="table-dark table-striped"
+                          table-class-name="z-0"
+                          header-class-name="z-0"
+                          hide-footer
+                          border-cell
+                          :headers="headersEquip"
+                          :items="freeEquipItems"
+                          v-model:server-options="serverOptions"
+                          :server-items-length="serverItemsLength"
+                          :loading="isFetchingEquip"
+                        >
+                          <template v-slot:item-web="{ id, show_in_web }">
+                            <input
+                              type="checkbox"
+                              class="checkbox"
+                              :checked="show_in_web"
+                              @click="webEquip(id, show_in_web, 0)"
+                            />
+                          </template>
+                          <template v-slot:item-featured="{ id, is_featured }">
+                            <input
+                              type="checkbox"
+                              class="checkbox"
+                              :checked="is_featured"
+                              @click="webEquip(id, is_featured, 1)"
+                            />
+                          </template>
+                          <template v-slot:item-id="{ id }">
+                            <div class="w-14">
+                              <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                                <Icon icon="mdi:pencil" />
+                              </button>
+                              <button
+                                class="btn btn-square btn-error btn-xs"
+                                @click="removeEquip(id)"
+                              >
+                                <Icon icon="mdi:trash-can-outline" />
+                              </button>
+                            </div>
+                          </template>
+                        </EasyDataTable>
                       </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="discounts"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
-                  <template #content>
-                    <EasyDataTable
-                      class="z-0"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      buttons-pagination
-                      :headers="headersDiscounts"
-                      :items="itemsDiscount"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingDiscounts"
+                      <template #drawer> </template>
+                    </VehicleTable>
+                  </div>
+                  <div
+                    ref="paidEquip"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+                  >
+                    <VehicleTable
+                      title="Opcional con coste"
+                      @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
+                      add
                     >
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button
-                            class="btn btn-square btn-error btn-xs"
-                            @click="removeDiscount(id)"
-                          >
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
+                      <template #content>
+                        <EasyDataTable
+                          class="table-dark table-striped"
+                          table-class-name="z-0"
+                          header-class-name="z-0"
+                          hide-footer
+                          border-cell
+                          :headers="headersEquip"
+                          :items="paidEquipItems"
+                          v-model:server-options="serverOptions"
+                          :server-items-length="serverItemsLength"
+                          :loading="isFetchingEquip"
+                        >
+                          <template v-slot:item-web="{ id, show_in_web }">
+                            <input
+                              type="checkbox"
+                              class="checkbox"
+                              :checked="show_in_web"
+                              @click="webEquip(id, show_in_web, 0)"
+                            />
+                          </template>
+                          <template v-slot:item-featured="{ id, is_featured }">
+                            <input
+                              type="checkbox"
+                              class="checkbox"
+                              :checked="is_featured"
+                              @click="webEquip(id, is_featured, 1)"
+                            />
+                          </template>
+                          <template v-slot:item-id="{ id }">
+                            <div class="w-14">
+                              <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
+                                <Icon icon="mdi:pencil" />
+                              </button>
+                              <button
+                                class="btn btn-square btn-error btn-xs"
+                                @click="removeEquip(id)"
+                              >
+                                <Icon icon="mdi:trash-can-outline" />
+                              </button>
+                            </div>
+                          </template>
+                        </EasyDataTable>
                       </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="technical"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <div class="flex flex-row justify-between">
-                  <h1 class="text-xl font-medium">Más información</h1>
+                    </VehicleTable>
+                  </div>
                 </div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <SelectInput
-                    label="Tracción:"
-                    :options="driveOptions"
-                    v-model="drives"
-                    :initialValue="null"
-                  />
-                  <TextInput label="Marchas:" v-model="gears" />
-                  <TextInput label="Velocidad Máxima:" v-model="speed" />
-                  <TextInput label="Aceleración 0/100:" v-model="acceleration" />
-                </div>
-                <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
-                <div class="divider m-0 p-0"></div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Consumo ambiente:" v-model="environment" />
-                  <TextInput label="Consumo en carretera:" v-model="road" />
-                  <TextInput label="En ciudad:" v-model="city" />
-                  <TextInput label="Emisiones CO2:" v-model="co2" />
-                </div>
-                <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
-                <div class="divider m-0 p-0"></div>
-                <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                  <TextInput label="Longitud:" v-model="length" />
-                  <TextInput label="Altura:" v-model="height" />
-                  <TextInput label="Tara:" v-model="tare" />
-                </div>
-              </div>
-            </div>
-            <div v-if="tab > 8 && tab < 11" class="flex flex-col gap-8">
-              <div
-                ref="serialEquip"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Equipamiento de serie" @addBtn="drawerSection = 'SERIAL'" add>
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersEquip"
-                      :items="serialEquipItems"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
-                    >
-                      <template v-slot:item-web="{ id, show_in_web }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="show_in_web"
-                          @click="webEquip(id, show_in_web, 0)"
-                        />
-                      </template>
-                      <template v-slot:item-featured="{ id, is_featured }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="is_featured"
-                          @click="webEquip(id, is_featured, 1)"
-                        />
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                  <template #drawer> </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="optionalEquip"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable
-                  title="Opcional sin coste"
-                  @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
-                  add
-                >
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersEquip"
-                      :items="freeEquipItems"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
-                    >
-                      <template v-slot:item-web="{ id, show_in_web }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="show_in_web"
-                          @click="webEquip(id, show_in_web, 0)"
-                        />
-                      </template>
-                      <template v-slot:item-featured="{ id, is_featured }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="is_featured"
-                          @click="webEquip(id, is_featured, 1)"
-                        />
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                  <template #drawer> </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="paidEquip"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable
-                  title="Opcional con coste"
-                  @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
-                  add
-                >
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersEquip"
-                      :items="paidEquipItems"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingEquip"
-                    >
-                      <template v-slot:item-web="{ id, show_in_web }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="show_in_web"
-                          @click="webEquip(id, show_in_web, 0)"
-                        />
-                      </template>
-                      <template v-slot:item-featured="{ id, is_featured }">
-                        <input
-                          type="checkbox"
-                          class="checkbox"
-                          :checked="is_featured"
-                          @click="webEquip(id, is_featured, 1)"
-                        />
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 2)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeEquip(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
+              </template>
             </div>
             <div
               v-if="tab === 11"

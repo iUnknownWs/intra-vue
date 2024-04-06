@@ -10,6 +10,7 @@ import TextInput from '@/components/TextInput.vue'
 import ExtrasDrawer from '@/components/Reserva/ExtrasDrawer.vue'
 import PaymentDrawer from '@/components/Reserva/PaymentDrawer.vue'
 import PaymentsDrawer from '@/components/Reserva/PaymentsDrawer.vue'
+import CardMobile from '@/components/Reserva/CardMobile.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -24,8 +25,32 @@ const tab = ref('details')
 const isCompany = ref(false)
 const extras = ref([])
 
+const tab1 = ref(null)
+const tab2 = ref(null)
+const tab3 = ref(null)
+const tabs = [tab1, tab2, tab3]
+const navBtn1 = ref(null)
+const navBtn2 = ref(null)
+const navBtn3 = ref(null)
+const navBtn4 = ref(null)
+
+const tabEvent = (tabSelected) => {
+  for (let tab of tabs) {
+    tab.value.classList.remove('tab-active')
+  }
+  if (tabSelected === 1) {
+    tab1.value.classList.add('tab-active')
+  }
+  if (tabSelected === 2) {
+    tab2.value.classList.add('tab-active')
+  }
+  if (tabSelected === 3) {
+    tab3.value.classList.add('tab-active')
+  }
+}
+
 const edit = ref(null)
-const infoModal = ref(null)
+const info = ref(null)
 const confirm = ref(null)
 const modalTitle = ref('')
 const modalMessage = ref('')
@@ -78,7 +103,7 @@ const getVehicle = () => {
       paymentMonths.value = vehicle.value.form_of_payment_financed_amount_fees
       paymentDues.value = vehicle.value.form_of_payment_financed_fee
       axios
-        .get(`${import.meta.env.VITE_API}/vehicles-extras/?vehicle__in=${id.value}`)
+        .get(`${import.meta.env.VITE_API}/vehicles-extras/?vehicle__in=${vehicle.value.vehicle.id}`)
         .then((response) => {
           extras.value = response.data.results
         })
@@ -131,9 +156,15 @@ const updateData = () => {
     })
     .then((response) => {
       console.log(response)
+      modalTitle.value = 'Información actualizada'
+      modalMessage.value = 'La información ha sido actualizada con éxito'
+      info.value.modal.showModal()
     })
     .catch((error) => {
       console.error(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'Se ha producido un error al intentar actualizar la información'
+      info.value.modal.showModal()
     })
     .finally(() => {
       loading.value = false
@@ -263,8 +294,10 @@ const paymentDues = ref(null)
 const isFetchingPayments = ref(true)
 const paymentType = ref(null)
 const paymentId = ref(null)
+const loadingPayment = ref(false)
 
 const updatePayments = () => {
+  loadingPayment.value = true
   axios
     .patch(`${import.meta.env.VITE_SALES}/bookings/${id.value}/`, {
       form_of_payment_type: paymentType.value,
@@ -274,16 +307,30 @@ const updatePayments = () => {
     })
     .then(() => {
       getVehicle()
+      modalTitle.value = 'Pago actualizado'
+      modalMessage.value = 'El pago ha sido actualizado con éxito'
+      info.value.modal.showModal()
     })
     .catch((error) => {
       console.error(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo actualizar el pago'
+      info.value.modal.showModal()
+    })
+    .finally(() => {
+      loadingPayment.value = false
     })
 }
 
-const paymentsDrawer = (id) => {
-  drawerSection.value = 'payment'
-  paymentId.value = id
-  toggleDrawer()
+const payment = ref({})
+
+const paymentDrawer = (id) => {
+  axios.get(`${import.meta.env.VITE_SALES}/payments/${id}/`).then((response) => {
+    payment.value = response.data
+    drawerSection.value = 'payment'
+    paymentId.value = id
+    toggleDrawer()
+  })
 }
 
 const headersPayments = [
@@ -325,7 +372,10 @@ const editModal = (id, mode) => {
   edit.value.showModal()
 }
 
+const loadingExtra = ref(false)
+
 const updateExtra = () => {
+  loadingExtra.value = true
   axios
     .put(`${import.meta.env.VITE_SALES}/booking-extras/${modalId.value}/`, {
       title: extraTitle.value,
@@ -337,9 +387,18 @@ const updateExtra = () => {
     .then(() => {
       getVehicle()
       edit.value.close()
+      modalTitle.value = 'Extra actualizado'
+      modalMessage.value = 'El extra ha sido actualizado con éxito'
+      info.value.modal.showModal()
     })
     .catch((error) => {
       console.error(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo actualizar el extra'
+      info.value.modal.showModal()
+    })
+    .finally(() => {
+      loadingExtra.value = false
     })
 }
 
@@ -379,7 +438,7 @@ onMounted(() => {
   <div class="drawer drawer-end">
     <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
-      <ModalInfo class="w-full" ref="infoModal" :title="modalTitle" :message="modalMessage" />
+      <ModalInfo class="w-full" ref="info" :title="modalTitle" :message="modalMessage" />
       <ModalConfirm
         class="w-full"
         ref="confirm"
@@ -400,8 +459,8 @@ onMounted(() => {
               <TextInput label="Precio:" v-model="extraPrice" />
               <TextInput label="Descripción:" v-model="extraDescription" />
               <button type="submit" class="btn btn-primary mt-4 self-end text-white">
-                <LoadingSpinner v-if="loadingSpinner" />
-                Guardar
+                <LoadingSpinner v-if="loadingExtra" />
+                <span v-else class="font-semibold text-white">Guardar</span>
               </button>
             </form>
           </div>
@@ -410,18 +469,21 @@ onMounted(() => {
       <HeaderMain class="pb-16">
         <header class="flex flex-col items-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
-          <CardDetails v-else :reserve="vehicle" />
+          <template v-else>
+            <CardDetails :reserve="vehicle" class="hidden lg:flex" />
+            <CardMobile :reserve="vehicle" class="lg:hidden" />
+          </template>
         </header>
         <div
           v-if="tab === 'details'"
           role="tablist"
-          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
+          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit text-nowrap bg-white py-4 lg:hidden"
         >
-          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Info. facturación</a>
-          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Extras</a>
-          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Más info</a>
+          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent(1)">Info facturación</a>
+          <a ref="tab2" role="tab" class="tab" @click="tabEvent(2)">Extras</a>
+          <a ref="tab3" role="tab" class="tab" @click="tabEvent(3)">Más info</a>
         </div>
-        <section class="my-10 flex w-full flex-col gap-6 lg:flex-row">
+        <section class="my-4 flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
               <li>
@@ -633,7 +695,8 @@ onMounted(() => {
                   class="btn btn-primary mt-4 w-fit self-end text-white"
                   @click="updatePayments"
                 >
-                  Guardar
+                  <LoadingSpinner v-if="loadingPayment" />
+                  <span v-else class="font-semibold text-white">Guardar</span>
                 </button>
               </div>
               <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
@@ -653,6 +716,9 @@ onMounted(() => {
                     >
                       <template v-slot:item-payment_type="{ payment_type }">
                         <span v-if="payment_type == 'counted'"> Contado </span>
+                        <span v-else-if="payment_type == 'booking_pre_order_payment'">
+                          Pago reservado
+                        </span>
                         <span v-else> Financiado </span>
                       </template>
                       <template v-slot:item-payment_method="{ payment_method }">
@@ -666,7 +732,7 @@ onMounted(() => {
                       </template>
                       <template v-slot:item-id="{ id }">
                         <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="paymentsDrawer(id)">
+                          <button class="btn btn-square btn-xs mr-2" @click="paymentDrawer(id)">
                             <Icon icon="mdi:pencil" />
                           </button>
                           <button
@@ -887,9 +953,27 @@ onMounted(() => {
     <div class="drawer-side z-50 h-full w-full">
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
       <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
-        <ExtrasDrawer v-if="drawerSection === 'extras'" :toggle="toggleDrawer" :extras="extras" :id="id" />
-        <PaymentDrawer v-if="drawerSection === 'payment'" :toggle="toggleDrawer" :id="paymentId" />
-      <PaymentsDrawer v-if="drawerSection === 'payments'" :toggle="toggleDrawer" :id="id" @added="getVehicle" />
+        <ExtrasDrawer
+          v-if="drawerSection === 'extras'"
+          :toggle="toggleDrawer"
+          :extras="extras"
+          :id="id"
+          @added="getVehicle"
+        />
+        <PaymentDrawer
+          v-if="drawerSection === 'payment'"
+          :toggle="toggleDrawer"
+          :id="paymentId"
+          :payment="payment"
+          @added="getVehicle"
+          :key="paymentId"
+        />
+        <PaymentsDrawer
+          v-if="drawerSection === 'payments'"
+          :toggle="toggleDrawer"
+          :id="id"
+          @added="getVehicle"
+        />
       </ul>
     </div>
   </div>

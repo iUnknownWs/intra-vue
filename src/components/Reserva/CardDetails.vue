@@ -124,7 +124,7 @@ defineProps({
       <div class="divider divider-horizontal"></div>
       <div class="flex w-full flex-row gap-4">
         <button class="btn btn-accent text-white" @click="reserveClick">Entregar</button>
-        <button class="btn btn-outline" @click="cancelClick">Opciones</button>
+        <button class="btn btn-outline" @click="cancelClick">Acciones</button>
       </div>
     </div>
   </div>

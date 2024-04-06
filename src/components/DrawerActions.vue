@@ -18,7 +18,7 @@ defineEmits(['click-primary', 'click-secondary'])
       :disabled="disabled"
     >
       <LoadingSpinner v-if="loading" />
-      <span v-else>{{ primary }}</span>
+      <span v-else class="font-semibold text-white">{{ primary }}</span>
     </button>
   </li>
 </template>

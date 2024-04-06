@@ -4,8 +4,16 @@ import { ref, onMounted } from 'vue'
 import options from '@/js/filterOptions'
 const props = defineProps({
   toggle: { type: Function, required: true },
+  payment: { type: Object, required: true },
   id: { type: Number, required: true }
 })
+
+const loading = ref(false)
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
+
+const emits = defineEmits(['added'])
 
 const paymentType = ref(null)
 const paymentMethod = ref(null)
@@ -21,6 +29,27 @@ const vehicleKms = ref([])
 const vehicleBrands = ref([])
 const vehicleModels = ref([])
 
+paymentMethod.value = props.payment.payment_method
+paymentType.value = props.payment.payment_type
+paymentAmount.value = props.payment.amount
+
+if (props.payment.form_of_payment_vehicle) {
+  vehicleVin.value = props.payment.form_of_payment_vehicle.vin
+  vehiclePlate.value = props.payment.form_of_payment_vehicle.plate
+  vehicleBrand.value = props.payment.form_of_payment_vehicle.brand
+  vehicleModel.value = props.payment.form_of_payment_vehicle.model_car
+  vehicleFuel.value = props.payment.form_of_payment_vehicle.fuel
+  vehicleGearbox.value = props.payment.form_of_payment_vehicle.gearbox
+  vehicleKms.value = props.payment.form_of_payment_vehicle.kms
+  axios
+    .get(
+      `${import.meta.env.VITE_API}/vehicles-models-web/?brand_web=${vehicleBrand.value}&limit=200`
+    )
+    .then((response) => {
+      vehicleModels.value = response.data.results
+    })
+}
+
 const typeSelected = () => {
   if (paymentType.value === 'financed') {
     paymentMethod.value = 'transfer'
@@ -30,6 +59,7 @@ const typeSelected = () => {
 }
 
 const updatePayment = () => {
+  loading.value = true
   const payload = {
     payment_method: paymentMethod.value,
     payment_type: paymentType.value,
@@ -48,9 +78,24 @@ const updatePayment = () => {
     }
   }
 
-  axios.patch(`${import.meta.env.VITE_SALES}/payments/${props.id}/`, payload).then(() => {
-    props.toggle()
-  })
+  axios
+    .patch(`${import.meta.env.VITE_SALES}/payments/${props.id}/`, payload)
+    .then(() => {
+      props.toggle()
+      emits('added')
+      modalTitle.value = 'Pago actualizado'
+      modalMessage.value = 'El pago ha sido actualizado con éxito'
+      info.value.modal.showModal()
+    })
+    .catch((error) => {
+      console.log(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'Se ha producido un error al intentar actualizar el pago'
+      info.value.modal.showModal()
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const getModels = () => {
@@ -69,27 +114,6 @@ const getModels = () => {
 }
 
 onMounted(() => {
-  axios.get(`${import.meta.env.VITE_SALES}/payments/${props.id}/`).then((response) => {
-    paymentMethod.value = response.data.payment_method
-    paymentType.value = response.data.payment_type
-    paymentAmount.value = response.data.amount
-    if (response.data.form_of_payment_vehicle) {
-      vehicleVin.value = response.data.form_of_payment_vehicle.vin
-      vehiclePlate.value = response.data.form_of_payment_vehicle.plate
-      vehicleBrand.value = response.data.form_of_payment_vehicle.brand
-      vehicleModel.value = response.data.form_of_payment_vehicle.model_car
-      vehicleFuel.value = response.data.form_of_payment_vehicle.fuel
-      vehicleGearbox.value = response.data.form_of_payment_vehicle.gearbox
-      vehicleKms.value = response.data.form_of_payment_vehicle.kms
-      axios
-        .get(
-          `${import.meta.env.VITE_API}/vehicles-models-web/?brand_web=${vehicleBrand.value}&limit=200`
-        )
-        .then((response) => {
-          vehicleModels.value = response.data.results
-        })
-    }
-  })
   axios.get(`${import.meta.env.VITE_API}/vehicles-brands-web/?limit=200`).then((response) => {
     vehicleBrands.value = response.data.results
   })
@@ -97,6 +121,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div>
     <DrawerTitle title="Editar Pago" @toggle="toggle" />
     <SelectInput
@@ -163,6 +188,7 @@ onMounted(() => {
   <DrawerActions
     secondary="Cancelar"
     primary="Guardar"
+    :loading="loading"
     @click-secondary="toggle"
     @click-primary="updatePayment"
   />
