@@ -8,6 +8,8 @@ import axios from 'axios'
 import CardDetails from '@/components/Reserva/CardDetails.vue'
 import TextInput from '@/components/TextInput.vue'
 import ExtrasDrawer from '@/components/Reserva/ExtrasDrawer.vue'
+import PaymentDrawer from '@/components/Reserva/PaymentDrawer.vue'
+import PaymentsDrawer from '@/components/Reserva/PaymentsDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -19,6 +21,8 @@ const galleryDocs = ref([])
 const loading = ref(true)
 const vehicle = ref({})
 const tab = ref('details')
+const isCompany = ref(false)
+const extras = ref([])
 
 const edit = ref(null)
 const infoModal = ref(null)
@@ -34,6 +38,7 @@ const getVehicle = () => {
     .then((response) => {
       vehicle.value = response.data
       seller.value = vehicle.value.seller
+      comments.value = vehicle.value.additional_info
       contactId.value = vehicle.value.contact_document_type
       contactIdNumber.value = vehicle.value.contact_document_id
       contactName.value = vehicle.value.contact_first_name
@@ -41,31 +46,91 @@ const getVehicle = () => {
       contactEmail.value = vehicle.value.contact_email
       contactPrefix.value = vehicle.value.contact_phone_prefix
       contactPhone.value = vehicle.value.contact_phone
+      contactAddress.value = vehicle.value.contact_address
       contactCity.value = vehicle.value.contact_city
       contactRegion.value = vehicle.value.contact_region
       contactCountry.value = vehicle.value.contact_country
       contactZip.value = vehicle.value.contact_postal_code
+      if (vehicle.value.buyer_company) {
+        isCompany.value = true
+      }
       companyVat.value = vehicle.value.buyer_company.vat
       companyName.value = vehicle.value.buyer_company.name
       companyEmail.value = vehicle.value.buyer_company.email
       companyPrefix.value = vehicle.value.buyer_company.phone_prefix
       companyPhone.value = vehicle.value.buyer_company.phone
+      companyAddress.value = vehicle.value.buyer_company.address.address
       companyCity.value = vehicle.value.buyer_company.address.city
       companyRegion.value = vehicle.value.buyer_company.address.region
       companyCountry.value = vehicle.value.buyer_company.address.country
       companyZip.value = vehicle.value.buyer_company.address.postal_code
-      extras.value = vehicle.value.extras
+      vehicleExtras.value = vehicle.value.extras
       isFetchingExtras.value = false
+      deliveryAddress.value = vehicle.value.delivery_address
       deliveryCity.value = vehicle.value.delivery_city
       deliveryRegion.value = vehicle.value.delivery_province
       deliveryCountry.value = vehicle.value.delivery_country
       deliveryZip.value = vehicle.value.delivery_postal_code
       payments.value = vehicle.value.payments
       isFetchingPayments.value = false
-      paymentType.value = vehicle.value.form_of_payment_type
+      paymentType.value = vehicle.value.form_of_payment_type.toString()
       paymentAmount.value = vehicle.value.form_of_payment_financed_price
       paymentMonths.value = vehicle.value.form_of_payment_financed_amount_fees
       paymentDues.value = vehicle.value.form_of_payment_financed_fee
+      axios
+        .get(`${import.meta.env.VITE_API}/vehicles-extras/?vehicle__in=${id.value}`)
+        .then((response) => {
+          extras.value = response.data.results
+        })
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const updateData = () => {
+  loading.value = true
+  axios
+    .patch(url, {
+      seller: seller.value,
+      additional_info: comments.value,
+      contact_document_type: contactId.value,
+      contact_document_id: contactIdNumber.value,
+      contact_first_name: contactName.value,
+      contact_last_name: contactLastName.value,
+      contact_email: contactEmail.value,
+      contact_phone_prefix: contactPrefix.value,
+      contact_phone: contactPhone.value,
+      contact_address: contactAddress.value,
+      contact_city: contactCity.value,
+      contact_region: contactRegion.value,
+      contact_country: contactCountry.value,
+      contact_postal_code: contactZip.value,
+      buyer_company: {
+        vat: companyVat.value,
+        name: companyName.value,
+        email: companyEmail.value,
+        phone_prefix: companyPrefix.value,
+        phone: companyPhone.value,
+        address: {
+          address: companyAddress.value,
+          city: companyCity.value,
+          region: companyRegion.value,
+          country: companyCountry.value,
+          postal_code: companyZip.value
+        }
+      },
+      delivery_address: deliveryAddress.value,
+      delivery_city: deliveryCity.value,
+      delivery_province: deliveryRegion.value,
+      delivery_country: deliveryCountry.value,
+      delivery_postal_code: deliveryZip.value
+    })
+    .then((response) => {
+      console.log(response)
     })
     .catch((error) => {
       console.error(error)
@@ -84,7 +149,6 @@ const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
 
-const isCompany = ref(false)
 const sellerOptions = ref([])
 const seller = ref(null)
 const contactId = ref(null)
@@ -95,6 +159,7 @@ const contactEmail = ref(null)
 const prefixOptions = ref([])
 const contactPrefix = ref(null)
 const contactPhone = ref(null)
+const contactAddress = ref(null)
 const contactCity = ref(null)
 const contactRegion = ref(null)
 const contactCountry = ref(null)
@@ -104,6 +169,7 @@ const companyName = ref(null)
 const companyEmail = ref(null)
 const companyPrefix = ref(null)
 const companyPhone = ref(null)
+const companyAddress = ref(null)
 const companyCity = ref(null)
 const companyRegion = ref(null)
 const companyCountry = ref(null)
@@ -117,12 +183,70 @@ for (let prefix of phonesPrefix) {
   prefixOptions.value.push({ id: prefix.dial_code, label: `${prefix.code} ${prefix.dial_code}` })
 }
 
+const addressFull = ref([])
+const setContactPlace = (place) => {
+  addressFull.value = place.address_components
+  contactAddress.value = place.formatted_address
+  for (let address of addressFull.value) {
+    if (address.types.includes('locality')) {
+      contactCity.value = address.long_name
+    }
+    if (address.types.includes('administrative_area_level_1')) {
+      contactRegion.value = address.long_name
+    }
+    if (address.types.includes('country')) {
+      contactCountry.value = address.long_name
+    }
+    if (address.types.includes('postal_code')) {
+      contactZip.value = address.long_name
+    }
+  }
+}
+
+const setCompanyPlace = (place) => {
+  addressFull.value = place.address_components
+  companyAddress.value = place.formatted_address
+  for (let address of addressFull.value) {
+    if (address.types.includes('locality')) {
+      companyCity.value = address.long_name
+    }
+    if (address.types.includes('administrative_area_level_1')) {
+      companyRegion.value = address.long_name
+    }
+    if (address.types.includes('country')) {
+      companyCountry.value = address.long_name
+    }
+    if (address.types.includes('postal_code')) {
+      companyZip.value = address.long_name
+    }
+  }
+}
+
+const setDeliveryPlace = (place) => {
+  addressFull.value = place.address_components
+  deliveryAddress.value = place.formatted_address
+  for (let address of addressFull.value) {
+    if (address.types.includes('locality')) {
+      deliveryCity.value = address.long_name
+    }
+    if (address.types.includes('administrative_area_level_1')) {
+      deliveryRegion.value = address.long_name
+    }
+    if (address.types.includes('country')) {
+      deliveryCountry.value = address.long_name
+    }
+    if (address.types.includes('postal_code')) {
+      deliveryZip.value = address.long_name
+    }
+  }
+}
+
 const serverOptions = ref({
   page: 1,
   rowsPerPage: 20
 })
 
-const extras = ref([])
+const vehicleExtras = ref([])
 const isFetchingExtras = ref(true)
 const serverItemsLength = ref(0)
 const headersExtras = [
@@ -138,6 +262,29 @@ const paymentMonths = ref(null)
 const paymentDues = ref(null)
 const isFetchingPayments = ref(true)
 const paymentType = ref(null)
+const paymentId = ref(null)
+
+const updatePayments = () => {
+  axios
+    .patch(`${import.meta.env.VITE_SALES}/bookings/${id.value}/`, {
+      form_of_payment_type: paymentType.value,
+      form_of_payment_financed_price: paymentAmount.value,
+      form_of_payment_financed_amount_fees: paymentMonths.value,
+      form_of_payment_financed_fee: paymentDues.value
+    })
+    .then(() => {
+      getVehicle()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const paymentsDrawer = (id) => {
+  drawerSection.value = 'payment'
+  paymentId.value = id
+  toggleDrawer()
+}
 
 const headersPayments = [
   { text: 'Forma de Pago', value: 'payment_type' },
@@ -147,6 +294,7 @@ const headersPayments = [
 ]
 
 const comments = ref('')
+const deliveryAddress = ref(null)
 const deliveryCity = ref(null)
 const deliveryRegion = ref(null)
 const deliveryCountry = ref(null)
@@ -163,23 +311,12 @@ const editModal = (id, mode) => {
   if (mode === 0) {
     editMode.value = 'extras'
     axios
-    .get(`${import.meta.env.VITE_SALES}/booking-extras/${id}/`)
-    .then((response) => {
-      extraTitle.value = response.data.title
-      extraPrice.value = response.data.price
-      extraDescription.value = response.data.description
-      extraId.value = response.data.extra
-      })
-      .then(() => {
-        edit.value.showModal()
-      })
-  }
-  if (mode === 1) {
-    editMode.value = 'extras'
-    axios
-      .get(`${import.meta.env.VITE_SALES}/payments/${id}/`)
+      .get(`${import.meta.env.VITE_SALES}/booking-extras/${id}/`)
       .then((response) => {
-        console.log(response.data)
+        extraTitle.value = response.data.title
+        extraPrice.value = response.data.price
+        extraDescription.value = response.data.description
+        extraId.value = response.data.extra
       })
       .then(() => {
         edit.value.showModal()
@@ -275,27 +412,15 @@ onMounted(() => {
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <CardDetails v-else :reserve="vehicle" />
         </header>
-        <!-- <div
-          v-if="tab > 0 && tab < 9"
+        <div
+          v-if="tab === 'details'"
           role="tablist"
-          class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
+          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
-          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Información Básica</a>
-          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Información Técnica</a>
-          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Mantenimiento</a>
-          <a ref="tab5" role="tab" class="tab" @click="tabEvent5">Compra y precio</a>
-          <a ref="tab6" role="tab" class="tab" @click="tabEvent6">Comentarios</a>
-          <a ref="tab7" role="tab" class="tab" @click="tabEvent7">Extras</a>
-          <a ref="tab8" role="tab" class="tab" @click="tabEvent8">Descuentos</a>
-        </div> -->
-        <!-- <div
-          v-if="tab > 8 && tab < 11"
-          role="tablist"
-          class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
-        >
-          <a ref="tab9" role="tab" class="tab tab-active" @click="tabEvent9">Equip de serie</a>
-          <a ref="tab10" role="tab" class="tab" @click="tabEvent10">Equip opcional</a>
-        </div> -->
+          <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent1">Info. facturación</a>
+          <a ref="tab2" role="tab" class="tab" @click="tabEvent2">Extras</a>
+          <a ref="tab4" role="tab" class="tab" @click="tabEvent4">Más info</a>
+        </div>
         <section class="my-10 flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
@@ -367,7 +492,7 @@ onMounted(() => {
                       <span class="label-text font-medium">Dirección:</span>
                     </div>
                     <GMapAutocomplete
-                      @place_changed="console.log('si')"
+                      @place_changed="setContactPlace"
                       class="input input-bordered w-full"
                     >
                     </GMapAutocomplete>
@@ -389,7 +514,12 @@ onMounted(() => {
                           <span class="label-text font-medium">Teléfono:</span>
                         </div>
                         <div class="flex flex-row gap-2">
-                          <VueSelect v-model="companyPrefix" :options="phonesPre" class="w-60" />
+                          <VueSelect
+                            v-model="companyPrefix"
+                            :options="prefixOptions"
+                            :reduce="(prefix) => prefix.id"
+                            class="w-60"
+                          />
                           <input
                             type="text"
                             class="input input-bordered w-full"
@@ -427,7 +557,7 @@ onMounted(() => {
                       hide-footer
                       border-cell
                       :headers="headersExtras"
-                      :items="extras"
+                      :items="vehicleExtras"
                       v-model:server-options="serverOptions"
                       :server-items-length="serverItemsLength"
                       :loading="isFetchingExtras"
@@ -472,7 +602,7 @@ onMounted(() => {
                     <span class="label-text font-medium">Dirección:</span>
                   </div>
                   <GMapAutocomplete
-                    @place_changed="console.log('si')"
+                    @place_changed="setDeliveryPlace"
                     class="input input-bordered w-full"
                   >
                   </GMapAutocomplete>
@@ -485,20 +615,29 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <div v-else class="flex w-full flex-col gap-8">
+            <div v-else class="flex w-full flex-col gap-4">
               <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
                 <h2 class="text-xl font-medium">Forma de pago</h2>
-                <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  <SelectInput
-                    label="Método de Pago:"
-                    v-model="paymentType"
-                    :options="options.paymentType"
-                  />
+                <SelectInput
+                  label="Método de Pago:"
+                  v-model="paymentType"
+                  :options="options.paymentType"
+                  :initialValue="null"
+                />
+                <div v-if="paymentType !== '0'" class="grid grid-cols-1 gap-4 lg:grid-cols-3">
                   <TextInput label="Importe a financiar:" v-model="paymentAmount" />
                   <TextInput label="Meses de financiación:" v-model="paymentMonths" />
                   <TextInput label="Cuotas mensuales:" v-model="paymentDues" />
                 </div>
-                <VehicleTable add title="Pagos">
+                <button
+                  class="btn btn-primary mt-4 w-fit self-end text-white"
+                  @click="updatePayments"
+                >
+                  Guardar
+                </button>
+              </div>
+              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+                <VehicleTable add title="Pagos" @addBtn="drawerSection = 'payments'">
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
@@ -527,7 +666,7 @@ onMounted(() => {
                       </template>
                       <template v-slot:item-id="{ id }">
                         <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 1)">
+                          <button class="btn btn-square btn-xs mr-2" @click="paymentsDrawer(id)">
                             <Icon icon="mdi:pencil" />
                           </button>
                           <button
@@ -700,7 +839,7 @@ onMounted(() => {
           <div class="mr-4 flex flex-row justify-end">
             <button class="btn btn-primary max-w-24 text-white" @click="updateData">
               <LoadingSpinner v-if="loading" />
-              <span v-else class="font-semibold">Guardar</span>
+              <span v-else class="font-semibold" @click="updateData">Guardar</span>
             </button>
           </div>
         </div>
@@ -747,8 +886,10 @@ onMounted(() => {
     </div>
     <div class="drawer-side z-50 h-full w-full">
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
-      <ul class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-96 justify-between">
-        <ExtrasDrawer v-if="drawerSection === 'extras'" :toggle="toggleDrawer" />
+      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
+        <ExtrasDrawer v-if="drawerSection === 'extras'" :toggle="toggleDrawer" :extras="extras" :id="id" />
+        <PaymentDrawer v-if="drawerSection === 'payment'" :toggle="toggleDrawer" :id="paymentId" />
+      <PaymentsDrawer v-if="drawerSection === 'payments'" :toggle="toggleDrawer" :id="id" @added="getVehicle" />
       </ul>
     </div>
   </div>

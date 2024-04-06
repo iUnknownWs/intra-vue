@@ -3415,7 +3415,6 @@ onMounted(async () => {
                 </button>
               </div>
             </div>
-            <!-- <h3 class="mt-4 text-lg font-semibold">Extras agregados</h3> -->
             <div
               v-for="(extra, index) in extrasAdded"
               :key="index"

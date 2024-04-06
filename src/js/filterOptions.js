@@ -196,6 +196,21 @@ const paymentMethods = [
     }
 ]
 
+const paymentMethods2 = [
+    {
+        id: 'card',
+        title: 'Tarjeta'
+    },
+    {
+        id: 'cash',
+        title: 'Efectivo'
+    },
+    {
+        id: 'transfer',
+        title: 'Transferencia'
+    }
+]
+
 const paymentType = [
     {
         id: '0',
@@ -302,6 +317,21 @@ const delivery = [
     }
 ]
 
+const paymentForm = [
+    {
+        id: 'counted',
+        title: 'Contado'
+    },
+    {
+        id: 'financed',
+        title: 'Financiado'
+    },
+    {
+        id: 'booking_pre_order_payment',
+        title: 'Pago reserva'
+    }
+]
+
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
 const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
@@ -318,12 +348,14 @@ const options = {
     extraType,
     idTypes,
     paymentMethods,
+    paymentMethods2,
     paymentType,
     financingMonths,
     cochesnetCategory,
     sources,
     warrantyBookings,
-    delivery
+    delivery,
+    paymentForm
 }
 
 export default options
