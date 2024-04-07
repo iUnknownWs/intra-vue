@@ -12,6 +12,38 @@ const info = ref(null)
 const modalTitle = ref('')
 const modalMessage = ref('')
 
+const resendEmail = () => {
+  axios
+    .get(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/resend_confirmation_email/`)
+    .then(() => {
+      modalTitle.value = 'Email reenviado'
+      modalMessage.value = 'El email ha sido reenviado'
+      info.value.modal.showModal()
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+const printReserve = () => {
+  axios
+    .post(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/download_mail_file/`)
+    .then((response) => {
+      const downloadLink = document.createElement('a')
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      downloadLink.href = url
+      downloadLink.setAttribute('download', `Reserva ${props.reserve.id}.pdf`)
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      modalTitle.value = 'Reserva generada'
+      modalMessage.value = 'Tu reserva ha sido generada, la descarga se iniciará en breve'
+      info.value.modal.showModal()
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
 const cancelReserve = () => {
   axios
     .patch(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/`, {
@@ -159,6 +191,8 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             <button class="btn btn-outline" @click="cancelClick">Acciones</button>
           </template>
           <template #content>
+            <li><a @click="resendEmail">Reenviar Confirmación</a></li>
+            <li><a @click="printReserve">Imprimir reserva</a></li>
             <li><a @click="cancelReserve">Cancelar reserva</a></li>
           </template>
         </DropdownBtn>

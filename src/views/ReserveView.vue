@@ -455,12 +455,26 @@ const removePayment = (id) => {
 }
 
 onMounted(() => {
-  getVehicle()
+  let prev = window.scrollY
+
+  window.addEventListener('scroll', () => {
+    let current = window.scrollY
+    if (prev > current) {
+      scrollDown.value = false
+      scrollTop.value = true
+    } else {
+      scrollDown.value = true
+      scrollTop.value = false
+    }
+    prev = current
+  })
+
   axios
     .get(`${import.meta.env.VITE_SALES}/sale_documents/?booking=${id.value}`)
     .then((response) => {
       galleryDocs.value = response.data.results
     })
+  getVehicle()
 })
 </script>
 
@@ -718,7 +732,7 @@ onMounted(() => {
             </div>
             <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4">
               <div class="flex scroll-m-28 flex-col rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h2 class="text-xl font-medium mb-4">Forma de pago</h2>
+                <h2 class="mb-4 text-xl font-medium">Forma de pago</h2>
                 <SelectInput
                   label="Método de Pago:"
                   v-model="paymentType"
@@ -859,7 +873,7 @@ onMounted(() => {
                   class="card card-side bg-base-100 shadow-xl"
                 >
                   <div class="card-body flex-row justify-between p-4">
-                    <div class="flex text-wrap w-full gap-2 flex-col lg:flex-row">
+                    <div class="flex w-full flex-col gap-2 text-wrap lg:flex-row">
                       <div class="flex flex-row gap-3">
                         <span class="badge badge-primary capitalize">{{ doc.status }}</span>
                         <span class="text-sm">{{ doc.date_parsed }}</span>
@@ -1056,18 +1070,12 @@ onMounted(() => {
         </div>
         <div v-show="scrollDown" class="btm-nav lg:hidden">
           <div>
-            <label
-              for="vehicle-drawer"
-              class="btn btn-warning w-36"
-              ref="navBtn6"
-              @click="drawerSection = 'reserve'"
-            >
-              <span class="btm-nav-label font-medium">Reservar</span>
-            </label>
+            <button class="btn btn-accent w-36 text-white">Entregar</button>
           </div>
           <div>
             <button class="btn btn-primary w-36 text-white" ref="navBtn6" @click="updateData">
-              <span class="btm-nav-label font-medium">Guardar</span>
+              <LoadingSpinner v-if="loading" />
+              <span v-else class="btm-nav-label font-medium">Guardar</span>
             </button>
           </div>
         </div>

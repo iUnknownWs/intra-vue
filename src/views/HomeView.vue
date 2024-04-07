@@ -614,7 +614,7 @@ onMounted(() => {
         <!-- Page content here -->
         <header class="flex flex-row items-center justify-between">
           <TextBtn
-            class="max-w-[275px] lg:ml-4"
+            class="max-w-[275px] lg:ml-4 lg:max-w-[400px]"
             placeholder="Buscar"
             v-model="searchValue"
             :disabled="disSearch"
@@ -690,7 +690,7 @@ onMounted(() => {
               @change-lte="priceFilter"
             />
             <RangeInputN
-              label="KMs:"
+              label="Kms:"
               :max="200000"
               v-model:gte="kmsGte"
               v-model:lte="kmsLte"
