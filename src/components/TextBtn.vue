@@ -14,8 +14,8 @@ class="input join-item input-bordered w-full"
     <label class="input join-item input-bordered flex items-center gap-2">
       <input
         type="text"
-        class="grow"
         placeholder="Buscar"
+        class="w-full"
         v-model="value"
         @input="$emit('change')"
       />

@@ -1,16 +1,46 @@
 <script setup>
-defineProps({
+import axios from 'axios'
+import { ref } from 'vue'
+
+const props = defineProps({
   reserve: { Object, required: true }
 })
+
+const emits = defineEmits(['cancelled'])
+
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
+
+const cancelReserve = () => {
+  axios
+    .patch(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/`, {
+      status: 2
+    })
+    .then(() => {
+      modalTitle.value = 'Reserva cancelada'
+      modalMessage.value = 'Tu reserva ha sido cancelada'
+      info.value.modal.showModal()
+      emits('cancelled')
+    })
+    .catch((error) => {
+      console.log(error)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo cancelar la reserva'
+      info.value.modal.showModal()
+    })
+}
+
+const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
 
 <template>
-  <div class="card card-side mt-4 h-[225px] w-fit bg-base-100 text-xs font-normal">
+  <div class="card card-side mt-4 hidden h-[225px] w-fit bg-base-100 text-xs font-normal lg:flex">
     <span class="relative z-0">
       <div
         class="cover z-0 h-full w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
         :style="{
-          'background-image': 'url(' + reserve.vehicle.image + ')'
+          backgroundImage: `url(${reserve.vehicle.image ? reserve.vehicle.image : placeholder})`
         }"
       >
         <div
@@ -124,10 +154,18 @@ defineProps({
       <div class="divider divider-horizontal"></div>
       <div class="flex w-full flex-row gap-4">
         <button class="btn btn-accent text-white" @click="reserveClick">Entregar</button>
-        <button class="btn btn-outline" @click="cancelClick">Acciones</button>
+        <DropdownBtn>
+          <template #btn>
+            <button class="btn btn-outline" @click="cancelClick">Acciones</button>
+          </template>
+          <template #content>
+            <li><a @click="cancelReserve">Cancelar reserva</a></li>
+          </template>
+        </DropdownBtn>
       </div>
     </div>
   </div>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
 </template>
 
 <style>

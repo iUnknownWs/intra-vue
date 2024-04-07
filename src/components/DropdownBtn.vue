@@ -8,7 +8,7 @@ defineProps({
     <slot name="btn" />
     <ul
       tabindex="0"
-      :class="`menu dropdown-content menu-xs z-50 mt-3 rounded-box bg-base-100 p-2 font-medium shadow ${width}`"
+      :class="`menu dropdown-content menu-xs z-50 rounded-box bg-base-100 p-2 font-medium shadow ${width}`"
     >
       <slot name="content" />
     </ul>

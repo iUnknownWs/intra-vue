@@ -14,7 +14,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card-compact mt-3 flex w-[90vw] flex-row bg-base-100 text-xs">
+  <div class="card-compact mt-3 flex w-[90vw] flex-row bg-base-100 text-xs lg:hidden">
     <figure>
       <div
         class="cover relative z-0 aspect-square h-full self-center bg-cover bg-center"

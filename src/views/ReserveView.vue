@@ -33,6 +33,11 @@ const navBtn1 = ref(null)
 const navBtn2 = ref(null)
 const navBtn3 = ref(null)
 const navBtn4 = ref(null)
+const navBtns = [navBtn1, navBtn2, navBtn3, navBtn4]
+
+const billingDiv = ref(null)
+const extrasDiv = ref(null)
+const infoDiv = ref(null)
 
 const tabEvent = (tabSelected) => {
   for (let tab of tabs) {
@@ -40,12 +45,37 @@ const tabEvent = (tabSelected) => {
   }
   if (tabSelected === 1) {
     tab1.value.classList.add('tab-active')
+    billingDiv.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 2) {
+    extrasDiv.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
     tab2.value.classList.add('tab-active')
   }
   if (tabSelected === 3) {
+    infoDiv.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
     tab3.value.classList.add('tab-active')
+  }
+}
+
+const navEvent = (tabSelected) => {
+  for (let btn of navBtns) {
+    btn.value.classList.remove('active')
+  }
+  if (tabSelected === 1) {
+    navBtn1.value.classList.add('active')
+    tab.value = 'summary'
+  }
+  if (tabSelected === 2) {
+    navBtn2.value.classList.add('active')
+    tab.value = 'details'
+  }
+  if (tabSelected === 3) {
+    navBtn3.value.classList.add('active')
+    tab.value = 'payments'
+  }
+  if (tabSelected === 4) {
+    navBtn4.value.classList.add('active')
+    tab.value = 'docs'
   }
 }
 
@@ -470,8 +500,8 @@ onMounted(() => {
         <header class="flex flex-col items-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <template v-else>
-            <CardDetails :reserve="vehicle" class="hidden lg:flex" />
-            <CardMobile :reserve="vehicle" class="lg:hidden" />
+            <CardDetails :reserve="vehicle" @cancelled="getVehicle" />
+            <CardMobile :reserve="vehicle" />
           </template>
         </header>
         <div
@@ -503,7 +533,10 @@ onMounted(() => {
               v-if="tab === 'details'"
               class="flex w-full flex-col gap-8"
             >
-              <div class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+              <div
+                ref="billingDiv"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <h1 class="text-xl font-medium">Información de facturación</h1>
                 <SelectInput
                   label="Vendedor:"
@@ -609,7 +642,10 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-              <div class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+              <div
+                ref="extrasDiv"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <VehicleTable title="Extras" add @addBtn="drawerSection = 'extras'">
                   <template #content>
                     <EasyDataTable
@@ -656,7 +692,10 @@ onMounted(() => {
                   </template>
                 </VehicleTable>
               </div>
-              <div class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
+              <div
+                ref="infoDiv"
+                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
+              >
                 <h2 class="text-xl font-medium">Más información</h2>
                 <AreaInput label="Comentarios Comerciales:" v-model="comments" />
                 <label class="form-control w-full">
@@ -677,9 +716,9 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <div v-else class="flex w-full flex-col gap-4">
-              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h2 class="text-xl font-medium">Forma de pago</h2>
+            <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4">
+              <div class="flex scroll-m-28 flex-col rounded bg-base-100 p-4 lg:scroll-m-20">
+                <h2 class="text-xl font-medium mb-4">Forma de pago</h2>
                 <SelectInput
                   label="Método de Pago:"
                   v-model="paymentType"
@@ -746,6 +785,94 @@ onMounted(() => {
                     </EasyDataTable>
                   </template>
                 </VehicleTable>
+              </div>
+            </div>
+            <div v-else-if="tab === 'summary'" class="flex w-full flex-col gap-4">
+              <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4">
+                <div>
+                  <h2 class="text-xl font-medium">Resumen de compra</h2>
+                  <div class="divider m-0"></div>
+                </div>
+                <div class="text-sm [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                  <div v-if="vehicle.form_of_payment_type === 1">
+                    <span> Precio de compra: </span>
+                    <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                    <span> Financiado </span>
+                  </div>
+                  <div v-else>
+                    <span> Precio de compra: </span>
+                    <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                    <span> Contado </span>
+                  </div>
+                  <div v-for="extra of vehicle.extras" :key="extra.id">
+                    <span> Extra: </span>
+                    <span class="mr-2 text-right"> {{ extra.price }} € </span>
+                    <span> {{ extra.title }} </span>
+                  </div>
+                  <div v-for="discount of vehicle.discounts" :key="discount.id">
+                    <span> Descuento: </span>
+                    <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
+                      {{ discount.amount_fix }} €
+                    </span>
+                    <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
+                      {{ discount.amount_percent }} %
+                    </span>
+                    <span> {{ discount.title }} </span>
+                  </div>
+                  <div>
+                    <span class="font-bold"> Precio final: </span>
+                    <span class="mr-2 text-right font-bold">{{ vehicle.final_price }}</span>
+                    <span></span>
+                  </div>
+                </div>
+                <div class="divider m-0"></div>
+                <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                  <div v-for="payment of vehicle.payments" :key="payment.id">
+                    <span> Importe de reserva: </span>
+                    <span class="mr-2 text-right"> {{ payment.amount }} € </span>
+                    <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
+                    <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
+                    <span v-if="payment.payment_method === 'cash'"> Contado </span>
+                    <span v-if="payment.payment_method === 'vehicle_exchange'">
+                      Vehiculo a cambio
+                    </span>
+                  </div>
+                  <div>
+                    <span class="font-bold"> Importe pendiente: </span>
+                    <span class="mr-2 text-right font-bold">
+                      {{ vehicle.pending_booking_amount }} €
+                    </span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="flex w-full flex-col gap-4">
+              <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4">
+                <div>
+                  <h2 class="text-xl font-medium">Documentos</h2>
+                  <div class="divider m-0"></div>
+                </div>
+                <div
+                  v-for="doc in galleryDocs"
+                  :key="doc.id"
+                  class="card card-side bg-base-100 shadow-xl"
+                >
+                  <div class="card-body flex-row justify-between p-4">
+                    <div class="flex text-wrap w-full gap-2 flex-col lg:flex-row">
+                      <div class="flex flex-row gap-3">
+                        <span class="badge badge-primary capitalize">{{ doc.status }}</span>
+                        <span class="text-sm">{{ doc.date_parsed }}</span>
+                      </div>
+                      <span class="text-sm">{{ doc.sent_to }}</span>
+                    </div>
+                    <div class="self flex gap-2">
+                      <button class="btn btn-square btn-error btn-sm" @click="console.log(doc.id)">
+                        <Icon icon="mdi:delete" width="20" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -910,25 +1037,21 @@ onMounted(() => {
           </div>
         </div>
         <div v-show="scrollTop" class="btm-nav lg:hidden">
-          <button ref="navBtn1" @click="navEvent1" class="active">
+          <button ref="navBtn1" @click="navEvent(1)" class="active">
             <Icon icon="mdi:car" width="30" />
-            <span class="btm-nav-label">I. Admin</span>
+            <span class="btm-nav-label">Resumen</span>
           </button>
-          <button ref="navBtn2" @click="navEvent2">
-            <Icon icon="mdi:webpack" width="30" />
-            <span class="btm-nav-label">Port Web</span>
+          <button ref="navBtn2" @click="navEvent(2)">
+            <Icon icon="mdi:account-details" width="30" />
+            <span class="btm-nav-label">Detalles</span>
           </button>
-          <button ref="navBtn3" @click="navEvent3">
-            <Icon icon="mdi:bag-checked" width="30" />
-            <span class="btm-nav-label">Equip</span>
+          <button ref="navBtn3" @click="navEvent(3)">
+            <Icon icon="mdi:payment" width="30" />
+            <span class="btm-nav-label">Pagos</span>
           </button>
-          <button ref="navBtn4" @click="navEvent4">
-            <Icon icon="mdi:performance" width="30" />
-            <span class="btm-nav-label">PT</span>
-          </button>
-          <button ref="navBtn5" @click="navEvent5">
-            <Icon icon="mdi:image-multiple" width="30" />
-            <span class="btm-nav-label">Galeria</span>
+          <button ref="navBtn4" @click="navEvent(4)">
+            <Icon icon="mdi:file-document-edit" width="30" />
+            <span class="btm-nav-label">Documentos</span>
           </button>
         </div>
         <div v-show="scrollDown" class="btm-nav lg:hidden">

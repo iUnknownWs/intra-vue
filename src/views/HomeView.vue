@@ -614,7 +614,7 @@ onMounted(() => {
         <!-- Page content here -->
         <header class="flex flex-row items-center justify-between">
           <TextBtn
-            class="max-w-[400px] lg:ml-4"
+            class="max-w-[275px] lg:ml-4"
             placeholder="Buscar"
             v-model="searchValue"
             :disabled="disSearch"
@@ -624,7 +624,7 @@ onMounted(() => {
           >
             <Icon icon="mdi:magnify" width="25" />
           </TextBtn>
-          <div class="ml-2 flex gap-1">
+          <div class="flex gap-1">
             <label for="filterDrawer" @click="filterDrawer" class="text-black lg:hidden">
               <div tabindex="0" role="button" class="btn btn-primary text-white lg:hidden">
                 <Icon icon="mdi:filter" />
