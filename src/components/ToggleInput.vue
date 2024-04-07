@@ -10,9 +10,9 @@ const value = defineModel()
 <template>
   <div class="form-control">
     <label class="label cursor-pointer">
-      <span class="label-text text-lg font-medium mr-4">{{ label }}</span>
+      <span class="label-text text-base font-medium mr-4">{{ label }}</span>
       <input type="checkbox" class="toggle" v-model="value" @change="$emit('changed')" />
-      <span v-if="option" class="label-text text-lg font-medium ml-4">{{ option }}</span>
+      <span v-if="option" class="label-text text-base font-medium ml-4">{{ option }}</span>
     </label>
   </div>
 </template>

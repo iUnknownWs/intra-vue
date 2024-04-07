@@ -6,7 +6,7 @@ const props = defineProps({
   reserve: { Object, required: true }
 })
 
-const emits = defineEmits(['cancelled'])
+const emits = defineEmits(['cancelled', 'docuDrawer'])
 
 const info = ref(null)
 const modalTitle = ref('')
@@ -92,7 +92,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </span>
           <span
             v-if="reserve.status == 1"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
           >
             Confirmado
           </span>
@@ -104,7 +104,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </span>
           <span
             v-if="reserve.status == 3"
-            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            class="badge badge-accent mr-2 mt-2 rounded-md px-3 pb-1 text-white"
           >
             Entregado
           </span>
@@ -191,6 +191,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             <button class="btn btn-outline" @click="cancelClick">Acciones</button>
           </template>
           <template #content>
+            <li><a @click="$emit('docuDrawer')">Enviar Documentación</a></li>
             <li><a @click="resendEmail">Reenviar Confirmación</a></li>
             <li><a @click="printReserve">Imprimir reserva</a></li>
             <li><a @click="cancelReserve">Cancelar reserva</a></li>
