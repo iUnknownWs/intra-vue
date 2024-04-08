@@ -10,6 +10,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 const url = `${import.meta.env.VITE_VEHICLES}/`
+const filterCountsUrl = `${import.meta.env.VITE_VEHICLES}/counts-filters/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 let scrollNextUrl = ''
@@ -167,6 +168,9 @@ const filter = () => {
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
+  axios.get(filterCountsUrl, { params: filterParams }).then((response) => {
+    filtersCounters.value = response.data
+  })
   toggleDrawer.value = ref(false)
 }
 
@@ -198,6 +202,9 @@ const search = () => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
     loading.value = false
+  })
+  axios.get(filterCountsUrl, { params: filterParams }).then((response) => {
+    filtersCounters.value = response.data
   })
 }
 
@@ -241,8 +248,11 @@ const selected = () => {
   }
 }
 
+const filtersCounters = ref({})
+
 const all = () => {
   loading.value = true
+  tab.value = '0'
   if (filterParams.status || filterParams.status === 0) {
     delete filterParams.status
   }
@@ -263,6 +273,9 @@ const all = () => {
     vehiclesFilter.value = response.data.results
     loading.value = false
   })
+  axios.get(filterCountsUrl, { params: filterParams }).then((response) => {
+    filtersCounters.value = response.data
+  })
 }
 
 const vehicleStatus = (status) => {
@@ -279,7 +292,25 @@ const vehicleStatus = (status) => {
   if (filterParams.inmediate_delivery) {
     delete filterParams.inmediate_delivery
   }
+
+  if (status === 0) {
+    tab.value = '1'
+  }
+  if (status === 3) {
+    tab.value = '2'
+  }
+  if (status === 4) {
+    tab.value = '3'
+  }
+  if (status === 5) {
+    tab.value = '4'
+  }
+  if (status === 10) {
+    tab.value = '9'
+  }
+
   filterParams.status = status
+
   axios.get(url, { params: filterParams }).then((response) => {
     scrollNextUrl = response.data.next
     vehiclesFilter.value = response.data.results
@@ -288,6 +319,7 @@ const vehicleStatus = (status) => {
 }
 
 const ppt = () => {
+  tab.value = '5'
   loading.value = true
   if (filterParams.status || filterParams.status === 0) {
     delete filterParams.status
@@ -310,6 +342,7 @@ const ppt = () => {
 }
 
 const vpt = () => {
+  tab.value = '6'
   loading.value = true
   if (filterParams.status || filterParams.status === 0) {
     delete filterParams.status
@@ -332,6 +365,7 @@ const vpt = () => {
 }
 
 const web = () => {
+  tab.value = '7'
   loading.value = true
   if (filterParams.status || filterParams.status === 0) {
     delete filterParams.status
@@ -354,6 +388,7 @@ const web = () => {
 }
 
 const entrega = () => {
+  tab.value = '8'
   loading.value = true
   if (filterParams.status || filterParams.status === 0) {
     delete filterParams.status
@@ -747,87 +782,108 @@ onMounted(() => {
               role="tablist"
               class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid"
             >
-              <input
-                type="radio"
-                name="class"
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Todos"
-                checked
-                @change="all"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '0' }"
+                @click="all"
+              >
+                Todos
+                <span class="badge indicator-item badge-primary">{{ filtersCounters.total }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Recepción"
-                @change="vehicleStatus(0)"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '1' }"
+                @click="vehicleStatus(0)"
+              >
+                Recepción
+                <span class="badge indicator-item badge-primary">{{
+                  filtersCounters.receipt
+                }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Publicación"
-                @change="vehicleStatus(3)"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '2' }"
+                @click="vehicleStatus(3)"
+              >
+                Publicación
+                <span class="badge indicator-item badge-primary">{{
+                  filtersCounters.publication
+                }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="En venta"
-                @change="vehicleStatus(4)"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '3' }"
+                @click="vehicleStatus(4)"
+              >
+                En venta
+                <span class="badge indicator-item badge-primary">{{
+                  filtersCounters.on_sale
+                }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Reservados"
-                @change="vehicleStatus(5)"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '4' }"
+                @click="vehicleStatus(5)"
+              >
+                Reservados
+                <span class="badge indicator-item badge-primary">{{
+                  filtersCounters.reserved
+                }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Pte. de PT"
-                @change="ppt"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '5' }"
+                @click="ppt"
+              >
+                Pte. de PT
+                <span class="badge indicator-item badge-primary">{{ filtersCounters.ppt }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Validar PT"
-                @change="vpt"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '6' }"
+                @click="vpt"
+              >
+                Validar PT
+                <span class="badge indicator-item badge-primary">{{ filtersCounters.vpt }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="No web"
-                @change="web"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '7' }"
+                @click="web"
+              >
+                No web
+                <span class="badge indicator-item badge-primary">{{ filtersCounters.no_web }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="Entrega inmediata"
-                @change="entrega"
-              />
-              <input
-                type="radio"
-                name="class"
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '8' }"
+                @click="entrega"
+              >
+                Entrega inmediata
+                <span class="badge indicator-item badge-primary">{{
+                  filtersCounters.inmediate_delivery
+                }}</span>
+              </a>
+              <a
                 role="tab"
-                class="tab"
-                aria-label="No disponible"
-                @change="vehicleStatus(10)"
-              />
+                class="tab indicator"
+                :class="{ 'tab-active': tab === '9' }"
+                @click="vehicleStatus(10)"
+              >
+                No disponible
+                <span class="badge indicator-item badge-primary">{{
+                  filtersCounters.not_available
+                }}</span>
+              </a>
             </div>
             <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
               <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
