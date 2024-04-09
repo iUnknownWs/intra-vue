@@ -766,20 +766,14 @@ onMounted(() => {
             <CheckInput label="Pendiente ITV:" v-model="pitv" />
             <CheckInput label="Pendiente Video:" v-model="pVideo" />
             <li class="mt-8 flex flex-row justify-between">
-              <button class="btn btn-outline w-28" @click="reset">
-                <Icon icon="mdi:arrow-u-left-top" />
-                Reset
-              </button>
-              <button class="btn btn-primary w-24 text-white" @click="filter">
-                <Icon icon="mdi:check" />
-                Filtrar
-              </button>
+              <button class="btn btn-outline w-fit" @click="reset">Reset</button>
+              <button class="btn btn-primary w-fit text-white" @click="filter">Filtrar</button>
             </li>
           </div>
-          <div class="flex flex-col items-start justify-center">
+          <div class="flex w-full flex-col items-start justify-center">
             <div
               role="tablist"
-              class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid [&_span]:grid [&_span]:h-[35px] [&_span]:w-[35px] [&_span]:text-[12px]"
+              class="tabs tabs-bordered mx-4 mt-7 hidden w-full bg-white font-medium lg:grid [&_a]:w-full [&_a]:text-xs [&_span]:text-[12px]"
             >
               <a
                 role="tab"

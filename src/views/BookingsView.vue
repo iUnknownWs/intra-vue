@@ -174,12 +174,8 @@ onMounted(() => {
               :initialValue="null"
             />
             <div class="mt-8 flex flex-row justify-between">
-              <button class="btn btn-outline" @click="reset">
-                <Icon icon="mdi:arrow-u-left-top" />
-                Reset
-              </button>
-              <button class="btn btn-primary text-white" @click="getVehiclesFilter">
-                <Icon icon="mdi:check" />
+              <button class="btn btn-outline w-fit" @click="reset">Reset</button>
+              <button class="btn btn-primary w-fit text-white" @click="getVehiclesFilter">
                 Filtrar
               </button>
             </div>

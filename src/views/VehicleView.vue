@@ -123,9 +123,9 @@ const buyer = ref({ id: '', label: '' })
 const prefixBuyer = ref({ id: '+34', label: 'ES+34' })
 const prefixCompany = ref({ id: '+34', label: 'ES+34' })
 const equipmentsGroup = ref([])
-const plate = ref('')
+const plate = ref(null)
 const license1 = ref(null)
-const kms = ref(0)
+const kms = ref(null)
 const fuel = ref(null)
 const gearBox = ref(null)
 const power = ref(0)
@@ -164,11 +164,11 @@ const purchasePrice = ref(0)
 const sellManage = ref(false)
 const sellerName = ref('')
 const commission = ref(0)
-const price = ref('0')
-const financed = ref('0')
-const financingMonths = ref(0)
-const financingQ = ref('0')
-const reserve = ref('0')
+const price = ref(null)
+const financed = ref(null)
+const financingMonths = ref(null)
+const financingQ = ref(null)
+const reserve = ref(null)
 const iva = ref(false)
 const infoModal = ref(null)
 const message = ref('')
@@ -458,6 +458,8 @@ const updateData = () => {
       tax_regime: regimen?.value,
       purchase_date: purchaseDate?.value,
       price: purchasePrice?.value,
+      owner: sellerName.value,
+      selling_fee: commission.value,
       vehicle: vehicle.value.id
     },
     price: {
@@ -474,22 +476,79 @@ const updateData = () => {
     tare: tare?.value,
     web_categories: [category?.value]
   }
+  modalTitle.value = 'Error'
   if (payload.chassis_number === null) {
     message.value = 'Debe ingresar el VIN del vehículo, el campo Bastidor es obligatorio'
-    modalTitle.value = 'Error'
     infoModal.value?.modal.showModal()
-    fetch()
+    loading.value = false
     return
   }
-  if (payload.drive_type === 0) {
-    payload.drive_type = 1
+  if (payload.license_plate === null) {
+    message.value = 'Debe ingresar la matricula del vehículo, la matricula es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.body_type === null) {
+    message.value = 'Debe ingresar la carrocería del vehículo, la carrocería es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.date_first_registration === null) {
+    message.value = 'Debe ingresar la primera matriculación del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.kms === null) {
+    message.value = 'Debe ingresar el kilometraje del vehículo, el kilometraje es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.fuel === null) {
+    message.value = 'Debe ingresar el tipo de combustible del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.gear_box === null) {
+    message.value = 'Debe ingresar el tipo de transmisión del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.price.sale_price === null) {
+    message.value = 'Debe ingresar el precio de venta del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.price.financed_price === null) {
+    message.value = 'Debe ingresar el precio financiado del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.price.financing_fee === null) {
+    message.value = 'Debe ingresar las cuotas de financiación del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
+  }
+  if (payload.price.reserve_amount === null) {
+    message.value = 'Debe ingresar el precio de reserva del vehículo es obligatoria'
+    infoModal.value?.modal.showModal()
+    loading.value = false
+    return
   }
   if (vehicle.value.purchase?.vehicle && vehicle.value.price?.vehicle) {
     delete payload.purchase.vehicle
     delete payload.price.vehicle
   } else if (vehicle.value.price?.vehicle) {
     delete payload.price.vehicle
-  } else {
+  } else if (vehicle.value.purchase?.vehicle) {
     delete payload.purchase.vehicle
   }
   axios
@@ -504,6 +563,9 @@ const updateData = () => {
       message.value = e.request.response
       modalTitle.value = 'Error'
       infoModal.value.modal.showModal()
+    })
+    .finally(() => {
+      loading.value = false
     })
 }
 
@@ -1986,7 +2048,7 @@ onMounted(async () => {
         </div>
       </dialog>
       <HeaderMain class="pb-16">
-        <header class="flex flex-col items-center h-[250px] justify-center">
+        <header class="flex h-[250px] flex-col items-center justify-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <VehicleCard
             v-else
@@ -3302,7 +3364,6 @@ onMounted(async () => {
       >
         <form @submit.prevent="reserveDrawer(2)">
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
-          <!-- <DragDrop :url="url" type="vehicle" :params="params" format=".pdf" /> -->
           <div>
             <ToggleInput
               label="Particular"
