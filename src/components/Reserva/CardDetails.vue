@@ -6,7 +6,7 @@ const props = defineProps({
   reserve: { Object, required: true }
 })
 
-const emits = defineEmits(['cancelled', 'docuDrawer'])
+const emits = defineEmits(['cancelled', 'docuDrawer', 'deliverBtn'])
 
 const info = ref(null)
 const modalTitle = ref('')
@@ -67,7 +67,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card card-side mt-4 hidden h-[225px] w-fit bg-base-100 text-xs font-normal lg:flex">
+  <div class="card card-side mt-4 hidden h-[250px] w-fit bg-base-100 text-xs font-normal lg:flex">
     <span class="relative z-0">
       <div
         class="cover z-0 h-full w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
@@ -183,21 +183,29 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </div>
         </div>
       </div>
-      <div class="divider divider-horizontal"></div>
-      <div class="flex w-full flex-row gap-4">
-        <button class="btn btn-accent text-white" @click="reserveClick">Entregar</button>
-        <DropdownBtn>
-          <template #btn>
-            <button class="btn btn-outline" @click="cancelClick">Acciones</button>
-          </template>
-          <template #content>
-            <li><a @click="$emit('docuDrawer')">Enviar Documentación</a></li>
-            <li><a @click="resendEmail">Reenviar Confirmación</a></li>
-            <li><a @click="printReserve">Imprimir reserva</a></li>
-            <li><a @click="cancelReserve">Cancelar reserva</a></li>
-          </template>
-        </DropdownBtn>
-      </div>
+      <template v-if="reserve.status !== 2">
+        <div class="divider divider-horizontal"></div>
+        <div class="flex w-full flex-row gap-4">
+          <button
+            v-if="reserve.status == 1"
+            class="btn btn-accent text-white"
+            @click="$emit('deliverBtn')"
+          >
+            Entregar
+          </button>
+          <DropdownBtn>
+            <template #btn>
+              <button class="btn btn-outline">Acciones</button>
+            </template>
+            <template #content>
+              <li><a @click="$emit('docuDrawer')">Enviar Documentación</a></li>
+              <li><a @click="resendEmail">Reenviar Confirmación</a></li>
+              <li><a @click="printReserve">Imprimir reserva</a></li>
+              <li><a @click="cancelReserve">Cancelar reserva</a></li>
+            </template>
+          </DropdownBtn>
+        </div>
+      </template>
     </div>
   </div>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />

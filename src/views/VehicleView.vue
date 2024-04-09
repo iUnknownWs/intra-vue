@@ -1986,7 +1986,7 @@ onMounted(async () => {
         </div>
       </dialog>
       <HeaderMain class="pb-16">
-        <header class="flex flex-col items-center">
+        <header class="flex flex-col items-center h-[250px] justify-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <VehicleCard
             v-else

@@ -117,7 +117,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               >
             </div>
             <div class="absolute right-2 top-2 flex gap-4">
-              <label for="vehicle-drawer" class="btn btn-warning" @click="$emit('reserve')"
+              <label v-if="vehicle.status == 4" for="vehicle-drawer" class="btn btn-warning" @click="$emit('reserve')"
                 >Reservar</label
               >
               <button class="btn btn-ghost" @click="$emit('delete')">Eliminar</button>

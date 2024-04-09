@@ -11,7 +11,8 @@ import ExtrasDrawer from '@/components/Reserva/ExtrasDrawer.vue'
 import PaymentDrawer from '@/components/Reserva/PaymentDrawer.vue'
 import PaymentsDrawer from '@/components/Reserva/PaymentsDrawer.vue'
 import CardMobile from '@/components/Reserva/CardMobile.vue'
-import DeliverDrawer from '@/components/Reserva/DeliverDrawer.vue'
+import DocumentDrawer from '@/components/Reserva/DocumentDrawer.vue'
+import DeliveryDrawer from '@/components/Reserva/DeliveryDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -212,6 +213,11 @@ const drawerSection = ref('')
 
 const docuDrawer = () => {
   drawerSection.value = 'document'
+  drawer.value = true
+}
+
+const deliDrawer = () => {
+  drawerSection.value = 'delivery'
   drawer.value = true
 }
 
@@ -520,10 +526,15 @@ onMounted(() => {
         </div>
       </dialog>
       <HeaderMain class="pb-16">
-        <header class="flex flex-col items-center">
+        <header class="flex h-[250px] flex-col items-center justify-center">
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <template v-else>
-            <CardDetails :reserve="vehicle" @cancelled="getVehicle" @docuDrawer="docuDrawer" />
+            <CardDetails
+              :reserve="vehicle"
+              @cancelled="getVehicle"
+              @docuDrawer="docuDrawer"
+              @deliverBtn="deliDrawer"
+            />
             <CardMobile :reserve="vehicle" />
           </template>
         </header>
@@ -870,70 +881,70 @@ onMounted(() => {
                 </div>
               </div>
               <template v-for="payment of vehicle.payments" :key="payment.id">
-              <div
-                v-if="
-                  payment.payment_method === 'vehicle_exchange' && payment.form_of_payment_vehicle
-                "
-                class="h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 flex"
-              >
-                <div>
-                  <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
-                  <div class="divider m-0"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 text-base">
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Marca: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.brand_details }}
-                    </span>
+                <div
+                  v-if="
+                    payment.payment_method === 'vehicle_exchange' && payment.form_of_payment_vehicle
+                  "
+                  class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4"
+                >
+                  <div>
+                    <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
+                    <div class="divider m-0"></div>
                   </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Modelo: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.model_details }}
-                    </span>
-                  </div>
-                  <!-- <div class="flex flex-col">
+                  <div class="grid grid-cols-2 gap-4 text-base">
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Marca: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.brand_details }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Modelo: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.model_details }}
+                      </span>
+                    </div>
+                    <!-- <div class="flex flex-col">
                     <span class="font-bold"> Versión: </span>
                     <span> falta en la api </span>
                   </div> -->
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Bastidor: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.vin }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Matricula: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.plate }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Kms: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.kms }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Cambios: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.gearbox_details }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Combustible: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.fuel_details }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Valoración: </span>
-                    <span> {{ payment.form_of_payment_vehicle.price }} € </span>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Bastidor: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.vin }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Matricula: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.plate }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Kms: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.kms }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Cambios: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.gearbox_details }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Combustible: </span>
+                      <span>
+                        {{ payment.form_of_payment_vehicle.fuel_details }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold"> Valoración: </span>
+                      <span> {{ payment.form_of_payment_vehicle.price }} € </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </template>
+              </template>
             </div>
             <div v-else class="flex w-full flex-col gap-4">
               <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4">
@@ -1179,12 +1190,20 @@ onMounted(() => {
           :id="id"
           @added="getVehicle"
         />
-        <DeliverDrawer
+        <DocumentDrawer
           v-if="drawerSection === 'document'"
           :toggle="toggleDrawer"
           :id="id"
           :comments="docusignComments"
           :email="contactEmail"
+        />
+        <DeliveryDrawer
+          v-if="drawerSection === 'delivery'"
+          :toggle="toggleDrawer"
+          :id="id"
+          :comments="docusignComments"
+          :email="contactEmail"
+          @delivered="getVehicle"
         />
       </ul>
     </div>

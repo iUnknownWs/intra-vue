@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   toggle: { type: Function, required: true },
-  comments: { type: String, required: true },
+  comments: { type: [String, null], required: true },
   email: { type: String, required: true },
   id: { type: String, required: true }
 })
@@ -12,7 +12,6 @@ const props = defineProps({
 const info = ref(null)
 const modalTitle = ref('')
 const modalMessage = ref('')
-
 
 const loading = ref(false)
 const sellMode = ref(false)
@@ -93,5 +92,3 @@ onMounted(() => {
     @click-primary="sendDocusign"
   />
 </template>
-
-<style scoped></style>

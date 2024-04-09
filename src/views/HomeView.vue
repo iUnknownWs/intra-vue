@@ -613,16 +613,15 @@ const fillVehicle = () => {
     })
 }
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      fillVehicle()
-    }
-  })
-})
-
 onMounted(() => {
   selected()
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        fillVehicle()
+      }
+    })
+  })
   observer.observe(vehicleNext.value)
 })
 </script>
@@ -680,13 +679,13 @@ onMounted(() => {
               </template>
             </DropdownBtn>
             <label for="filterDrawer" class="btn btn-outline hidden text-black">
-              <Icon icon="mdi:filter" />
+              <Icon icon="mdi:filter" width="25" />
               Filtros
             </label>
             <DropdownBtn>
               <template #btn>
                 <div tabindex="0" role="button" class="btn btn-primary hidden text-white lg:flex">
-                  <Icon icon="mdi:plus" />
+                  <Icon icon="mdi:plus" width="25" />
                   Nuevo
                 </div>
               </template>
@@ -780,7 +779,7 @@ onMounted(() => {
           <div class="flex flex-col items-start justify-center">
             <div
               role="tablist"
-              class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid"
+              class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid [&_span]:grid [&_span]:h-[35px] [&_span]:w-[35px] [&_span]:text-[12px]"
             >
               <a
                 role="tab"
