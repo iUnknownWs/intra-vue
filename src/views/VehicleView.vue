@@ -164,11 +164,11 @@ const purchasePrice = ref(0)
 const sellManage = ref(false)
 const sellerName = ref('')
 const commission = ref(0)
-const price = ref(null)
-const financed = ref(null)
+const price = ref(0)
+const financed = ref(0)
 const financingMonths = ref(null)
 const financingQ = ref(null)
-const reserve = ref(null)
+const reserve = ref(0)
 const iva = ref(false)
 const infoModal = ref(null)
 const message = ref('')
@@ -463,11 +463,11 @@ const updateData = () => {
       vehicle: vehicle.value.id
     },
     price: {
-      sale_price: price?.value,
-      financed_price: financed?.value,
+      sale_price: price?.value || 0,
+      financed_price: financed?.value || 0,
       amount_fees: financingMonths?.value,
       financing_fee: financingQ?.value,
-      reserve_amount: reserve?.value,
+      reserve_amount: reserve?.value || 0,
       is_tax_deductible: iva?.value,
       vehicle: vehicle.value.id
     },
@@ -519,25 +519,19 @@ const updateData = () => {
     loading.value = false
     return
   }
-  if (payload.price.sale_price === null) {
+  if (payload.price.sale_price === 0) {
     message.value = 'Debe ingresar el precio de venta del vehículo es obligatoria'
     infoModal.value?.modal.showModal()
     loading.value = false
     return
   }
-  if (payload.price.financed_price === null) {
+  if (payload.price.financed_price === 0) {
     message.value = 'Debe ingresar el precio financiado del vehículo es obligatoria'
     infoModal.value?.modal.showModal()
     loading.value = false
     return
   }
-  if (payload.price.financing_fee === null) {
-    message.value = 'Debe ingresar las cuotas de financiación del vehículo es obligatoria'
-    infoModal.value?.modal.showModal()
-    loading.value = false
-    return
-  }
-  if (payload.price.reserve_amount === null) {
+  if (payload.price.reserve_amount === 0) {
     message.value = 'Debe ingresar el precio de reserva del vehículo es obligatoria'
     infoModal.value?.modal.showModal()
     loading.value = false

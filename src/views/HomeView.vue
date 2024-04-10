@@ -773,7 +773,7 @@ onMounted(() => {
           <div class="flex w-full flex-col items-start justify-center">
             <div
               role="tablist"
-              class="tabs tabs-bordered mx-4 mt-7 hidden w-full bg-white font-medium lg:grid [&_a]:w-full [&_a]:text-xs [&_span]:text-[12px]"
+              class="tabs tabs-bordered mx-4 mt-7 hidden w-full bg-white font-medium lg:grid [&_a]:text-xs [&_span]:text-[12px]"
             >
               <a
                 role="tab"

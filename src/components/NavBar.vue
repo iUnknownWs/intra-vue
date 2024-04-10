@@ -20,6 +20,10 @@ const data = ref([])
 axios.get(url).then((response) => {
   data.value = response.data
 })
+const image = ref('/src/assets/img/R.png')
+if (localStorage.getItem('image')) {
+  image.value = localStorage.getItem('image')
+}
 </script>
 
 <template>
@@ -56,20 +60,20 @@ axios.get(url).then((response) => {
             <template #btn>
               <div class="w-10 rounded-full">
                 <img v-if="data.img" :src="data.img" />
-                <img v-else alt="Avatar" src="/src/assets/img/R.png" />
+                <img v-else alt="Avatar" :src="image" />
               </div>
             </template>
             <template #content>
               <div class="avatar flex items-center">
                 <div class="w-10 rounded-full">
                   <img v-if="data.img" alt="Avatar" :src="data.img" />
-                  <img v-else alt="Avatar" src="/src/assets/img/R.png" />
+                  <img v-else alt="Avatar" :src="image" />
                 </div>
                 <p class="pl-2 text-center text-xs text-gray-500">{{ data.email }}</p>
               </div>
               <div class="divider m-0 p-0"></div>
               <li>
-                <a> <Icon icon="mdi:user" /> Mi Perfil </a>
+                <RouterLink to="/perfil"> <Icon icon="mdi:user" /> Mi Perfil </RouterLink>
               </li>
               <li>
                 <a @click="logout"> <Icon icon="mdi:logout" /> Cerrar sesión </a>

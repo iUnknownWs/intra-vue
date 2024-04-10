@@ -13,6 +13,7 @@ import DocsView from '@/views/DocsView.vue'
 import ExtrasView from '@/views/ExtrasView.vue'
 import IntegrationsView from '@/views/IntegrationsView.vue'
 import ReserveView from '@/views/ReserveView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/',
       name: 'login',
       component: LoginViewVue
+    },
+    {
+      path: '/perfil',
+      name: 'profile',
+      component: ProfileView
     },
     {
       path: '/vehiculos',
@@ -45,47 +51,47 @@ const router = createRouter({
     {
       path: '/tasaciones',
       name: 'valuation',
-      component: () => ValuationView
+      component: ValuationView
     },
     {
       path: '/recuperar',
       name: 'recovery',
-      component: () => RecoveryView
+      component: RecoveryView
     },
     {
       path: '/usuarios',
       name: 'users',
-      component: () => UsersView
+      component: UsersView
     },
     {
       path: '/descuentos',
       name: 'discounts',
-      component: () => DiscountsView
+      component: DiscountsView
     },
     {
       path: '/garantias',
       name: 'warranty',
-      component: () => WarrantsView
+      component: WarrantsView
     },
     {
       path: '/entregas',
       name: 'deliveries',
-      component: () => DeliveriesView
+      component: DeliveriesView
     },
     {
       path: '/documentos',
       name: 'docs',
-      component: () => DocsView
+      component: DocsView
     },
     {
       path: '/extras',
       name: 'extras',
-      component: () => ExtrasView
+      component: ExtrasView
     },
     {
       path: '/integraciones',
       name: 'integration',
-      component: () => IntegrationsView
+      component: IntegrationsView
     },
   ]
 })

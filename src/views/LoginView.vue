@@ -18,6 +18,10 @@ const login = () => {
     .then((response) => {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('userid', response.data.user.id)
+      localStorage.setItem('image', response.data.image)
+      localStorage.setItem('email', response.data.email)
+      localStorage.setItem('name', response.data.first_name)
+      localStorage.setItem('last_name', response.data.last_name)
       if (response.status === 200) {
         router.push('/vehiculos')
       }

@@ -222,7 +222,7 @@ const addWarrant = () => {
         <NumberInput label="Precio" placeholder="Introducir" v-model="price" :max="200000" />
         <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
         <div class="mt-3 font-medium">
-          <CheckInput label="Sin Garantía" @input="updateGarantia" v-model="garantia" />
+          <CheckInput label="Sin Garantía" v-model="garantia" />
           <CheckInput label="¿Agregar al vehículo automáticamente?" v-model="auto" />
         </div>
       </template>

@@ -1,0 +1,119 @@
+<script setup>
+import HeaderMain from '@/components/HeaderMain.vue'
+import { useDropzone } from 'vue3-dropzone'
+import { ref, reactive } from 'vue'
+import axios from 'axios'
+
+const drawer = ref(false)
+
+const loading = ref(false)
+const name = ref(localStorage.getItem('name'))
+const lastName = ref(localStorage.getItem('last_name'))
+const email = ref(localStorage.getItem('email'))
+const newPassword = ref(null)
+const confirmPassword = ref(null)
+
+const formData = new FormData()
+
+const saveFiles = (files) => {
+  for (var x = 0; x < files.length; x++) {
+    formData.append('image', files[x])
+  }
+  loading.value = false
+}
+
+const onDrop = (acceptFiles) => {
+  loading.value = true
+  saveFiles(acceptFiles)
+}
+
+const optionsDrop = reactive({
+  multiple: true,
+  onDrop,
+  accept: 'image/*'
+})
+
+const save = () => {
+  loading.value = true
+
+  formData.append('first_name', name.value)
+  formData.append('last_name', lastName.value)
+  formData.append('email', email.value)
+
+  axios
+    .patch(`${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    .then((response) => {
+      loading.value = false
+      localStorage.setItem('image', response.data.image)
+      localStorage.setItem('email', response.data.email)
+      localStorage.setItem('name', response.data.first_name)
+      localStorage.setItem('last_name', response.data.last_name)
+    })
+    .catch((err) => {
+      loading.value = false
+      console.error(err)
+    })
+}
+
+const { getRootProps, getInputProps, isDragActive } = useDropzone(optionsDrop)
+
+const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
+</script>
+
+<template>
+  <div class="drawer drawer-end">
+    <input id="integration-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
+    <div class="drawer-content">
+      <HeaderMain>
+        <h1 class="mx-10 mt-4 text-xl font-bold">Perfil de Usuario</h1>
+        <h2 class="mx-10 text-lg font-bold">Hola bienvenido, {{ name }}</h2>
+        <div class="flex w-full flex-row">
+          <div class="m-10 flex w-full flex-col bg-base-100 p-10">
+            <div>
+              <h3 class="text-xl font-medium">Información personal</h3>
+              <div class="divider m-0"></div>
+            </div>
+            <div class="mt-4">
+              <span class="label-text font-medium">Subir foto de perfil</span>
+              <div v-bind="getRootProps()" class="m-2 w-fit rounded border-2 border-black p-3">
+                <input v-bind="getInputProps()" />
+                <div class="w-[25rem] text-center">
+                  <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
+                  <LoadingSpinner v-else-if="loading" />
+                  <p v-else>Arrastra y suelta los archivos o selecciónalos haciendo click</p>
+                </div>
+              </div>
+            </div>
+            <TextInput label="Nombre:" v-model="name" />
+            <TextInput label="Apellidos:" v-model="lastName" />
+            <TextInput label="Email:" v-model="email" />
+            <button class="btn btn-primary mt-4 self-end text-white" @click="save">Guardar</button>
+          </div>
+          <div class="m-10 flex w-full flex-col bg-base-100 p-10">
+            <div>
+              <h3 class="text-xl font-medium">Cambiar contraseña</h3>
+              <div class="divider m-0"></div>
+            </div>
+            <TextInput label="Nueva Contraseña:" type="password" v-model="newPassword" />
+            <TextInput label="Repetir Contraseña:" type="password" v-model="confirmPassword" />
+            <button class="btn btn-primary mt-4 self-end text-white" @click="changePassword">
+              Guardar
+            </button>
+          </div>
+        </div>
+      </HeaderMain>
+    </div>
+    <div class="drawer-side z-50">
+      <label for="integration-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+      <ul class="menu min-h-full w-80 bg-white p-4 text-base-content">
+        <DrawerTitle title="Integraciones" @toggle="toggleDrawer" />
+      </ul>
+    </div>
+  </div>
+</template>
