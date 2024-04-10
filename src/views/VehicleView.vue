@@ -702,13 +702,19 @@ const fetch = () => {
 
 fetch()
 
+const loadingInfo = ref(false)
+
 const updateStatus = (status) => {
+  loadingInfo.value = true
+  infoModal.value?.modal.showModal()
   axios
     .patch(statusUrl, {
       status: status
     })
     .then(() => {
       fetch()
+      modalTitle.value = 'Status editado'
+      message.value = 'Se ha cambiado el estado correctamente'
     })
     .catch((e) => {
       modalTitle.value = 'Error'
@@ -717,7 +723,9 @@ const updateStatus = (status) => {
       } else {
         message.value = e.message
       }
-      infoModal.value?.modal.showModal()
+    })
+    .finally(() => {
+      loadingInfo.value = false
     })
 }
 
@@ -1952,7 +1960,13 @@ onMounted(async () => {
   <div class="drawer drawer-end">
     <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
-      <ModalInfo class="w-full" ref="infoModal" :title="modalTitle" :message="message" />
+      <ModalInfo
+        class="w-full"
+        ref="infoModal"
+        :title="modalTitle"
+        :message="message"
+        :loading="loadingInfo"
+      />
       <ModalConfirm
         class="w-full"
         ref="confirm"
@@ -2331,7 +2345,11 @@ onMounted(async () => {
                   </div>
                   <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
                     <TextInput label="Precio de venta:" v-model="price" />
-                    <TextInput label="Precio financiado:" v-model="financed" />
+                    <TextInput
+                      label="Precio financiado:"
+                      v-model="financed"
+                      @focus="financed = price"
+                    />
                     <TextInput label="Meses de financiación:" v-model="financingMonths" />
                     <TextInput label="Cuota financiación:" v-model="financingQ" />
                     <TextInput label="Reserva:" v-model="reserve" />

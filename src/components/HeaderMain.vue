@@ -15,12 +15,11 @@ const toggleDrawer = () => {
 <template>
   <div class="drawer bg-base-200">
     <input id="drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
-    <div class="drawer-content flex flex-col">
+    <div class="drawer-content flex w-full flex-col">
       <!-- Navbar -->
       <header class="sticky top-0 z-20">
         <NavBar />
       </header>
-      <!-- Page content here -->
       <main class="min-h-[90vh] w-screen lg:w-[98vw]">
         <slot />
       </main>

@@ -613,6 +613,11 @@ const fillVehicle = () => {
     })
 }
 
+const tabContainer = ref(null)
+const horizontalScroll = (evt) => {
+  tabContainer.value.scrollLeft += evt.deltaY * 1
+}
+
 onMounted(() => {
   selected()
   const observer = new IntersectionObserver((entries) => {
@@ -703,7 +708,7 @@ onMounted(() => {
           <SelectTab label="Pestaña:" v-model="tab" @change="selected" />
         </div>
         <div class="hidden flex-row items-start lg:flex">
-          <div class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
+          <div class="my-4 ml-4 min-h-full w-72 bg-white text-base-content">
             <div class="menu-title flex flex-row justify-between">Filtros</div>
             <div class="divider m-0"></div>
             <RangeSelect
@@ -770,110 +775,120 @@ onMounted(() => {
               <button class="btn btn-primary w-fit text-white" @click="filter">Filtrar</button>
             </li>
           </div>
-          <div class="flex w-full flex-col items-start justify-center">
+          <div class="flex w-[75vw] flex-col items-start justify-center">
             <div
               role="tablist"
-              class="tabs tabs-bordered mx-4 mt-7 hidden w-full bg-white font-medium lg:grid [&_a]:text-xs [&_span]:text-[12px]"
+              ref="tabContainer"
+              @wheel.prevent="horizontalScroll"
+              class="tabs tabs-bordered mx-4 mt-7 hidden max-w-full overflow-x-scroll bg-white font-medium lg:grid [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
             >
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '0' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '0' }"
                 @click="all"
               >
                 Todos
-                <span class="badge indicator-item badge-primary">{{ filtersCounters.total }}</span>
+                <span class="badge" :class="{ 'badge-primary': tab === '0' }">{{
+                  filtersCounters.total
+                }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '1' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '1' }"
                 @click="vehicleStatus(0)"
               >
                 Recepción
-                <span class="badge indicator-item badge-primary">{{
+                <span class="badge" :class="{ 'badge-primary': tab === '1' }">{{
                   filtersCounters.receipt
                 }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '2' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '2' }"
                 @click="vehicleStatus(3)"
               >
                 Publicación
-                <span class="badge indicator-item badge-primary">{{
+                <span class="badge" :class="{ 'badge-primary': tab === '2' }">{{
                   filtersCounters.publication
                 }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '3' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '3' }"
                 @click="vehicleStatus(4)"
               >
                 En venta
-                <span class="badge indicator-item badge-primary">{{
+                <span class="badge" :class="{ 'badge-primary': tab === '3' }">{{
                   filtersCounters.on_sale
                 }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '4' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '4' }"
                 @click="vehicleStatus(5)"
               >
                 Reservados
-                <span class="badge indicator-item badge-primary">{{
+                <span class="badge" :class="{ 'badge-primary': tab === '4' }">{{
                   filtersCounters.reserved
                 }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '5' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '5' }"
                 @click="ppt"
               >
                 Pte. de PT
-                <span class="badge indicator-item badge-primary">{{ filtersCounters.ppt }}</span>
+                <span class="badge" :class="{ 'badge-primary': tab === '5' }">{{
+                  filtersCounters.ppt
+                }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '6' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '6' }"
                 @click="vpt"
               >
                 Validar PT
-                <span class="badge indicator-item badge-primary">{{ filtersCounters.vpt }}</span>
+                <span class="badge" :class="{ 'badge-primary': tab === '6' }">{{
+                  filtersCounters.vpt
+                }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '7' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '7' }"
                 @click="web"
               >
                 No web
-                <span class="badge indicator-item badge-primary">{{ filtersCounters.no_web }}</span>
+                <span class="badge" :class="{ 'badge-primary': tab === '7' }">{{
+                  filtersCounters.no_web
+                }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '8' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '8' }"
                 @click="entrega"
               >
                 Entrega inmediata
-                <span class="badge indicator-item badge-primary">{{
+                <span class="badge" :class="{ 'badge-primary': tab === '8' }">{{
                   filtersCounters.inmediate_delivery
                 }}</span>
               </a>
               <a
                 role="tab"
-                class="tab indicator"
-                :class="{ 'tab-active': tab === '9' }"
+                class="tab"
+                :class="{ 'tab-active font-medium': tab === '9' }"
                 @click="vehicleStatus(10)"
               >
                 No disponible
-                <span class="badge indicator-item badge-primary">{{
+                <span class="badge" :class="{ 'badge-primary': tab === '9' }">{{
                   filtersCounters.not_available
                 }}</span>
               </a>
@@ -1113,7 +1128,9 @@ onMounted(() => {
 <style>
 .badge {
   font-weight: 600;
-  color: #fff;
+}
+.badge-primary {
+  color: white;
 }
 .textcard {
   font-size: 0.65rem;

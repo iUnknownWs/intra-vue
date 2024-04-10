@@ -4,7 +4,12 @@ import { useDropzone } from 'vue3-dropzone'
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 
+axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
 const drawer = ref(false)
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
 
 const loading = ref(false)
 const name = ref(localStorage.getItem('name'))
@@ -47,16 +52,51 @@ const save = () => {
       }
     })
     .then((response) => {
-      loading.value = false
       localStorage.setItem('image', response.data.image)
       localStorage.setItem('email', response.data.email)
       localStorage.setItem('name', response.data.first_name)
       localStorage.setItem('last_name', response.data.last_name)
+      modalTitle.value = 'Usuario'
+      modalMessage.value = 'La información del usuario ha sido actualizada correctamente'
+      info.value.modal.showModal()
     })
     .catch((err) => {
-      loading.value = false
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo actualizar la información del usuario'
+      info.value.modal.showModal()
       console.error(err)
     })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const passwordLoading = ref(false)
+
+const changePassword = () => {
+  if (newPassword.value === confirmPassword.value) {
+    passwordLoading.value = true
+    axios
+      .post(`${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}/change-password/`, {
+        new_password: newPassword.value,
+        confirm_password: confirmPassword.value
+      })
+      .then(() => {
+        modalTitle.value = 'Contraseña actualizada'
+        modalMessage.value = 'La contraseña ha sido actualizada correctamente'
+        info.value.modal.showModal()
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+      .finally(() => {
+        passwordLoading.value = false
+      })
+  } else {
+    modalTitle.value = 'Contraseñas no coinciden'
+    modalMessage.value = 'Las contraseñas no coinciden, por favor, verifique los datos'
+    info.value.modal.showModal()
+  }
 }
 
 const { getRootProps, getInputProps, isDragActive } = useDropzone(optionsDrop)
@@ -70,23 +110,38 @@ const toggleDrawer = () => {
   <div class="drawer drawer-end">
     <input id="integration-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
+      <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
       <HeaderMain>
-        <h1 class="mx-10 mt-4 text-xl font-bold">Perfil de Usuario</h1>
-        <h2 class="mx-10 text-lg font-bold">Hola bienvenido, {{ name }}</h2>
-        <div class="flex w-full flex-row">
-          <div class="m-10 flex w-full flex-col bg-base-100 p-10">
+        <h1 class="mx-4 mt-4 text-xl font-bold lg:mx-12">Perfil de Usuario</h1>
+        <h2 class="mx-4 mb-4 text-lg font-bold lg:mx-12">Hola bienvenido, {{ name }}</h2>
+        <div class="flex w-full flex-col gap-4 p-2 lg:flex-row">
+          <div class="flex w-full flex-col rounded-md bg-base-100 p-4 lg:mx-10 lg:p-10">
             <div>
               <h3 class="text-xl font-medium">Información personal</h3>
               <div class="divider m-0"></div>
             </div>
             <div class="mt-4">
               <span class="label-text font-medium">Subir foto de perfil</span>
-              <div v-bind="getRootProps()" class="m-2 w-fit rounded border-2 border-black p-3">
+              <div
+                v-bind="getRootProps()"
+                class="my-2 hidden w-fit rounded border-2 border-black p-3 lg:block"
+              >
                 <input v-bind="getInputProps()" />
                 <div class="w-[25rem] text-center">
                   <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
                   <LoadingSpinner v-else-if="loading" />
                   <p v-else>Arrastra y suelta los archivos o selecciónalos haciendo click</p>
+                </div>
+              </div>
+              <div
+                v-bind="getRootProps()"
+                class="my-2 w-fit rounded border-2 border-black p-2 lg:hidden"
+              >
+                <input v-bind="getInputProps()" />
+                <div class="w-fit text-center">
+                  <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
+                  <LoadingSpinner v-else-if="loading" />
+                  <p v-else class="text-xs">Pulsa aquí para añadir archivos</p>
                 </div>
               </div>
             </div>
@@ -95,7 +150,9 @@ const toggleDrawer = () => {
             <TextInput label="Email:" v-model="email" />
             <button class="btn btn-primary mt-4 self-end text-white" @click="save">Guardar</button>
           </div>
-          <div class="m-10 flex w-full flex-col bg-base-100 p-10">
+          <div
+            class="box-border flex h-fit w-full flex-col rounded-md bg-base-100 p-4 lg:m-10 lg:p-10"
+          >
             <div>
               <h3 class="text-xl font-medium">Cambiar contraseña</h3>
               <div class="divider m-0"></div>
@@ -103,7 +160,8 @@ const toggleDrawer = () => {
             <TextInput label="Nueva Contraseña:" type="password" v-model="newPassword" />
             <TextInput label="Repetir Contraseña:" type="password" v-model="confirmPassword" />
             <button class="btn btn-primary mt-4 self-end text-white" @click="changePassword">
-              Guardar
+              <LoadingSpinner v-if="passwordLoading" />
+              <span v-else class="font-medium text-white">Cambiar</span>
             </button>
           </div>
         </div>

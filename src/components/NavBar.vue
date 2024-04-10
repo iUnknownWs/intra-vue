@@ -92,9 +92,6 @@ if (localStorage.getItem('image')) {
               </li>
               <MenuLink label="Usuarios" href="/usuarios" />
               <MenuLink label="Descuentos" href="/descuentos" />
-              <li>
-                <label for="riDrawer" aria-label="open sidebar"> Financiación </label>
-              </li>
               <li class="menu-title flex-row items-center gap-1">
                 <Icon icon="mdi:settings" />Gestión de extras
               </li>
@@ -105,7 +102,7 @@ if (localStorage.getItem('image')) {
               <li class="menu-title flex-row items-center gap-1">
                 <Icon icon="mdi:settings" />Integraciones
               </li>
-              <MenuLink label="Portales Web" href="/integraciones" />
+              <MenuLink label="Integraciones" href="/integraciones" />
             </template>
           </DropdownBtn>
         </div>
