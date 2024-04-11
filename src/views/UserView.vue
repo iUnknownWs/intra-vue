@@ -1,10 +1,19 @@
 <script setup>
 import HeaderMain from '@/components/HeaderMain.vue'
 import { useDropzone } from 'vue3-dropzone'
+import { useRoute } from 'vue-router'
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+const route = useRoute()
+const id = ref(route.params.id)
+
+axios.get(`${import.meta.env.VITE_USER}/${id.value}/`).then((response) => {
+  name.value = response.data.first_name
+  lastName.value = response.data.last_name
+  email.value = response.data.email
+})
 
 const drawer = ref(false)
 const info = ref(null)
@@ -12,9 +21,9 @@ const modalTitle = ref('')
 const modalMessage = ref('')
 
 const loading = ref(false)
-const name = ref(localStorage.getItem('name'))
-const lastName = ref(localStorage.getItem('last_name'))
-const email = ref(localStorage.getItem('email'))
+const name = ref(null)
+const lastName = ref(null)
+const email = ref(null)
 const newPassword = ref(null)
 const confirmPassword = ref(null)
 
@@ -46,16 +55,12 @@ const save = () => {
   formData.append('email', email.value)
 
   axios
-    .patch(`${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}/`, formData, {
+    .patch(`${import.meta.env.VITE_USER}/${id.value}/`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
-    .then((response) => {
-      localStorage.setItem('image', response.data.image)
-      localStorage.setItem('email', response.data.email)
-      localStorage.setItem('name', response.data.first_name)
-      localStorage.setItem('last_name', response.data.last_name)
+    .then(() => {
       modalTitle.value = 'Usuario'
       modalMessage.value = 'La información del usuario ha sido actualizada correctamente'
       info.value.modal.showModal()

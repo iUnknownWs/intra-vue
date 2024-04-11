@@ -135,6 +135,9 @@ const reset = () => {
               Eliminar
             </button>
           </template>
+          <template v-slot:item-email="{ id, email }">
+            <RouterLink :to="`/usuario/${id}`">{{ email }}</RouterLink>
+          </template>
         </EasyDataTable>
       </template>
       <template #drawer>

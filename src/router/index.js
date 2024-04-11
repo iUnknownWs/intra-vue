@@ -14,6 +14,7 @@ import ExtrasView from '@/views/ExtrasView.vue'
 import IntegrationsView from '@/views/IntegrationsView.vue'
 import ReserveView from '@/views/ReserveView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import UserView from '@/views/UserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/usuarios',
       name: 'users',
       component: UsersView
+    },
+    {
+      path: '/usuario/:id',
+      name: 'manage-user',
+      component: UserView
     },
     {
       path: '/descuentos',
