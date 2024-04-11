@@ -13,7 +13,7 @@ defineEmits(['settingClick', 'primaryClick'])
 <template>
   <div class="card w-[80vw] bg-base-100 shadow-xl lg:w-full lg:max-w-56">
     <figure class="h-28 px-4 pt-10">
-      <img :src="img" alt="Logo" class="rounded-xl" />
+      <img :src="img" alt="Logo" />
     </figure>
     <div class="card-body items-center p-4 text-center">
       <span v-if="published || published === 0">Vehiculos publicados: {{ published }}</span>

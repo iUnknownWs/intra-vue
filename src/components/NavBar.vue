@@ -3,7 +3,6 @@ import axios from 'axios'
 import { Icon } from '@iconify/vue'
 import { ref } from 'vue'
 import router from '@/router'
-import { interes, ajuste } from '@/js/filterOptions.js'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -112,11 +111,7 @@ if (localStorage.getItem('image')) {
       <label for="riDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content">
         <!-- Sidebar content here -->
-        <div>
-          <DrawerTitle title="Añadir Ajuste Financiero" @toggle="toggleDrawer" />
-          <SelectInput label="Interés:" :options="interes" />
-          <SelectInput label="Tipo de Ajuste:" :options="ajuste" />
-        </div>
+        
         <DrawerActions :toggleDrawer="toggleDrawer" primary="Guardar" secondary="Cancelar" />
       </ul>
     </div>

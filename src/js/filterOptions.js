@@ -1,17 +1,3 @@
-export const interes = [
-    {
-        id: '1',
-        title: '1'
-    }
-]
-
-export const ajuste = [
-    {
-        id: '1',
-        title: '1'
-    }
-]
-
 const combustible = [
     {
         id: '1',

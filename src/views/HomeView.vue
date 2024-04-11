@@ -1136,6 +1136,9 @@ onMounted(() => {
   font-size: 0.65rem;
   line-height: 0.75rem;
 }
+.btn-primary {
+  color: white;
+}
 .v-select,
 .vs__dropdown-toggle {
   height: 3rem;
