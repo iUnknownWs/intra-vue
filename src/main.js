@@ -1,5 +1,9 @@
 import './assets/main.css'
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { Sortable } from 'sortablejs-vue3'
+import { registerScrollSpy } from 'vue3-scroll-spy'
 import App from './App.vue'
 import router from './router'
 import AreaInput from '@/components/AreaInput.vue'
@@ -40,12 +44,11 @@ import VehicleTable from '@/components/VehicleTable.vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import VueSelect from "vue-select"
 import VueGoogleMaps from 'vue-google-maps-community-fork'
-import { Sortable } from 'sortablejs-vue3'
-import { registerScrollSpy } from 'vue3-scroll-spy'
 import 'vue3-easy-data-table/dist/style.css'
 import 'vue-select/dist/vue-select.css'
 
-
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 const app = createApp(App)
 registerScrollSpy(app)
 app.component('EasyDataTable', Vue3EasyDataTable)
@@ -88,7 +91,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('VueSelect', VueSelect)
 
 app.use(router)
-
+app.use(pinia)
 app.use(VueGoogleMaps, {
     load: {
         key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,

@@ -1,10 +1,13 @@
 <script setup>
 import axios from 'axios'
 import { Icon } from '@iconify/vue'
+import { useUserStore } from '@/stores/user'
 import { ref } from 'vue'
 import router from '@/router'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
+const userStore = useUserStore()
 
 const drawer = ref(false)
 const toggleDrawer = () => {
@@ -14,11 +17,7 @@ const logout = () => {
   localStorage.removeItem('token')
   router.push('/')
 }
-const url = `${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}`
-const data = ref([])
-axios.get(url).then((response) => {
-  data.value = response.data
-})
+
 const image = ref('/src/assets/img/R.png')
 if (localStorage.getItem('image')) {
   image.value = localStorage.getItem('image')
@@ -58,17 +57,17 @@ if (localStorage.getItem('image')) {
           <DropdownAvatar>
             <template #btn>
               <div class="w-10 rounded-full">
-                <img v-if="data.img" :src="data.img" />
+                <img v-if="userStore.image" :src="userStore.image" />
                 <img v-else alt="Avatar" :src="image" />
               </div>
             </template>
             <template #content>
               <div class="avatar flex items-center">
                 <div class="w-10 rounded-full">
-                  <img v-if="data.img" alt="Avatar" :src="data.img" />
+                  <img v-if="userStore.image" alt="Avatar" :src="userStore.image" />
                   <img v-else alt="Avatar" :src="image" />
                 </div>
-                <p class="pl-2 text-center text-xs text-gray-500">{{ data.email }}</p>
+                <p class="pl-2 text-center text-xs text-gray-500">{{ userStore.email }}</p>
               </div>
               <div class="divider m-0 p-0"></div>
               <li>
@@ -111,7 +110,7 @@ if (localStorage.getItem('image')) {
       <label for="riDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul class="menu min-h-full w-80 justify-between bg-white p-4 text-base-content">
         <!-- Sidebar content here -->
-        
+
         <DrawerActions :toggleDrawer="toggleDrawer" primary="Guardar" secondary="Cancelar" />
       </ul>
     </div>

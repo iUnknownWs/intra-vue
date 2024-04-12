@@ -7,8 +7,11 @@ import CheckInput from '@/components/CheckInput.vue'
 import SettingTable from '@/components/SettingTable.vue'
 import axios from 'axios'
 import router from '@/router'
+import { useUserStore } from '@/stores/user'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
+const userStore = useUserStore()
 
 axios.get(`${import.meta.env.VITE_API}/permissions/`).then((response) => {
   permissions.value = response.data.results
@@ -135,7 +138,7 @@ const reset = () => {
               Eliminar
             </button>
           </template>
-          <template v-slot:item-email="{ id, email }">
+          <template v-if="userStore.isAdmin" v-slot:item-email="{ id, email }">
             <RouterLink :to="`/usuario/${id}`">{{ email }}</RouterLink>
           </template>
         </EasyDataTable>

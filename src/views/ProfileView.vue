@@ -1,20 +1,24 @@
 <script setup>
 import HeaderMain from '@/components/HeaderMain.vue'
-import { useDropzone } from 'vue3-dropzone'
 import { ref, reactive } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { useDropzone } from 'vue3-dropzone'
 import axios from 'axios'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
+const userStore = useUserStore()
 
 const drawer = ref(false)
 const info = ref(null)
 const modalTitle = ref('')
 const modalMessage = ref('')
 
+const name = ref(userStore.name)
+const lastName = ref(userStore.lastName)
+const email = ref(userStore.email)
+
 const loading = ref(false)
-const name = ref(localStorage.getItem('name'))
-const lastName = ref(localStorage.getItem('last_name'))
-const email = ref(localStorage.getItem('email'))
 const newPassword = ref(null)
 const confirmPassword = ref(null)
 
@@ -41,9 +45,9 @@ const optionsDrop = reactive({
 const save = () => {
   loading.value = true
 
-  formData.append('first_name', name.value)
-  formData.append('last_name', lastName.value)
-  formData.append('email', email.value)
+  formData.append('first_name', userStore.name)
+  formData.append('last_name', userStore.lastName)
+  formData.append('email', userStore.email)
 
   axios
     .patch(`${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}/`, formData, {
@@ -51,11 +55,7 @@ const save = () => {
         'Content-Type': 'multipart/form-data'
       }
     })
-    .then((response) => {
-      localStorage.setItem('image', response.data.image)
-      localStorage.setItem('email', response.data.email)
-      localStorage.setItem('name', response.data.first_name)
-      localStorage.setItem('last_name', response.data.last_name)
+    .then(() => {
       modalTitle.value = 'Usuario'
       modalMessage.value = 'La información del usuario ha sido actualizada correctamente'
       info.value.modal.showModal()
@@ -113,7 +113,7 @@ const toggleDrawer = () => {
       <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
       <HeaderMain>
         <h1 class="mx-4 mt-4 text-xl font-bold lg:mx-12">Perfil de Usuario</h1>
-        <h2 class="mx-4 mb-4 text-lg font-bold lg:mx-12">Hola bienvenido, {{ name }}</h2>
+        <h2 class="mx-4 mb-4 text-lg font-bold lg:mx-12">Hola bienvenido, {{ userStore.name }}</h2>
         <div class="flex w-full flex-col gap-4 p-2 lg:flex-row">
           <div class="flex w-full flex-col rounded-md bg-base-100 p-4 lg:mx-10 lg:p-10">
             <div>

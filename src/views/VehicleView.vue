@@ -1,6 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import { ref, onMounted, watch, computed } from 'vue'
 import phonePrefix from '@/js/phone_prefixes.json'
 import PerformanceTest from '@/components/PerformanceTest.vue'
@@ -14,6 +15,8 @@ import WallapopDrawer from '@/components/WallapopDrawer.vue'
 import SumautoDrawer from '@/components/SumautoDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
+const userStore = useUserStore()
 
 const route = useRoute()
 const id = ref(route.params.id)
@@ -62,7 +65,6 @@ const wallapopUrl = `${import.meta.env.VITE_INTEGRATIONS}/wallapop/`
 const sumautoUrl = `${import.meta.env.VITE_INTEGRATIONS}/sumauto/`
 const loading = ref(true)
 const vehicle = ref({})
-const tab = ref(1)
 const navBtn1 = ref(null)
 const navBtn2 = ref(null)
 const navBtn3 = ref(null)
@@ -870,54 +872,45 @@ const tabEvent = (tabSelected) => {
     }
   }
   if (tabSelected === 1) {
-    tab.value = 1
     tab1.value.classList.add('tab-active')
     basic.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 2) {
-    tab.value = 2
     tab2.value.classList.add('tab-active')
     prices.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 3) {
-    tab.value = 3
     tab3.value.classList.add('tab-active')
     comments.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 4) {
-    tab.value = 4
     tab4.value.classList.add('tab-active')
     maintenance.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 5) {
-    tab.value = 5
     tab5.value.classList.add('tab-active')
     extras.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 6) {
-    tab.value = 6
     tab6.value.classList.add('tab-active')
     discounts.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 7) {
-    tab.value = 7
     tab7.value.classList.add('tab-active')
     technical.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 8) {
-    tab.value = 8
     tab8.value.classList.add('tab-active')
     serialEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
   if (tabSelected === 9) {
-    tab.value = 9
     tab9.value.classList.add('tab-active')
     optionalEquip.value.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
   }
 }
 
 const navEvent1 = () => {
-  tab.value = 1
+  vehicleTab.value = 'admin'
   for (let nav of navs) {
     nav.value.classList.remove('active')
   }
@@ -925,7 +918,7 @@ const navEvent1 = () => {
 }
 
 const navEvent2 = () => {
-  tab.value = 13
+  vehicleTab.value = 'integration'
   for (let nav of navs) {
     nav.value.classList.remove('active')
   }
@@ -933,7 +926,7 @@ const navEvent2 = () => {
 }
 
 const navEvent3 = () => {
-  tab.value = 9
+  vehicleTab.value = 'equip'
   for (let nav of navs) {
     nav.value.classList.remove('active')
   }
@@ -941,7 +934,7 @@ const navEvent3 = () => {
 }
 
 const navEvent4 = () => {
-  tab.value = 11
+  vehicleTab.value = 'pt'
   for (let nav of navs) {
     nav.value.classList.remove('active')
   }
@@ -949,7 +942,7 @@ const navEvent4 = () => {
 }
 
 const navEvent5 = () => {
-  tab.value = 12
+  vehicleTab.value = 'gallery'
   for (let nav of navs) {
     nav.value.classList.remove('active')
   }
@@ -1937,6 +1930,18 @@ const equipActive = () => {
   isEquip.value = true
 }
 
+const ptActive = () => {
+  vehicleTab.value = 'pt'
+  isAdmin.value = false
+  isEquip.value = false
+}
+
+const integrationsActive = () => {
+  vehicleTab.value = 'integration'
+  isAdmin.value = false
+  isEquip.value = false
+}
+
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
@@ -2074,7 +2079,7 @@ onMounted(async () => {
           />
         </header>
         <div
-          v-if="tab > 0 && tab < 9"
+          v-if="vehicleTab === 'admin'"
           role="tablist"
           class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
@@ -2089,12 +2094,12 @@ onMounted(async () => {
           <a ref="tab7" role="tab" class="tab" @click="tabEvent(7)">Mas información</a>
         </div>
         <div
-          v-if="tab > 8 && tab < 11"
           role="tablist"
+          v-if="vehicleTab === 'equip'"
           class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
         >
           <a ref="tab8" role="tab" class="tab tab-active" @click="tabEvent(8)">Equip de serie</a>
-          <a ref="tab9" role="tab" class="tab" @click="tabEvent(8)">Equip opcional</a>
+          <a ref="tab9" role="tab" class="tab" @click="tabEvent(9)">Equip opcional</a>
         </div>
         <main class="flex w-full flex-col gap-6 lg:flex-row">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
@@ -2138,8 +2143,8 @@ onMounted(async () => {
                   </li>
                 </ul>
               </li>
-              <li><a class="font-bold" @click="tab = 11">PT</a></li>
-              <li><a class="font-bold" @click="tab = 13">Integraciones</a></li>
+              <li><a class="font-bold" @click="ptActive">PT</a></li>
+              <li><a class="font-bold" @click="integrationsActive">Integraciones</a></li>
             </ul>
           </aside>
           <section class="flex w-full flex-1 flex-col">
@@ -2148,7 +2153,6 @@ onMounted(async () => {
               <template v-if="vehicleTab === 'admin'">
                 <div
                   ref="basic"
-                  v-if="tab >= 1 && tab <= 7"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
                   <div class="flex flex-row justify-between">
@@ -2244,93 +2248,94 @@ onMounted(async () => {
                 </div>
                 <div
                   ref="prices"
-                  v-if="tab >= 1 && tab <= 7"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
-                  <div class="flex flex-row justify-between">
-                    <h1 class="text-xl font-medium">Información de compra</h1>
-                    <label
-                      v-if="addContract"
-                      for="vehicle-drawer"
-                      class="btn btn-outline btn-sm mb-2"
-                      @click="docusignDrawer()"
-                      >Generar contrato</label
-                    >
-                  </div>
-                  <CheckInput
-                    label="Gestión de venta:"
-                    v-model="sellManage"
-                    class="flex items-start"
-                  />
-                  <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                    <SearchSelect
-                      label="Proveedor:"
-                      :options="providersOptions"
-                      v-model="provider"
+                  <template v-if="userStore.perms.includes('can_view_purchase_info')">
+                    <div class="flex flex-row justify-between">
+                      <h1 class="text-xl font-medium">Información de compra</h1>
+                      <label
+                        v-if="addContract"
+                        for="vehicle-drawer"
+                        class="btn btn-outline btn-sm mb-2"
+                        @click="docusignDrawer()"
+                        >Generar contrato</label
+                      >
+                    </div>
+                    <CheckInput
+                      label="Gestión de venta:"
+                      v-model="sellManage"
+                      class="flex items-start"
                     />
-                    <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
-                    <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-                    <TextInput label="Precio de compra:" v-model="purchasePrice" />
-                    <SelectInput
-                      label="Régimen:"
-                      :options="regimenOptions"
-                      v-model="regimen"
-                      :initialValue="null"
-                    />
-                  </div>
-                  <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
-                    <TextInput label="Nombre Completo:" v-model="sellerName" />
-                    <TextInput label="Importe de comisión:" v-model="commission" />
-                    <DateInput label="Fecha de compra:" v-model="purchaseDate" />
-                  </div>
-                  <div v-if="docusignContracts?.length > 0" class="my-8">
-                    <h2 class="text-xl font-medium">Documentos de compra</h2>
-                    <div class="divider m-0 p-0"></div>
-                    <VehicleTable>
-                      <template #content>
-                        <EasyDataTable
-                          class="table-dark table-striped"
-                          table-class-name="z-0"
-                          header-class-name="z-0"
-                          hide-footer
-                          border-cell
-                          :headers="headersDocusign"
-                          :items="docusignContracts"
-                          v-model:server-options="serverOptions"
-                          :server-items-length="serverItemsLength"
-                          :loading="isFetchingDocs"
-                        >
-                          <template v-slot:item-files="{ files }">
-                            <div class="flex gap-2">
-                              <a
-                                v-for="(file, index) in files"
-                                :key="index"
-                                :href="file.file"
-                                target="_blank"
-                                class="btn btn-square btn-xs"
+                    <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <SearchSelect
+                        label="Proveedor:"
+                        :options="providersOptions"
+                        v-model="provider"
+                      />
+                      <SearchSelect label="Comprador:" :options="buyersOptions" v-model="buyer" />
+                      <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                      <TextInput label="Precio de compra:" v-model="purchasePrice" />
+                      <SelectInput
+                        label="Régimen:"
+                        :options="regimenOptions"
+                        v-model="regimen"
+                        :initialValue="null"
+                      />
+                    </div>
+                    <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <TextInput label="Nombre Completo:" v-model="sellerName" />
+                      <TextInput label="Importe de comisión:" v-model="commission" />
+                      <DateInput label="Fecha de compra:" v-model="purchaseDate" />
+                    </div>
+                    <div v-if="docusignContracts?.length > 0" class="my-8">
+                      <h2 class="text-xl font-medium">Documentos de compra</h2>
+                      <div class="divider m-0 p-0"></div>
+                      <VehicleTable>
+                        <template #content>
+                          <EasyDataTable
+                            class="table-dark table-striped"
+                            table-class-name="z-0"
+                            header-class-name="z-0"
+                            hide-footer
+                            border-cell
+                            :headers="headersDocusign"
+                            :items="docusignContracts"
+                            v-model:server-options="serverOptions"
+                            :server-items-length="serverItemsLength"
+                            :loading="isFetchingDocs"
+                          >
+                            <template v-slot:item-files="{ files }">
+                              <div class="flex gap-2">
+                                <a
+                                  v-for="(file, index) in files"
+                                  :key="index"
+                                  :href="file.file"
+                                  target="_blank"
+                                  class="btn btn-square btn-xs"
+                                >
+                                  <Icon icon="mdi:download" />
+                                </a>
+                              </div>
+                            </template>
+                            <template v-slot:item-status="{ status }">
+                              <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                                {{ status.toUpperCase() }}
+                              </span>
+                            </template>
+                            <template v-slot:item-id="{ id }">
+                              <button
+                                class="btn btn-square btn-error btn-xs"
+                                @click="contractConfirm(id)"
                               >
-                                <Icon icon="mdi:download" />
-                              </a>
-                            </div>
-                          </template>
-                          <template v-slot:item-status="{ status }">
-                            <span class="badge badge-primary rounded-md px-3 py-1 text-white">
-                              {{ status.toUpperCase() }}
-                            </span>
-                          </template>
-                          <template v-slot:item-id="{ id }">
-                            <button
-                              class="btn btn-square btn-error btn-xs"
-                              @click="contractConfirm(id)"
-                            >
-                              <Icon icon="mdi:trash-can-outline" />
-                            </button>
-                          </template>
-                        </EasyDataTable>
-                      </template>
-                      <template #drawer> </template>
-                    </VehicleTable>
-                  </div>
+                                <Icon icon="mdi:trash-can-outline" />
+                              </button>
+                            </template>
+                          </EasyDataTable>
+                        </template>
+                        <template #drawer> </template>
+                      </VehicleTable>
+                    </div>
+                  </template>
                   <div class="mt-4 flex flex-col">
                     <div class="flex flex-row justify-between">
                       <h1 class="text-xl font-medium">Configuración de precio</h1>
@@ -2357,7 +2362,6 @@ onMounted(async () => {
                   </div>
                 </div>
                 <div
-                  v-if="tab >= 1 && tab <= 7"
                   ref="comments"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
@@ -2374,7 +2378,6 @@ onMounted(async () => {
                 </div>
                 <div
                   ref="maintenance"
-                  v-if="tab >= 1 && tab <= 7"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
                   <h1 class="text-xl font-medium">Mantenimiento</h1>
@@ -2387,7 +2390,6 @@ onMounted(async () => {
                 </div>
                 <div
                   ref="extras"
-                  v-if="tab >= 1 && tab <= 7"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
                   <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
@@ -2423,7 +2425,6 @@ onMounted(async () => {
                 </div>
                 <div
                   ref="discounts"
-                  v-if="tab >= 1 && tab <= 7"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
                   <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
@@ -2460,7 +2461,6 @@ onMounted(async () => {
                 </div>
                 <div
                   ref="technical"
-                  v-if="tab >= 1 && tab <= 7"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
                 >
                   <div class="flex flex-row justify-between">
@@ -2494,7 +2494,7 @@ onMounted(async () => {
                   </div>
                 </div>
               </template>
-              <template v-else>
+              <template v-else-if="vehicleTab === 'equip'">
                 <div
                   ref="serialEquip"
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
@@ -2667,7 +2667,7 @@ onMounted(async () => {
               </template>
             </div>
             <div
-              v-if="tab === 11"
+              v-if="vehicleTab === 'pt'"
               class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
             >
               <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
@@ -2770,7 +2770,7 @@ onMounted(async () => {
               </div>
             </div>
             <div
-              v-if="tab === 12"
+              v-if="vehicleTab === 'gallery'"
               ref="gallery"
               class="flex flex-col gap-4 rounded bg-base-100 p-4 lg:hidden"
             >
@@ -2924,37 +2924,43 @@ onMounted(async () => {
               </div>
             </div>
             <div
-              v-if="tab === 13"
+              v-if="vehicleTab === 'integration'"
               ref="portals"
               class="flex w-full scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
             >
               <h1 class="text-xl font-medium">Integraciones</h1>
               <div class="mt-6 flex flex-col gap-4 lg:flex-row">
-                <IntegrationCard
-                  img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-                  @settingClick="cochesnetDrawer"
-                  @primaryClick="cochesnetRemove"
-                  :state="cochesnet"
-                  :loading="cochesnetLoading"
-                />
-                <IntegrationCard
-                  img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-                  @settingClick="wallapopDrawer"
-                  @primaryClick="wallapopRemove"
-                  :state="wallapop"
-                  :published="wallapopStats?.published ?? 0"
-                  :pending="wallapopStats?.pending ?? 0"
-                  :loading="wallapopLoading"
-                />
-                <IntegrationCard
-                  img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
-                  @settingClick="sumautoDrawer"
-                  @primaryClick="sumautoRemove"
-                  :state="sumauto"
-                  :published="sumautoStats?.published ?? 0"
-                  :pending="sumautoStats?.pending ?? 0"
-                  :loading="sumautoLoading"
-                />
+                <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
+                  <IntegrationCard
+                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                    @settingClick="cochesnetDrawer"
+                    @primaryClick="cochesnetRemove"
+                    :state="cochesnet"
+                    :loading="cochesnetLoading"
+                  />
+                </template>
+                <template v-if="userStore.perms.includes('can_edit_wallapop_vehicle')">
+                  <IntegrationCard
+                    img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+                    @settingClick="wallapopDrawer"
+                    @primaryClick="wallapopRemove"
+                    :state="wallapop"
+                    :published="wallapopStats?.published ?? 0"
+                    :pending="wallapopStats?.pending ?? 0"
+                    :loading="wallapopLoading"
+                  />
+                </template>
+                <template v-if="userStore.perms.includes('can_edit_sumauto_vehicle')">
+                  <IntegrationCard
+                    img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
+                    @settingClick="sumautoDrawer"
+                    @primaryClick="sumautoRemove"
+                    :state="sumauto"
+                    :published="sumautoStats?.published ?? 0"
+                    :pending="sumautoStats?.pending ?? 0"
+                    :loading="sumautoLoading"
+                  />
+                </template>
               </div>
             </div>
           </section>

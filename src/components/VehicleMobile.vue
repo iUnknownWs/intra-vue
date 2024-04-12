@@ -1,4 +1,5 @@
 <script setup>
+import { useUserStore } from '@/stores/user'
 import { ref } from 'vue'
 
 defineProps({
@@ -10,6 +11,7 @@ defineProps({
 
 defineEmits(['status'])
 
+const userStore = useUserStore()
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 </script>
 
@@ -37,84 +39,102 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         <span>{{ vehicle.model_web.title }}</span>
         <span>{{ vehicle.power }}CV</span>
       </div>
-      <DropdownBtn>
-        <template #btn>
-          <button
-            v-if="vehicle.status == 0"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Pte. de Recepción
-          </button>
-          <button
-            v-if="vehicle.status == 3"
-            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Pte. de Publicación
-          </button>
-          <button
-            v-if="vehicle.status == 4"
-            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            En venta
-          </button>
-          <button
-            v-if="vehicle.status == 5"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Reservado
-          </button>
-          <button
-            v-if="vehicle.status == 8"
-            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Entregado
-          </button>
-          <button
-            v-if="vehicle.status == 10"
-            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            No Disponible
-          </button>
-        </template>
-        <template #content>
-          <button
-            @click="$emit('status', 5)"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Reservado
-          </button>
-          <button
-            @click="$emit('status', 0)"
-            class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Pte. de Recepción
-          </button>
-          <button
-            @click="$emit('status', 3)"
-            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Pte. de Publicación
-          </button>
-          <button
-            @click="$emit('status', 4)"
-            class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            En venta
-          </button>
-          <button
-            @click="$emit('status', 8)"
-            class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            Entregado
-          </button>
-          <button
-            @click="$emit('status', 10)"
-            class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-          >
-            No Disponible
-          </button>
-        </template>
-      </DropdownBtn>
+      <template v-if="userStore.perms.includes('allow_change_vehicle_status')">
+        <DropdownBtn>
+          <template #btn>
+            <button
+              v-if="vehicle.status == 0"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Recepción
+            </button>
+            <button
+              v-if="vehicle.status == 3"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Publicación
+            </button>
+            <button
+              v-if="vehicle.status == 4"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              En venta
+            </button>
+            <button
+              v-if="vehicle.status == 5"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Reservado
+            </button>
+            <button
+              v-if="vehicle.status == 8"
+              class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Entregado
+            </button>
+            <button
+              v-if="vehicle.status == 10"
+              class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              No Disponible
+            </button>
+          </template>
+          <template #content>
+            <button
+              @click="$emit('status', 5)"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Reservado
+            </button>
+            <button
+              @click="$emit('status', 0)"
+              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Recepción
+            </button>
+            <button
+              @click="$emit('status', 3)"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Pte. de Publicación
+            </button>
+            <button
+              @click="$emit('status', 4)"
+              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              En venta
+            </button>
+            <button
+              @click="$emit('status', 8)"
+              class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              Entregado
+            </button>
+            <button
+              @click="$emit('status', 10)"
+              class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
+            >
+              No Disponible
+            </button>
+          </template>
+        </DropdownBtn>
+      </template>
+      <template v-else>
+        <span class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          Reservado
+        </span>
+        <span class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          Pte. de Recepción
+        </span>
+        <span class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          Pte. de Publicación
+        </span>
+        <span class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"> En venta </span>
+        <span class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"> Entregado </span>
+        <span class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white">
+          No Disponible
+        </span>
+      </template>
       <div class="textcard flex flex-row flex-wrap items-center justify-start gap-3">
         <span>{{ vehicle.price?.financed_price ? vehicle.price.financed_price : 0 }}€</span>
         <span>{{ vehicle.kms }} Kms</span>

@@ -3,8 +3,11 @@ import axios from 'axios'
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import HeaderMain from '@/components/HeaderMain.vue'
+import { useUserStore } from '@/stores/user'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
+
+const userStore = useUserStore()
 
 const finRatesUrl = `${import.meta.env.VITE_API}/vehicles-financing-rates/`
 const finProdUrl = `${import.meta.env.VITE_API}/vehicles-financing-products/`
@@ -23,6 +26,11 @@ const finProd = ref(null)
 const finRateOptions = ref([])
 const finProdOptions = ref([])
 
+const tabSelect = (tabSelected) => {
+  tab.value = tabSelected
+  integration.value = 'menu'
+}
+
 axios.get(finProdUrl).then((response) => {
   finProdOptions.value = response.data.results
 })
@@ -38,12 +46,12 @@ axios.get(finRatesUrl).then((response) => {
     <div class="drawer-content">
       <HeaderMain>
         <span class="text-3xl font-bold">Integraciones</span>
-        <div role="tablist" class="tabs tabs-bordered my-8">
+        <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
           <a
             role="tab"
             class="tab"
             :class="{ 'tab-active font-medium': tab === 1 }"
-            @click="tab = 1"
+            @click="tabSelect(1)"
           >
             Portales Web
           </a>
@@ -51,7 +59,7 @@ axios.get(finRatesUrl).then((response) => {
             role="tab"
             class="tab"
             :class="{ 'tab-active font-medium': tab === 2 }"
-            @click="tab = 2"
+            @click="tabSelect(2)"
           >
             Financiación
           </a>
@@ -59,7 +67,7 @@ axios.get(finRatesUrl).then((response) => {
             role="tab"
             class="tab"
             :class="{ 'tab-active font-medium': tab === 3 }"
-            @click="tab = 3"
+            @click="tabSelect(3)"
           >
             CRM
           </a>
@@ -73,21 +81,27 @@ axios.get(finRatesUrl).then((response) => {
               <div class="divider m-0"></div>
             </div>
             <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
-              <IntegrationCard
-                img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-                @settingClick="integration = 'cochesnet'"
-                @primaryClick="console.log('desactivar')"
-              />
-              <IntegrationCard
-                img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-                @settingClick="integration = 'wallapop'"
-                @primaryClick="console.log('desactivar')"
-              />
-              <IntegrationCard
-                img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
-                @settingClick="integration = 'sumauto'"
-                @primaryClick="console.log('desactivar')"
-              />
+              <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
+                <IntegrationCard
+                  img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                  @settingClick="integration = 'cochesnet'"
+                  @primaryClick="console.log('desactivar')"
+                />
+              </template>
+              <template v-if="userStore.perms.includes('can_edit_wallapop_vehicle')">
+                <IntegrationCard
+                  img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+                  @settingClick="integration = 'wallapop'"
+                  @primaryClick="console.log('desactivar')"
+                />
+              </template>
+              <template v-if="userStore.perms.includes('can_edit_sumauto_vehicle')">
+                <IntegrationCard
+                  img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
+                  @settingClick="integration = 'sumauto'"
+                  @primaryClick="console.log('desactivar')"
+                />
+              </template>
             </div>
           </template>
           <template v-if="integration === 'cochesnet'">
@@ -124,31 +138,50 @@ axios.get(finRatesUrl).then((response) => {
             </div>
           </template>
         </div>
-        <div
-          v-if="tab === 2"
-          class="mx-auto flex w-full max-w-3xl flex-col rounded-md bg-base-100 p-4"
-        >
-          <div>
-            <h2 class="text-xl font-medium">Configuración financiera</h2>
-            <div class="divider m-0"></div>
-          </div>
-          <div class="my-4 flex flex-col items-center gap-4 lg:flex-row">
-            <SelectInput
-              label="Interés por defecto:"
-              v-model="finRate"
-              :options="finRateOptions"
-              optionLabel="label"
-              :initialValue="null"
-            />
-            <SelectInput
-              label="Producto por defecto:"
-              v-model="finProd"
-              :options="finProdOptions"
-              optionLabel="label"
-              :initialValue="null"
-            />
-          </div>
-          <button class="btn btn-primary self-end">Guardar</button>
+        <div v-if="tab === 2" class="mx-auto flex w-full flex-col rounded-md bg-base-100 p-4">
+          <template v-if="integration === 'menu'">
+            <div>
+              <h2 class="text-xl font-medium">Configuración financiera</h2>
+              <div class="divider m-0"></div>
+            </div>
+            <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+              <IntegrationCard
+                img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                @settingClick="integration = 'finance'"
+                @primaryClick="console.log('desactivar')"
+              />
+            </div>
+          </template>
+          <template v-if="integration === 'finance'">
+            <div class="mb-4">
+              <div class="flex items-center">
+                <button class="btn btn-square btn-ghost mr-2" @click="integration = 'menu'">
+                  <Icon icon="mdi:arrow-left" width="25" />
+                </button>
+                <h2 class="text-xl font-medium">Financiación</h2>
+              </div>
+              <div class="divider m-0"></div>
+              <div class="flex flex-col">
+                <div class="my-4 flex flex-col items-center gap-4 lg:flex-row">
+                  <SelectInput
+                    label="Interés por defecto:"
+                    v-model="finRate"
+                    :options="finRateOptions"
+                    optionLabel="label"
+                    :initialValue="null"
+                  />
+                  <SelectInput
+                    label="Producto por defecto:"
+                    v-model="finProd"
+                    :options="finProdOptions"
+                    optionLabel="label"
+                    :initialValue="null"
+                  />
+                </div>
+                <button class="btn btn-primary self-end">Guardar</button>
+              </div>
+            </div>
+          </template>
         </div>
         <div v-if="tab === 3" class="flex w-full flex-col rounded-md bg-base-100 p-4">
           <template v-if="integration === 'walcu'">

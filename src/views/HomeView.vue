@@ -6,10 +6,12 @@ import options from '@/js/filterOptions.js'
 import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { useUserStore } from '@/stores/user'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
 const url = `${import.meta.env.VITE_VEHICLES}/`
+const userUrl = `${import.meta.env.VITE_USER}/${localStorage.getItem('userid')}`
 const filterCountsUrl = `${import.meta.env.VITE_VEHICLES}/counts-filters/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
@@ -64,6 +66,8 @@ const header = ref(null)
 const disSearch = ref(true)
 const vehicleNext = ref(null)
 const loadingNext = ref(false)
+
+const userStore = useUserStore()
 
 const searchReact = () => {
   if (searchValue.value.length > 2) {
@@ -619,7 +623,18 @@ const horizontalScroll = (evt) => {
 }
 
 onMounted(() => {
+  axios.get(userUrl).then((response) => {
+    userStore.id = response.data.id
+    userStore.email = response.data.email
+    userStore.name = response.data.first_name
+    userStore.lastName = response.data.last_name
+    userStore.image = response.data.image
+    userStore.perms = response.data.permissions_codenames
+    userStore.isAdmin = response.data.is_admin
+  })
+
   selected()
+  
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {

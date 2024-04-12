@@ -13,6 +13,15 @@ axios.get(`${import.meta.env.VITE_USER}/${id.value}/`).then((response) => {
   name.value = response.data.first_name
   lastName.value = response.data.last_name
   email.value = response.data.email
+  isAdmin.value = response.data.is_admin
+  for (let perm of response.data.permissions) {
+    perms.value[perm] = true
+  }
+})
+
+const permissions = ref([])
+axios.get(`${import.meta.env.VITE_API}/permissions/`).then((response) => {
+  permissions.value = response.data.results
 })
 
 const drawer = ref(false)
@@ -24,6 +33,8 @@ const loading = ref(false)
 const name = ref(null)
 const lastName = ref(null)
 const email = ref(null)
+const isAdmin = ref(null)
+const perms = ref({})
 const newPassword = ref(null)
 const confirmPassword = ref(null)
 
@@ -49,10 +60,21 @@ const optionsDrop = reactive({
 
 const save = () => {
   loading.value = true
+  const newPerms = []
+
+  for (let perm in perms.value) {
+    if (perms.value[perm]) {
+      newPerms.push(parseInt(perm))
+    }
+  }
 
   formData.append('first_name', name.value)
   formData.append('last_name', lastName.value)
   formData.append('email', email.value)
+  formData.append('is_admin', isAdmin.value)
+  newPerms.forEach((perm) => {
+    formData.append('permissions', perm)
+  })
 
   axios
     .patch(`${import.meta.env.VITE_USER}/${id.value}/`, formData, {
@@ -73,6 +95,12 @@ const save = () => {
     })
     .finally(() => {
       loading.value = false
+      formData.delete('image')
+      formData.delete('first_name')
+      formData.delete('last_name')
+      formData.delete('email')
+      formData.delete('is_admin')
+      formData.delete('permissions')
     })
 }
 
@@ -117,10 +145,9 @@ const toggleDrawer = () => {
     <div class="drawer-content">
       <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
       <HeaderMain>
-        <h1 class="mx-4 mt-4 text-xl font-bold lg:mx-12">Perfil de Usuario</h1>
-        <h2 class="mx-4 mb-4 text-lg font-bold lg:mx-12">Hola bienvenido, {{ name }}</h2>
+        <h1 class="mx-4 my-4 text-xl font-bold lg:mx-12">Editar Perfil del Usuario {{ name }}</h1>
         <div class="flex w-full flex-col gap-4 p-2 lg:flex-row">
-          <div class="flex w-full flex-col rounded-md bg-base-100 p-4 lg:mx-10 lg:p-10">
+          <div class="flex w-full flex-col rounded-md bg-base-100 p-4 lg:mx-10 lg:px-10">
             <div>
               <h3 class="text-xl font-medium">Información personal</h3>
               <div class="divider m-0"></div>
@@ -153,10 +180,23 @@ const toggleDrawer = () => {
             <TextInput label="Nombre:" v-model="name" />
             <TextInput label="Apellidos:" v-model="lastName" />
             <TextInput label="Email:" v-model="email" />
+            <div class="my-4">
+              <h3 class="text-xl font-medium">Permisos</h3>
+              <div class="divider m-0"></div>
+            </div>
+            <ToggleInput label="Administrador" v-model="isAdmin" class="my-4 w-fit" />
+            <div class="grid grid-cols-2 gap-2">
+              <ToggleInput
+                v-for="permission in permissions"
+                :key="permission.id"
+                :label="permission.name"
+                v-model="perms[permission.id]"
+              />
+            </div>
             <button class="btn btn-primary mt-4 self-end text-white" @click="save">Guardar</button>
           </div>
           <div
-            class="box-border flex h-fit w-full flex-col rounded-md bg-base-100 p-4 lg:mx-10 lg:p-10"
+            class="box-border flex h-fit w-full flex-col rounded-md bg-base-100 p-4 lg:mx-10 lg:px-10"
           >
             <div>
               <h3 class="text-xl font-medium">Cambiar contraseña</h3>

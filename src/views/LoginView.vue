@@ -1,9 +1,12 @@
 <script setup>
 import axios from 'axios'
-import TextInput from '@/components/TextInput.vue'
 import { ref } from 'vue'
+import { useUserStore } from '@/stores/user'
 import router from '@/router'
+import TextInput from '@/components/TextInput.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
+
+const userStore = useUserStore()
 
 const email = ref('')
 const password = ref('')
@@ -18,10 +21,13 @@ const login = () => {
     .then((response) => {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('userid', response.data.user.id)
-      localStorage.setItem('image', response.data.user.image)
-      localStorage.setItem('email', response.data.user.email)
-      localStorage.setItem('name', response.data.user.first_name)
-      localStorage.setItem('last_name', response.data.user.last_name)
+      userStore.id = response.data.user.id
+      userStore.email = response.data.user.email
+      userStore.name = response.data.user.first_name
+      userStore.lastName = response.data.user.last_name
+      userStore.image = response.data.user.image
+      userStore.perms = response.data.user.permissions_codenames
+      userStore.isAdmin = response.data.user.is_admin
       if (response.status === 200) {
         router.push('/vehiculos')
       }
