@@ -159,7 +159,7 @@ const toggleDrawer = () => {
                 class="my-2 hidden w-fit rounded border-2 border-black p-3 lg:block"
               >
                 <input v-bind="getInputProps()" />
-                <div class="w-[25rem] text-center">
+                <div class="w-[30rem] text-center">
                   <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
                   <LoadingSpinner v-else-if="loading" />
                   <p v-else>Arrastra y suelta los archivos o selecciónalos haciendo click</p>

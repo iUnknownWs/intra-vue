@@ -2332,7 +2332,6 @@ onMounted(async () => {
                             </template>
                           </EasyDataTable>
                         </template>
-                        <template #drawer> </template>
                       </VehicleTable>
                     </div>
                   </template>
@@ -2548,7 +2547,6 @@ onMounted(async () => {
                         </template>
                       </EasyDataTable>
                     </template>
-                    <template #drawer> </template>
                   </VehicleTable>
                 </div>
                 <div>
@@ -2605,7 +2603,6 @@ onMounted(async () => {
                           </template>
                         </EasyDataTable>
                       </template>
-                      <template #drawer> </template>
                     </VehicleTable>
                   </div>
                   <div
@@ -2765,7 +2762,6 @@ onMounted(async () => {
                       </template>
                     </EasyDataTable>
                   </template>
-                  <template #drawer> </template>
                 </VehicleTable>
               </div>
             </div>

@@ -1167,7 +1167,7 @@ onMounted(() => {
       </footer>
     </div>
     <div class="drawer-side z-50 h-full w-full">
-      <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
+      <label for="reserve-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
       <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
         <ExtrasDrawer
           v-if="drawerSection === 'extras'"

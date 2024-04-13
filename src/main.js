@@ -46,6 +46,7 @@ import VueSelect from "vue-select"
 import VueGoogleMaps from 'vue-google-maps-community-fork'
 import 'vue3-easy-data-table/dist/style.css'
 import 'vue-select/dist/vue-select.css'
+import FileInput from './components/FileInput.vue'
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
@@ -64,6 +65,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('DropdownAvatar', DropdownAvatar)
     .component('DropdownBtn', DropdownBtn)
     .component('DropMobile', DropMobile)
+    .component('FileInput', FileInput)
     .component('HeaderMain', HeaderMain)
     .component('IntegrationCard', IntegrationCard)
     .component('MenuLink', MenuLink)

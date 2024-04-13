@@ -318,6 +318,107 @@ const paymentForm = [
     }
 ]
 
+const defaultCochesnet = [
+    {
+        id: '250025002500',
+        title: 'Automóvil Turismo'
+    },
+    {
+        id: '250028102810',
+        title: 'Automóvil Todo Terreno'
+    },
+    {
+        id: '290029302930',
+        title: 'Furgonetas'
+    }
+]
+
+const week = [
+    {
+        id: '1',
+        title: 'Lunes'
+    },
+    {
+        id: '2',
+        title: 'Martes'
+    },
+    {
+        id: '3',
+        title: 'Miércoles'
+    },
+    {
+        id: '4',
+        title: 'Jueves'
+    },
+    {
+        id: '5',
+        title: 'Viernes'
+    },
+    {
+        id: '6',
+        title: 'Sábado'
+    },
+    {
+        id: '7',
+        title: 'Domingo'
+    }
+]
+
+const daysCochesnet = [
+    {
+        id: '20',
+        title: '20 días'
+    },
+    {
+        id: '30',
+        title: '30 día'
+    },
+    {
+        id: '40',
+        title: '40 día'
+    },
+    {
+        id: '50',
+        title: '50 día'
+    },
+    {
+        id: '60',
+        title: '60 día'
+    },
+    {
+        id: '70',
+        title: '70 día'
+    },
+    {
+        id: '80',
+        title: '80 día'
+    },
+    {
+        id: '90',
+        title: '90 día'
+    },
+]
+
+const vehiclesCochesnet = [
+    {
+        id: '5',
+        title: '5 vehículos'
+    },
+    {
+        id: '10',
+        title: '10 vehículos'
+    },
+    {
+        id: '15',
+        title: '15 vehículos'
+    },
+    {
+        id: '20',
+        title: '20 vehículos'
+    }
+]
+
+
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
 const reverseYears = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i).reverse()
@@ -341,7 +442,11 @@ const options = {
     sources,
     warrantyBookings,
     delivery,
-    paymentForm
+    paymentForm,
+    defaultCochesnet,
+    week,
+    daysCochesnet,
+    vehiclesCochesnet
 }
 
 export default options

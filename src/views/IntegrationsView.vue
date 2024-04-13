@@ -1,17 +1,18 @@
 <script setup>
 import axios from 'axios'
-import { ref } from 'vue'
-import { Icon } from '@iconify/vue'
+import { ref, onMounted } from 'vue'
 import HeaderMain from '@/components/HeaderMain.vue'
-import { useUserStore } from '@/stores/user'
+import CochesnetIntegration from '@/components/Integrations/CochesnetIntegration.vue'
+import WallapopIntegration from '@/components/Integrations/WallapopIntegration.vue'
+import SumautoIntegration from '@/components/Integrations/SumautoIntegration.vue'
+import CofidisIntegration from '@/components/Integrations/CofidisIntegration.vue'
+import WalcuIntegration from '@/components/Integrations/WalcuIntegration.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
-const userStore = useUserStore()
-
-const finRatesUrl = `${import.meta.env.VITE_API}/vehicles-financing-rates/`
-const finProdUrl = `${import.meta.env.VITE_API}/vehicles-financing-products/`
-
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
 const drawer = ref(false)
 const tab = ref(1)
 
@@ -20,23 +21,51 @@ const toggleDrawer = () => {
 }
 
 const integration = ref('menu')
-
-const finRate = ref(null)
-const finProd = ref(null)
-const finRateOptions = ref([])
-const finProdOptions = ref([])
+const integrationId = ref(null)
 
 const tabSelect = (tabSelected) => {
   tab.value = tabSelected
   integration.value = 'menu'
 }
 
-axios.get(finProdUrl).then((response) => {
-  finProdOptions.value = response.data.results
-})
+const webPortals = ref([])
+const finances = ref([])
+const crms = ref([])
 
-axios.get(finRatesUrl).then((response) => {
-  finRateOptions.value = response.data.results
+const getIntegrations = () => {
+  axios
+    .get(`${import.meta.env.VITE_INTEGRATIONS}/integrations/?category=web_portals`)
+    .then((response) => {
+      webPortals.value = response.data.results
+    })
+  axios.get(`${import.meta.env.VITE_INTEGRATIONS}/integrations/?category=crm`).then((response) => {
+    crms.value = response.data.results
+  })
+  axios
+    .get(`${import.meta.env.VITE_INTEGRATIONS}/integrations/?category=financing`)
+    .then((response) => {
+      finances.value = response.data.results
+    })
+}
+
+const settIntegration = (id, name) => {
+  integration.value = name
+  integrationId.value = id
+}
+
+const disIntegration = (id, state) => {
+  axios
+    .patch(`${import.meta.env.VITE_INTEGRATIONS}/integrations/${id}/`, { is_active: !state })
+    .then(() => {
+      getIntegrations()
+      modalTitle.value = 'Integración' + (state ? ' desactivada' : ' activada')
+      modalMessage.value = `La integración ha sido ${state ? 'desactivada' : 'activada'} correctamente`
+      info.value.modal.showModal()
+    })
+}
+
+onMounted(() => {
+  getIntegrations()
 })
 </script>
 
@@ -44,6 +73,7 @@ axios.get(finRatesUrl).then((response) => {
   <div class="drawer drawer-end">
     <input id="integration-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
+      <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
       <HeaderMain>
         <span class="text-3xl font-bold">Integraciones</span>
         <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
@@ -72,71 +102,42 @@ axios.get(finRatesUrl).then((response) => {
             CRM
           </a>
         </div>
-        <div v-if="tab === 1" class="flex w-full flex-col rounded-md bg-base-100 p-4">
-          <template v-if="integration === 'menu'">
-            <div class="mb-4">
+        <div v-if="tab === 1" class="flex w-full flex-col gap-8">
+          <div v-if="integration === 'menu'">
+            <div class="mb-4 rounded-md bg-base-100 p-4">
               <div>
                 <h2 class="text-xl font-medium">Portales Web</h2>
               </div>
               <div class="divider m-0"></div>
-            </div>
-            <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
-              <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
+              <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
                 <IntegrationCard
-                  img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-                  @settingClick="integration = 'cochesnet'"
-                  @primaryClick="console.log('desactivar')"
+                  v-for="portal in webPortals"
+                  :key="portal.id"
+                  :img="portal.logo_img"
+                  :name="portal.provider_name"
+                  :state="portal.is_active"
+                  toggle
+                  @settingClick="settIntegration(portal.id, portal.provider_name)"
+                  @primaryClick="disIntegration(portal.id, portal.is_active)"
                 />
-              </template>
-              <template v-if="userStore.perms.includes('can_edit_wallapop_vehicle')">
-                <IntegrationCard
-                  img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
-                  @settingClick="integration = 'wallapop'"
-                  @primaryClick="console.log('desactivar')"
-                />
-              </template>
-              <template v-if="userStore.perms.includes('can_edit_sumauto_vehicle')">
-                <IntegrationCard
-                  img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
-                  @settingClick="integration = 'sumauto'"
-                  @primaryClick="console.log('desactivar')"
-                />
-              </template>
-            </div>
-          </template>
-          <template v-if="integration === 'cochesnet'">
-            <div class="mb-4">
-              <div class="flex items-center">
-                <button class="btn btn-square btn-ghost mr-2" @click="integration = 'menu'">
-                  <Icon icon="mdi:arrow-left" width="25" />
-                </button>
-                <h2 class="text-xl font-medium">Cochesnet</h2>
               </div>
-              <div class="divider m-0"></div>
             </div>
-          </template>
-          <template v-if="integration === 'wallapop'">
-            <div class="mb-4">
-              <div class="flex items-center">
-                <button class="btn btn-square btn-ghost mr-2" @click="integration = 'menu'">
-                  <Icon icon="mdi:arrow-left" width="25" />
-                </button>
-                <h2 class="text-xl font-medium">Wallapop</h2>
-              </div>
-              <div class="divider m-0"></div>
-            </div>
-          </template>
-          <template v-if="integration === 'sumauto'">
-            <div class="mb-4">
-              <div class="flex items-center">
-                <button class="btn btn-square btn-ghost mr-2" @click="integration = 'menu'">
-                  <Icon icon="mdi:arrow-left" width="25" />
-                </button>
-                <h2 class="text-xl font-medium">Sumauto</h2>
-              </div>
-              <div class="divider m-0"></div>
-            </div>
-          </template>
+          </div>
+          <CochesnetIntegration
+            v-if="integration === 'Coches.net'"
+            @return="integration = 'menu'"
+            :id="integrationId"
+          />
+          <WallapopIntegration
+            v-if="integration === 'Wallapop'"
+            @return="integration = 'menu'"
+            :id="integrationId"
+          />
+          <SumautoIntegration
+            v-if="integration === 'Sumauto'"
+            @return="integration = 'menu'"
+            :id="integrationId"
+          />
         </div>
         <div v-if="tab === 2" class="mx-auto flex w-full flex-col rounded-md bg-base-100 p-4">
           <template v-if="integration === 'menu'">
@@ -146,55 +147,20 @@ axios.get(finRatesUrl).then((response) => {
             </div>
             <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
               <IntegrationCard
-                img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
-                @settingClick="integration = 'finance'"
-                @primaryClick="console.log('desactivar')"
+                v-for="finance in finances"
+                :key="finance.id"
+                :img="finance.logo_img"
+                :name="finance.provider_name"
+                :state="finance.is_active"
+                toggle
+                @settingClick="integration = finance.provider_name"
+                @primaryClick="disIntegration(finance.id, finance.is_active, finance)"
               />
             </div>
           </template>
-          <template v-if="integration === 'finance'">
-            <div class="mb-4">
-              <div class="flex items-center">
-                <button class="btn btn-square btn-ghost mr-2" @click="integration = 'menu'">
-                  <Icon icon="mdi:arrow-left" width="25" />
-                </button>
-                <h2 class="text-xl font-medium">Financiación</h2>
-              </div>
-              <div class="divider m-0"></div>
-              <div class="flex flex-col">
-                <div class="my-4 flex flex-col items-center gap-4 lg:flex-row">
-                  <SelectInput
-                    label="Interés por defecto:"
-                    v-model="finRate"
-                    :options="finRateOptions"
-                    optionLabel="label"
-                    :initialValue="null"
-                  />
-                  <SelectInput
-                    label="Producto por defecto:"
-                    v-model="finProd"
-                    :options="finProdOptions"
-                    optionLabel="label"
-                    :initialValue="null"
-                  />
-                </div>
-                <button class="btn btn-primary self-end">Guardar</button>
-              </div>
-            </div>
-          </template>
+          <CofidisIntegration v-if="integration === 'COFIDIS'" @return="integration = 'menu'" />
         </div>
         <div v-if="tab === 3" class="flex w-full flex-col rounded-md bg-base-100 p-4">
-          <template v-if="integration === 'walcu'">
-            <div class="mb-4">
-              <div class="flex items-center">
-                <button class="btn btn-square btn-ghost mr-2" @click="integration = 'menu'">
-                  <Icon icon="mdi:arrow-left" width="25" />
-                </button>
-                <h2 class="text-xl font-medium">Walcu</h2>
-              </div>
-              <div class="divider m-0"></div>
-            </div>
-          </template>
           <template v-if="integration === 'menu'">
             <div class="mb-4">
               <div>
@@ -204,12 +170,18 @@ axios.get(finRatesUrl).then((response) => {
             </div>
             <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
               <IntegrationCard
-                img="https://www.walcu.com/wp-content/uploads/elementor/thumbs/logo-walcu-pwhwe8cmr066cx7a97fdv60rf1bbefzikhxt38wa9s.png"
-                @settingClick="integration = 'walcu'"
-                @primaryClick="toggleDrawer"
+                v-for="crm in crms"
+                :key="crm.id"
+                :img="crm.logo_img"
+                :name="crm.provider_name"
+                :state="crm.is_active"
+                toggle
+                @settingClick="integration = crm.provider_name"
+                @primaryClick="disIntegration(crm.id, crm.is_active, crm)"
               />
             </div>
           </template>
+          <WalcuIntegration v-if="integration === 'Walcu CRM'" @return="integration = 'menu'" />
         </div>
       </HeaderMain>
     </div>
@@ -221,3 +193,9 @@ axios.get(finRatesUrl).then((response) => {
     </div>
   </div>
 </template>
+
+<style>
+.btn-error {
+  color: #fff;
+}
+</style>
