@@ -51,7 +51,7 @@ const save = () => {
 
 <template>
   <div>
-    <DrawerTitle title="Editar campaña" @toggle="toggle" />
+    <DrawerTitle title="Añadir campaña" @toggle="toggle" />
     <TextInput label="Titulo:" v-model="title" />
     <div class="flex flex-row gap-2">
       <DateInput label="Fecha de inicio:" v-model="startDate" />

@@ -13,26 +13,33 @@ const props = defineProps({
 defineEmits(['return'])
 
 const loading = ref(false)
+const loadingCampaign = ref(false)
+
 const drawer = ref(false)
 const drawerSection = ref('')
 const toggle = () => {
   drawer.value = !drawer.value
 }
 
+const info = ref(null)
+const modalTitle = ref('')
+const modalMessage = ref('')
+
 const campaigns = ref([])
 const getCampaigns = () => {
-  loading.value = true
+  loadingCampaign.value = true
   axios
     .get(`${import.meta.env.VITE_INTEGRATIONS}/campaigns/?integration=${props.id}`)
     .then((response) => {
       campaigns.value = response.data.results
     })
     .finally(() => {
-      loading.value = false
+      loadingCampaign.value = false
     })
 }
 
 const getData = () => {
+  loading.value = true
   axios
     .get(`${import.meta.env.VITE_INTEGRATIONS}/web_portals/?integration=${props.id}`)
     .then((response) => {
@@ -43,6 +50,41 @@ const getData = () => {
       warranty.value = integration.value.coches_net_config.official_warranty
       defaultCategory.value = integration.value.coches_net_config.default_category
       carfax.value = integration.value.coches_net_config.show_carfax_report
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const saveData = () => {
+  loading.value = true
+  axios
+    .post(
+      `${import.meta.env.VITE_INTEGRATIONS}/integrations/${props.id}/create_or_update_config/`,
+      {
+        integration: 'web_portals',
+        username: user.value,
+        password: password.value,
+        description: description.value,
+        official_warranty: warranty.value,
+        default_category: defaultCategory.value,
+        show_carfax_report: carfax.value
+      }
+    )
+    .then(() => {
+      getData()
+      modalTitle.value = 'Integración actualizada'
+      modalMessage.value = 'Las configuraciones se han actualizado correctamente'
+      info.value.modal.showModal()
+    })
+    .catch((err) => {
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo actualizar la configuración'
+      info.value.modal.showModal()
+      console.error(err)
+    })
+    .finally(() => {
+      loading.value = false
     })
 }
 
@@ -58,6 +100,30 @@ const headersCampaigns = [
   { text: 'Descripción', value: 'description', width: 60 },
   { text: 'Imagen', value: 'image_overlay', width: 60 },
   { text: 'Acciones', value: 'id', width: 40 }
+]
+
+const logs = ref([])
+const loadingLogs = ref(false)
+const getLogs = () => {
+  loadingLogs.value = true
+  axios
+    .get(`${import.meta.env.VITE_INTEGRATIONS}/integration_log/?integration=${props.id}`)
+    .then((response) => {
+      logs.value = response.data.results
+    })
+    .finally(() => {
+      loadingLogs.value = false
+    })
+}
+
+const headersLogs = [
+  { text: 'ID', value: 'id' },
+  { text: 'Fecha de creación', value: 'created_at' },
+  { text: 'Headers', value: 'headers', width: 60 },
+  { text: 'Method', value: 'method', width: 60 },
+  { text: 'Código', value: 'status_code', width: 60 },
+  { text: 'Response', value: 'response', width: 60 },
+  { text: 'Detalles', value: 'id', width: 40 }
 ]
 
 const removeCampaign = (id) => {
@@ -77,6 +143,13 @@ const editCampaign = (id) => {
 const addCampaign = () => {
   drawer.value = !drawer.value
   drawerSection.value = 'addCampaign'
+}
+
+const updatedCampaign = () => {
+  getCampaigns()
+  modalTitle.value = 'Campaña actualizada'
+  modalMessage.value = 'La campaña se ha actualizado correctamente'
+  info.value.modal.showModal()
 }
 
 const integration = ref({})
@@ -124,12 +197,14 @@ const getAutomatization = () => {
 
 onMounted(() => {
   getData()
+  getLogs()
   getCampaigns()
   getAutomatization()
 })
 </script>
 
 <template>
+  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div class="drawer drawer-end">
     <input id="cochesnet-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
@@ -158,7 +233,10 @@ onMounted(() => {
               <ToggleInput label="Mostrar Carfax" v-model="carfax" />
             </div>
             <AreaInput label="Descripción" v-model="description" />
-            <button class="btn btn-primary mt-4 self-end">Guardar</button>
+            <button class="btn btn-primary mt-4 self-end" @click="saveData">
+              <LoadingSpinner v-if="loading" />
+              <span v-else class="font-semibold text-white">Guardar</span>
+            </button>
           </div>
         </div>
         <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
@@ -173,7 +251,7 @@ onMounted(() => {
                 :headers="headersCampaigns"
                 :items="campaigns"
                 v-model:server-options="serverOptions"
-                :loading="loading"
+                :loading="loadingCampaign"
               >
                 <template v-slot:item-id="{ id }">
                   <div class="w-14">
@@ -248,6 +326,47 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
+          <VehicleTable title="Logs">
+            <template #content>
+              <EasyDataTable
+                class="table-dark table-striped"
+                table-class-name="z-0"
+                header-class-name="z-0"
+                hide-footer
+                border-cell
+                :headers="headersLogs"
+                :items="logs"
+                :loading="loadingLogs"
+              >
+                <!-- <template v-slot:item-id="{ id }">
+                  <div class="w-14">
+                    <button class="btn btn-square btn-xs mr-2" @click="editCampaign(id)">
+                      <Icon icon="mdi:pencil" />
+                    </button>
+                    <button class="btn btn-square btn-error btn-xs" @click="removeCampaign(id)">
+                      <Icon icon="mdi:trash-can-outline" />
+                    </button>
+                  </div>
+                </template>
+                <template v-slot:item-image_overlay="{ image_overlay }">
+                  <Icon icon="mdi:check" v-if="image_overlay" color="green" width="30" />
+                  <Icon icon="mdi:close" v-else color="red" width="30" />
+                </template>
+                <template v-slot:item-description="{ description }">
+                  <Icon icon="mdi:check" v-if="description" color="green" width="30" />
+                  <Icon icon="mdi:close" v-else color="red" width="30" />
+                </template>
+                <template v-slot:item-start_date="{ start_date }">
+                  {{ new Date(start_date).toLocaleString('en-GB') }}
+                </template>
+                <template v-slot:item-end_date="{ end_date }">
+                  {{ new Date(end_date).toLocaleString('en-GB') }}
+                </template> -->
+              </EasyDataTable>
+            </template>
+          </VehicleTable>
+        </div>
       </div>
     </div>
     <div class="drawer-side z-50 h-full w-full">
@@ -259,13 +378,13 @@ onMounted(() => {
           :data="campaignData"
           :id="campaignId"
           :key="campaignId"
-          @updated="getCampaigns"
+          @updated="updatedCampaign"
         />
         <AddCampaign
           v-if="drawerSection === 'addCampaign'"
           :toggle="toggle"
           :id="id"
-          @added="getCampaigns"
+          @added="updatedCampaign"
         />
       </ul>
     </div>
