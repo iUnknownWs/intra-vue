@@ -49,8 +49,8 @@ const getIntegrations = () => {
 }
 
 const settIntegration = (id, name) => {
-  integration.value = name
   integrationId.value = id
+  integration.value = name
 }
 
 const disIntegration = (id, state) => {
@@ -139,49 +139,53 @@ onMounted(() => {
             :id="integrationId"
           />
         </div>
-        <div v-if="tab === 2" class="mx-auto flex w-full flex-col rounded-md bg-base-100 p-4">
+        <div v-if="tab === 2" class="mx-auto flex w-full flex-col">
           <template v-if="integration === 'menu'">
-            <div>
+            <div class="mb-4 rounded-md bg-base-100 p-4">
               <h2 class="text-xl font-medium">Configuración financiera</h2>
               <div class="divider m-0"></div>
-            </div>
-            <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
-              <IntegrationCard
-                v-for="finance in finances"
-                :key="finance.id"
-                :img="finance.logo_img"
-                :name="finance.provider_name"
-                :state="finance.is_active"
-                toggle
-                @settingClick="integration = finance.provider_name"
-                @primaryClick="disIntegration(finance.id, finance.is_active, finance)"
-              />
+              <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+                <IntegrationCard
+                  v-for="finance in finances"
+                  :key="finance.id"
+                  :img="finance.logo_img"
+                  :name="finance.provider_name"
+                  :state="finance.is_active"
+                  toggle
+                  @settingClick="integration = finance.provider_name"
+                  @primaryClick="disIntegration(finance.id, finance.is_active, finance)"
+                />
+              </div>
             </div>
           </template>
           <CofidisIntegration v-if="integration === 'COFIDIS'" @return="integration = 'menu'" />
         </div>
-        <div v-if="tab === 3" class="flex w-full flex-col rounded-md bg-base-100 p-4">
+        <div v-if="tab === 3" class="flex w-full flex-col">
           <template v-if="integration === 'menu'">
-            <div class="mb-4">
+            <div class="mb-4 rounded-md bg-base-100 p-4">
               <div>
                 <h2 class="text-xl font-medium">CRM</h2>
               </div>
               <div class="divider m-0"></div>
-            </div>
-            <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
-              <IntegrationCard
-                v-for="crm in crms"
-                :key="crm.id"
-                :img="crm.logo_img"
-                :name="crm.provider_name"
-                :state="crm.is_active"
-                toggle
-                @settingClick="integration = crm.provider_name"
-                @primaryClick="disIntegration(crm.id, crm.is_active, crm)"
-              />
+              <div class="mt-6 flex flex-col items-center gap-4 lg:flex-row">
+                <IntegrationCard
+                  v-for="crm in crms"
+                  :key="crm.id"
+                  :img="crm.logo_img"
+                  :name="crm.provider_name"
+                  :state="crm.is_active"
+                  toggle
+                  @settingClick="settIntegration(crm.id, crm.provider_name)"
+                  @primaryClick="disIntegration(crm.id, crm.is_active, crm)"
+                />
+              </div>
             </div>
           </template>
-          <WalcuIntegration v-if="integration === 'Walcu CRM'" @return="integration = 'menu'" />
+          <WalcuIntegration
+            v-if="integration === 'Walcu CRM'"
+            @return="integration = 'menu'"
+            :id="integrationId"
+          />
         </div>
       </HeaderMain>
     </div>

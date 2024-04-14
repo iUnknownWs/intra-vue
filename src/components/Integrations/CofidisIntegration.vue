@@ -25,7 +25,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mb-4">
+  <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
     <div class="flex items-center">
       <button class="btn btn-square btn-ghost mr-2" @click="$emit('return')">
         <Icon icon="mdi:arrow-left" width="25" />

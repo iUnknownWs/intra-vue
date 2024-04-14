@@ -418,6 +418,35 @@ const vehiclesCochesnet = [
     }
 ]
 
+const vehicleState = [
+    {
+        id: 'new',
+        title: 'Nuevo'
+    },
+    {
+        id: 'used',
+        title: 'Usado'
+    }
+]
+
+const walcuStatus = [
+    {
+        id: 'available',
+        title: 'Disponible'
+    },
+    {
+        id: 'reserved',
+        title: 'Reservado'
+    },
+    {
+        id: 'delivered',
+        title: 'Entrega'
+    },
+    {
+        id: 'not_included',
+        title: 'No incluir'
+    }
+]
 
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: currentYear - 1969 }, (_, i) => currentYear - i)
@@ -446,7 +475,9 @@ const options = {
     defaultCochesnet,
     week,
     daysCochesnet,
-    vehiclesCochesnet
+    vehiclesCochesnet,
+    vehicleState,
+    walcuStatus
 }
 
 export default options
