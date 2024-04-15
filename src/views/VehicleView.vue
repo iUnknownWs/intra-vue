@@ -1757,6 +1757,7 @@ const docusignDrawer = (step) => {
   }
 
   if (step === 3) {
+    loadingTemplates.value = true
     const payload = {
       contact_person: {
         address: {
@@ -1820,6 +1821,9 @@ const docusignDrawer = (step) => {
         message.value = e.message
         modalTitle.value = 'Error'
         infoModal.value.modal.showModal()
+      })
+      .finally(() => {
+        loadingTemplates.value = false
       })
   }
 }
@@ -2061,7 +2065,7 @@ onMounted(async () => {
         </div>
       </dialog>
       <HeaderMain class="pb-16">
-        <header class="flex h-[250px] flex-col items-center justify-center">
+        <header class="flex flex-col items-center justify-center lg:h-[250px]">
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <VehicleCard
             v-else
@@ -2074,7 +2078,7 @@ onMounted(async () => {
           <VehicleMobile
             v-if="!loading"
             :vehicle="vehicle"
-            class="my-3 lg:hidden"
+            class="lg:hidden"
             @status="updateStatus"
           />
         </header>
@@ -3027,7 +3031,7 @@ onMounted(async () => {
                       @mouseleave="galleryHover = null"
                       class="relative aspect-square w-28 rounded bg-cover bg-center"
                     >
-                      <video autoplay muted loop class="h-full w-full object-cover">
+                      <video muted loop class="h-full w-full object-cover">
                         <source :src="element.video" type="video/mp4" />
                         Tu navegador no soporta el elemento de video.
                       </video>
@@ -3204,7 +3208,7 @@ onMounted(async () => {
       >
         <div>
           <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
-          <ToggleInput label="Auto / Manual" v-model="discountMode" />
+          <!-- <ToggleInput label="Auto / Manual" v-model="discountMode" /> -->
           <SelectInput
             v-if="!discountMode"
             label="Descuento:"
@@ -3369,6 +3373,7 @@ onMounted(async () => {
           primary="Enviar"
           @click-secondary="docusignDrawer()"
           @click-primary="docusignDrawer(3)"
+          :loading="loadingTemplates"
           :disabled="docusignDis"
         />
       </ul>
