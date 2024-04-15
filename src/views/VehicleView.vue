@@ -1493,6 +1493,7 @@ const discountDrawer = () => {
   })
 }
 
+const loadingBooking = ref(false)
 const reserveDrawer = (step) => {
   if (!step) {
     drawerSection.value = 'reserve'
@@ -1547,6 +1548,7 @@ const reserveDrawer = (step) => {
   }
 
   if (step === 5) {
+    loadingBooking.value = true
     const payload = {
       additional_info: commentsReserve.value,
       buyer_company: {
@@ -1627,9 +1629,13 @@ const reserveDrawer = (step) => {
       .post(reserveUrl, payload)
       .then((response) => {
         console.log(response)
+        router.push({ name: 'reserve-detail', params: { id: response.data.id } })
       })
       .catch((error) => {
         console.log(error)
+      })
+      .finally(() => {
+        loadingBooking.value = false
       })
     return
   }
@@ -3344,7 +3350,7 @@ onMounted(async () => {
             <button @click="toggleDrawer" class="btn btn-outline w-28">Cancelar</button>
             <button type="submit" class="btn btn-primary w-24">
               <LoadingSpinner v-if="loadingTemplates" />
-              <span class="text-white" v-else>Siguiente</span>
+              <span class="font-semibold text-white" v-else>Siguiente</span>
             </button>
           </li>
         </form>
@@ -3646,9 +3652,10 @@ onMounted(async () => {
         <DrawerActions
           secondary="Volver"
           primary="Reservar"
+          :disabled="formPicked"
+          :loading="loadingBooking"
           @click-secondary="reserveDrawer(3)"
           @click-primary="reserveDrawer(5)"
-          :disabled="formPicked"
         />
       </ul>
       <ul
