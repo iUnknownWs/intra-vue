@@ -946,7 +946,7 @@ onMounted(() => {
           </div>
         </div>
         <div
-          class="mt-4 flex min-h-[150vh] flex-col items-center justify-center lg:hidden"
+          class="mt-4 flex min-h-[150vh] flex-col items-center justify-between lg:hidden"
           :key="refresh"
         >
           <LoadingSpinner v-if="loading" class="loading-lg" />
@@ -978,7 +978,7 @@ onMounted(() => {
               :distinctive="vehicle.maintenance?.distinctive"
             />
           </div>
-          <div ref="vehicleNext2" class="mx-auto w-full">
+          <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
             <LoadingSpinner v-if="loadingNext" class="loading-lg" />
           </div>
         </div>

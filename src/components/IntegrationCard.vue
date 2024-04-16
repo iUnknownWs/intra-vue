@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
-  img: { type: [String, null], required: true },
-  name: { type: String, required: true },
+  img: { type: [String, null] },
+  name: { type: String },
   published: { type: Number },
   pending: { type: Number },
   state: { type: Boolean },

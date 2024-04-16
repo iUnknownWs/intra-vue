@@ -3091,7 +3091,7 @@ onMounted(async () => {
                   <div class="card-body flex-row justify-between p-4">
                     <div class="flex gap-2">
                       <Icon icon="mdi:file-document" width="50" />
-                      <h2 class="card-title text-lg">{{ doc.file_name }}</h2>
+                      <h2 class="card-title text-base">{{ doc.file_name }}</h2>
                     </div>
                     <div class="self flex gap-2">
                       <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
@@ -3710,7 +3710,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'pt'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96"
       >
         <PerformanceTest
           :url="ptUrl"

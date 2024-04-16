@@ -24,9 +24,6 @@ defineProps({
   distinctive: { type: [Number, null], required: true },
   leads: { type: Number, default: 0 }
 })
-
-const integrations = [true, true, true]
-
 defineEmits(['btn-click'])
 </script>
 
@@ -87,9 +84,9 @@ defineEmits(['btn-click'])
     </figure>
     <div class="card-body relative flex">
       <div class="textcard mr-5 flex gap-1 font-bold">
-        <RouterLink :to="'/vehiculos/' + id">{{ placa }}</RouterLink>
-        <span>{{ marca }}</span>
-        <span>{{ modelo }}</span>
+        <RouterLink :to="'/vehiculos/' + id" class="font-bold">{{ placa }}</RouterLink>
+        <span class="font-bold">{{ marca }}</span>
+        <span class="font-bold">{{ modelo }}</span>
       </div>
       <div class="absolute right-0 top-2 flex flex-col items-center">
         <button class="btn btn-square btn-ghost btn-xs" @click="$emit('menu', id, slug)">
@@ -97,27 +94,7 @@ defineEmits(['btn-click'])
         </button>
       </div>
       <span class="textcard text-xs text-gray-500">{{ version }}</span>
-      <div class="textcard mt-4 flex flex-row justify-between">
-        <div class="flex flex-col">
-          <span>Contado</span>
-          <span class="font-bold">{{ contado }}€</span>
-        </div>
-        <div class="flex flex-col">
-          <span>Financiado</span>
-          <span class="font-bold">{{ financiado }}€</span>
-          <span>Desde {{ quotes }}€</span>
-        </div>
-        <div class="flex flex-col">
-          <span>Dias stock</span>
-          <span class="font-bold">{{ stock }} días</span>
-        </div>
-        <div class="flex flex-col">
-          <span>Leads</span>
-          <span class="font-bold">{{ leads }}</span>
-        </div>
-      </div>
-      <div class="divider m-0"></div>
-      <div class="textcard flex flex-row items-center justify-around">
+      <div class="textcard flex flex-row items-center justify-between">
         <span>{{ kms }} Kms</span>
         <span>{{ año }}</span>
         <span>{{ cambios }}</span>
@@ -129,16 +106,25 @@ defineEmits(['btn-click'])
           <img v-if="distinctive == 3" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
         </div>
       </div>
-      <div class="flex justify-around gap-1 [&>span]:text-xs">
-        <span v-if="integrations[0]" class="badge badge-primary rounded-md pb-1"
-          ><a href="">coches.net</a></span
-        >
-        <span v-if="integrations[1]" class="badge badge-primary rounded-md pb-1"
-          ><a href="">wallapop</a></span
-        >
-        <span v-if="integrations[2]" class="badge badge-primary rounded-md pb-1"
-          ><a href="">sumauto</a></span
-        >
+      <div class="divider m-0"></div>
+      <div class="textcard flex flex-row justify-between [&_div]:gap-1">
+        <div class="flex flex-col">
+          <span class="font-bold">Contado</span>
+          <span>{{ contado }}€</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold">Financiado</span>
+          <span>{{ financiado }}€</span>
+          <span>Desde {{ quotes }}€</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold">Dias stock</span>
+          <span>{{ stock }} días</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold">Leads</span>
+          <span>{{ leads }}</span>
+        </div>
       </div>
     </div>
   </div>

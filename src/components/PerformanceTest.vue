@@ -7,6 +7,7 @@ import AreaPT from './PT/AreaPT.vue'
 import RadioPT from './PT/RadioPT.vue'
 import DatePT from './PT/DatePT.vue'
 import NumberPT from './PT/NumberPT.vue'
+
 const props = defineProps({
   url: {
     type: String,
@@ -28,13 +29,15 @@ const props = defineProps({
     type: Number
   }
 })
+
 const emit = defineEmits(['created', 'validate'])
+
 const testTemplates = ref([])
 const questions = ref([])
 const templateId = ref(null)
 const sameType = ref(false)
 const nextStep = ref(false)
-const loading = ref(true)
+const loading = ref(false)
 const validating = ref(false)
 const validatePT = ref(null)
 const completePT = ref(null)
@@ -42,6 +45,7 @@ const title = ref('')
 const message = ref('')
 
 const create = () => {
+  loading.value = true
   axios
     .post(props.url + 'answered/', {
       vehicle: props.id,
@@ -52,11 +56,13 @@ const create = () => {
         questions.value = response.data.answered_questions
       })
       nextStep.value = true
-      loading.value = false
       emit('created')
     })
     .catch(() => {
       sameType.value = true
+    })
+    .finally(() => {
+      loading.value = false
     })
 }
 
@@ -82,7 +88,6 @@ const ptStatus = (status) => {
       validating.value = false
     })
     .catch(() => {
-      sameType.value = true
       validating.value = false
     })
 }
@@ -116,7 +121,7 @@ onMounted(() => {
     :message="message"
     @confirm="ptStatus(1)"
   />
-  <div v-if="step === 1 && !nextStep" class="flex h-[95vh] w-full flex-col justify-between">
+  <template v-if="step === 1 && !nextStep">
     <div class="h-full w-full">
       <DrawerTitle title="Performance Test" @toggle="toggle" />
       <div v-if="sameType" role="alert" class="alert alert-error">
@@ -133,11 +138,12 @@ onMounted(() => {
     <DrawerActions
       secondary="Cancelar"
       primary="Crear"
+      :loading="loading"
+      :disabled="!templateId"
       @click-secondary="toggle"
       @click-primary="create"
-      :disabled="!templateId"
     />
-  </div>
+  </template>
   <form
     @submit.prevent="ptComplete"
     v-if="step === 2 || nextStep"
@@ -192,7 +198,7 @@ onMounted(() => {
       <button @click="toggle" class="btn btn-outline w-28">Cancelar</button>
       <button type="submit" class="btn btn-primary w-24 text-white">
         <LoadingSpinner v-if="validating" />
-        <span v-else>Guardar</span>
+        <span v-else class="font-semibold text-white">Guardar</span>
       </button>
     </li>
   </form>
@@ -251,7 +257,7 @@ onMounted(() => {
       <button class="btn btn-outline w-28" @click="toggle">Cancelar</button>
       <button class="btn btn-primary w-24 text-white" @click="ptValidate">
         <LoadingSpinner v-if="validating" />
-        <span v-else>Validar</span>
+        <span v-else class="font-semibold text-white">Validar</span>
       </button>
     </li>
   </div>

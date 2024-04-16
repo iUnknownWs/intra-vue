@@ -287,7 +287,7 @@ onMounted(() => {
           </div>
           <div class="divider m-0"></div>
           <div class="flex flex-col">
-            <div class="flex flex-row justify-around">
+            <div class="flex flex-col justify-around lg:flex-row">
               <div
                 v-for="automation in automatization"
                 :key="automation.id"
