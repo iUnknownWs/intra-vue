@@ -719,9 +719,10 @@ onMounted(() => {
             </DropdownBtn>
           </div>
         </header>
-        <div class="lg:hidden">
+        <!-- <div class="lg:hidden">
           <SelectTab label="Pestaña:" v-model="tab" @change="selected" />
-        </div>
+        </div> -->
+
         <div class="hidden flex-row items-start lg:flex">
           <div class="my-4 ml-4 min-h-full w-72 bg-white text-base-content">
             <div class="menu-title flex flex-row justify-between">Filtros</div>
@@ -795,7 +796,7 @@ onMounted(() => {
               role="tablist"
               ref="tabContainer"
               @wheel.prevent="horizontalScroll"
-              class="tabs tabs-bordered mx-4 mt-7 hidden max-w-full overflow-x-scroll bg-white font-medium lg:grid [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
+              class="tabs tabs-bordered mx-4 mt-7 max-w-full overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
             >
               <a
                 role="tab"
@@ -949,6 +950,123 @@ onMounted(() => {
           class="mt-4 flex min-h-[150vh] flex-col items-center justify-between lg:hidden"
           :key="refresh"
         >
+          <div
+            role="tablist"
+            ref="tabContainer"
+            @wheel.prevent="horizontalScroll"
+            class="tabs tabs-bordered mx-4 max-w-full overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
+          >
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '0' }"
+              @click="all"
+            >
+              Todos
+              <span class="badge" :class="{ 'badge-primary': tab === '0' }">{{
+                filtersCounters.total
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '1' }"
+              @click="vehicleStatus(0)"
+            >
+              Recepción
+              <span class="badge" :class="{ 'badge-primary': tab === '1' }">{{
+                filtersCounters.receipt
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '2' }"
+              @click="vehicleStatus(3)"
+            >
+              Publicación
+              <span class="badge" :class="{ 'badge-primary': tab === '2' }">{{
+                filtersCounters.publication
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '3' }"
+              @click="vehicleStatus(4)"
+            >
+              En venta
+              <span class="badge" :class="{ 'badge-primary': tab === '3' }">{{
+                filtersCounters.on_sale
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '4' }"
+              @click="vehicleStatus(5)"
+            >
+              Reservados
+              <span class="badge" :class="{ 'badge-primary': tab === '4' }">{{
+                filtersCounters.reserved
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '5' }"
+              @click="ppt"
+            >
+              Pte. de PT
+              <span class="badge" :class="{ 'badge-primary': tab === '5' }">{{
+                filtersCounters.ppt
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '6' }"
+              @click="vpt"
+            >
+              Validar PT
+              <span class="badge" :class="{ 'badge-primary': tab === '6' }">{{
+                filtersCounters.vpt
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '7' }"
+              @click="web"
+            >
+              No web
+              <span class="badge" :class="{ 'badge-primary': tab === '7' }">{{
+                filtersCounters.no_web
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '8' }"
+              @click="entrega"
+            >
+              Entrega inmediata
+              <span class="badge" :class="{ 'badge-primary': tab === '8' }">{{
+                filtersCounters.inmediate_delivery
+              }}</span>
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === '9' }"
+              @click="vehicleStatus(10)"
+            >
+              No disponible
+              <span class="badge" :class="{ 'badge-primary': tab === '9' }">{{
+                filtersCounters.not_available
+              }}</span>
+            </a>
+          </div>
           <LoadingSpinner v-if="loading" class="loading-lg" />
           <div v-else>
             <CardMobile
