@@ -13,7 +13,6 @@ const loadingNext = ref(false)
 const drawer = ref(false)
 const drawerSection = ref(false)
 const vehicleNext = ref(false)
-const vehicleNext2 = ref(false)
 const nextUrl = ref('')
 const toggleDrawer = () => {
   drawer.value = !drawer.value
@@ -104,16 +103,10 @@ const getVehiclesTabs = (status) => {
 }
 
 const fillBookings = () => {
-  loadingNext.value = true
-  axios
-    .get(nextUrl.value)
-    .then((response) => {
-      nextUrl.value = response.data.next
-      bookings.value = [...bookings.value, ...response.data.results]
-    })
-    .then(() => {
-      loadingNext.value = false
-    })
+  axios.get(nextUrl.value).then((response) => {
+    nextUrl.value = response.data.next
+    bookings.value = [...bookings.value, ...response.data.results]
+  })
 }
 
 const observer = new IntersectionObserver((entries) => {
@@ -123,6 +116,11 @@ const observer = new IntersectionObserver((entries) => {
     }
   })
 })
+
+const tabContainer = ref(null)
+const horizontalScroll = (evt) => {
+  tabContainer.value.scrollLeft += evt.deltaY * 1
+}
 
 onMounted(() => {
   getVehicles()
@@ -137,7 +135,7 @@ onMounted(() => {
       <div class="drawer-content">
         <header class="flex flex-row items-center justify-between">
           <TextBtn
-            class="max-w-[400px] lg:ml-4"
+            class="lg:ml-4 lg:max-w-[400px]"
             placeholder="Buscar"
             v-model="search"
             :disabled="disSearch"
@@ -148,42 +146,105 @@ onMounted(() => {
             <Icon icon="mdi:magnify" width="25" />
           </TextBtn>
         </header>
-        <div class="lg:hidden">
-          <SelectTab label="Pestaña:" />
-        </div>
-        <div class="hidden flex-row items-start lg:flex">
-          <aside class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
-            <div class="menu-title flex flex-row justify-between">Filtros</div>
-            <div class="divider m-0"></div>
-            <SelectInput
-              label="Origen:"
-              :options="options.sources"
-              v-model="source"
-              :initialValue="null"
-            />
-            <SelectInput
-              label="Tipo de entrega:"
-              :options="options.delivery"
-              v-model="delivery"
-              :initialValue="null"
-            />
-            <SelectInput
-              label="Tipo de garantia:"
-              :options="options.warrantyBookings"
-              v-model="warranty"
-              :initialValue="null"
-            />
-            <div class="mt-8 flex flex-row justify-between">
-              <button class="btn btn-outline w-fit" @click="reset">Reset</button>
-              <button class="btn btn-primary w-fit text-white" @click="getVehiclesFilter">
-                Filtrar
-              </button>
+        <main class="flex flex-col justify-between">
+          <div class="hidden min-h-[150vh] flex-row lg:flex">
+            <div class="hidden flex-row items-start lg:flex">
+              <aside class="my-4 ml-4 min-h-full w-80 bg-white text-base-content">
+                <div class="menu-title flex flex-row justify-between">Filtros</div>
+                <div class="divider m-0"></div>
+                <SelectInput
+                  label="Origen:"
+                  :options="options.sources"
+                  v-model="source"
+                  :initialValue="null"
+                />
+                <SelectInput
+                  label="Tipo de entrega:"
+                  :options="options.delivery"
+                  v-model="delivery"
+                  :initialValue="null"
+                />
+                <SelectInput
+                  label="Tipo de garantia:"
+                  :options="options.warrantyBookings"
+                  v-model="warranty"
+                  :initialValue="null"
+                />
+                <div class="mt-8 flex flex-row justify-between">
+                  <button class="btn btn-outline w-fit" @click="reset">Reset</button>
+                  <button class="btn btn-primary w-fit text-white" @click="getVehiclesFilter">
+                    Filtrar
+                  </button>
+                </div>
+              </aside>
             </div>
-          </aside>
-          <div class="flex flex-col items-start justify-center px-8">
+            <div ref="vehicleNext" class="mb-8 hidden w-full lg:flex">
+              <div class="flex flex-col items-start pl-24">
+                <div
+                  role="tablist"
+                  class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid"
+                >
+                  <input
+                    type="radio"
+                    name="class"
+                    role="tab"
+                    class="tab"
+                    aria-label="Todas"
+                    checked
+                    @change="getVehicles"
+                  />
+                  <input
+                    type="radio"
+                    name="class"
+                    role="tab"
+                    class="tab"
+                    aria-label="Pendientes"
+                    @change="getVehiclesTabs(0)"
+                  />
+                  <input
+                    type="radio"
+                    name="class"
+                    role="tab"
+                    class="tab"
+                    aria-label="Confirmadas"
+                    @change="getVehiclesTabs(1)"
+                  />
+                  <input
+                    type="radio"
+                    name="class"
+                    role="tab"
+                    class="tab"
+                    aria-label="Canceladas"
+                    @change="getVehiclesTabs(2)"
+                  />
+                  <input
+                    type="radio"
+                    name="class"
+                    role="tab"
+                    class="tab"
+                    aria-label="Entregadas"
+                    @change="getVehiclesTabs(3)"
+                  />
+                </div>
+                <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
+                  <LoadingSpinner v-if="loading" class="loading-lg mt-4" />
+                  <div v-else>
+                    <CardDesktop
+                      v-for="(vehicle, index) in bookings"
+                      :key="index"
+                      :reserve="vehicle"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 flex min-h-[150vh] flex-col items-center lg:hidden">
             <div
               role="tablist"
-              class="tabs tabs-bordered ml-20 mt-7 hidden justify-items-start bg-white font-medium lg:grid"
+              ref="tabContainer"
+              @wheel.prevent="horizontalScroll"
+              class="tabs tabs-bordered mx-4 w-screen overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
             >
               <input
                 type="radio"
@@ -227,23 +288,10 @@ onMounted(() => {
                 @change="getVehiclesTabs(3)"
               />
             </div>
-            <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
-              <LoadingSpinner v-if="loading" class="loading-lg mt-4" />
-              <div v-else>
-                <CardDesktop v-for="(vehicle, index) in bookings" :key="index" :reserve="vehicle" />
-              </div>
-              <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
-                <LoadingSpinner v-if="loadingNext" class="loading-lg" />
-              </div>
-            </div>
+            <LoadingSpinner v-if="loading" class="loading-lg" />
           </div>
-        </div>
-        <div class="mt-4 flex min-h-[150vh] flex-col items-center justify-center lg:hidden">
-          <LoadingSpinner v-if="loading" class="loading-lg" />
-          <div ref="vehicleNext2" class="mx-auto w-full">
-            <LoadingSpinner v-if="loadingNext" class="loading-lg" />
-          </div>
-        </div>
+          <LoadingSpinner v-if="nextUrl" class="loading-lg self-center text-center" />
+        </main>
       </div>
       <div class="drawer-side z-50">
         <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>

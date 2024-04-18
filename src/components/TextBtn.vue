@@ -11,7 +11,7 @@ const value = defineModel()
 class="input join-item input-bordered w-full"
 <template>
   <div class="join w-full">
-    <label class="input join-item input-bordered flex items-center gap-2">
+    <label class="input join-item input-bordered flex w-full items-center gap-2">
       <input
         type="text"
         placeholder="Buscar"

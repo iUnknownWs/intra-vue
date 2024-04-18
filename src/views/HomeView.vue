@@ -65,7 +65,6 @@ const loadingInfo = ref(true)
 const header = ref(null)
 const disSearch = ref(true)
 const vehicleNext = ref(null)
-const loadingNext = ref(false)
 
 const userStore = useUserStore()
 
@@ -605,16 +604,10 @@ const makeType = (code) => {
 }
 
 const fillVehicle = () => {
-  loadingNext.value = true
-  axios
-    .get(scrollNextUrl)
-    .then((response) => {
-      scrollNextUrl = response.data.next
-      vehiclesFilter.value = [...vehiclesFilter.value, ...response.data.results]
-    })
-    .then(() => {
-      loadingNext.value = false
-    })
+  axios.get(scrollNextUrl).then((response) => {
+    scrollNextUrl = response.data.next
+    vehiclesFilter.value = [...vehiclesFilter.value, ...response.data.results]
+  })
 }
 
 const tabContainer = ref(null)
@@ -665,10 +658,9 @@ onMounted(() => {
     <div class="drawer drawer-end">
       <input v-model="toggleDrawer" id="filterDrawer" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content">
-        <!-- Page content here -->
         <header class="flex flex-row items-center justify-between">
           <TextBtn
-            class="max-w-[275px] lg:ml-4 lg:max-w-[400px]"
+            class="mr-3 lg:ml-4 lg:max-w-[400px]"
             placeholder="Buscar"
             v-model="searchValue"
             :disabled="disSearch"
@@ -678,7 +670,7 @@ onMounted(() => {
           >
             <Icon icon="mdi:magnify" width="25" />
           </TextBtn>
-          <div class="flex gap-1">
+          <div class="flex gap-2">
             <label for="filterDrawer" @click="filterDrawer" class="text-black lg:hidden">
               <div tabindex="0" role="button" class="btn btn-primary text-white lg:hidden">
                 <Icon icon="mdi:filter" />
@@ -719,10 +711,6 @@ onMounted(() => {
             </DropdownBtn>
           </div>
         </header>
-        <!-- <div class="lg:hidden">
-          <SelectTab label="Pestaña:" v-model="tab" @change="selected" />
-        </div> -->
-
         <div class="hidden flex-row items-start lg:flex">
           <div class="my-4 ml-4 min-h-full w-72 bg-white text-base-content">
             <div class="menu-title flex flex-row justify-between">Filtros</div>
@@ -940,9 +928,6 @@ onMounted(() => {
                   @menu-btn5="deleteVehicle"
                 />
               </div>
-              <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
-                <LoadingSpinner v-if="loadingNext" class="loading-lg" />
-              </div>
             </div>
           </div>
         </div>
@@ -1098,9 +1083,9 @@ onMounted(() => {
               />
             </div>
           </div>
-          <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
-            <LoadingSpinner v-if="loadingNext" class="loading-lg" />
-          </div>
+        </div>
+        <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
+          <LoadingSpinner v-if="scrollNextUrl" class="loading-lg" />
         </div>
       </div>
       <div class="drawer-side z-50">
