@@ -8,13 +8,15 @@ defineProps({
 })
 const modal = ref(null)
 defineExpose({ modal })
+defineEmits(['close'])
+
 </script>
 
 <template>
   <dialog ref="modal" class="modal">
     <div class="modal-box">
       <form method="dialog">
-        <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
+        <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2" @click="$emit('close')">✕</button>
       </form>
       <h3 class="text-lg font-bold">{{ title }}</h3>
       <p class="py-4">{{ message }}</p>
@@ -23,7 +25,7 @@ defineExpose({ modal })
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
-      <button>close</button>
+      <button @click="$emit('close')">close</button>
     </form>
   </dialog>
 </template>

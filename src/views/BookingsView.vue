@@ -9,7 +9,6 @@ axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('
 
 let url = `${import.meta.env.VITE_SALES}/bookings/`
 const loading = ref(null)
-const loadingNext = ref(false)
 const drawer = ref(false)
 const drawerSection = ref(false)
 const vehicleNext = ref(false)
@@ -178,7 +177,7 @@ onMounted(() => {
                 </div>
               </aside>
             </div>
-            <div ref="vehicleNext" class="mb-8 hidden w-full lg:flex">
+            <div class="mb-8 hidden w-full lg:flex">
               <div class="flex flex-col items-start pl-24">
                 <div
                   role="tablist"
@@ -186,7 +185,7 @@ onMounted(() => {
                 >
                   <input
                     type="radio"
-                    name="class"
+                    name="tabs-desktop"
                     role="tab"
                     class="tab"
                     aria-label="Todas"
@@ -195,7 +194,7 @@ onMounted(() => {
                   />
                   <input
                     type="radio"
-                    name="class"
+                    name="tabs-desktop"
                     role="tab"
                     class="tab"
                     aria-label="Pendientes"
@@ -203,7 +202,7 @@ onMounted(() => {
                   />
                   <input
                     type="radio"
-                    name="class"
+                    name="tabs-desktop"
                     role="tab"
                     class="tab"
                     aria-label="Confirmadas"
@@ -211,7 +210,7 @@ onMounted(() => {
                   />
                   <input
                     type="radio"
-                    name="class"
+                    name="tabs-desktop"
                     role="tab"
                     class="tab"
                     aria-label="Canceladas"
@@ -219,7 +218,7 @@ onMounted(() => {
                   />
                   <input
                     type="radio"
-                    name="class"
+                    name="tabs-desktop"
                     role="tab"
                     class="tab"
                     aria-label="Entregadas"
@@ -248,7 +247,7 @@ onMounted(() => {
             >
               <input
                 type="radio"
-                name="class"
+                name="tabs-mobile"
                 role="tab"
                 class="tab"
                 aria-label="Todas"
@@ -257,7 +256,7 @@ onMounted(() => {
               />
               <input
                 type="radio"
-                name="class"
+                name="tabs-mobile"
                 role="tab"
                 class="tab"
                 aria-label="Pendientes"
@@ -265,7 +264,7 @@ onMounted(() => {
               />
               <input
                 type="radio"
-                name="class"
+                name="tabs-mobile"
                 role="tab"
                 class="tab"
                 aria-label="Confirmadas"
@@ -273,7 +272,7 @@ onMounted(() => {
               />
               <input
                 type="radio"
-                name="class"
+                name="tabs-mobile"
                 role="tab"
                 class="tab"
                 aria-label="Canceladas"
@@ -281,7 +280,7 @@ onMounted(() => {
               />
               <input
                 type="radio"
-                name="class"
+                name="tabs-mobile"
                 role="tab"
                 class="tab"
                 aria-label="Entregadas"
@@ -290,7 +289,9 @@ onMounted(() => {
             </div>
             <LoadingSpinner v-if="loading" class="loading-lg" />
           </div>
-          <LoadingSpinner v-if="nextUrl" class="loading-lg self-center text-center" />
+          <div ref="vehicleNext" class="self-center text-center">
+            <LoadingSpinner v-if="nextUrl" class="loading-lg" />
+          </div>
         </main>
       </div>
       <div class="drawer-side z-50">

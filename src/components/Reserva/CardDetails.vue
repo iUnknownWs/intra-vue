@@ -3,41 +3,55 @@ import axios from 'axios'
 import { ref } from 'vue'
 
 const props = defineProps({
-  reserve: { Object, required: true }
+  reserve: { Object, required: true },
+  getData: { Function, required: true }
 })
 
-const emits = defineEmits(['cancelled', 'docuDrawer', 'deliverBtn'])
+defineEmits(['docuDrawer', 'deliverBtn'])
 
 const info = ref(null)
 const modalTitle = ref('')
 const modalMessage = ref('')
+const modalLoading = ref(false)
+const refresh = ref(false)
 
 const resendEmail = () => {
+  modalLoading.value = true
+  info.value.modal.showModal()
+  refresh.value = false
+
   axios
     .get(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/resend_confirmation_email/`)
     .then(() => {
+      modalLoading.value = false
       modalTitle.value = 'Email reenviado'
       modalMessage.value = 'El email ha sido reenviado'
-      info.value.modal.showModal()
     })
     .catch((error) => {
+      modalLoading.value = false
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo reenviar el email'
       console.log(error)
     })
 }
 
 const printReserve = () => {
+  modalLoading.value = true
+  info.value.modal.showModal()
+  refresh.value = false
+
   axios
     .post(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/download_mail_file/`)
     .then((response) => {
+      modalLoading.value = false
+      modalTitle.value = 'Reserva generada'
+      modalMessage.value = 'Tu reserva ha sido generada, la descarga se iniciará en breve'
       const downloadLink = document.createElement('a')
       const url = window.URL.createObjectURL(new Blob([response.data]))
       downloadLink.href = url
       downloadLink.setAttribute('download', `Reserva ${props.reserve.id}.pdf`)
       document.body.appendChild(downloadLink)
       downloadLink.click()
-      modalTitle.value = 'Reserva generada'
-      modalMessage.value = 'Tu reserva ha sido generada, la descarga se iniciará en breve'
-      info.value.modal.showModal()
     })
     .catch((error) => {
       console.log(error)
@@ -45,22 +59,33 @@ const printReserve = () => {
 }
 
 const cancelReserve = () => {
+  modalLoading.value = true
+  info.value.modal.showModal()
+  refresh.value = true
+
   axios
     .patch(`${import.meta.env.VITE_SALES}/bookings/${props.reserve.id}/`, {
       status: 2
     })
     .then(() => {
+      modalLoading.value = false
       modalTitle.value = 'Reserva cancelada'
       modalMessage.value = 'Tu reserva ha sido cancelada'
-      info.value.modal.showModal()
-      emits('cancelled')
     })
     .catch((error) => {
       console.log(error)
+      modalLoading.value = false
       modalTitle.value = 'Error'
       modalMessage.value = 'No se pudo cancelar la reserva'
-      info.value.modal.showModal()
     })
+}
+
+const modalClosed = () => {
+  if (refresh.value) {
+    props.getData()
+  }
+  modalTitle.value = null
+  modalMessage.value = null
 }
 
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
@@ -208,7 +233,13 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
       </template>
     </div>
   </div>
-  <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
+  <ModalInfo
+    ref="info"
+    :title="modalTitle"
+    :message="modalMessage"
+    :loading="modalLoading"
+    @close="modalClosed"
+  />
 </template>
 
 <style>

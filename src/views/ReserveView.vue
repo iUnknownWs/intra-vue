@@ -111,19 +111,19 @@ const getVehicle = () => {
       contactRegion.value = vehicle.value.contact_region
       contactCountry.value = vehicle.value.contact_country
       contactZip.value = vehicle.value.contact_postal_code
-      if (vehicle.value.buyer_company) {
+      if (vehicle.value?.buyer_company) {
         isCompany.value = true
       }
-      companyVat.value = vehicle.value.buyer_company.vat
-      companyName.value = vehicle.value.buyer_company.name
-      companyEmail.value = vehicle.value.buyer_company.email
-      companyPrefix.value = vehicle.value.buyer_company.phone_prefix
-      companyPhone.value = vehicle.value.buyer_company.phone
-      companyAddress.value = vehicle.value.buyer_company.address.address
-      companyCity.value = vehicle.value.buyer_company.address.city
-      companyRegion.value = vehicle.value.buyer_company.address.region
-      companyCountry.value = vehicle.value.buyer_company.address.country
-      companyZip.value = vehicle.value.buyer_company.address.postal_code
+      companyVat.value = vehicle.value?.buyer_company?.vat
+      companyName.value = vehicle.value?.buyer_company?.name
+      companyEmail.value = vehicle.value?.buyer_company?.email
+      companyPrefix.value = vehicle.value?.buyer_company?.phone_prefix
+      companyPhone.value = vehicle.value?.buyer_company?.phone
+      companyAddress.value = vehicle.value?.buyer_company?.address.address
+      companyCity.value = vehicle.value?.buyer_company?.address.city
+      companyRegion.value = vehicle.value?.buyer_company?.address.region
+      companyCountry.value = vehicle.value?.buyer_company?.address.country
+      companyZip.value = vehicle.value?.buyer_company?.address.postal_code
       vehicleExtras.value = vehicle.value.extras
       isFetchingExtras.value = false
       deliveryAddress.value = vehicle.value.delivery_address
@@ -531,7 +531,7 @@ onMounted(() => {
           <template v-else>
             <CardDetails
               :reserve="vehicle"
-              @cancelled="getVehicle"
+              :getData="getVehicle"
               @docuDrawer="docuDrawer"
               @deliverBtn="deliDrawer"
             />
@@ -552,10 +552,22 @@ onMounted(() => {
             <ul class="menu menu-sm w-56 rounded-box bg-base-100">
               <li>
                 <a class="font-bold" @click="tab = 'details'">Detalles</a>
-                <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a' }">
-                  <li><a @click="tab = 'details'">Info. facturación</a></li>
-                  <li><a @click="tab = 'details'">Extras</a></li>
-                  <li><a @click="tab = 'details'">Más info</a></li>
+                <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a.menu-item' }">
+                  <li>
+                    <a @click="tab = 'details'" :class="{ 'menu-item': tab === 'details' }">
+                      Info. facturación
+                    </a>
+                  </li>
+                  <li>
+                    <a @click="tab = 'details'" :class="{ 'menu-item': tab === 'details' }">
+                      Extras
+                    </a>
+                  </li>
+                  <li>
+                    <a @click="tab = 'details'" :class="{ 'menu-item': tab === 'details' }">
+                      Más info
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li><a class="font-bold" @click="tab = 'payments'">Pagos</a></li>
@@ -830,12 +842,12 @@ onMounted(() => {
                 <div class="text-sm [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
                   <div v-if="vehicle.form_of_payment_type === 1">
                     <span> Precio de compra: </span>
-                    <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                    <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
                     <span> Financiado </span>
                   </div>
                   <div v-else>
                     <span> Precio de compra: </span>
-                    <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                    <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
                     <span> Contado </span>
                   </div>
                   <div v-for="extra of vehicle.extras" :key="extra.id">
@@ -855,7 +867,7 @@ onMounted(() => {
                   </div>
                   <div>
                     <span class="font-bold"> Precio final: </span>
-                    <span class="mr-2 text-right font-bold">{{ vehicle.final_price }}</span>
+                    <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
                     <span></span>
                   </div>
                 </div>
@@ -984,12 +996,12 @@ onMounted(() => {
               <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
                 <div v-if="vehicle.form_of_payment_type === 1">
                   <span> Precio de compra: </span>
-                  <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                  <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
                   <span> Financiado </span>
                 </div>
                 <div v-else>
                   <span> Precio de compra: </span>
-                  <span class="mr-2 text-right"> {{ vehicle.price }} </span>
+                  <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
                   <span> Contado </span>
                 </div>
                 <div v-for="extra of vehicle.extras" :key="extra.id">
@@ -1009,7 +1021,7 @@ onMounted(() => {
                 </div>
                 <div>
                   <span class="font-bold"> Precio final: </span>
-                  <span class="mr-2 text-right font-bold">{{ vehicle.final_price }}</span>
+                  <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
                   <span></span>
                 </div>
               </div>

@@ -7,7 +7,8 @@ import EditCampaign from './EditCampaign.vue'
 import AddCampaign from './AddCampaign.vue'
 
 const props = defineProps({
-  id: { type: Number, required: true }
+  id: { type: Number, required: true },
+  tab: { type: String, required: true }
 })
 
 defineEmits(['return'])
@@ -204,9 +205,9 @@ onMounted(() => {
 <template>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div class="drawer drawer-end">
-    <input id="cochesnet-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
+    <input id="drawer-wallapop" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
-      <div class="flex flex-col gap-8">
+      <div v-if="tab === 'settings'" class="flex flex-col gap-8">
         <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
           <div class="flex items-center">
             <button class="btn btn-square btn-ghost mr-2" @click="$emit('return')">
@@ -321,30 +322,30 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
-          <VehicleTable title="Logs">
-            <template #content>
-              <EasyDataTable
-                class="table-dark table-striped"
-                table-class-name="z-0"
-                header-class-name="z-0"
-                hide-footer
-                border-cell
-                :headers="headersLogs"
-                :items="logs"
-                :loading="loadingLogs"
-              >
-                <template v-slot:item-created_at="{ created_at }">
-                  {{ new Date(created_at).toLocaleString('en-GB') }}
-                </template>
-              </EasyDataTable>
-            </template>
-          </VehicleTable>
-        </div>
+      </div>
+      <div v-else class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
+        <VehicleTable title="Logs">
+          <template #content>
+            <EasyDataTable
+              class="table-dark table-striped"
+              table-class-name="z-0"
+              header-class-name="z-0"
+              hide-footer
+              border-cell
+              :headers="headersLogs"
+              :items="logs"
+              :loading="loadingLogs"
+            >
+              <template v-slot:item-created_at="{ created_at }">
+                {{ new Date(created_at).toLocaleString('en-GB') }}
+              </template>
+            </EasyDataTable>
+          </template>
+        </VehicleTable>
       </div>
     </div>
-    <div class="drawer-side z-50 h-full w-full">
-      <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+    <div class="drawer-side z-50">
+      <label for="drawer-wallapop" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
         <EditCampaign
           v-if="drawerSection === 'editCampaign'"

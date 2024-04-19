@@ -22,6 +22,7 @@ const toggleDrawer = () => {
 
 const integration = ref('menu')
 const integrationId = ref(null)
+const integrationSection = ref('settings')
 
 const tabSelect = (tabSelected) => {
   tab.value = tabSelected
@@ -76,32 +77,94 @@ onMounted(() => {
       <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
       <HeaderMain>
         <span class="text-3xl font-bold">Integraciones</span>
-        <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
-          <a
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active font-medium': tab === 1 }"
-            @click="tabSelect(1)"
-          >
-            Portales Web
-          </a>
-          <a
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active font-medium': tab === 2 }"
-            @click="tabSelect(2)"
-          >
-            Financiación
-          </a>
-          <a
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active font-medium': tab === 3 }"
-            @click="tabSelect(3)"
-          >
-            CRM
-          </a>
-        </div>
+        <template v-if="integration === 'menu'">
+          <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === 1 }"
+              @click="tabSelect(1)"
+            >
+              Portales Web
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === 2 }"
+              @click="tabSelect(2)"
+            >
+              Financiación
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': tab === 3 }"
+              @click="tabSelect(3)"
+            >
+              CRM
+            </a>
+          </div>
+        </template>
+        <template v-if="integration === 'Coches.net'">
+          <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'settings' }"
+              @click="integrationSection = 'settings'"
+            >
+              Configuración
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'logs' }"
+              @click="integrationSection = 'logs'"
+            >
+              Logs
+            </a>
+          </div>
+        </template>
+        <template v-if="integration === 'Wallapop'">
+          <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'settings' }"
+              @click="integrationSection = 'settings'"
+            >
+              Configuración
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'logs' }"
+              @click="integrationSection = 'logs'"
+            >
+              Logs
+            </a>
+          </div>
+        </template>
+        <template v-if="integration === 'Sumauto'">
+          <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'settings' }"
+              @click="integrationSection = 'settings'"
+            >
+              Configuración
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'logs' }"
+              @click="integrationSection = 'logs'"
+            >
+              Logs
+            </a>
+          </div>
+        </template>
         <div v-if="tab === 1" class="flex w-full flex-col gap-8">
           <div v-if="integration === 'menu'">
             <div class="mb-4 rounded-md bg-base-100 p-4">
@@ -125,18 +188,21 @@ onMounted(() => {
           </div>
           <CochesnetIntegration
             v-if="integration === 'Coches.net'"
-            @return="integration = 'menu'"
             :id="integrationId"
+            :tab="integrationSection"
+            @return="integration = 'menu'"
           />
           <WallapopIntegration
             v-if="integration === 'Wallapop'"
-            @return="integration = 'menu'"
             :id="integrationId"
+            :tab="integrationSection"
+            @return="integration = 'menu'"
           />
           <SumautoIntegration
             v-if="integration === 'Sumauto'"
-            @return="integration = 'menu'"
             :id="integrationId"
+            :tab="integrationSection"
+            @return="integration = 'menu'"
           />
         </div>
         <div v-if="tab === 2" class="mx-auto flex w-full flex-col">

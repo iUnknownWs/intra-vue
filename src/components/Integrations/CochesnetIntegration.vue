@@ -5,9 +5,11 @@ import axios from 'axios'
 import options from '@/js/filterOptions'
 import EditCampaign from './EditCampaign.vue'
 import AddCampaign from './AddCampaign.vue'
+import LogDrawer from './LogDrawer.vue'
 
 const props = defineProps({
-  id: { type: Number, required: true }
+  id: { type: Number, required: true },
+  tab: { type: String, required: true }
 })
 
 defineEmits(['return'])
@@ -117,13 +119,12 @@ const getLogs = () => {
 }
 
 const headersLogs = [
-  { text: 'ID', value: 'id' },
-  { text: 'Fecha de creación', value: 'created_at' },
+  { text: 'Fecha de creación', value: 'created_at', width: 120 },
   { text: 'Headers', value: 'headers', width: 60 },
   { text: 'Method', value: 'method', width: 60 },
   { text: 'Código', value: 'status_code', width: 60 },
   { text: 'Response', value: 'response', width: 60 },
-  { text: 'Detalles', value: 'id', width: 40 }
+  { text: 'Detalles', value: 'id', width: 100 }
 ]
 
 const removeCampaign = (id) => {
@@ -195,6 +196,13 @@ const getAutomatization = () => {
   })
 }
 
+const logId = ref(null)
+const logDetails = (id) => {
+  logId.value = id
+  drawer.value = !drawer.value
+  drawerSection.value = 'log'
+}
+
 onMounted(() => {
   getData()
   getLogs()
@@ -206,9 +214,9 @@ onMounted(() => {
 <template>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
   <div class="drawer drawer-end">
-    <input id="cochesnet-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
+    <input id="drawer-cochesnet" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
-      <div class="flex flex-col gap-8">
+      <div v-if="tab === 'settings'" class="flex flex-col gap-8">
         <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
           <div class="flex items-center">
             <button class="btn btn-square btn-ghost mr-2" @click="$emit('return')">
@@ -326,52 +334,40 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
-          <VehicleTable title="Logs">
-            <template #content>
-              <EasyDataTable
-                class="table-dark table-striped"
-                table-class-name="z-0"
-                header-class-name="z-0"
-                hide-footer
-                border-cell
-                :headers="headersLogs"
-                :items="logs"
-                :loading="loadingLogs"
-              >
-                <!-- <template v-slot:item-id="{ id }">
-                  <div class="w-14">
-                    <button class="btn btn-square btn-xs mr-2" @click="editCampaign(id)">
-                      <Icon icon="mdi:pencil" />
-                    </button>
-                    <button class="btn btn-square btn-error btn-xs" @click="removeCampaign(id)">
-                      <Icon icon="mdi:trash-can-outline" />
-                    </button>
-                  </div>
-                </template>
-                <template v-slot:item-image_overlay="{ image_overlay }">
-                  <Icon icon="mdi:check" v-if="image_overlay" color="green" width="30" />
-                  <Icon icon="mdi:close" v-else color="red" width="30" />
-                </template>
-                <template v-slot:item-description="{ description }">
-                  <Icon icon="mdi:check" v-if="description" color="green" width="30" />
-                  <Icon icon="mdi:close" v-else color="red" width="30" />
-                </template>
-                <template v-slot:item-start_date="{ start_date }">
-                  {{ new Date(start_date).toLocaleString('en-GB') }}
-                </template>
-                <template v-slot:item-end_date="{ end_date }">
-                  {{ new Date(end_date).toLocaleString('en-GB') }}
-                </template> -->
-              </EasyDataTable>
-            </template>
-          </VehicleTable>
-        </div>
+      </div>
+      <div v-else class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
+        <VehicleTable title="Logs">
+          <template #content>
+            <EasyDataTable
+              class="table-dark table-striped"
+              table-class-name="z-0"
+              header-class-name="z-0"
+              hide-footer
+              border-cell
+              :headers="headersLogs"
+              :items="logs"
+              :loading="loadingLogs"
+            >
+              <template v-slot:item-id="{ id }">
+                <button class="btn btn-primary btn-xs" @click="logDetails(id)">Ver Detalles</button>
+              </template>
+              <template v-slot:item-headers="{ headers }">
+                <p class="w-64 overflow-hidden text-ellipsis text-nowrap">{{ headers }}</p>
+              </template>
+              <template v-slot:item-response="{ response }">
+                <p class="w-64 overflow-hidden text-ellipsis text-nowrap">{{ response }}</p>
+              </template>
+              <template v-slot:item-created_at="{ created_at }">
+                {{ new Date(created_at).toLocaleString('en-GB') }}
+              </template>
+            </EasyDataTable>
+          </template>
+        </VehicleTable>
       </div>
     </div>
     <div class="drawer-side z-50 h-full w-full">
-      <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
+      <label for="drawer-cochesnet" aria-label="close sidebar" class="drawer-overlay"></label>
+      <ul class="menu min-h-full w-screen justify-between bg-white p-6 text-base-content lg:w-1/3">
         <EditCampaign
           v-if="drawerSection === 'editCampaign'"
           :toggle="toggle"
@@ -386,6 +382,7 @@ onMounted(() => {
           :id="id"
           @added="updatedCampaign"
         />
+        <LogDrawer v-if="drawerSection === 'log'" :toggle="toggle" :id="logId" :key="logId" />
       </ul>
     </div>
   </div>
