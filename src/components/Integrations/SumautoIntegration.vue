@@ -201,6 +201,41 @@ const getAutomatization = () => {
   })
 }
 
+const downloadFile = (id) => {
+  axios
+    .post(`${import.meta.env.VITE_INTEGRATIONS}/file_logs/download_file/`, { file_id: id })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `sumauto_log_${id}.txt`)
+      document.body.appendChild(link)
+      link.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(link)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+}
+
+const resendLog = (id) => {
+  axios
+    .post(`${import.meta.env.VITE_INTEGRATIONS}/file_logs/resend_file/`, { file_id: id })
+    .then(() => {
+      getLogs()
+      modalTitle.value = 'Log enviado'
+      modalMessage.value = 'El log se ha enviado correctamente'
+      info.value.modal.showModal()
+    })
+    .catch((err) => {
+      console.error(err)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo enviar el log'
+      info.value.modal.showModal()
+    })
+}
+
 onMounted(() => {
   getData()
   getLogs()
@@ -360,6 +395,19 @@ onMounted(() => {
             >
               <template v-slot:item-created_at="{ created_at }">
                 {{ new Date(created_at).toLocaleString('en-GB') }}
+              </template>
+              <template v-slot:item-id="{ id, file }">
+                <div class="dropdown dropdown-end">
+                  <div tabindex="0" role="button" class="btn btn-xs m-1">Acciones</div>
+                  <ul
+                    tabindex="0"
+                    class="menu dropdown-content menu-xs z-10 w-36 rounded-box bg-white p-2 shadow"
+                  >
+                    <li><a :href="file" target="_blank">Ver</a></li>
+                    <li><a @click="downloadFile(id)">Descargar</a></li>
+                    <li><a @click="resendLog(id)">Forzar envío</a></li>
+                  </ul>
+                </div>
               </template>
             </EasyDataTable>
           </template>
