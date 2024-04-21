@@ -10,6 +10,7 @@ import AreaInput from '@/components/AreaInput.vue'
 import DateInput from '@/components/DateInput.vue'
 import DragDrop from '@/components/DragDrop.vue'
 import DraggableGallery from '@/components/DraggableGallery.vue'
+import DrawerComponent from './components/DrawerComponent.vue'
 import DrawerActions from '@/components/DrawerActions.vue'
 import DrawerLink from '@/components/DrawerLink.vue'
 import DrawerLogo from '@/components/DrawerLogo.vue'
@@ -58,6 +59,7 @@ app.component('EasyDataTable', Vue3EasyDataTable)
     .component('DateInput', DateInput)
     .component('DragDrop', DragDrop)
     .component('DraggableGallery', DraggableGallery)
+    .component('DrawerComponent', DrawerComponent)
     .component('DrawerActions', DrawerActions)
     .component('DrawerLink', DrawerLink)
     .component('DrawerLogo', DrawerLogo)

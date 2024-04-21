@@ -23,7 +23,7 @@ defineEmits(['addBtn'])
             <span class="hidden lg:inline"> Nuevo </span>
           </label>
         </div>
-        <div class="divider m-0"></div>
+        <div v-if="add" class="divider m-0"></div>
       </div>
     </div>
     <slot name="content" />

@@ -15,6 +15,7 @@ import IntegrationsView from '@/views/IntegrationsView.vue'
 import ReserveView from '@/views/ReserveView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import UserView from '@/views/UserView.vue'
+import AutoDiscountsView from '@/views/AutoDiscountsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -99,6 +100,11 @@ const router = createRouter({
       name: 'integration',
       component: IntegrationsView
     },
+    {
+      path: '/descuentos-automaticos',
+      name: 'automatic-discounts',
+      component: AutoDiscountsView
+    }
   ]
 })
 
