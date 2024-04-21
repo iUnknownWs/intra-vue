@@ -208,7 +208,7 @@ const downloadFile = (id) => {
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `sumauto_log_${id}.txt`)
+      link.setAttribute('download', `sumauto_log_${id}.xml`)
       document.body.appendChild(link)
       link.click()
       window.URL.revokeObjectURL(url)

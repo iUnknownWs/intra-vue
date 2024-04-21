@@ -298,7 +298,7 @@ onMounted(() => {
         <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
         <ul
           v-if="drawerSection === 'filter'"
-          class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+          class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
         >
           <DrawerTitle title="Filtros" @toggle="toggle" />
 

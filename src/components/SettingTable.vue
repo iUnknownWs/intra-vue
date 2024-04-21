@@ -36,8 +36,7 @@ const toggle = ref(false)
     </div>
     <div class="drawer-side z-20">
       <label for="rightDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-80">
-        <!-- Sidebar content here -->
+      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3">
         <div>
           <DrawerTitle :title="drawerTitle" @toggle="toggleDrawer" />
           <slot name="drawer" />

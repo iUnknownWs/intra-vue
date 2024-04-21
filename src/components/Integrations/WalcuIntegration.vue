@@ -5,7 +5,8 @@ import options from '@/js/filterOptions'
 import axios from 'axios'
 
 const props = defineProps({
-  id: { type: Number, required: true }
+  id: { type: Number, required: true }, 
+  tab: { type: String, required: true }
 })
 
 defineEmits(['return'])
@@ -125,7 +126,7 @@ const saveData = () => {
 }
 
 const headersLogs = [
-  { text: 'Fecha', value: 'created_at', width: 60 },
+  { text: 'Fecha', value: 'created_at', width: 140 },
   { text: 'Usuario', value: 'user' },
   { text: 'Resultado', value: 'response' },
   { text: 'Comentarios', value: 'comments' },
@@ -147,6 +148,41 @@ const getLogs = () => {
     })
 }
 
+const downloadFile = (id) => {
+  axios
+    .post(`${import.meta.env.VITE_INTEGRATIONS}/file_logs/download_file/`, { file_id: id })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `wallapop_log_${id}.xml`)
+      document.body.appendChild(link)
+      link.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(link)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+}
+
+const resendLog = (id) => {
+  axios
+    .post(`${import.meta.env.VITE_INTEGRATIONS}/file_logs/resend_file/`, { file_id: id })
+    .then(() => {
+      getLogs()
+      modalTitle.value = 'Log enviado'
+      modalMessage.value = 'El log se ha enviado correctamente'
+      info.value.modal.showModal()
+    })
+    .catch((err) => {
+      console.error(err)
+      modalTitle.value = 'Error'
+      modalMessage.value = 'No se pudo enviar el log'
+      info.value.modal.showModal()
+    })
+}
+
 onMounted(() => {
   getData()
   getLogs()
@@ -162,7 +198,7 @@ onMounted(() => {
     @confirm="confirmDefaults"
   />
   <div class="flex flex-col gap-8">
-    <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
+    <div v-if="tab === 'settings'" class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
       <div class="flex items-center">
         <button class="btn btn-square btn-ghost mr-2" @click="$emit('return')">
           <Icon icon="mdi:arrow-left" width="25" />
@@ -244,7 +280,7 @@ onMounted(() => {
         </button>
       </div>
     </div>
-    <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
+    <div v-else class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
       <VehicleTable title="Logs">
         <template #content>
           <EasyDataTable
@@ -259,6 +295,19 @@ onMounted(() => {
           >
             <template v-slot:item-created_at="{ created_at }">
               {{ new Date(created_at).toLocaleString('en-GB') }}
+            </template>
+            <template v-slot:item-id="{ id, file }">
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-xs m-1">Acciones</div>
+                <ul
+                  tabindex="0"
+                  class="menu dropdown-content menu-xs z-10 w-36 rounded-box bg-white p-2 shadow"
+                >
+                  <li><a :href="file" target="_blank">Ver</a></li>
+                  <li><a @click="downloadFile(id)">Descargar</a></li>
+                  <li><a @click="resendLog(id)">Forzar envío</a></li>
+                </ul>
+              </div>
             </template>
           </EasyDataTable>
         </template>

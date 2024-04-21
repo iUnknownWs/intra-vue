@@ -165,6 +165,26 @@ onMounted(() => {
             </a>
           </div>
         </template>
+        <template v-if="integration === 'Walcu CRM'">
+          <div role="tablist" class="tabs tabs-bordered my-8 w-fit">
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'settings' }"
+              @click="integrationSection = 'settings'"
+            >
+              Configuración
+            </a>
+            <a
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active font-medium': integrationSection === 'logs' }"
+              @click="integrationSection = 'logs'"
+            >
+              Logs
+            </a>
+          </div>
+        </template>
         <div v-if="tab === 1" class="flex w-full flex-col gap-8">
           <div v-if="integration === 'menu'">
             <div class="mb-4 rounded-md bg-base-100 p-4">
@@ -249,8 +269,9 @@ onMounted(() => {
           </template>
           <WalcuIntegration
             v-if="integration === 'Walcu CRM'"
-            @return="integration = 'menu'"
             :id="integrationId"
+            :tab="integrationSection"
+            @return="integration = 'menu'"
           />
         </div>
       </HeaderMain>

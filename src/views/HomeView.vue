@@ -1092,7 +1092,7 @@ onMounted(() => {
         <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
         <ul
           v-if="drawer === 'filter'"
-          class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+          class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
         >
           <!-- Sidebar content here -->
           <DrawerTitle title="Filtros" @toggle="toggle" />
@@ -1163,7 +1163,7 @@ onMounted(() => {
         </ul>
         <ul
           v-if="drawer === 'auto'"
-          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
         >
           <!-- Sidebar content here -->
           <div>
@@ -1179,7 +1179,7 @@ onMounted(() => {
         </ul>
         <ul
           v-if="drawer === 'semi'"
-          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
         >
           <!-- Sidebar content here -->
           <div class="flex flex-col">
@@ -1223,7 +1223,7 @@ onMounted(() => {
         </ul>
         <ul
           v-if="drawer === 'manual'"
-          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
         >
           <!-- Sidebar content here -->
           <div>

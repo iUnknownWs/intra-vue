@@ -3162,7 +3162,7 @@ onMounted(async () => {
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
       <ul
         v-if="drawerSection === 'extra'"
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-80"
+        class="menu min-h-full w-1/3 w-screen flex-col justify-between bg-white p-4 text-base-content"
       >
         <div>
           <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
@@ -3210,7 +3210,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'discount'"
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-80"
+        class="menu min-h-full w-1/3 w-screen flex-col justify-between bg-white p-4 text-base-content"
       >
         <div>
           <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
@@ -3245,7 +3245,7 @@ onMounted(async () => {
           drawerSection === 'OPTIONAL_FREE_OF_CHARGE' ||
           drawerSection === 'SERIAL'
         "
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-96"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Equipamiento" @toggle="toggleDrawer" />
@@ -3265,7 +3265,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'docusign'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <form @submit.prevent="docusignDrawer(2)">
           <DrawerTitle title="Generar Contrato" @toggle="toggleDrawer" />
@@ -3357,7 +3357,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'docusign2'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Generar contrato" @toggle="toggleDrawer" />
@@ -3385,7 +3385,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <form @submit.prevent="reserveDrawer(2)">
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3474,7 +3474,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve2'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3515,7 +3515,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve3'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3591,7 +3591,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve4'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3660,7 +3660,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'finance'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Calcular Cuotas de Financiación" @toggle="toggleDrawer" />
@@ -3692,25 +3692,25 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'cochesnet'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
       >
         <CochesnetDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'wallapop'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
       >
         <WallapopDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'sumauto'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-[50vw]"
+        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
       >
         <SumautoDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'pt'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <PerformanceTest
           :url="ptUrl"

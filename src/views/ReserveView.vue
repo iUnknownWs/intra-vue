@@ -221,6 +221,11 @@ const deliDrawer = () => {
   drawer.value = true
 }
 
+const extraDrawer = () => {
+  drawerSection.value = 'extras'
+  drawer.value = true
+}
+
 const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
@@ -495,7 +500,7 @@ onMounted(() => {
 
 <template>
   <div class="drawer drawer-end">
-    <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
+    <input id="reserve-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
       <ModalInfo class="w-full" ref="info" :title="modalTitle" :message="modalMessage" />
       <ModalConfirm
@@ -692,7 +697,7 @@ onMounted(() => {
                 ref="extrasDiv"
                 class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
               >
-                <VehicleTable title="Extras" add @addBtn="drawerSection = 'extras'">
+                <VehicleTable title="Extras" add @addBtn="extraDrawer">
                   <template #content>
                     <EasyDataTable
                       class="table-dark table-striped"
@@ -1180,7 +1185,7 @@ onMounted(() => {
     </div>
     <div class="drawer-side z-50 h-full w-full">
       <label for="reserve-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
-      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
+      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3">
         <ExtrasDrawer
           v-if="drawerSection === 'extras'"
           :toggle="toggleDrawer"

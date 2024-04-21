@@ -90,6 +90,7 @@ if (localStorage.getItem('image')) {
               </li>
               <MenuLink label="Usuarios" href="/usuarios" />
               <MenuLink label="Descuentos" href="/descuentos" />
+              <MenuLink label="Descuentos automáticos" href="/descuentos-automáticos" />
               <li class="menu-title flex-row items-center gap-1">
                 <Icon icon="mdi:settings" />Gestión de extras
               </li>

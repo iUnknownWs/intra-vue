@@ -201,7 +201,7 @@ const downloadFile = (id) => {
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `wallapop_log_${id}.txt`)
+      link.setAttribute('download', `wallapop_log_${id}.xml`)
       document.body.appendChild(link)
       link.click()
       window.URL.revokeObjectURL(url)
@@ -394,7 +394,7 @@ onMounted(() => {
     </div>
     <div class="drawer-side z-50">
       <label for="drawer-wallapop" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-96">
+      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3">
         <EditCampaign
           v-if="drawerSection === 'editCampaign'"
           :toggle="toggle"
