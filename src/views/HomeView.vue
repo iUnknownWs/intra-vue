@@ -7,6 +7,7 @@ import CardDesktop from '@/components/CardDesktop.vue'
 import CardMobile from '@/components/CardMobile.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useUserStore } from '@/stores/user'
+import AutoDiscountDrawer from '@/components/AutoDiscountDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -16,7 +17,8 @@ const filterCountsUrl = `${import.meta.env.VITE_VEHICLES}/counts-filters/`
 const brandUrl = `${import.meta.env.VITE_API}/vehicles-brands/?limit=500`
 const bodyUrl = `${import.meta.env.VITE_API}/vehicles-types/`
 let scrollNextUrl = ''
-const drawer = ref('')
+const drawer = ref(false)
+const drawerSection = ref('')
 const vehiclesFilter = ref([])
 let filterParams = {}
 const refresh = ref(0)
@@ -36,7 +38,6 @@ const itv = ref(false)
 const pitv = ref(false)
 const pVideo = ref(false)
 const searchValue = ref('')
-const toggleDrawer = ref(false)
 const menu = ref(null)
 const info = ref(null)
 const id = ref(0)
@@ -89,20 +90,20 @@ const resetDrawer = () => {
 }
 
 const toggle = () => {
-  toggleDrawer.value = !toggleDrawer.value
+  drawer.value = !drawer.value
   resetDrawer()
 }
 
 const filterDrawer = () => {
-  drawer.value = 'filter'
+  drawerSection.value = 'filter'
 }
 
 const autoDrawer = () => {
-  drawer.value = 'auto'
+  drawerSection.value = 'auto'
 }
 
 const semiDrawer = () => {
-  drawer.value = 'semi'
+  drawerSection.value = 'semi'
   axios.get(brandUrl).then((response) => {
     for (let option of response.data.results) {
       brandOptions.value.push({
@@ -117,7 +118,7 @@ const semiDrawer = () => {
 }
 
 const manualDrawer = () => {
-  drawer.value = 'manual'
+  drawerSection.value = 'manual'
 }
 
 const yearFilter = () => {
@@ -155,6 +156,11 @@ const categoriaFilter = () => {
   filterParams.web_categories = categoria.value
 }
 
+const discountDrawer = () => {
+  drawerSection.value = 'discount'
+  toggle()
+}
+
 const filter = () => {
   loading.value = true
   if (itv.value) {
@@ -174,7 +180,7 @@ const filter = () => {
   axios.get(filterCountsUrl, { params: filterParams }).then((response) => {
     filtersCounters.value = response.data
   })
-  toggleDrawer.value = ref(false)
+  drawer.value = ref(false)
 }
 
 const reset = () => {
@@ -193,7 +199,7 @@ const reset = () => {
   pitv.value = false
   pVideo.value = false
   filterParams = {}
-  toggleDrawer.value = ref(false)
+  drawer.value = ref(false)
   filter()
 }
 
@@ -442,7 +448,7 @@ const vehicleWeb = (slugWeb) => {
 }
 
 const addAuto = () => {
-  toggleDrawer.value = false
+  drawer.value = false
   info.value.modal.showModal()
   axios
     .post(`${import.meta.env.VITE_VEHICLES}/from-chassis-number/`, {
@@ -472,7 +478,7 @@ const addAuto = () => {
 const addSemi = () => {
   const value = version.value.value.split('<')
   info.value.modal.showModal()
-  toggleDrawer.value = false
+  drawer.value = false
   axios
     .post(`${import.meta.env.VITE_VEHICLES}/from-national-code/`, {
       national_vehicle_code: value[0],
@@ -655,9 +661,8 @@ onMounted(() => {
   </ModalDialog>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" :loading="loadingInfo" />
   <HeaderMain ref="header">
-    <div class="drawer drawer-end">
-      <input v-model="toggleDrawer" id="filterDrawer" type="checkbox" class="drawer-toggle" />
-      <div class="drawer-content">
+    <DrawerComponent id="filterDrawer" v-model="drawer">
+      <template #content>
         <header class="flex flex-row items-center justify-between">
           <TextBtn
             class="mr-3 lg:ml-4 lg:max-w-[400px]"
@@ -694,6 +699,10 @@ onMounted(() => {
               <Icon icon="mdi:filter" width="25" />
               Filtros
             </label>
+            <button @click="discountDrawer" class="btn btn-primary hidden lg:flex">
+              <Icon icon="mdi:discount" width="25" />
+              Descuentos
+            </button>
             <DropdownBtn>
               <template #btn>
                 <div tabindex="0" role="button" class="btn btn-primary hidden text-white lg:flex">
@@ -1087,85 +1096,78 @@ onMounted(() => {
         <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
           <LoadingSpinner v-if="scrollNextUrl" class="loading-lg" />
         </div>
-      </div>
-      <div class="drawer-side z-50">
-        <label for="filterDrawer" aria-label="close sidebar" class="drawer-overlay"></label>
-        <ul
-          v-if="drawer === 'filter'"
-          class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
-        >
-          <!-- Sidebar content here -->
-          <DrawerTitle title="Filtros" @toggle="toggle" />
-          <RangeSelect
-            label="Año:"
-            :from="options.reverseYears"
-            :to="options.years"
-            v-model:gte="yearGte"
-            v-model:lte="yearLte"
-            @change-gte="yearFilter"
-            @change-lte="yearFilter"
-          />
-          <RangeInputN
-            label="Precio:"
-            :max="200000"
-            v-model:gte="priceGte"
-            v-model:lte="priceLte"
-            @change-gte="priceFilter"
-            @change-lte="priceFilter"
-          />
-          <RangeInputN
-            label="KMs:"
-            :max="200000"
-            v-model:gte="kmsGte"
-            v-model:lte="kmsLte"
-            @change-gte="kmsFilter"
-            @change-lte="kmsFilter"
-          />
-          <SelectInput
-            label="Combustible:"
-            :options="options.combustible"
-            v-model="combustible"
-            @selected="combustibleFilter"
-          />
-          <SelectInput
-            label="Tipo de Cambio:"
-            :options="options.cambio"
-            v-model="cambio"
-            @selected="cambioFilter"
-          />
-          <SelectInput
-            label="Tipo de Vehículo:"
-            :options="options.vehiculo"
-            v-model="vehiculo"
-            @selected="vehiculoFilter"
-          />
-          <SelectInput
-            label="Categoría web:"
-            :options="options.categoria"
-            v-model="categoria"
-            @selected="categoriaFilter"
-          />
-          <SelectInput
-            label="Etiqueta medioambiental:"
-            :options="options.medioambiental"
-            v-model="medioambiental"
-            @selected="medioambientalFilter"
-          />
-          <CheckInput label="ITV Vigente:" v-model="itv" />
-          <CheckInput label="Pendiente ITV:" v-model="pitv" />
-          <CheckInput label="Pendiente Video:" v-model="pVideo" />
+      </template>
+      <template #drawer>
+        <template v-if="drawerSection === 'filter'">
+          <div>
+            <DrawerTitle title="Filtros" @toggle="toggle" />
+            <RangeSelect
+              label="Año:"
+              :from="options.reverseYears"
+              :to="options.years"
+              v-model:gte="yearGte"
+              v-model:lte="yearLte"
+              @change-gte="yearFilter"
+              @change-lte="yearFilter"
+            />
+            <RangeInputN
+              label="Precio:"
+              :max="200000"
+              v-model:gte="priceGte"
+              v-model:lte="priceLte"
+              @change-gte="priceFilter"
+              @change-lte="priceFilter"
+            />
+            <RangeInputN
+              label="KMs:"
+              :max="200000"
+              v-model:gte="kmsGte"
+              v-model:lte="kmsLte"
+              @change-gte="kmsFilter"
+              @change-lte="kmsFilter"
+            />
+            <SelectInput
+              label="Combustible:"
+              :options="options.combustible"
+              v-model="combustible"
+              @selected="combustibleFilter"
+            />
+            <SelectInput
+              label="Tipo de Cambio:"
+              :options="options.cambio"
+              v-model="cambio"
+              @selected="cambioFilter"
+            />
+            <SelectInput
+              label="Tipo de Vehículo:"
+              :options="options.vehiculo"
+              v-model="vehiculo"
+              @selected="vehiculoFilter"
+            />
+            <SelectInput
+              label="Categoría web:"
+              :options="options.categoria"
+              v-model="categoria"
+              @selected="categoriaFilter"
+            />
+            <SelectInput
+              label="Etiqueta medioambiental:"
+              :options="options.medioambiental"
+              v-model="medioambiental"
+              @selected="medioambientalFilter"
+            />
+            <CheckInput label="ITV Vigente:" v-model="itv" />
+            <CheckInput label="Pendiente ITV:" v-model="pitv" />
+            <CheckInput label="Pendiente Video:" v-model="pVideo" />
+          </div>
           <DrawerActions
             secondary="Reset"
             primary="Filtrar"
             @click-secondary="reset"
             @click-primary="filter"
           />
-        </ul>
-        <ul
-          v-if="drawer === 'auto'"
-          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
-        >
-          <!-- Sidebar content here -->
+        </template>
+        <template v-if="drawerSection === 'auto'">
           <div>
             <DrawerTitle title="Nuevo Vehículo Automático" @toggle="toggle" />
             <TextInput label="VIN:" placeholder="Introducir VIN" v-model="vin" />
@@ -1176,12 +1178,8 @@ onMounted(() => {
             @click-primary="addAuto"
             @click-secondary="toggle"
           />
-        </ul>
-        <ul
-          v-if="drawer === 'semi'"
-          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
-        >
-          <!-- Sidebar content here -->
+        </template>
+        <template v-if="drawerSection === 'semi'">
           <div class="flex flex-col">
             <DrawerTitle title="Nuevo Vehículo Semi-Automático" @toggle="toggle" />
             <SearchSelect label="Marca:" :options="brandOptions" v-model="brand" />
@@ -1220,28 +1218,27 @@ onMounted(() => {
             @click-secondary="toggle"
             :disabled="disAdd"
           />
-        </ul>
-        <ul
-          v-if="drawer === 'manual'"
-          class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
-        >
-          <!-- Sidebar content here -->
+        </template>
+        <template v-if="drawerSection === 'manual'">
           <div>
             <DrawerTitle title="Nuevo Vehículo Manual" @toggle="toggle" />
-            <TextInput label="Bastidor:" placeholder="Introducir" />
-            <TextInput label="Matricula:" placeholder="Introducir" />
-            <TextInput label="Fabricación:" placeholder="Introducir" />
-            <TextInput label="Marca:" placeholder="Introducir" />
-            <TextInput label="Modelo:" placeholder="Introducir" />
-            <TextInput label="Version:" placeholder="Introducir" />
-            <TextInput label="Carrocería:" placeholder="Introducir" />
-            <TextInput label="Tipo de cambio:" placeholder="Introducir" />
-            <TextInput label="Combustible:" placeholder="Introducir" />
+            <TextInput label="Bastidor:" />
+            <TextInput label="Matricula:" />
+            <TextInput label="Fabricación:" />
+            <TextInput label="Marca:" />
+            <TextInput label="Modelo:" />
+            <TextInput label="Version:" />
+            <TextInput label="Carrocería:" />
+            <TextInput label="Tipo de cambio:" />
+            <TextInput label="Combustible:" />
           </div>
           <DrawerActions secondary="Cancelar" primary="Añadir" />
-        </ul>
-      </div>
-    </div>
+        </template>
+        <template v-if="drawerSection === 'discount'">
+          <AutoDiscountDrawer :toggle="toggle" />
+        </template>
+      </template>
+    </DrawerComponent>
   </HeaderMain>
 </template>
 

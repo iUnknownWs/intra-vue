@@ -147,10 +147,6 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
             class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
           >
             <li><RouterLink :to="'/reservas/' + reserve.id">Ver/Editar</RouterLink></li>
-            <li><a @click="$emit('menu-btn2')">Ver anuncio</a></li>
-            <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
-            <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
-            <li><a @click="$emit('menu-btn5', reserve.id)">Eliminar</a></li>
           </ul>
         </div>
       </div>

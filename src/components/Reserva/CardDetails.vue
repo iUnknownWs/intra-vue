@@ -192,7 +192,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             </div>
           </div>
           <div class="divider m-0"></div>
-          <div class="mt-3 flex flex-row justify-between gap-3">
+          <div class="my-2 flex flex-row justify-between gap-3">
             <div class="flex flex-col items-start p-0">
               <span>Dias Stock</span>
               <span class="mx-auto font-bold">{{ reserve.vehicle.days_in_stock }} Dias</span>
@@ -206,6 +206,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
               <span class="mx-auto font-bold">{{ reserve.pending_booking_amount }} €</span>
             </div>
           </div>
+          <span></span>
         </div>
       </div>
       <template v-if="reserve.status !== 2">

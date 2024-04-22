@@ -2142,14 +2142,14 @@ onMounted(async () => {
                 <a @click="equipActive" class="font-bold">Equipamiento</a>
                 <ul>
                   <li>
-                    <a :class="{ 'menu-item': isEquip }" @click="equipActive"
-                      >Equipamiento de serie</a
-                    >
+                    <a :class="{ 'menu-item': isEquip }" @click="equipActive">
+                      Equipamiento de serie
+                    </a>
                   </li>
                   <li>
-                    <a :class="{ 'menu-item': isEquip }" @click="equipActive"
-                      >Equipamiento opcional</a
-                    >
+                    <a :class="{ 'menu-item': isEquip }" @click="equipActive">
+                      Equipamiento opcional
+                    </a>
                   </li>
                 </ul>
               </li>
@@ -2348,12 +2348,17 @@ onMounted(async () => {
                   <div class="mt-4 flex flex-col">
                     <div class="flex flex-row justify-between">
                       <h1 class="text-xl font-medium">Configuración de precio</h1>
-                      <label
-                        for="vehicle-drawer"
-                        class="btn btn-outline btn-sm"
-                        @click="drawerFinance"
-                        >Conf. Financiera
-                      </label>
+                      <div class="flex flex-row gap-4">
+                        <button class="btn btn-primary btn-sm" @click="toggleDrawer">
+                          Descuentos automáticos
+                        </button>
+                        <label
+                          for="vehicle-drawer"
+                          class="btn btn-outline btn-sm"
+                          @click="drawerFinance"
+                          >Conf. Financiera
+                        </label>
+                      </div>
                     </div>
                     <div class="divider m-0 p-0"></div>
                   </div>
@@ -3162,7 +3167,7 @@ onMounted(async () => {
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
       <ul
         v-if="drawerSection === 'extra'"
-        class="menu min-h-full w-1/3 w-screen flex-col justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
@@ -3210,7 +3215,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'discount'"
-        class="menu min-h-full w-1/3 w-screen flex-col justify-between bg-white p-4 text-base-content"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
@@ -3722,6 +3727,10 @@ onMounted(async () => {
           @validate="fetchPT"
         />
       </ul>
+      <ul
+        v-if="drawerSection === 'pt'"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+      ></ul>
     </div>
   </div>
 </template>
