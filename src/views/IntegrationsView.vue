@@ -199,6 +199,7 @@ onMounted(() => {
                   :img="portal.logo_img"
                   :name="portal.provider_name"
                   :state="portal.is_active"
+                  btnLabel="Editar Anuncio"
                   toggle
                   @settingClick="settIntegration(portal.id, portal.provider_name)"
                   @primaryClick="disIntegration(portal.id, portal.is_active)"

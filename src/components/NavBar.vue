@@ -81,7 +81,7 @@ if (localStorage.getItem('image')) {
           <DropdownBtn>
             <template #btn>
               <div tabindex="0" role="button" class="btn btn-circle btn-ghost">
-                <Icon icon="mdi:settings" color="white" width="30" />
+                <Icon icon="heroicons:cog-8-tooth" color="white" width="30" />
               </div>
             </template>
             <template #content>

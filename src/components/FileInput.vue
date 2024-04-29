@@ -16,7 +16,7 @@ const handleFile = (e) => {
 <template>
   <label class="form-control w-full max-w-xs">
     <div class="label">
-      <span class="label-text">{{ label }}</span>
+      <span class="label-text font-medium">{{ label }}</span>
     </div>
     <input
       type="file"

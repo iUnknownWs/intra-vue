@@ -22,6 +22,10 @@ export default {
 
           "base-100": "#f3f4f6",
 
+          "base-200": "#90A3BF",
+
+          "base-300": "#4f5765",
+
           "info": "#299efe",
 
           "success": "#84cc16",

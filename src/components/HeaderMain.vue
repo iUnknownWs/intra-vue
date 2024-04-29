@@ -20,13 +20,13 @@ const toggleDrawer = () => {
       <header class="sticky top-0 z-20">
         <NavBar />
       </header>
-      <main class="min-h-[90vh] w-screen lg:w-[98vw]">
+      <main class="min-h-[90vh] w-screen bg-base-100 px-5 py-8 lg:w-[98vw]">
         <slot />
       </main>
     </div>
     <div class="drawer-side z-50">
       <label for="drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-      <div class="menu min-h-full w-screen bg-white p-4 text-lg font-medium w-1/3">
+      <div class="menu min-h-full w-screen bg-white p-4 text-lg font-medium lg:w-1/3">
         <!-- Sidebar content here -->
         <DrawerLogo @toggle="toggleDrawer">
           <img

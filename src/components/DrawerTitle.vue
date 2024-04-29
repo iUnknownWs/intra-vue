@@ -8,11 +8,10 @@ defineEmits(['toggle'])
 </script>
 
 <template>
-  <li class="menu-title flex flex-row flex-nowrap justify-between lg:text-lg">
-    {{ title }}
-    <button @click="$emit('toggle')" class="btn btn-square btn-xs">
-      <Icon icon="mdi:close" width="20" />
-    </button>
-  </li>
-  <div class="divider m-0"></div>
+  <div class="mb-8 flex flex-row items-center justify-between">
+    <span class="text-xl font-bold">{{ title }}</span>
+    <a @click="$emit('toggle')">
+      <Icon icon="mdi:close" width="24" />
+    </a>
+  </div>
 </template>

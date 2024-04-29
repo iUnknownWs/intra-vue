@@ -10,16 +10,16 @@ const lte = defineModel('lte')
 </script>
 
 <template>
-  <label class="form-control mb-4 w-full">
+  <label class="form-control w-full">
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <div class="flex flex-row justify-between">
+    <div class="flex flex-row justify-between gap-2">
       <input
         type="number"
         name="from"
         id="from"
-        class="input input-bordered w-32"
+        class="input input-bordered w-full"
         :max="max"
         min="0"
         v-model="gte"
@@ -29,7 +29,7 @@ const lte = defineModel('lte')
         type="number"
         name="to"
         id="to"
-        class="input input-bordered w-32"
+        class="input input-bordered w-full"
         :max="max"
         min="0"
         v-model="lte"

@@ -664,27 +664,29 @@ onMounted(() => {
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
         <header class="flex flex-row items-center justify-between">
-          <TextBtn
-            class="mr-3 lg:ml-4 lg:max-w-[400px]"
-            placeholder="Buscar"
-            v-model="searchValue"
-            :disabled="disSearch"
-            @btn-click="search"
-            @icon-click="searchReset"
-            @change="searchReact"
-          >
-            <Icon icon="mdi:magnify" width="25" />
-          </TextBtn>
-          <div class="flex gap-2">
-            <label for="filterDrawer" @click="filterDrawer" class="text-black lg:hidden">
-              <div tabindex="0" role="button" class="btn btn-primary text-white lg:hidden">
-                <Icon icon="mdi:filter" />
+          <form @submit.prevent="search">
+            <label class="input input-bordered flex items-center gap-2">
+              <Icon icon="mdi:magnify" width="24" />
+              <input
+                type="text"
+                class="grow"
+                placeholder="Buscar"
+                v-model="searchValue"
+                @change="searchReact"
+              />
+              <Icon icon="mdi:times" width="24" @click="searchReset" />
+            </label>
+          </form>
+          <div class="flex gap-2 lg:hidden">
+            <label for="filterDrawer" @click="filterDrawer" class="text-black">
+              <div tabindex="0" role="button" class="btn btn-square btn-outline lg:hidden">
+                <Icon icon="heroicons:adjustments-vertical" width="24" />
               </div>
             </label>
-            <DropdownBtn class="lg:hidden">
+            <DropdownBtn>
               <template #btn>
-                <div tabindex="0" role="button" class="btn btn-outline">
-                  <Icon icon="mdi:plus" />
+                <div tabindex="0" role="button" class="btn btn-square btn-primary">
+                  <Icon icon="mdi:plus" width="24" />
                 </div>
               </template>
               <template #content>
@@ -695,6 +697,8 @@ onMounted(() => {
                 <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
               </template>
             </DropdownBtn>
+          </div>
+          <div class="hidden gap-2 lg:flex">
             <label for="filterDrawer" class="btn btn-outline hidden text-black">
               <Icon icon="mdi:filter" width="25" />
               Filtros
@@ -793,23 +797,20 @@ onMounted(() => {
               role="tablist"
               ref="tabContainer"
               @wheel.prevent="horizontalScroll"
-              class="no-scrollbar tabs tabs-bordered mx-4 mt-7 max-w-full overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
+              class="no-scrollbar tabs tabs-bordered mx-4 mt-7 max-w-full overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
             >
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '0' }"
+                :class="{ 'tab-active font-bold': tab === '0' }"
                 @click="all"
               >
-                Todos
-                <span class="badge" :class="{ 'badge-primary': tab === '0' }">{{
-                  filtersCounters.total
-                }}</span>
+                Todos ({{ filtersCounters.total }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '1' }"
+                :class="{ 'tab-active font-bold': tab === '1' }"
                 @click="vehicleStatus(0)"
               >
                 Recepción
@@ -820,7 +821,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '2' }"
+                :class="{ 'tab-active font-bold': tab === '2' }"
                 @click="vehicleStatus(3)"
               >
                 Publicación
@@ -831,7 +832,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '3' }"
+                :class="{ 'tab-active font-bold': tab === '3' }"
                 @click="vehicleStatus(4)"
               >
                 En venta
@@ -842,7 +843,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '4' }"
+                :class="{ 'tab-active font-bold': tab === '4' }"
                 @click="vehicleStatus(5)"
               >
                 Reservados
@@ -853,7 +854,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '5' }"
+                :class="{ 'tab-active font-bold': tab === '5' }"
                 @click="ppt"
               >
                 Pte. de PT
@@ -864,7 +865,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '6' }"
+                :class="{ 'tab-active font-bold': tab === '6' }"
                 @click="vpt"
               >
                 Validar PT
@@ -875,7 +876,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '7' }"
+                :class="{ 'tab-active font-bold': tab === '7' }"
                 @click="web"
               >
                 No web
@@ -886,7 +887,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '8' }"
+                :class="{ 'tab-active font-bold': tab === '8' }"
                 @click="entrega"
               >
                 Entrega inmediata
@@ -897,7 +898,7 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '9' }"
+                :class="{ 'tab-active font-bold': tab === '9' }"
                 @click="vehicleStatus(10)"
               >
                 No disponible
@@ -949,117 +950,87 @@ onMounted(() => {
               role="tablist"
               ref="tabContainer"
               @wheel.prevent="horizontalScroll"
-              class="tabs tabs-bordered mx-4 max-w-full overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
+              class="tabs tabs-bordered mx-4 max-w-full overflow-x-scroll font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
             >
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '0' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '0' }"
                 @click="all"
               >
-                Todos
-                <span class="badge" :class="{ 'badge-primary': tab === '0' }">{{
-                  filtersCounters.total
-                }}</span>
+                Todos ({{ filtersCounters.total }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '1' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '1' }"
                 @click="vehicleStatus(0)"
               >
-                Recepción
-                <span class="badge" :class="{ 'badge-primary': tab === '1' }">{{
-                  filtersCounters.receipt
-                }}</span>
+                Recepción ({{ filtersCounters.receipt }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '2' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '2' }"
                 @click="vehicleStatus(3)"
               >
-                Publicación
-                <span class="badge" :class="{ 'badge-primary': tab === '2' }">{{
-                  filtersCounters.publication
-                }}</span>
+                Publicación ({{ filtersCounters.publication }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '3' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '3' }"
                 @click="vehicleStatus(4)"
               >
-                En venta
-                <span class="badge" :class="{ 'badge-primary': tab === '3' }">{{
-                  filtersCounters.on_sale
-                }}</span>
+                En venta ({{ filtersCounters.on_sale }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '4' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '4' }"
                 @click="vehicleStatus(5)"
               >
-                Reservados
-                <span class="badge" :class="{ 'badge-primary': tab === '4' }">{{
-                  filtersCounters.reserved
-                }}</span>
+                Reservados ({{ filtersCounters.reserved }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '5' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '5' }"
                 @click="ppt"
               >
-                Pte. de PT
-                <span class="badge" :class="{ 'badge-primary': tab === '5' }">{{
-                  filtersCounters.ppt
-                }}</span>
+                Pte. de PT ({{ filtersCounters.ppt }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '6' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '6' }"
                 @click="vpt"
               >
-                Validar PT
-                <span class="badge" :class="{ 'badge-primary': tab === '6' }">{{
-                  filtersCounters.vpt
-                }}</span>
+                Validar PT ({{ filtersCounters.vpt }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '7' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '7' }"
                 @click="web"
               >
-                No web
-                <span class="badge" :class="{ 'badge-primary': tab === '7' }">{{
-                  filtersCounters.no_web
-                }}</span>
+                No web ({{ filtersCounters.no_web }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '8' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '8' }"
                 @click="entrega"
               >
-                Entrega inmediata
-                <span class="badge" :class="{ 'badge-primary': tab === '8' }">{{
-                  filtersCounters.inmediate_delivery
-                }}</span>
+                Entrega inmediata ({{ filtersCounters.inmediate_delivery }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-medium': tab === '9' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '9' }"
                 @click="vehicleStatus(10)"
               >
-                No disponible
-                <span class="badge" :class="{ 'badge-primary': tab === '9' }">{{
-                  filtersCounters.not_available
-                }}</span>
+                No disponible ({{ filtersCounters.not_available }})
               </a>
             </div>
             <LoadingSpinner v-if="loading" class="loading-lg mt-24" />
@@ -1068,27 +1039,7 @@ onMounted(() => {
                 v-for="(vehicle, index) in vehiclesFilter"
                 @menu="vehicleMenu"
                 :key="index"
-                :id="vehicle.id"
-                :slug="vehicle.slug || 'No disponible'"
-                :placa="vehicle.license_plate || 'Sin matricula'"
-                :modelo="vehicle.model?.model_web?.title || 'No disponible'"
-                :marca="vehicle.model?.brand?.title || 'No disponible'"
-                :version="vehicle.version?.title || 'No disponible'"
-                :estado="vehicle.status"
-                :contado="vehicle.price?.price_with_discounts || 0"
-                :financiado="vehicle.price?.financed_price || '0'"
-                :quotes="vehicle.price?.financing_fee || '0'"
-                :stock="vehicle.days_in_stock || 0"
-                :img="
-                  vehicle.image ||
-                  'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
-                "
-                :combustible="vehicle.fuel?.description || 'No disponible'"
-                :año="vehicle.year || 0"
-                :cambios="vehicle.gear_box?.description || 'No disponible'"
-                :keys="vehicle.key_locator"
-                :kms="vehicle.kms || 0"
-                :distinctive="vehicle.maintenance?.distinctive"
+                :vehicle="vehicle"
               />
             </div>
           </div>
@@ -1155,8 +1106,9 @@ onMounted(() => {
               :options="options.medioambiental"
               v-model="medioambiental"
               @selected="medioambientalFilter"
+              :initialValue="null"
             />
-            <CheckInput label="ITV Vigente:" v-model="itv" />
+            <CheckInput class="mt-6" label="ITV Vigente:" v-model="itv" />
             <CheckInput label="Pendiente ITV:" v-model="pitv" />
             <CheckInput label="Pendiente Video:" v-model="pVideo" />
           </div>

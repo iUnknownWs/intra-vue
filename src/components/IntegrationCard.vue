@@ -6,7 +6,8 @@ defineProps({
   pending: { type: Number },
   state: { type: Boolean },
   loading: { type: Boolean },
-  toggle: { type: Boolean, default: false }
+  toggle: { type: Boolean, default: false },
+  btnLabel: { type: String, default: 'Configurar' },
 })
 
 defineEmits(['settingClick', 'primaryClick'])
@@ -21,7 +22,7 @@ defineEmits(['settingClick', 'primaryClick'])
     <div class="card-body items-center p-4 text-center">
       <span v-if="published || published === 0">Vehiculos publicados: {{ published }}</span>
       <span v-if="pending || pending === 0">Vehiculos por publicar: {{ pending }}</span>
-      <button class="btn btn-outline btn-sm" @click="$emit('settingClick')">Configurar</button>
+      <button class="btn btn-outline btn-sm" @click="$emit('settingClick')">{{ btnLabel }}</button>
       <template v-if="toggle">
         <button v-if="state" class="btn btn-error btn-sm" @click="$emit('primaryClick')">
           <LoadingSpinner v-if="loading" />

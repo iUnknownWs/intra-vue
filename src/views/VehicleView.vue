@@ -2944,6 +2944,7 @@ onMounted(async () => {
                 <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
                   <IntegrationCard
                     img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
+                    btnLabel="Editar Anuncio"
                     @settingClick="cochesnetDrawer"
                     @primaryClick="cochesnetRemove"
                     :state="cochesnet"
@@ -2953,6 +2954,7 @@ onMounted(async () => {
                 <template v-if="userStore.perms.includes('can_edit_wallapop_vehicle')">
                   <IntegrationCard
                     img="https://garageclub-prod.s3.amazonaws.com/backend/media/wallapop-logo-317DAB9D83-seeklogo.com.png"
+                    btnLabel="Editar Anuncio"
                     @settingClick="wallapopDrawer"
                     @primaryClick="wallapopRemove"
                     :state="wallapop"
@@ -2964,6 +2966,7 @@ onMounted(async () => {
                 <template v-if="userStore.perms.includes('can_edit_sumauto_vehicle')">
                   <IntegrationCard
                     img="https://www.sumauto.com/assets/logo.svg?a2a568d6"
+                    btnLabel="Editar Anuncio"
                     @settingClick="sumautoDrawer"
                     @primaryClick="sumautoRemove"
                     :state="sumauto"

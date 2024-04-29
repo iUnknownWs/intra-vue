@@ -11,16 +11,16 @@ const lte = defineModel('lte')
 </script>
 
 <template>
-  <label class="form-control mb-4 w-full">
+  <label class="form-control w-full">
     <div class="label">
       <span class="label-text font-medium">{{ label }}</span>
     </div>
-    <div class="flex flex-row justify-between">
-      <select class="select select-bordered w-32" v-model="gte" @change="$emit('change-gte')">
+    <div class="flex flex-row gap-2 justify-between">
+      <select class="select select-bordered w-full" v-model="gte" @change="$emit('change-gte')">
         <option disabled selected>Desde</option>
         <option v-for="option in from" :key="option">{{ option }}</option>
       </select>
-      <select class="select select-bordered w-32" v-model="lte" @change="$emit('change-lte')">
+      <select class="select select-bordered w-full" v-model="lte" @change="$emit('change-lte')">
         <option disabled selected>Hasta</option>
         <option v-for="option in to" :key="option">{{ option }}</option>
       </select>

@@ -4,12 +4,12 @@
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    display: none;
   }
   .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-}
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 .slider-connect {
@@ -21,10 +21,6 @@
   border: #000000 !important;
   color: white;
 }
-
-/* * {
-  outline: 1px solid red !important;
-} */
 
 body {
   background-color: #000000;
@@ -79,7 +75,6 @@ main {
   }
 }
 
-
 th:first-child {
   border-top-left-radius: 10px;
 }
@@ -127,3 +122,31 @@ th:last-child {
 
   --easy-table-loading-mask-background-color: #2d3a4f;
 }
+
+.input {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.input-bordered {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
+}
+
+.select {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.select-bordered {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
+}
+
+.btn-outline {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+

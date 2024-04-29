@@ -1,130 +1,105 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 defineProps({
-  id: { type: Number, required: true },
-  slug: { type: String, required: true },
-  placa: { type: [String, null], required: true },
-  modelo: { type: String, required: true },
-  marca: { type: String, required: true },
-  version: { type: String, required: true },
-  estado: { type: Number, required: true },
-  contado: { type: [Number, null], required: true },
-  financiado: { type: [String, null], required: true },
-  quotes: { type: [String, null], required: true },
-  stock: { type: Number, required: true },
-  img: {
-    type: [String, null],
-    default: 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
-  },
-  combustible: { type: String, required: true },
-  año: { type: Number, required: true },
-  cambios: { type: [String, null], required: true },
-  keys: { type: [Number, null], required: true },
-  kms: { type: [Number, null], required: true },
-  distinctive: { type: [Number, null], required: true },
-  leads: { type: Number, default: 0 }
+  vehicle: { type: Object, required: true }
 })
-defineEmits(['btn-click'])
+defineEmits(['menu'])
+const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
 </script>
 
 <template>
-  <div class="card card-compact mt-3 w-[90vw] bg-base-100 text-xs shadow-xl">
-    <figure class="bg-cover">
-      <RouterLink :to="'/vehiculos/' + id" class="relative">
+  <div class="card card-compact mt-3 w-full bg-white p-4 text-xs shadow-xl">
+    <div class="flex flex-row gap-4">
+      <div class="flex flex-col items-center gap-3">
+        <img
+          :src="vehicle.image ? vehicle.image : placeholder"
+          alt="vehicle pic"
+          class="aspect-square w-20 rounded-lg object-cover"
+        />
         <div
-          class="cover relative z-0 aspect-video h-full w-[90vw] bg-cover bg-center"
-          :style="{ 'background-image': 'url(' + img + ')' }"
+          class="[&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-[8px] [&_span]:font-semibold"
         >
-          <div
-            v-if="keys"
-            class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
-          >
-            <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
+          <span v-if="vehicle.status == 0" class="badge-warning"> Pte. Recepción </span>
+          <span v-if="vehicle.status == 3" class="badge-error"> Pte. Publicación </span>
+          <span v-if="vehicle.status == 4" class="badge-error"> En venta </span>
+          <span v-if="vehicle.status == 5" class="badge-warning"> Reservado </span>
+          <span v-if="vehicle.status == 8" class="badge-info"> Entregado </span>
+          <span v-if="vehicle.status == 10" class="badge-primary"> No disponible </span>
+        </div>
+      </div>
+      <div class="flex w-full flex-row justify-between">
+        <div class="flex w-full flex-col">
+          <div class="flex flex-row justify-between gap-1">
+            <div class="flex w-fit flex-col">
+              <span class="text-sm font-bold">
+                {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
+                {{ vehicle.model.model_web.title }}
+              </span>
+              <span class="text-sm font-medium text-base-200">{{ vehicle.version.title }}</span>
+            </div>
+            <div class="flex min-w-8 flex-col items-center">
+              <a @click="$emit('menu', id, slug)">
+                <Icon icon="mdi:dots-vertical" width="24" color="black" />
+              </a>
+              <div class="flex h-full items-center justify-center [&_img]:mt-1 [&_img]:w-8">
+                <img
+                  v-if="vehicle.maintenance.distinctive == 0"
+                  src="/src/assets/img/etiqueta_0.png"
+                  alt="env label"
+                />
+                <img
+                  v-if="vehicle.maintenance.distinctive == 1"
+                  src="/src/assets/img/etiqueta_ECO.png"
+                  alt="env label"
+                />
+                <img
+                  v-if="vehicle.maintenance.distinctive == 2"
+                  src="/src/assets/img/etiqueta_B.png"
+                  alt="env label"
+                />
+                <img
+                  v-if="vehicle.maintenance.distinctive == 3"
+                  src="/src/assets/img/etiqueta_C.png"
+                  alt="env label"
+                />
+              </div>
+            </div>
           </div>
-          <div class="absolute bottom-2 right-2">
-            <span
-              v-if="estado == 0"
-              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Pte. de Recepción
-            </span>
-            <span
-              v-if="estado == 3"
-              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Pte. de Publicación
-            </span>
-            <span
-              v-if="estado == 4"
-              class="badge badge-error mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              En venta
-            </span>
-            <span
-              v-if="estado == 5"
-              class="badge badge-warning mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Reservado
-            </span>
-            <span
-              v-if="estado == 8"
-              class="badge badge-info mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              Entregado
-            </span>
-            <span
-              v-if="estado == 10"
-              class="badge badge-primary mr-2 mt-2 rounded-md px-3 pb-1 text-white"
-            >
-              No disponible
-            </span>
+          <div class="divider m-0"></div>
+          <div class="grid grid-cols-2 gap-1">
+            <div class="flex flex-row items-center gap-1">
+              <Icon icon="mdi:calendar" width="14" class="text-base-200" />
+              <span class="text-xs font-semibold">{{ vehicle.year }}</span>
+            </div>
+            <div class="flex flex-row items-center gap-1">
+              <Icon icon="ph:speedometer" width="14" class="text-base-200" />
+              <span class="text-xs font-semibold">{{ vehicle.kms }} Kms</span>
+            </div>
+            <div class="flex flex-row items-center gap-1">
+              <Icon icon="mdi:gas-station" width="14" class="text-base-200" />
+              <span class="text-xs font-semibold">{{ vehicle.fuel?.description }}</span>
+            </div>
+            <div class="flex flex-row items-center gap-1">
+              <Icon icon="mdi:car-brake-parking" width="14" class="text-base-200" />
+              <span class="text-xs font-semibold">{{ vehicle.gear_box?.description }}</span>
+            </div>
           </div>
         </div>
-      </RouterLink>
-    </figure>
-    <div class="card-body relative flex">
-      <div class="textcard mr-5 flex gap-1 font-bold">
-        <RouterLink :to="'/vehiculos/' + id" class="font-bold">{{ placa }}</RouterLink>
-        <span class="font-bold">{{ marca }}</span>
-        <span class="font-bold">{{ modelo }}</span>
       </div>
-      <div class="absolute right-0 top-2 flex flex-col items-center">
-        <button class="btn btn-square btn-ghost btn-xs" @click="$emit('menu', id, slug)">
-          <Icon icon="mdi:dots-vertical" width="30" />
-        </button>
+    </div>
+    <div class="divider m-0"></div>
+    <div class="flex flex-row justify-between">
+      <div class="flex flex-row gap-1">
+        <span class="text-base-200">Contado: </span>
+        <span class="font-semibold">{{ vehicle.price?.price_with_discounts || 0 }}€</span>
       </div>
-      <span class="textcard text-xs text-gray-500">{{ version }}</span>
-      <div class="textcard flex flex-row items-center justify-between">
-        <span>{{ kms }} Kms</span>
-        <span>{{ año }}</span>
-        <span>{{ cambios }}</span>
-        <span>{{ combustible }}</span>
-        <div class="w-7">
-          <img v-if="distinctive == 0" src="/src/assets/img/etiqueta_0.png" alt="distinctive" />
-          <img v-if="distinctive == 1" src="/src/assets/img/etiqueta_ECO.png" alt="distinctive" />
-          <img v-if="distinctive == 2" src="/src/assets/img/etiqueta_B.png" alt="distinctive" />
-          <img v-if="distinctive == 3" src="/src/assets/img/etiqueta_C.png" alt="distinctive" />
-        </div>
+      <div class="flex flex-row gap-1">
+        <span class="text-base-200">Días stock: </span>
+        <span class="font-semibold">{{ vehicle.days_in_stock }} días</span>
       </div>
-      <div class="divider m-0"></div>
-      <div class="textcard flex flex-row justify-between [&_div]:gap-1">
-        <div class="flex flex-col">
-          <span class="font-bold">Contado</span>
-          <span>{{ contado }}€</span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-bold">Financiado</span>
-          <span>{{ financiado }}€</span>
-          <span>Desde {{ quotes }}€</span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-bold">Dias stock</span>
-          <span>{{ stock }} días</span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-bold">Leads</span>
-          <span>{{ leads }}</span>
-        </div>
+      <div class="flex flex-row gap-1">
+        <span class="text-base-200">Leads: </span>
+        <span class="font-semibold">{{ vehicle.leads || 0 }}</span>
       </div>
     </div>
   </div>

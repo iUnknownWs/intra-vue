@@ -14,6 +14,7 @@ const description = ref(null)
 const startDate = ref(null)
 const endDate = ref(null)
 const includeQr = ref(null)
+const image = ref(null)
 
 const previewFile = (file) => {
   formData.append('image_overlay', file)
@@ -26,7 +27,6 @@ const save = () => {
   formData.append('start_date', startDate.value)
   formData.append('end_date', endDate.value)
   formData.append('include_qr', includeQr.value)
-  
 
   axios
     .patch(`${import.meta.env.VITE_INTEGRATIONS}/campaigns/${props.id}/`, formData, {
@@ -53,6 +53,7 @@ onMounted(() => {
     startDate.value = response.data.start_date
     endDate.value = response.data.end_date
     includeQr.value = response.data.include_qr
+    image.value = response.data.image_overlay
   })
 })
 </script>
@@ -68,6 +69,10 @@ onMounted(() => {
     <AreaInput label="Descripción:" v-model="description" />
     <ToggleInput label="Incluir QR:" class="my-2 w-fit" v-model="includeQr" />
     <FileInput label="Imagen de portada:" @fileSelected="previewFile" />
+    <div class="form-control w-full my-8">
+      <span class="label font-medium">Foto actual:</span>
+      <img :src="image" />
+    </div>
   </div>
   <DrawerActions
     secondary="Cancelar"
