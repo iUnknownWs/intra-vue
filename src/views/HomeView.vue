@@ -663,8 +663,8 @@ onMounted(() => {
   <HeaderMain ref="header">
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
-        <header class="flex flex-row items-center justify-between lg:hidden">
-          <form @submit.prevent="search">
+        <header class="flex w-full flex-row items-center justify-between lg:hidden">
+          <form @submit.prevent="search" class="w-full">
             <label class="input input-bordered flex items-center gap-2">
               <Icon icon="mdi:magnify" width="24" />
               <input
@@ -676,7 +676,7 @@ onMounted(() => {
               <Icon icon="mdi:times" width="24" @click="searchReset" />
             </label>
           </form>
-          <div class="flex gap-2 lg:hidden">
+          <div class="flex w-fit gap-2 lg:hidden">
             <label for="filterDrawer" @click="filterDrawer" class="text-black">
               <div tabindex="0" role="button" class="btn btn-square btn-outline lg:hidden">
                 <Icon icon="heroicons:adjustments-vertical" width="24" />
