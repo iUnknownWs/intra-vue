@@ -665,7 +665,7 @@ onMounted(() => {
       <template #content>
         <header class="flex w-full flex-row items-center justify-between gap-2 lg:hidden">
           <form @submit.prevent="search" class="w-full">
-            <label class="input input-bordered flex w-full items-center gap-2">
+            <label class="input input-bordered flex w-full max-w-[275px] items-center gap-2">
               <Icon icon="mdi:magnify" width="24" />
               <input type="text" placeholder="Buscar" v-model="searchValue" @change="searchReact" />
               <Icon icon="mdi:times" width="24" @click="searchReset" />
