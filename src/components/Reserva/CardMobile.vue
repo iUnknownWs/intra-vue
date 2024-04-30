@@ -127,7 +127,3 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
     </div>
   </div>
 </template>
-
-<style>
-
-</style>

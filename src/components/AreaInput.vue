@@ -18,5 +18,3 @@ const value = defineModel()
     ></textarea>
   </label>
 </template>
-
-<style scoped></style>

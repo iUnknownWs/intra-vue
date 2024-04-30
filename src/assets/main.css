@@ -143,11 +143,34 @@ th:last-child {
   border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
 }
 
+.btn-primary {
+  color: white;
+}
+
+.btn-error {
+  color: #fff;
+}
+
 .btn-outline {
   --tw-border-opacity: 1;
   border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.textcard {
+  font-size: 0.65rem;
+  line-height: 0.75rem;
+}
+
+.v-select,
+.vs__dropdown-toggle {
+  height: 3rem;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)))!important;
+  border-radius: 10px !important;
 }
 
 .triangle {

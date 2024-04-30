@@ -22,5 +22,3 @@ const drawer = defineModel()
     </div>
   </div>
 </template>
-
-<style scoped></style>

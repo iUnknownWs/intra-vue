@@ -5,5 +5,3 @@
     <span class="text-3xl font-bold">Valuación</span>
   </HeaderMain>
 </template>
-
-<style scoped></style>

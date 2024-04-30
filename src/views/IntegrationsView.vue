@@ -285,9 +285,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style>
-.btn-error {
-  color: #fff;
-}
-</style>

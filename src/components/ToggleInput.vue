@@ -17,4 +17,4 @@ const value = defineModel({ default: false })
   </div>
 </template>
 
-<style scoped></style>
+ scoped></style>

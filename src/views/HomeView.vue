@@ -669,7 +669,6 @@ onMounted(() => {
               <Icon icon="mdi:magnify" width="24" />
               <input
                 type="text"
-                class="grow"
                 placeholder="Buscar"
                 v-model="searchValue"
                 @change="searchReact"
@@ -761,9 +760,16 @@ onMounted(() => {
             <CheckInput label="ITV Vigente:" v-model="itv" />
             <CheckInput label="Pendiente ITV:" v-model="pitv" />
             <CheckInput label="Pendiente Video:" v-model="pVideo" />
-            <li class="mt-8 flex flex-row justify-between">
-              <button class="btn btn-outline w-fit" @click="reset">Reset</button>
-              <button class="btn btn-primary w-fit text-white" @click="filter">Filtrar</button>
+            <li class="mt-6 grid grid-cols-2 gap-2">
+              <button @click="reset" class="btn btn-outline w-full">Limpiar</button>
+              <button
+                @click="filter"
+                class="btn btn-primary w-full text-white"
+                :disabled="disabled"
+              >
+                <LoadingSpinner v-if="loading" />
+                <span v-else class="font-semibold text-white">Filtrar</span>
+              </button>
             </li>
           </aside>
           <div class="flex w-full flex-col items-start justify-center rounded-md">
@@ -1183,26 +1189,3 @@ onMounted(() => {
     </DrawerComponent>
   </HeaderMain>
 </template>
-
-<style>
-.badge {
-  font-weight: 600;
-}
-.badge-primary {
-  color: white;
-}
-.textcard {
-  font-size: 0.65rem;
-  line-height: 0.75rem;
-}
-.btn-primary {
-  color: white;
-}
-.v-select,
-.vs__dropdown-toggle {
-  height: 3rem;
-  background-color: #f3f4f6;
-  background: #f3f4f6;
-  border-radius: 10px !important;
-}
-</style>

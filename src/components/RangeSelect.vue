@@ -28,4 +28,4 @@ const lte = defineModel('lte')
   </label>
 </template>
 
-<style scoped></style>
+ scoped></style>

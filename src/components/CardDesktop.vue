@@ -26,12 +26,12 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         <div
           class="absolute bottom-2 right-2 [&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-xs [&_span]:font-semibold"
         >
-          <span v-if="estado == 0" class="badge-warning"> Pte. de Recepción </span>
-          <span v-if="estado == 3" class="badge-error"> Pte. de Publicación </span>
-          <span v-if="estado == 4" class="badge-error"> En venta </span>
-          <span v-if="estado == 5" class="badge-warning"> Reservado </span>
-          <span v-if="estado == 8" class="badge-info"> Entregado </span>
-          <span v-if="estado == 10" class="badge-primary"> No Disponible </span>
+          <span v-if="vehicle.status == 0" class="badge-warning"> Pte. de Recepción </span>
+          <span v-if="vehicle.status == 3" class="badge-error"> Pte. de Publicación </span>
+          <span v-if="vehicle.status == 4" class="badge-error"> En venta </span>
+          <span v-if="vehicle.status == 5" class="badge-warning"> Reservado </span>
+          <span v-if="vehicle.status == 8" class="badge-info"> Entregado </span>
+          <span v-if="vehicle.status == 10" class="badge-primary"> No Disponible </span>
         </div>
       </div>
     </RouterLink>
