@@ -10,10 +10,10 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
 <template>
   <div class="card card-compact mt-3 w-full bg-white p-4 text-xs shadow-xl">
     <div class="flex flex-row gap-4">
-      <div class="flex flex-col items-center gap-3">
+      <div class="flex flex-col items-center justify-between gap-3">
         <RouterLink :to="'/vehiculos/' + vehicle.id">
           <div
-            class="relative aspect-square w-20 rounded-lg bg-cover bg-center"
+            class="relative aspect-square w-20 rounded-lg bg-cover bg-center md:w-28"
             :style="{
               'background-image': `url(${vehicle.image || placeholder})`
             }"
@@ -27,7 +27,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
           </div>
         </RouterLink>
         <div
-          class="[&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-[8px] [&_span]:font-semibold"
+          class="[&_span]:badge [&_span]:min-w-20 md:[&_span]:min-w-28 [&_span]:rounded-md [&_span]:text-[8px] md:[&_span]:text-[12px] [&_span]:font-semibold"
         >
           <span v-if="vehicle.status == 0" class="badge-warning"> Pte. Recepción </span>
           <span v-if="vehicle.status == 3" class="badge-error"> Pte. Publicación </span>
@@ -38,7 +38,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         </div>
       </div>
       <div class="flex w-full flex-row justify-between">
-        <div class="flex w-full flex-col">
+        <div class="flex w-full flex-col justify-between">
           <div class="flex flex-row justify-between gap-1">
             <div class="flex w-fit flex-col">
               <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-sm font-bold">
@@ -76,7 +76,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
             </div>
           </div>
           <div class="divider m-0"></div>
-          <div class="grid grid-cols-2 gap-1">
+          <div class="grid grid-cols-2 gap-1 md:grid-cols-4">
             <div class="flex flex-row items-center gap-1">
               <Icon icon="mdi:calendar" width="14" class="text-base-200" />
               <span class="text-xs font-semibold">{{ vehicle.year }}</span>
@@ -94,11 +94,30 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
               <span class="text-xs font-semibold">{{ vehicle.gear_box?.description }}</span>
             </div>
           </div>
+          <div class="divider m-0 hidden md:flex"></div>
+          <div class="hidden flex-row justify-between md:flex">
+            <div class="flex flex-col gap-1">
+              <span class="text-base-200">Contado: </span>
+              <span class="font-semibold">{{ vehicle.price?.price_with_discounts || 0 }}€</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-base-200">Financiado: </span>
+              <span class="font-semibold">{{ vehicle.price?.financed_price || 0 }}€</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-base-200">Días stock: </span>
+              <span class="font-semibold">{{ vehicle.days_in_stock }} días</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-base-200">Leads: </span>
+              <span class="font-semibold">{{ vehicle.leads || 0 }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="divider m-0"></div>
-    <div class="flex flex-row justify-between">
+    <div class="divider m-0 md:hidden"></div>
+    <div class="flex flex-row justify-between md:hidden">
       <div class="flex flex-row gap-1">
         <span class="text-base-200">Contado: </span>
         <span class="font-semibold">{{ vehicle.price?.price_with_discounts || 0 }}€</span>
