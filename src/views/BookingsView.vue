@@ -243,7 +243,7 @@ onMounted(() => {
               role="tablist"
               ref="tabContainer"
               @wheel.prevent="horizontalScroll"
-              class="tabs tabs-bordered mx-4 w-screen overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
+              class="tabs tabs-bordered mx-4 w-screen overflow-x-scroll font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_span]:text-[12px]"
             >
               <input
                 type="radio"

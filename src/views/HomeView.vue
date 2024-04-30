@@ -663,11 +663,17 @@ onMounted(() => {
   <HeaderMain ref="header">
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
-        <header class="flex w-fit flex-row items-center justify-between gap-2 lg:hidden">
-          <form @submit.prevent="search">
-            <label class="input input-bordered">
+        <header class="flex w-full flex-row items-center justify-between gap-2 lg:hidden">
+          <form @submit.prevent="search" class="w-full">
+            <label class="input input-bordered flex items-center gap-2">
               <Icon icon="mdi:magnify" width="24" />
-              <input type="text" placeholder="Buscar" v-model="searchValue" @change="searchReact" class="w-full" />
+              <input
+                type="text"
+                placeholder="Buscar"
+                v-model="searchValue"
+                @change="searchReact"
+                class="w-full"
+              />
               <Icon icon="mdi:times" width="24" @click="searchReset" />
             </label>
           </form>
@@ -941,7 +947,7 @@ onMounted(() => {
               role="tablist"
               ref="tabContainer"
               @wheel.prevent="horizontalScroll"
-              class="tabs tabs-bordered mx-4 max-w-full overflow-x-scroll font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
+              class="tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
             >
               <a
                 role="tab"
