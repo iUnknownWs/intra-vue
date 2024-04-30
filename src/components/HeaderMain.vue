@@ -13,7 +13,7 @@ const toggleDrawer = () => {
 </script>
 
 <template>
-  <div class="drawer bg-base-200">
+  <div class="drawer">
     <input id="drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content flex w-full flex-col">
       <!-- Navbar -->

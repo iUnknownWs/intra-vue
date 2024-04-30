@@ -663,7 +663,7 @@ onMounted(() => {
   <HeaderMain ref="header">
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
-        <header class="flex flex-row items-center justify-between">
+        <header class="flex flex-row items-center justify-between lg:hidden">
           <form @submit.prevent="search">
             <label class="input input-bordered flex items-center gap-2">
               <Icon icon="mdi:magnify" width="24" />
@@ -698,36 +698,10 @@ onMounted(() => {
               </template>
             </DropdownBtn>
           </div>
-          <div class="hidden gap-2 lg:flex">
-            <label for="filterDrawer" class="btn btn-outline hidden text-black">
-              <Icon icon="mdi:filter" width="25" />
-              Filtros
-            </label>
-            <button @click="discountDrawer" class="btn btn-primary hidden lg:flex">
-              <Icon icon="mdi:discount" width="25" />
-              Descuentos
-            </button>
-            <DropdownBtn>
-              <template #btn>
-                <div tabindex="0" role="button" class="btn btn-primary hidden text-white lg:flex">
-                  <Icon icon="mdi:plus" width="25" />
-                  Nuevo
-                </div>
-              </template>
-              <template #content>
-                <li><label for="filterDrawer" @click="autoDrawer">Registro Automático</label></li>
-                <li>
-                  <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
-                </li>
-                <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
-              </template>
-            </DropdownBtn>
-          </div>
         </header>
-        <div class="hidden flex-row items-start lg:flex">
-          <div class="my-4 ml-4 min-h-full w-72 bg-white text-base-content">
-            <div class="menu-title flex flex-row justify-between">Filtros</div>
-            <div class="divider m-0"></div>
+        <div class="hidden w-full flex-row gap-8 lg:flex">
+          <aside class="min-h-full w-96 rounded-md bg-white p-8 text-base-content">
+            <span class="text-xl font-bold">Filtros</span>
             <RangeSelect
               label="Año:"
               :from="options.reverseYears"
@@ -791,18 +765,60 @@ onMounted(() => {
               <button class="btn btn-outline w-fit" @click="reset">Reset</button>
               <button class="btn btn-primary w-fit text-white" @click="filter">Filtrar</button>
             </li>
-          </div>
-          <div class="flex w-[75vw] flex-col items-start justify-center">
+          </aside>
+          <div class="flex w-full flex-col items-start justify-center rounded-md">
+            <div class="flex w-full flex-row justify-between gap-2">
+              <form @submit.prevent="search">
+                <label class="input input-bordered flex w-96 items-center gap-2">
+                  <Icon icon="mdi:magnify" width="24" />
+                  <input
+                    type="text"
+                    class="grow"
+                    placeholder="Buscar"
+                    v-model="searchValue"
+                    @change="searchReact"
+                  />
+                  <Icon icon="mdi:times" width="24" @click="searchReset" />
+                </label>
+              </form>
+              <div class="flex flex-row gap-2">
+                <button @click="discountDrawer" class="btn hidden lg:flex">
+                  <Icon icon="mdi:discount" width="25" />
+                  Descuentos
+                </button>
+                <DropdownBtn>
+                  <template #btn>
+                    <div
+                      tabindex="0"
+                      role="button"
+                      class="btn btn-primary hidden text-white lg:flex"
+                    >
+                      <Icon icon="mdi:plus" width="25" />
+                      Nuevo
+                    </div>
+                  </template>
+                  <template #content>
+                    <li>
+                      <label for="filterDrawer" @click="autoDrawer">Registro Automático</label>
+                    </li>
+                    <li>
+                      <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
+                    </li>
+                    <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
+                  </template>
+                </DropdownBtn>
+              </div>
+            </div>
             <div
               role="tablist"
               ref="tabContainer"
               @wheel.prevent="horizontalScroll"
-              class="no-scrollbar tabs tabs-bordered mx-4 mt-7 max-w-full overflow-x-scroll bg-white font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
+              class="no-scrollbar tabs tabs-bordered mx-4 mt-7 max-w-full overflow-x-scroll font-medium [&_a]:w-max [&_a]:gap-2 [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
             >
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '0' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '0' }"
                 @click="all"
               >
                 Todos ({{ filtersCounters.total }})
@@ -810,101 +826,74 @@ onMounted(() => {
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '1' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '1' }"
                 @click="vehicleStatus(0)"
               >
-                Recepción
-                <span class="badge" :class="{ 'badge-primary': tab === '1' }">{{
-                  filtersCounters.receipt
-                }}</span>
+                Recepción ({{ filtersCounters.receipt }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '2' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '2' }"
                 @click="vehicleStatus(3)"
               >
-                Publicación
-                <span class="badge" :class="{ 'badge-primary': tab === '2' }">{{
-                  filtersCounters.publication
-                }}</span>
+                Publicación ({{ filtersCounters.publication }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '3' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '3' }"
                 @click="vehicleStatus(4)"
               >
-                En venta
-                <span class="badge" :class="{ 'badge-primary': tab === '3' }">{{
-                  filtersCounters.on_sale
-                }}</span>
+                En venta ({{ filtersCounters.on_sale }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '4' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '4' }"
                 @click="vehicleStatus(5)"
               >
-                Reservados
-                <span class="badge" :class="{ 'badge-primary': tab === '4' }">{{
-                  filtersCounters.reserved
-                }}</span>
+                Reservados ({{ filtersCounters.reserved }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '5' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '5' }"
                 @click="ppt"
               >
-                Pte. de PT
-                <span class="badge" :class="{ 'badge-primary': tab === '5' }">{{
-                  filtersCounters.ppt
-                }}</span>
+                Pte. de PT ({{ filtersCounters.ppt }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '6' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '6' }"
                 @click="vpt"
               >
-                Validar PT
-                <span class="badge" :class="{ 'badge-primary': tab === '6' }">{{
-                  filtersCounters.vpt
-                }}</span>
+                Validar PT ({{ filtersCounters.vpt }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '7' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '7' }"
                 @click="web"
               >
-                No web
-                <span class="badge" :class="{ 'badge-primary': tab === '7' }">{{
-                  filtersCounters.no_web
-                }}</span>
+                No web ({{ filtersCounters.no_web }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '8' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '8' }"
                 @click="entrega"
               >
-                Entrega inmediata
-                <span class="badge" :class="{ 'badge-primary': tab === '8' }">{{
-                  filtersCounters.inmediate_delivery
-                }}</span>
+                Entrega inmediata ({{ filtersCounters.inmediate_delivery }})
               </a>
               <a
                 role="tab"
                 class="tab"
-                :class="{ 'tab-active font-bold': tab === '9' }"
+                :class="{ 'tab-active font-bold !text-black': tab === '9' }"
                 @click="vehicleStatus(10)"
               >
-                No disponible
-                <span class="badge" :class="{ 'badge-primary': tab === '9' }">{{
-                  filtersCounters.not_available
-                }}</span>
+                No disponible ({{ filtersCounters.not_available }})
               </a>
             </div>
             <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
@@ -913,6 +902,7 @@ onMounted(() => {
                 <CardDesktop
                   v-for="(vehicle, index) in vehiclesFilter"
                   :key="index"
+                  :vehicle="vehicle"
                   :id="vehicle.id"
                   :slug="vehicle.slug || 'No disponible'"
                   :placa="vehicle.license_plate || 'Sin matricula'"

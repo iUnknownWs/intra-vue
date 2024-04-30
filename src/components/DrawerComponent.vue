@@ -9,7 +9,7 @@ const drawer = defineModel()
 <template>
   <div class="drawer drawer-end">
     <input :id="id" type="checkbox" class="drawer-toggle" v-model="drawer" />
-    <div class="drawer-content">
+    <div class="drawer-content w-full">
       <slot name="content" />
     </div>
     <div class="drawer-side z-50">
