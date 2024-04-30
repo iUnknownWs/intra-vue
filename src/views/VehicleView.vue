@@ -2350,13 +2350,16 @@ onMounted(async () => {
                       <h1 class="text-xl font-medium">Configuración de precio</h1>
                       <div class="flex flex-row gap-4">
                         <button class="btn btn-primary btn-sm" @click="toggleDrawer">
-                          Descuentos automáticos
+                          <span class="hidden lg:inline">Descuentos automáticos</span>
+                          <Icon icon="mdi:percent" width="24" class="lg:hidden" />
                         </button>
                         <label
                           for="vehicle-drawer"
                           class="btn btn-outline btn-sm"
                           @click="drawerFinance"
-                          >Conf. Financiera
+                        >
+                          <span class="hidden lg:inline">Conf. Financiera</span>
+                          <Icon icon="mdi:cash" width="24" class="lg:hidden" />
                         </label>
                       </div>
                     </div>
