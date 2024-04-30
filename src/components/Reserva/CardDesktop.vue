@@ -153,12 +153,3 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
     </div>
   </div>
 </template>
-
-<style>
-.triangle {
-  width: 4rem;
-  aspect-ratio: 1;
-  border-top-left-radius: 16px;
-  clip-path: polygon(0 100%, 100% 0, 0 0);
-}
-</style>

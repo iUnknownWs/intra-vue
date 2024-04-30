@@ -1,66 +1,45 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 defineProps({
-  vehicle: { type: Object, required: true },
-  id: { type: Number, required: true },
-  slug: { type: String, required: true },
-  placa: { type: String, required: true },
-  modelo: { type: String, required: true },
-  marca: { type: String, required: true },
-  version: { type: String, required: true },
-  estado: { type: Number, required: true },
-  contado: { type: Number, required: true },
-  financiado: { type: String, required: true },
-  quotes: { type: String, required: true },
-  stock: { type: Number, required: true },
-  img: {
-    type: String,
-    default: 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
-  },
-  combustible: { type: String, required: true },
-  año: { type: Number, required: true },
-  cambios: { type: String, required: true, default: '-' },
-  keys: { type: Number },
-  kms: { type: Number, required: true },
-  distinctive: { type: [Number, null], required: true },
-  leads: { type: Number, default: 0 }
+  vehicle: { type: Object, required: true }
 })
 
-defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
-
-const integrations = [true, true, true]
+// defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
+const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
 </script>
 
 <template>
   <div class="card card-side mt-4 w-full flex-row gap-4 bg-white p-6">
-    <div
-      class="relative aspect-video w-60 rounded-lg bg-cover bg-center"
-      :style="{
-        'background-image': 'url(' + img + ')'
-      }"
-    >
-      <!-- <div
-        v-if="keys"
-        class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
-      >
-        <span class="w-fit text-base font-medium text-white">{{ keys }}</span>
-      </div> -->
+    <RouterLink :to="'/vehiculos/' + vehicle.id">
       <div
-        class="absolute bottom-2 right-2 [&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-xs [&_span]:font-semibold"
+        class="relative aspect-video w-60 rounded-lg bg-cover bg-center"
+        :style="{
+          'background-image': `url(${vehicle.image || placeholder})`
+        }"
       >
-        <span v-if="estado == 0" class="badge-warning"> Pte. de Recepción </span>
-        <span v-if="estado == 3" class="badge-error"> Pte. de Publicación </span>
-        <span v-if="estado == 4" class="badge-error"> En venta </span>
-        <span v-if="estado == 5" class="badge-warning"> Reservado </span>
-        <span v-if="estado == 8" class="badge-info"> Entregado </span>
-        <span v-if="estado == 10" class="badge-primary"> No Disponible </span>
+        <div
+          v-if="vehicle.key_locator"
+          class="triangle absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+        >
+          <span class="w-fit text-base font-medium text-white">{{ vehicle.key_locator }}</span>
+        </div>
+        <div
+          class="absolute bottom-2 right-2 [&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-xs [&_span]:font-semibold"
+        >
+          <span v-if="estado == 0" class="badge-warning"> Pte. de Recepción </span>
+          <span v-if="estado == 3" class="badge-error"> Pte. de Publicación </span>
+          <span v-if="estado == 4" class="badge-error"> En venta </span>
+          <span v-if="estado == 5" class="badge-warning"> Reservado </span>
+          <span v-if="estado == 8" class="badge-info"> Entregado </span>
+          <span v-if="estado == 10" class="badge-primary"> No Disponible </span>
+        </div>
       </div>
-    </div>
+    </RouterLink>
     <div class="flex min-w-[650px] flex-col">
-      <span class="text-xl font-bold">
+      <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-xl font-bold">
         {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
-        {{ vehicle.model.model_web.title }}
-      </span>
+        {{ vehicle.model.model_web?.title }}
+      </RouterLink>
       <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
       <div class="divider m-0"></div>
       <div class="flex flex-row gap-2">
@@ -252,12 +231,3 @@ const integrations = [true, true, true]
   </div>
 </div> -->
 
-<!-- <style>
-/* HTML: <div class="triangle"></div> */
-.triangle {
-  width: 4rem;
-  aspect-ratio: 1;
-  border-top-left-radius: 16px;
-  clip-path: polygon(0 100%, 100% 0, 0 0);
-}
-</style> -->

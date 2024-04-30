@@ -11,11 +11,31 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
   <div class="card card-compact mt-3 w-full bg-white p-4 text-xs shadow-xl">
     <div class="flex flex-row gap-4">
       <div class="flex flex-col items-center gap-3">
-        <img
-          :src="vehicle.image ? vehicle.image : placeholder"
-          alt="vehicle pic"
-          class="aspect-square w-20 rounded-lg object-cover"
-        />
+        <RouterLink :to="'/vehiculos/' + vehicle.id">
+          <div
+            class="relative aspect-square w-20 rounded-lg bg-cover bg-center"
+            :style="{
+              'background-image': `url(${vehicle.image || placeholder})`
+            }"
+          >
+            <div
+              v-if="vehicle.key_locator"
+              class="triangle1 absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2 shadow-xl"
+            >
+              <span class="w-fit text-xs font-medium text-white">{{ vehicle.key_locator }}</span>
+            </div>
+            <div
+              class="absolute bottom-2 right-2 [&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-xs [&_span]:font-semibold"
+            >
+              <span v-if="estado == 0" class="badge-warning"> Pte. de Recepción </span>
+              <span v-if="estado == 3" class="badge-error"> Pte. de Publicación </span>
+              <span v-if="estado == 4" class="badge-error"> En venta </span>
+              <span v-if="estado == 5" class="badge-warning"> Reservado </span>
+              <span v-if="estado == 8" class="badge-info"> Entregado </span>
+              <span v-if="estado == 10" class="badge-primary"> No Disponible </span>
+            </div>
+          </div>
+        </RouterLink>
         <div
           class="[&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-[8px] [&_span]:font-semibold"
         >
@@ -31,10 +51,10 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         <div class="flex w-full flex-col">
           <div class="flex flex-row justify-between gap-1">
             <div class="flex w-fit flex-col">
-              <span class="text-sm font-bold">
+              <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-sm font-bold">
                 {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
                 {{ vehicle.model.model_web.title }}
-              </span>
+              </RouterLink>
               <span class="text-sm font-medium text-base-200">{{ vehicle.version.title }}</span>
             </div>
             <div class="flex min-w-8 flex-col items-center">

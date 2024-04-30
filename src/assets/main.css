@@ -150,3 +150,16 @@ th:last-child {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.triangle {
+  width: 4rem;
+  aspect-ratio: 1;
+  border-top-left-radius: 8px;
+  clip-path: polygon(0 100%, 100% 0, 0 0);
+}
+
+.triangle1 {
+  width: 3rem;
+  aspect-ratio: 1;
+  border-top-left-radius: 8px;
+  clip-path: polygon(0 100%, 100% 0, 0 0);
+}

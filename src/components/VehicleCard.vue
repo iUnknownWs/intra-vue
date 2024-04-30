@@ -217,12 +217,3 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
     </div>
   </div>
 </template>
-
-<style>
-.triangle {
-  width: 4rem;
-  aspect-ratio: 1;
-  border-top-left-radius: 16px;
-  clip-path: polygon(0 100%, 100% 0, 0 0);
-}
-</style>
