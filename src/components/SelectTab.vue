@@ -26,5 +26,3 @@ defineEmits(['select'])
     </select>
   </label>
 </template>
-
- scoped></style>

@@ -15,5 +15,3 @@ defineEmits(['btn'])
     <button class="btn btn-xs" @click="$emit('btn')">cerrar</button>
   </div>
 </template>
-
- scoped></style>

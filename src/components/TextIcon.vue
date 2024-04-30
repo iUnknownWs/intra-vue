@@ -12,5 +12,3 @@ const value = defineModel()
     <input type="text" class="grow" :placeholder="placeholder" v-model="value" />
   </label>
 </template>
-
- scoped></style>

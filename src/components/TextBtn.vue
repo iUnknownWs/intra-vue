@@ -32,5 +32,3 @@ class="input join-item input-bordered w-full"
     </button>
   </div>
 </template>
-
- scoped></style>

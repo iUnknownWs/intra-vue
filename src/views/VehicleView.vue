@@ -3737,6 +3737,7 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
 <style scoped>
 .active {
   background-color: #dcdddf !important;

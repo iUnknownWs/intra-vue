@@ -16,5 +16,3 @@ const value = defineModel({ default: false })
     </label>
   </div>
 </template>
-
- scoped></style>
