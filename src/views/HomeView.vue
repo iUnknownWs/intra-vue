@@ -663,16 +663,11 @@ onMounted(() => {
   <HeaderMain ref="header">
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
-        <header class="flex w-full flex-row items-center justify-between lg:hidden">
+        <header class="flex w-full flex-row items-center justify-between gap-2 lg:hidden">
           <form @submit.prevent="search" class="w-full">
-            <label class="input input-bordered flex items-center gap-2">
+            <label class="input input-bordered flex w-full items-center gap-2">
               <Icon icon="mdi:magnify" width="24" />
-              <input
-                type="text"
-                placeholder="Buscar"
-                v-model="searchValue"
-                @change="searchReact"
-              />
+              <input type="text" placeholder="Buscar" v-model="searchValue" @change="searchReact" />
               <Icon icon="mdi:times" width="24" @click="searchReset" />
             </label>
           </form>
