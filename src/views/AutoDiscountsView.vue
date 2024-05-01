@@ -97,7 +97,7 @@ const editDrawer = (id) => {
   drawerSection.value = 'edit'
   drawer.value = true
   discountId.value = id
-  axios.get(`${import.meta.env.VITE_SALES}/discounts/${id}/`).then((response) => {
+  axios.get(`${import.meta.env.VITE_SALES}/discounts/${id}/?automated=true&ruleid=1`).then((response) => {
     title.value = response.data.title
     amount.value = response.data.amount_fix
     createIn.value = response.data.vehicle_automatic_discount.create_in
@@ -107,7 +107,7 @@ const editDrawer = (id) => {
 const editDiscount = () => {
   loading.value = true
   axios
-    .put(`${import.meta.env.VITE_SALES}/discounts/${discountId.value}/`, {
+    .put(`${import.meta.env.VITE_SALES}/discounts/${discountId.value}/?automated=true&ruleid=1`, {
       title: title.value,
       amount_fix: amount.value,
       amount_percent: 0,
@@ -231,7 +231,7 @@ const reset = () => {
             primary="Guardar"
             :loading="loading"
             @click-secondary="toggle"
-            @click-primary="addDiscount"
+            @click-primary="editDiscount"
           />
         </template>
       </template>

@@ -13,6 +13,7 @@ import axios from 'axios'
 import CochesnetDrawer from '@/components/CochesnetDrawer.vue'
 import WallapopDrawer from '@/components/WallapopDrawer.vue'
 import SumautoDrawer from '@/components/SumautoDrawer.vue'
+import AutoDiscountDrawer from '@/components/Vehicle/AutoDiscountDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -1493,6 +1494,12 @@ const discountDrawer = () => {
   })
 }
 
+const discountAuto = ref({})
+const discountAutoDrawer = () => {
+  drawerSection.value = 'auto-discounts'
+  toggleDrawer()
+}
+
 const loadingBooking = ref(false)
 const reserveDrawer = (step) => {
   if (!step) {
@@ -2349,7 +2356,7 @@ onMounted(async () => {
                     <div class="flex flex-row justify-between">
                       <h1 class="text-xl font-medium">Configuración de precio</h1>
                       <div class="flex flex-row gap-4">
-                        <button class="btn btn-primary btn-sm" @click="toggleDrawer">
+                        <button class="btn btn-primary btn-sm" @click="discountAutoDrawer">
                           <span class="hidden lg:inline">Descuentos automáticos</span>
                           <Icon icon="mdi:percent" width="24" class="lg:hidden" />
                         </button>
@@ -3703,25 +3710,25 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'cochesnet'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content lg:w-1/3"
       >
         <CochesnetDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'wallapop'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content lg:w-1/3"
       >
         <WallapopDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'sumauto'"
-        class="menu min-h-full w-screen bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content lg:w-1/3"
       >
         <SumautoDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'pt'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content lg:w-1/3"
       >
         <PerformanceTest
           :url="ptUrl"
@@ -3734,9 +3741,11 @@ onMounted(async () => {
         />
       </ul>
       <ul
-        v-if="drawerSection === 'pt'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
-      ></ul>
+        v-if="drawerSection === 'auto-discounts'"
+        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content lg:w-1/3"
+      >
+        <AutoDiscountDrawer :toggle="toggleDrawer" :id="id" />
+      </ul>
     </div>
   </div>
 </template>

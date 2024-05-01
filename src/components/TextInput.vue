@@ -9,7 +9,7 @@ defineProps({
 })
 
 const value = defineModel()
-defineEmits(['input', 'focus'])
+defineEmits(['input', 'focus', 'change'])
 </script>
 
 <template>
@@ -25,6 +25,7 @@ defineEmits(['input', 'focus'])
       v-model="value"
       @input="$emit('input')"
       @focus="$emit('focus')"
+      @change="$emit('change')"
       :required="required"
     />
   </label>

@@ -5,7 +5,7 @@
     </div>
     <ul
       tabindex="0"
-      class="menu dropdown-content menu-sm z-10 mt-3 min-w-56 rounded-box bg-base-100 p-2 font-medium shadow"
+      class="menu dropdown-content menu-sm z-10 mt-3 min-w-56 rounded-box bg-white p-2 font-medium shadow"
     >
       <slot name="content" />
     </ul>

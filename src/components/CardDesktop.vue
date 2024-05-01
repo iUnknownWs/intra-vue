@@ -24,14 +24,22 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
           <span class="w-fit text-base font-medium text-white">{{ vehicle.key_locator }}</span>
         </div>
         <div
-          class="absolute bottom-2 right-2 [&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-xs [&_span]:font-semibold"
+          class="absolute bottom-2 right-2 [&_span]:badge [&_span]:min-w-28 [&_span]:rounded-md [&_span]:text-xs [&_span]:font-bold"
         >
-          <span v-if="vehicle.status == 0" class="badge-warning"> Pte. de Recepción </span>
-          <span v-if="vehicle.status == 3" class="badge-error"> Pte. de Publicación </span>
-          <span v-if="vehicle.status == 4" class="badge-error"> En venta </span>
-          <span v-if="vehicle.status == 5" class="badge-warning"> Reservado </span>
-          <span v-if="vehicle.status == 8" class="badge-info"> Entregado </span>
-          <span v-if="vehicle.status == 10" class="badge-primary"> No Disponible </span>
+          <span v-if="vehicle.status == 0" class="!border-[#FCFF75] !bg-[#FFFDD5]">
+            Pte. Recepción
+          </span>
+          <span v-if="vehicle.status == 3" class="!border-[#EFABAB] !bg-[#FDECEC]">
+            Pte. Publicación
+          </span>
+          <span v-if="vehicle.status == 4" class="!border-[#EFABAB] !bg-[#FDECEC]"> En venta </span>
+          <span v-if="vehicle.status == 5" class="!border-[#FCFF75] !bg-[#FFFDD5]">
+            Reservado
+          </span>
+          <span v-if="vehicle.status == 8" class="!border-[#809CFF] !bg-[#DCE1FF]">
+            Entregado
+          </span>
+          <span v-if="vehicle.status == 10" class="badge-primary"> No disponible </span>
         </div>
       </div>
     </RouterLink>
@@ -91,9 +99,21 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
       <button class="btn btn-sm">Sumauto</button>
     </div>
     <div class="flex flex-col">
-      <a>
-        <Icon icon="mdi:dots-vertical" width="24" />
-      </a>
+      <div class="dropdown dropdown-end menu-xs">
+        <div tabindex="0" role="button" class="btn btn-square btn-ghost">
+          <Icon icon="mdi:dots-vertical" width="30" />
+        </div>
+        <ul
+          tabindex="0"
+          class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-white p-2 text-xs shadow-lg"
+        >
+          <li><RouterLink :to="'/vehiculos/' + vehicle.id">Ver/Editar</RouterLink></li>
+          <li><a @click="$emit('menu-btn2', vehicle.slug)">Ver anuncio</a></li>
+          <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
+          <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
+          <li><a @click="$emit('menu-btn5', vehicle.id)">Eliminar</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -213,21 +233,6 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         ><a href="">sumauto</a></span
       >
     </div>
-    <div class="dropdown dropdown-end menu-xs">
-      <div tabindex="0" role="button" class="btn btn-square btn-ghost">
-        <Icon icon="mdi:dots-vertical" width="30" />
-      </div>
-      <ul
-        tabindex="0"
-        class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-base-100 p-2 text-xs shadow-lg"
-      >
-        <li><RouterLink :to="'/vehiculos/' + id">Ver/Editar</RouterLink></li>
-        <li><a @click="$emit('menu-btn2', slug)">Ver anuncio</a></li>
-        <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
-        <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
-        <li><a @click="$emit('menu-btn5', id)">Eliminar</a></li>
-      </ul>
-    </div>
+    
   </div>
 </div> -->
-

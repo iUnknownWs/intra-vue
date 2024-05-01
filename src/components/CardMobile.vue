@@ -27,13 +27,21 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
           </div>
         </RouterLink>
         <div
-          class="[&_span]:badge [&_span]:min-w-20 md:[&_span]:min-w-28 [&_span]:rounded-md [&_span]:text-[8px] md:[&_span]:text-[12px] [&_span]:font-semibold"
+          class="[&_span]:badge [&_span]:min-w-20 [&_span]:rounded-md [&_span]:text-[8px] [&_span]:font-semibold md:[&_span]:min-w-28 md:[&_span]:text-[12px]"
         >
-          <span v-if="vehicle.status == 0" class="badge-warning"> Pte. Recepción </span>
-          <span v-if="vehicle.status == 3" class="badge-error"> Pte. Publicación </span>
-          <span v-if="vehicle.status == 4" class="badge-error"> En venta </span>
-          <span v-if="vehicle.status == 5" class="badge-warning"> Reservado </span>
-          <span v-if="vehicle.status == 8" class="badge-info"> Entregado </span>
+          <span v-if="vehicle.status == 0" class="!border-[#FCFF75] !bg-[#FFFDD5]">
+            Pte. Recepción
+          </span>
+          <span v-if="vehicle.status == 3" class="!border-[#EFABAB] !bg-[#FDECEC]">
+            Pte. Publicación
+          </span>
+          <span v-if="vehicle.status == 4" class="!border-[#EFABAB] !bg-[#FDECEC]"> En venta </span>
+          <span v-if="vehicle.status == 5" class="!border-[#FCFF75] !bg-[#FFFDD5]">
+            Reservado
+          </span>
+          <span v-if="vehicle.status == 8" class="!border-[#809CFF] !bg-[#DCE1FF]">
+            Entregado
+          </span>
           <span v-if="vehicle.status == 10" class="badge-primary"> No disponible </span>
         </div>
       </div>
@@ -48,7 +56,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
               <span class="text-sm font-medium text-base-200">{{ vehicle.version.title }}</span>
             </div>
             <div class="flex min-w-8 flex-col items-center">
-              <a @click="$emit('menu', id, slug)">
+              <a @click="$emit('menu', vehicle.id, vehicle.slug)">
                 <Icon icon="mdi:dots-vertical" width="24" color="black" />
               </a>
               <div class="flex h-full items-center justify-center [&_img]:mt-1 [&_img]:w-8">

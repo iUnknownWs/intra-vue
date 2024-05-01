@@ -419,10 +419,12 @@ const entrega = () => {
   })
 }
 
-const vehicleMenu = (vehicleId, vehicleSlug) => {
+const vehicleId = ref(null)
+const vehicleSlug = ref(null)
+const vehicleMenu = (id, slug) => {
   menu.value.modal.showModal()
-  id.value = vehicleId
-  slug.value = vehicleSlug
+  vehicleId.value = id
+  vehicleSlug.value = slug
 }
 
 const deleteVehicle = (vehicleId) => {
@@ -648,15 +650,15 @@ onMounted(() => {
 <template>
   <ModalDialog ref="menu">
     <ul class="menu w-full p-0 [&_li>*]:rounded-none">
-      <li><a>Ver/Editar</a></li>
+      <li><RouterLink :to="'/vehiculos/' + vehicleId">Ver/Editar</RouterLink></li>
       <div class="divider m-0"></div>
-      <li><a @click="vehicleWeb">Ver anuncio</a></li>
+      <li><a @click="vehicleWeb(vehicleSlug)">Ver anuncio</a></li>
       <div class="divider m-0"></div>
       <li><a>Ejecutar PT</a></li>
       <div class="divider m-0"></div>
       <li><a>Imprimir</a></li>
       <div class="divider m-0"></div>
-      <li><a @click="deleteVehicle">Eliminar</a></li>
+      <li><a @click="deleteVehicle(vehicleId)">Eliminar</a></li>
     </ul>
   </ModalDialog>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" :loading="loadingInfo" />
@@ -700,7 +702,7 @@ onMounted(() => {
           </div>
         </header>
         <div class="hidden w-full flex-row gap-8 lg:flex">
-          <aside class="min-h-full w-96 rounded-md bg-white p-8 text-base-content">
+          <aside class="h-fit w-96 rounded-md bg-white p-8 text-base-content">
             <span class="text-xl font-bold">Filtros</span>
             <RangeSelect
               label="Año:"
@@ -910,27 +912,6 @@ onMounted(() => {
                   v-for="(vehicle, index) in vehiclesFilter"
                   :key="index"
                   :vehicle="vehicle"
-                  :id="vehicle.id"
-                  :slug="vehicle.slug || 'No disponible'"
-                  :placa="vehicle.license_plate || 'Sin matricula'"
-                  :modelo="vehicle.model?.model_web?.title || 'No disponible'"
-                  :marca="vehicle.model?.brand?.title || 'No disponible'"
-                  :version="vehicle.version?.title || 'No disponible'"
-                  :estado="vehicle.status"
-                  :contado="vehicle.price?.price_with_discounts || 0"
-                  :financiado="vehicle.price?.financed_price || '0'"
-                  :quotes="vehicle.price?.financing_fee || '0'"
-                  :stock="vehicle.days_in_stock || 0"
-                  :img="
-                    vehicle.image ||
-                    'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
-                  "
-                  :combustible="vehicle.fuel?.description || 'No disponible'"
-                  :año="vehicle.year || 0"
-                  :cambios="vehicle.gear_box?.description || 'No disponible'"
-                  :keys="vehicle.key_locator"
-                  :kms="vehicle.kms || 0"
-                  :distinctive="vehicle.maintenance?.distinctive"
                   @menu-btn2="vehicleWeb"
                   @menu-btn5="deleteVehicle"
                 />

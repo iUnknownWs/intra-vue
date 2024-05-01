@@ -13,7 +13,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card card-side mt-4 w-full max-w-6xl bg-base-100 font-normal">
+  <div class="card card-side mt-4 w-full max-w-6xl bg-white font-normal">
     <div
       class="cover relative z-0 w-[400px] rounded-s-2xl bg-cover bg-center shadow-xl"
       :style="{
