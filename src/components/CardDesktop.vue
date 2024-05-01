@@ -43,7 +43,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         </div>
       </div>
     </RouterLink>
-    <div class="flex min-w-[480px] flex-col">
+    <div class="flex min-w-[450px] flex-col">
       <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-xl font-bold">
         {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
         {{ vehicle.model.model_web?.title }}
