@@ -43,7 +43,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         </div>
       </div>
     </RouterLink>
-    <div class="flex min-w-[650px] flex-col">
+    <div class="flex min-w-[480px] flex-col">
       <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-xl font-bold">
         {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
         {{ vehicle.model.model_web?.title }}
@@ -51,45 +51,43 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
       <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
       <div class="divider m-0"></div>
       <div class="flex flex-row gap-2">
-        <div class="grid grid-cols-2 gap-x-12 gap-y-2">
-          <div class="flex flex-row items-center gap-1">
-            <Icon icon="mdi:calendar" width="20" class="text-base-200" />
-            <span class="text-base font-semibold">{{ vehicle.year }}</span>
-          </div>
-          <div class="flex flex-row items-center gap-1">
-            <Icon icon="ph:speedometer" width="20" class="text-base-200" />
-            <span class="text-base font-semibold">{{ vehicle.kms }} Kms</span>
-          </div>
-          <div class="flex flex-row items-center gap-1">
-            <Icon icon="mdi:gas-station" width="20" class="text-base-200" />
-            <span class="text-base font-semibold">{{ vehicle.fuel?.description }}</span>
-          </div>
-          <div class="flex flex-row items-center gap-1">
-            <Icon icon="mdi:car-brake-parking" width="20" class="text-base-200" />
-            <span class="text-base font-semibold">{{ vehicle.gear_box?.description }}</span>
-          </div>
+        <div class="flex flex-row items-center gap-1">
+          <Icon icon="mdi:calendar" width="20" class="text-base-200" />
+          <span class="text-base font-semibold">{{ vehicle.year }}</span>
         </div>
-        <div class="divider divider-horizontal m-0"></div>
-        <div class="flex flex-row gap-4">
-          <div class="flex flex-col">
-            <span class="font-semibold text-base-200">Contado:</span>
-            <span class="font-bold">{{ vehicle.price?.price_with_discount || 0 }}€</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="font-semibold text-base-200">Financiado:</span>
-            <span class="font-bold">{{ vehicle.price?.financed_price || 0 }}€</span>
-            <span class="font-semibold text-base-200"
-              >Desde {{ vehicle.price?.financing_fee || 0 }}€</span
-            >
-          </div>
-          <div class="flex flex-col">
-            <span class="font-semibold text-base-200">Días stock:</span>
-            <span class="font-bold">{{ vehicle.days_in_stock }} Días</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="font-semibold text-base-200">Leads:</span>
-            <span class="font-bold">{{ vehicle.leads }}</span>
-          </div>
+        <div class="flex flex-row items-center gap-1">
+          <Icon icon="ph:speedometer" width="20" class="text-base-200" />
+          <span class="text-base font-semibold">{{ vehicle.kms }} Kms</span>
+        </div>
+        <div class="flex flex-row items-center gap-1">
+          <Icon icon="mdi:gas-station" width="20" class="text-base-200" />
+          <span class="text-base font-semibold">{{ vehicle.fuel?.description }}</span>
+        </div>
+        <div class="flex flex-row items-center gap-1">
+          <Icon icon="mdi:car-brake-parking" width="20" class="text-base-200" />
+          <span class="text-base font-semibold">{{ vehicle.gear_box?.description }}</span>
+        </div>
+      </div>
+      <div class="divider m-0"></div>
+      <div class="flex flex-row justify-between gap-4">
+        <div class="flex flex-col">
+          <span class="font-semibold text-base-200">Contado:</span>
+          <span class="font-bold">{{ vehicle.price?.price_with_discount || 0 }}€</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-semibold text-base-200">Financiado:</span>
+          <span class="font-bold">{{ vehicle.price?.financed_price || 0 }}€</span>
+          <span class="font-semibold text-base-200"
+            >Desde {{ vehicle.price?.financing_fee || 0 }}€</span
+          >
+        </div>
+        <div class="flex flex-col">
+          <span class="font-semibold text-base-200">Días stock:</span>
+          <span class="font-bold">{{ vehicle.days_in_stock }} Días</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-semibold text-base-200">Leads:</span>
+          <span class="font-bold">{{ vehicle.leads || 0 }}</span>
         </div>
       </div>
     </div>
