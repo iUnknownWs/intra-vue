@@ -702,7 +702,7 @@ onMounted(() => {
           </div>
         </header>
         <div class="hidden w-full flex-row gap-8 xl:flex">
-          <aside class="h-fit w-96 rounded-md bg-white p-8 text-base-content">
+          <aside class="min-h-full w-96 bg-white p-8 text-base-content">
             <span class="text-xl font-bold">Filtros</span>
             <RangeSelect
               label="Año:"
@@ -776,7 +776,7 @@ onMounted(() => {
             </li>
           </aside>
           <div
-            class="mx-auto flex w-full max-w-6xl flex-shrink flex-col items-start justify-center rounded-md"
+            class="mx-auto flex w-full max-w-6xl flex-shrink flex-col items-start justify-center rounded-md py-8"
           >
             <div class="flex w-full flex-row justify-between gap-2">
               <form @submit.prevent="search">
@@ -793,7 +793,7 @@ onMounted(() => {
                 </label>
               </form>
               <div class="flex flex-row gap-2">
-                <button @click="discountDrawer" class="btn hidden xl:flex">
+                <button @click="discountDrawer" class="btn btn-secondary hidden xl:flex">
                   <Icon icon="mdi:discount" width="25" />
                   Descuentos
                 </button>
@@ -907,9 +907,9 @@ onMounted(() => {
                 No disponible ({{ filtersCounters.not_available }})
               </a>
             </div>
-            <div class="flex min-h-[150vh] flex-col items-center justify-between">
+            <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
               <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
-              <div v-else>
+              <div v-else class="w-full">
                 <CardDesktop
                   v-for="(vehicle, index) in vehiclesFilter"
                   :key="index"

@@ -12,7 +12,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
   <div class="card card-side mt-4 w-full flex-row gap-4 bg-white p-6">
     <RouterLink :to="'/vehiculos/' + vehicle.id">
       <div
-        class="relative aspect-video w-60 rounded-lg bg-cover bg-center"
+        class="relative aspect-video h-44 rounded-lg bg-cover bg-center"
         :style="{
           'background-image': `url(${vehicle.image || placeholder})`
         }"
@@ -43,14 +43,14 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         </div>
       </div>
     </RouterLink>
-    <div class="flex min-w-[450px] flex-col">
+    <div class="flex w-full min-w-[350px] flex-col">
       <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-xl font-bold">
         {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
         {{ vehicle.model.model_web?.title }}
       </RouterLink>
       <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
       <div class="divider m-0"></div>
-      <div class="flex flex-row gap-2">
+      <div class="flex flex-row justify-between gap-2">
         <div class="flex flex-row items-center gap-1">
           <Icon icon="mdi:calendar" width="20" class="text-base-200" />
           <span class="text-base font-semibold">{{ vehicle.year }}</span>
@@ -92,9 +92,9 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
       </div>
     </div>
     <div class="flex flex-col gap-2">
-      <button class="btn btn-sm">Coches.net</button>
-      <button class="btn btn-sm">Wallapop</button>
-      <button class="btn btn-sm">Sumauto</button>
+      <button class="btn btn-neutral btn-sm" disabled>Coches.net</button>
+      <button class="btn btn-neutral btn-sm">Wallapop</button>
+      <button class="btn btn-neutral btn-sm">Sumauto</button>
     </div>
     <div class="flex flex-col">
       <div class="dropdown dropdown-end menu-xs">
