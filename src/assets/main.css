@@ -157,6 +157,10 @@ th:last-child {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.btn > span {
+  font-weight: 600;
+}
+
 .textcard {
   font-size: 0.65rem;
   line-height: 0.75rem;
@@ -168,8 +172,14 @@ th:last-child {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   --tw-border-opacity: 1;
-  border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)))!important;
+  border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity))) !important;
   border-radius: 10px !important;
+}
+
+.input-disabled,
+.input:disabled,
+.input[disabled] {
+  background-color: #d1d5db;
 }
 
 .triangle {

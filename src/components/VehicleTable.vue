@@ -19,7 +19,7 @@ defineEmits(['addBtn'])
             class="btn btn-outline btn-sm self-end"
             @click="$emit('addBtn')"
           >
-            <Icon icon="mdi:plus" width="25" />
+            <Icon icon="mdi:plus" width="24" />
             <span class="hidden lg:inline"> Nuevo </span>
           </label>
         </div>

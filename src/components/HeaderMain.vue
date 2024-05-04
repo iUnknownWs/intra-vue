@@ -20,7 +20,7 @@ const toggleDrawer = () => {
       <header class="sticky top-0 z-20">
         <NavBar />
       </header>
-      <main class="min-h-[90vh] w-screen bg-base-100 lg:w-[98vw]">
+      <main class="min-h-[90vh] w-screen bg-base-100 lg:w-[99vw]">
         <slot />
       </main>
     </div>
