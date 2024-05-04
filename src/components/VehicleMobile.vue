@@ -28,7 +28,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           v-if="vehicle.key_locator"
           class="triangle1 absolute left-0 top-0 bg-gradient-to-b from-primary to-secondary pl-2 pt-2"
         >
-          <span class="w-fit text-base font-medium text-white">{{ vehicle.key_locator }}</span>
+          <span class="w-fit text-xs font-medium text-white">{{ vehicle.key_locator }}</span>
         </div>
       </div>
     </figure>

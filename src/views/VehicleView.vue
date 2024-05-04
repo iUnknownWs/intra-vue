@@ -2083,10 +2083,10 @@ onMounted(async () => {
             <ul
               v-scroll-spy-link="{ selector: 'ul>li>a.menu-item' }"
               v-scroll-spy-active="{ selector: 'ul>li>a.menu-item' }"
-              class="menu menu-sm w-56 rounded-box bg-white p-6 text-base-content"
+              class="menu menu-sm w-56 rounded-box bg-white p-6 text-base-200"
             >
               <li>
-                <a @click="adminActive" class="font-bold">Admin</a>
+                <a @click="adminActive" class="font-bold text-black">Admin</a>
                 <ul>
                   <li>
                     <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Información básica</a>
@@ -2106,7 +2106,7 @@ onMounted(async () => {
                 </ul>
               </li>
               <li>
-                <a @click="equipActive" class="font-bold">Equipamiento</a>
+                <a @click="equipActive" class="font-bold text-black">Equipamiento</a>
                 <ul>
                   <li>
                     <a :class="{ 'menu-item': isEquip }" @click="equipActive">
@@ -2120,11 +2120,11 @@ onMounted(async () => {
                   </li>
                 </ul>
               </li>
-              <li><a class="font-bold" @click="ptActive">PT</a></li>
-              <li><a class="font-bold" @click="integrationsActive">Integraciones</a></li>
+              <li><a class="font-bold text-black" @click="ptActive">PT</a></li>
+              <li><a class="font-bold text-black" @click="integrationsActive">Integraciones</a></li>
             </ul>
           </aside>
-          <div class="mx-auto w-full px-8 py-6">
+          <div class="mx-auto w-full lg:p-6">
             <header class="flex flex-col items-center justify-center lg:h-[250px]">
               <LoadingSpinner v-if="loading" class="loading-lg" />
               <VehicleCard
@@ -2162,9 +2162,9 @@ onMounted(async () => {
               v-if="vehicleTab === 'equip'"
               class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
             >
-              <a ref="tab8" role="tab" class="tab tab-active" @click="tabEvent(8)"
-                >Equip de serie</a
-              >
+              <a ref="tab8" role="tab" class="tab tab-active" @click="tabEvent(8)">
+                Equip de serie
+              </a>
               <a ref="tab9" role="tab" class="tab" @click="tabEvent(9)">Equip opcional</a>
             </div>
             <main class="my-8 flex w-full flex-col gap-6 bg-base-100 lg:flex-row">
@@ -2721,7 +2721,7 @@ onMounted(async () => {
                 >
                   <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
                     <h2 class="text-xl font-medium">Performance Test</h2>
-                    <h3 class="text-base font-medium">
+                    <h3 class="text-center text-base font-medium">
                       No se ha realizado ningún performance test a este vehículo hasta el momento
                     </h3>
                     <span class="text-base">¿Desea realizar un Performance Test?</span>
@@ -2862,7 +2862,7 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
-                        class="grid grid-cols-3 gap-1 lg:grid-cols-3 lg:gap-4"
+                        class="grid grid-cols-3 gap-1 lg:gap-4"
                         mobile
                       />
                     </div>
@@ -2877,10 +2877,7 @@ onMounted(async () => {
                         format=".mp4"
                         :params="params"
                       />
-                      <div
-                        v-if="skeletonGallery"
-                        class="grid grid-cols-3 gap-1 lg:grid-cols-3 lg:gap-4"
-                      >
+                      <div v-if="skeletonGallery" class="grid grid-cols-3 gap-2">
                         <div class="skeleton h-28 w-28"></div>
                         <div class="skeleton h-28 w-28"></div>
                         <div class="skeleton h-28 w-28"></div>
@@ -2893,7 +2890,7 @@ onMounted(async () => {
                         :list="galleryVideo"
                         item-key="id"
                         :options="optionsDrag"
-                        class="grid grid-cols-3 gap-1 lg:grid-cols-3 lg:gap-4"
+                        class="grid grid-cols-3 gap-2"
                         @sort="updateImages"
                       >
                         <template #item="{ element, index }">
@@ -3035,7 +3032,10 @@ onMounted(async () => {
               </section>
               <aside class="hidden h-fit flex-col gap-4 rounded bg-white p-4 lg:flex">
                 <h2 class="text-xl font-medium">Galería Multimedia</h2>
-                <div role="tablist" class="tabs tabs-bordered">
+                <div
+                  role="tablist"
+                  class="!checked:[&_input]:font-bold tabs tabs-bordered [&_input]:text-base-200 checked:[&_input]:text-black"
+                >
                   <input
                     type="radio"
                     name="galeria"
@@ -3084,7 +3084,7 @@ onMounted(async () => {
                       format=".mp4"
                       :params="params"
                     />
-                    <div v-if="skeletonGallery" class="grid w-96 grid-cols-2 gap-4 lg:grid-cols-3">
+                    <div v-if="skeletonGallery" class="grid grid-cols-2 gap-2 lg:grid-cols-3">
                       <div class="skeleton h-28 w-28"></div>
                       <div class="skeleton h-28 w-28"></div>
                       <div class="skeleton h-28 w-28"></div>
@@ -3097,7 +3097,7 @@ onMounted(async () => {
                       :list="galleryVideo"
                       item-key="id"
                       :options="optionsDrag"
-                      class="grid w-96 grid-cols-2 gap-2 lg:grid-cols-3"
+                      class="grid grid-cols-2 gap-2 lg:grid-cols-3"
                       @sort="updateImages"
                     >
                       <template #item="{ element, index }">
@@ -3142,13 +3142,7 @@ onMounted(async () => {
                       class="grid grid-cols-2 gap-2 lg:grid-cols-3"
                     />
                   </div>
-                  <input
-                    type="radio"
-                    name="galeria"
-                    role="tab"
-                    class="tab"
-                    aria-label="Docs"
-                  />
+                  <input type="radio" name="galeria" role="tab" class="tab" aria-label="Docs" />
                   <div role="tabpanel" class="tab-content min-w-80 p-1">
                     <DragDrop
                       format=""
@@ -3163,13 +3157,19 @@ onMounted(async () => {
                       :key="index"
                       class="card card-side m-3 bg-base-100 shadow-xl"
                     >
-                      <div class="card-body flex-row justify-between p-4">
+                      <div class="card-body flex-row items-center justify-between p-4">
                         <div class="flex gap-2">
-                          <Icon icon="mdi:file-document" width="50" />
-                          <h2 class="card-title text-base">{{ doc.file_name }}</h2>
+                          <Icon icon="mdi:file-document" width="24" />
+                          <h2 class="card-title w-44 overflow-hidden text-ellipsis text-sm">
+                            {{ doc.file_name }}
+                          </h2>
                         </div>
-                        <div class="self flex gap-2">
-                          <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
+                        <div class="flex gap-2">
+                          <a
+                            :href="doc.file"
+                            target="_blank"
+                            class="btn btn-square btn-secondary btn-sm"
+                          >
                             <Icon icon="mdi:eye" width="20" />
                           </a>
                           <button
@@ -3189,7 +3189,7 @@ onMounted(async () => {
         </div>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50 bg-white">
-        <div class="btm-nav z-10 hidden lg:flex bg-white">
+        <div class="btm-nav z-10 hidden bg-white lg:flex">
           <div class="mr-4 flex flex-row justify-end">
             <button class="btn btn-primary max-w-24 text-white" @click="updateData">
               <LoadingSpinner v-if="loading" />
@@ -3590,7 +3590,7 @@ onMounted(async () => {
           primary="Siguiente"
           @click-secondary="reserveDrawer()"
           @click-primary="reserveDrawer(3)"
-          :disabled="userPicked || !(walcuId === 'create_new')"
+          :disabled="!(walcuId === 'create_new' || !userPicked)"
         />
       </ul>
       <ul
@@ -3606,6 +3606,8 @@ onMounted(async () => {
               :options="buyersOptions"
               v-model="buyerReserve"
               :initialValue="null"
+              optionValue="id"
+              optionLabel="label"
             />
             <SelectInput
               label="Vehículo:"
@@ -3738,6 +3740,7 @@ onMounted(async () => {
           @click-primary="reserveDrawer(5)"
         />
       </ul>
+
       <ul
         v-if="drawerSection === 'finance'"
         class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
@@ -3817,5 +3820,8 @@ onMounted(async () => {
   background-color: #dcdddf !important;
   color: black !important;
   font-weight: 600;
+}
+.checked\:\[\&_input\]\:text-black input:checked {
+  font-weight: 700;
 }
 </style>

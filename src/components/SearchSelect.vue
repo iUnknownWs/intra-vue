@@ -27,6 +27,7 @@ const brand = defineModel()
     <VueSelect
       v-else
       v-model="brand"
+      :label="optionLabel"
       :disabled="disabled"
       :options="options"
       @option:selected="$emit('selected')"

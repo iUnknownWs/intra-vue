@@ -54,12 +54,13 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone(optionsDrop)
 </script>
 
 <template>
-  <div v-bind="getRootProps()" class="m-2 w-fit rounded border-2 border-black p-3">
+  <div v-bind="getRootProps()" class="w-full rounded-xl bg-base-100 p-3 my-3">
     <input v-bind="getInputProps()" />
-    <div class="w-fit text-center">
+    <div class="flex flex-row items-center justify-between text-center">
       <p v-if="isDragActive">Suelta los archivos para añadirlos</p>
       <LoadingSpinner v-else-if="loading" />
-      <p v-else>Arrastra y suelta los archivos o selecciónalos haciendo click</p>
+      <p v-else class="font-medium text-base-200">Arrastra y suelta sus archivos aquí</p>
+      <button class="btn btn-outline btn-sm self-end text-base-200">Subir</button>
     </div>
   </div>
 </template>

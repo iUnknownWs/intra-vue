@@ -14,7 +14,7 @@ defineEmits(['settingClick', 'primaryClick'])
 </script>
 
 <template>
-  <div class="card w-[80vw] bg-white shadow-xl lg:w-full lg:max-w-56">
+  <div class="card bg-white shadow-xl lg:w-full lg:max-w-56">
     <figure class="h-28 px-4 pt-10">
       <img v-if="img" :src="img" alt="Logo" />
       <span v-else class="text-3xl">{{ name }}</span>
