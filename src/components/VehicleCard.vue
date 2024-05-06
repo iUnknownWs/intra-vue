@@ -176,7 +176,9 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         </div>
         <div class="flex flex-col">
           <span class="font-semibold text-base-200">Matriculación:</span>
-          <span class="font-bold">{{ vehicle.registration_date }}</span>
+          <span class="font-bold">
+            {{ new Date(vehicle.registration_date).toLocaleString('en-GB', { year: 'numeric', month: 'numeric', day: 'numeric' }) }}
+          </span>
         </div>
         <div class="flex flex-col">
           <span class="font-semibold text-base-200">Días stock:</span>

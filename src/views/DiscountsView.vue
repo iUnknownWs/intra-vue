@@ -181,6 +181,12 @@ const reset = () => {
           :loading="loading"
           rows-per-page-message="Filas por pestaña"
         >
+          <template v-slot:item-to_date="{ to_date }">
+            {{ new Date(to_date).toLocaleString('en-GB') }}
+          </template>
+          <template v-slot:item-from_date="{ from_date }">
+            {{ new Date(from_date).toLocaleString('en-GB') }}
+          </template>
           <template v-slot:item-id="{ id }">
             <div class="w-20">
               <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">

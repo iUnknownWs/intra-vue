@@ -765,11 +765,7 @@ onMounted(() => {
             <CheckInput label="Pendiente Video:" v-model="pVideo" />
             <li class="mt-6 grid grid-cols-2 gap-2">
               <button @click="reset" class="btn btn-outline w-full">Limpiar</button>
-              <button
-                @click="filter"
-                class="btn btn-primary w-full text-white"
-                :disabled="disabled"
-              >
+              <button @click="filter" class="btn btn-primary w-full text-white">
                 <LoadingSpinner v-if="loading" />
                 <span v-else class="font-semibold text-white">Filtrar</span>
               </button>

@@ -264,7 +264,7 @@ const deliveryToggle = ref(false)
 const financedFeeReserve = ref(0)
 const financedPriceReserve = ref(0)
 const monthsReserve = ref(0)
-const paymentType = ref(null)
+const paymentType = ref(0)
 const walcuVehicleId = ref(null)
 const docusignEmail = ref(null)
 const docusignComments = ref('')
@@ -276,7 +276,6 @@ const addContract = ref(false)
 const buyerPlace = ref(null)
 const userPicked = ref(true)
 const paymentPicked = ref(true)
-const formPicked = ref(true)
 const docusignDis = ref(true)
 const finProdOptions = ref([])
 const finRateOptions = ref([])
@@ -2351,6 +2350,9 @@ onMounted(async () => {
                                     {{ status.toUpperCase() }}
                                   </span>
                                 </template>
+                                <template v-slot:item-created_at="{ created_at }">
+                                  {{ new Date(created_at).toLocaleString('en-GB') }}
+                                </template>
                                 <template v-slot:item-id="{ id }">
                                   <button
                                     class="btn btn-square btn-error btn-xs"
@@ -2481,10 +2483,16 @@ onMounted(async () => {
                             :server-items-length="serverItemsLength"
                             :loading="isFetchingDiscounts"
                           >
+                            <template v-slot:item-from_date="{ from_date }">
+                              {{ new Date(from_date).toLocaleString('en-GB') }}
+                            </template>
+                            <template v-slot:item-to_date="{ to_date }">
+                              {{ new Date(to_date).toLocaleString('en-GB') }}
+                            </template>
                             <template v-slot:item-id="{ id }">
                               <div class="w-14">
                                 <button
-                                  class="btn btn-square btn-xs mr-2"
+                                  class="btn btn-square btn-secondary btn-xs mr-2"
                                   @click="editModal(id, 1)"
                                 >
                                   <Icon icon="mdi:pencil" />
@@ -3698,7 +3706,6 @@ onMounted(async () => {
               :options="options.paymentType"
               v-model="paymentType"
               :initialValue="null"
-              @selected="formPicked = false"
             />
             <div v-if="paymentType === '1'">
               <TextInput label="Cuota Mensual:" v-model="financedFeeReserve" />
@@ -3734,7 +3741,6 @@ onMounted(async () => {
         <DrawerActions
           secondary="Volver"
           primary="Reservar"
-          :disabled="formPicked"
           :loading="loadingBooking"
           @click-secondary="reserveDrawer(3)"
           @click-primary="reserveDrawer(5)"
