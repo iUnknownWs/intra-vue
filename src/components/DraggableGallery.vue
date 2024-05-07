@@ -17,13 +17,13 @@ const props = defineProps({
     required: true
   },
   updateUrl: {
-    type: String,
+    type: String
   },
   updateFunction: {
     type: Function
   },
   deleteUrl: {
-    type: [String],
+    type: [String]
   },
   params: {
     type: Object
@@ -43,7 +43,7 @@ const imagesParams = [
   {
     key: 'vehicle',
     value: props.id
-  },
+  }
 ]
 
 if (props.params) {
@@ -122,7 +122,7 @@ onMounted(() => {
     :params="imagesParams"
   />
   <div v-if="loading" :class="$attrs.class">
-    <div v-for="i in skeletons" :key="i" class="skeleton aspect-square gap-3 min-h-28"></div>
+    <div v-for="i in skeletons" :key="i" class="skeleton aspect-square min-h-28 gap-3"></div>
   </div>
   <Sortable
     v-else
@@ -136,7 +136,7 @@ onMounted(() => {
       <div
         @mouseover="galleryHover = index"
         @mouseleave="galleryHover = null"
-        class="draggable relative aspect-square min-w-28 rounded bg-cover bg-center object-cover"
+        class="draggable relative aspect-square w-full min-w-28 rounded bg-cover bg-center object-cover"
         :style="{
           backgroundImage: `url(${element.image})`
         }"
@@ -148,7 +148,7 @@ onMounted(() => {
             'bg-black/30': galleryHover === index
           }"
         >
-          <a :href="element.image" target="_blank" class="btn btn-square btn-sm">
+          <a :href="element.image" target="_blank" class="btn btn-square btn-secondary btn-sm">
             <Icon icon="mdi:eye" width="20" />
           </a>
           <button class="btn btn-square btn-error btn-sm" @click="deleteImage(element.id)">

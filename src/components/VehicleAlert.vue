@@ -9,10 +9,12 @@ defineEmits(['btn'])
 </script>
 
 <template>
-  <div role="alert" class="alert w-[98%] alert-warning my-6 mx-4 flex">
+  <div role="alert" class="alert alert-warning flex">
     <div class="flex flex-row w-full items-center justify-between gap-2">
-      <Icon icon="mdi:alert-circle" />
-      <span>{{ message }}</span>
+      <div class="flex flex-row items-center gap-2">
+        <Icon icon="mdi:alert-circle" width="24" />
+        <span class="w-fit">{{ message }}</span>
+      </div>
       <button class="btn btn-square btn-ghost btn-xs" @click="$emit('btn')">
         <Icon icon="mdi:close" width="24" />
       </button>

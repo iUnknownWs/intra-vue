@@ -6,11 +6,11 @@ defineProps({
 </script>
 
 <template>
-  <li class="disabled flex flex-row justify-between focus:bg-white">
+  <li class="disabled flex flex-row items-center justify-between pb-4 focus:bg-white">
     <slot />
     {{ label }}
-    <button @click="$emit('toggle')" class="btn btn-square btn-xs">
-      <Icon icon="mdi:close" width="20" />
-    </button>
+    <a @click="$emit('toggle')">
+      <Icon icon="mdi:close" width="24" color="black" />
+    </a>
   </li>
 </template>

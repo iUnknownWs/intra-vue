@@ -665,363 +665,369 @@ onMounted(() => {
   <HeaderMain ref="header">
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
-        <header class="flex w-full flex-row items-center justify-between gap-2 xl:hidden">
-          <form @submit.prevent="search" class="w-full">
-            <label class="input input-bordered flex items-center gap-2">
-              <Icon icon="mdi:magnify" width="24" />
-              <input
-                type="text"
-                placeholder="Buscar"
-                v-model="searchValue"
-                @change="searchReact"
-                class="w-full"
-              />
-              <Icon icon="mdi:times" width="24" @click="searchReset" />
-            </label>
-          </form>
-          <div class="flex gap-2 xl:hidden">
-            <label for="filterDrawer" @click="filterDrawer" class="text-black">
-              <div tabindex="0" role="button" class="btn btn-square btn-outline xl:hidden">
-                <Icon icon="heroicons:adjustments-vertical" width="24" />
-              </div>
-            </label>
-            <DropdownBtn>
-              <template #btn>
-                <div tabindex="0" role="button" class="btn btn-square btn-primary">
-                  <Icon icon="mdi:plus" width="24" />
+        <div class="p-4 xl:p-0">
+          <header class="flex w-full flex-row items-center justify-between gap-2 xl:hidden">
+            <form @submit.prevent="search" class="w-full">
+              <label class="input input-bordered flex items-center gap-2">
+                <Icon icon="mdi:magnify" width="24" />
+                <input
+                  type="text"
+                  placeholder="Buscar"
+                  v-model="searchValue"
+                  @change="searchReact"
+                  class="w-full"
+                />
+                <Icon icon="mdi:times" width="24" @click="searchReset" />
+              </label>
+            </form>
+            <div class="flex gap-2 xl:hidden">
+              <label for="filterDrawer" @click="filterDrawer" class="text-black">
+                <div tabindex="0" role="button" class="btn btn-square btn-outline xl:hidden">
+                  <Icon icon="heroicons:adjustments-vertical" width="24" />
                 </div>
-              </template>
-              <template #content>
-                <li><label for="filterDrawer" @click="autoDrawer">Registro Automático</label></li>
-                <li>
-                  <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
-                </li>
-                <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
-              </template>
-            </DropdownBtn>
-          </div>
-        </header>
-        <div class="hidden w-full flex-row gap-8 xl:flex">
-          <aside class="min-h-full w-96 bg-white p-8 text-base-content">
-            <span class="text-xl font-bold">Filtros</span>
-            <RangeSelect
-              label="Año:"
-              :from="options.reverseYears"
-              :to="options.years"
-              v-model:gte="yearGte"
-              v-model:lte="yearLte"
-              @change-gte="yearFilter"
-              @change-lte="yearFilter"
-            />
-            <RangeInputN
-              label="Precio:"
-              :max="200000"
-              v-model:gte="priceGte"
-              v-model:lte="priceLte"
-              @change-gte="priceFilter"
-              @change-lte="priceFilter"
-            />
-            <RangeInputN
-              label="Kms:"
-              :max="200000"
-              v-model:gte="kmsGte"
-              v-model:lte="kmsLte"
-              @change-gte="kmsFilter"
-              @change-lte="kmsFilter"
-            />
-            <SelectInput
-              label="Combustible:"
-              :options="options.combustible"
-              v-model="combustible"
-              @selected="combustibleFilter"
-            />
-            <SelectInput
-              label="Tipo de Cambio:"
-              :options="options.cambio"
-              v-model="cambio"
-              @selected="cambioFilter"
-            />
-            <SelectInput
-              label="Tipo de Vehículo:"
-              :options="options.vehiculo"
-              v-model="vehiculo"
-              @selected="vehiculoFilter"
-            />
-            <SelectInput
-              label="Categoría web:"
-              :options="options.categoria"
-              v-model="categoria"
-              @selected="categoriaFilter"
-            />
-            <SelectInput
-              label="Etiqueta medioambiental:"
-              :options="options.medioambiental"
-              v-model="medioambiental"
-              @selected="medioambientalFilter"
-              :initialValue="null"
-            />
-            <CheckInput label="ITV Vigente:" v-model="itv" />
-            <CheckInput label="Pendiente ITV:" v-model="pitv" />
-            <CheckInput label="Pendiente Video:" v-model="pVideo" />
-            <li class="mt-6 grid grid-cols-2 gap-2">
-              <button @click="reset" class="btn btn-outline w-full">Limpiar</button>
-              <button @click="filter" class="btn btn-primary w-full text-white">
-                <LoadingSpinner v-if="loading" />
-                <span v-else class="font-semibold text-white">Filtrar</span>
-              </button>
-            </li>
-          </aside>
-          <div
-            class="mx-auto flex w-full max-w-6xl flex-shrink flex-col items-start justify-center rounded-md py-8"
-          >
-            <div class="flex w-full flex-row justify-between gap-2">
-              <form @submit.prevent="search">
-                <label class="input input-bordered flex w-96 items-center gap-2">
-                  <Icon icon="mdi:magnify" width="24" />
-                  <input
-                    type="text"
-                    class="grow"
-                    placeholder="Buscar"
-                    v-model="searchValue"
-                    @change="searchReact"
-                  />
-                  <Icon icon="mdi:times" width="24" @click="searchReset" />
-                </label>
-              </form>
-              <div class="flex flex-row gap-2">
-                <button @click="discountDrawer" class="btn btn-secondary hidden xl:flex">
-                  <Icon icon="mdi:discount" width="25" />
-                  Descuentos
+              </label>
+              <DropdownBtn>
+                <template #btn>
+                  <div tabindex="0" role="button" class="btn btn-square btn-primary">
+                    <Icon icon="mdi:plus" width="24" />
+                  </div>
+                </template>
+                <template #content>
+                  <li><label for="filterDrawer" @click="autoDrawer">Registro Automático</label></li>
+                  <li>
+                    <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
+                  </li>
+                  <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
+                </template>
+              </DropdownBtn>
+            </div>
+          </header>
+          <div class="hidden w-full flex-row gap-8 xl:flex">
+            <aside class="min-h-full w-96 bg-white p-8 text-base-content">
+              <span class="text-xl font-bold">Filtros</span>
+              <RangeSelect
+                label="Año:"
+                :from="options.reverseYears"
+                :to="options.years"
+                v-model:gte="yearGte"
+                v-model:lte="yearLte"
+                @change-gte="yearFilter"
+                @change-lte="yearFilter"
+              />
+              <RangeInputN
+                label="Precio:"
+                :max="200000"
+                v-model:gte="priceGte"
+                v-model:lte="priceLte"
+                @change-gte="priceFilter"
+                @change-lte="priceFilter"
+              />
+              <RangeInputN
+                label="Kms:"
+                :max="200000"
+                v-model:gte="kmsGte"
+                v-model:lte="kmsLte"
+                @change-gte="kmsFilter"
+                @change-lte="kmsFilter"
+              />
+              <SelectInput
+                label="Combustible:"
+                :options="options.combustible"
+                v-model="combustible"
+                @selected="combustibleFilter"
+              />
+              <SelectInput
+                label="Tipo de Cambio:"
+                :options="options.cambio"
+                v-model="cambio"
+                @selected="cambioFilter"
+              />
+              <SelectInput
+                label="Tipo de Vehículo:"
+                :options="options.vehiculo"
+                v-model="vehiculo"
+                @selected="vehiculoFilter"
+              />
+              <SelectInput
+                label="Categoría web:"
+                :options="options.categoria"
+                v-model="categoria"
+                @selected="categoriaFilter"
+              />
+              <SelectInput
+                label="Etiqueta medioambiental:"
+                :options="options.medioambiental"
+                v-model="medioambiental"
+                @selected="medioambientalFilter"
+                :initialValue="null"
+              />
+              <CheckInput label="ITV Vigente:" v-model="itv" />
+              <CheckInput label="Pendiente ITV:" v-model="pitv" />
+              <CheckInput label="Pendiente Video:" v-model="pVideo" />
+              <li class="mt-6 grid grid-cols-2 gap-2">
+                <button @click="reset" class="btn btn-outline w-full">Limpiar</button>
+                <button @click="filter" class="btn btn-primary w-full text-white">
+                  <LoadingSpinner v-if="loading" />
+                  <span v-else class="font-semibold text-white">Filtrar</span>
                 </button>
-                <DropdownBtn>
-                  <template #btn>
-                    <div
-                      tabindex="0"
-                      role="button"
-                      class="btn btn-primary hidden text-white xl:flex"
-                    >
-                      <Icon icon="mdi:plus" width="25" />
-                      Nuevo
-                    </div>
-                  </template>
-                  <template #content>
-                    <li>
-                      <label for="filterDrawer" @click="autoDrawer">Registro Automático</label>
-                    </li>
-                    <li>
-                      <label for="filterDrawer" @click="semiDrawer">Registro Semi-Automático</label>
-                    </li>
-                    <li><label for="filterDrawer" @click="manualDrawer">Registro Manual</label></li>
-                  </template>
-                </DropdownBtn>
+              </li>
+            </aside>
+            <div
+              class="mx-auto flex w-full max-w-6xl flex-shrink flex-col items-start justify-center rounded-md py-8"
+            >
+              <div class="flex w-full flex-row justify-between gap-2">
+                <form @submit.prevent="search">
+                  <label class="input input-bordered flex w-96 items-center gap-2">
+                    <Icon icon="mdi:magnify" width="24" />
+                    <input
+                      type="text"
+                      class="grow"
+                      placeholder="Buscar"
+                      v-model="searchValue"
+                      @change="searchReact"
+                    />
+                    <Icon icon="mdi:times" width="24" @click="searchReset" />
+                  </label>
+                </form>
+                <div class="flex flex-row gap-2">
+                  <button @click="discountDrawer" class="btn btn-secondary hidden xl:flex">
+                    <Icon icon="mdi:discount" width="25" />
+                    Descuentos
+                  </button>
+                  <DropdownBtn>
+                    <template #btn>
+                      <div
+                        tabindex="0"
+                        role="button"
+                        class="btn btn-primary hidden text-white xl:flex"
+                      >
+                        <Icon icon="mdi:plus" width="25" />
+                        Nuevo
+                      </div>
+                    </template>
+                    <template #content>
+                      <li>
+                        <label for="filterDrawer" @click="autoDrawer">Registro Automático</label>
+                      </li>
+                      <li>
+                        <label for="filterDrawer" @click="semiDrawer"
+                          >Registro Semi-Automático</label
+                        >
+                      </li>
+                      <li>
+                        <label for="filterDrawer" @click="manualDrawer">Registro Manual</label>
+                      </li>
+                    </template>
+                  </DropdownBtn>
+                </div>
+              </div>
+              <div
+                role="tablist"
+                ref="tabContainer"
+                @wheel.prevent="horizontalScroll"
+                class="no-scrollbar tabs tabs-bordered mt-7 w-[73vw] max-w-6xl overflow-x-scroll font-medium [&_a]:gap-2 [&_a]:text-nowrap [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
+              >
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '0' }"
+                  @click="all"
+                >
+                  Todos ({{ filtersCounters.total }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '1' }"
+                  @click="vehicleStatus(0)"
+                >
+                  Recepción ({{ filtersCounters.receipt }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '2' }"
+                  @click="vehicleStatus(3)"
+                >
+                  Publicación ({{ filtersCounters.publication }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '3' }"
+                  @click="vehicleStatus(4)"
+                >
+                  En venta ({{ filtersCounters.on_sale }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '4' }"
+                  @click="vehicleStatus(5)"
+                >
+                  Reservados ({{ filtersCounters.reserved }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '5' }"
+                  @click="ppt"
+                >
+                  Pte. de PT ({{ filtersCounters.ppt }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '6' }"
+                  @click="vpt"
+                >
+                  Validar PT ({{ filtersCounters.vpt }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '7' }"
+                  @click="web"
+                >
+                  No web ({{ filtersCounters.no_web }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '8' }"
+                  @click="entrega"
+                >
+                  Entrega inmediata ({{ filtersCounters.inmediate_delivery }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '9' }"
+                  @click="vehicleStatus(10)"
+                >
+                  No disponible ({{ filtersCounters.not_available }})
+                </a>
+              </div>
+              <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
+                <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
+                <div v-else class="w-full">
+                  <CardDesktop
+                    v-for="(vehicle, index) in vehiclesFilter"
+                    :key="index"
+                    :vehicle="vehicle"
+                    @menu-btn2="vehicleWeb"
+                    @menu-btn5="deleteVehicle"
+                  />
+                </div>
               </div>
             </div>
-            <div
-              role="tablist"
-              ref="tabContainer"
-              @wheel.prevent="horizontalScroll"
-              class="no-scrollbar tabs tabs-bordered mt-7 w-[73vw] max-w-6xl overflow-x-scroll font-medium [&_a]:gap-2 [&_a]:text-nowrap [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
-            >
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '0' }"
-                @click="all"
+          </div>
+          <div
+            class="mt-4 flex min-h-[150vh] flex-col items-center justify-between xl:hidden"
+            :key="refresh"
+          >
+            <div class="flex h-full w-full flex-col items-center">
+              <div
+                role="tablist"
+                ref="tabContainer"
+                @wheel.prevent="horizontalScroll"
+                class="tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
               >
-                Todos ({{ filtersCounters.total }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '1' }"
-                @click="vehicleStatus(0)"
-              >
-                Recepción ({{ filtersCounters.receipt }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '2' }"
-                @click="vehicleStatus(3)"
-              >
-                Publicación ({{ filtersCounters.publication }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '3' }"
-                @click="vehicleStatus(4)"
-              >
-                En venta ({{ filtersCounters.on_sale }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '4' }"
-                @click="vehicleStatus(5)"
-              >
-                Reservados ({{ filtersCounters.reserved }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '5' }"
-                @click="ppt"
-              >
-                Pte. de PT ({{ filtersCounters.ppt }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '6' }"
-                @click="vpt"
-              >
-                Validar PT ({{ filtersCounters.vpt }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '7' }"
-                @click="web"
-              >
-                No web ({{ filtersCounters.no_web }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '8' }"
-                @click="entrega"
-              >
-                Entrega inmediata ({{ filtersCounters.inmediate_delivery }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '9' }"
-                @click="vehicleStatus(10)"
-              >
-                No disponible ({{ filtersCounters.not_available }})
-              </a>
-            </div>
-            <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
-              <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
-              <div v-else class="w-full">
-                <CardDesktop
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '0' }"
+                  @click="all"
+                >
+                  Todos ({{ filtersCounters.total }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '1' }"
+                  @click="vehicleStatus(0)"
+                >
+                  Recepción ({{ filtersCounters.receipt }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '2' }"
+                  @click="vehicleStatus(3)"
+                >
+                  Publicación ({{ filtersCounters.publication }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '3' }"
+                  @click="vehicleStatus(4)"
+                >
+                  En venta ({{ filtersCounters.on_sale }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '4' }"
+                  @click="vehicleStatus(5)"
+                >
+                  Reservados ({{ filtersCounters.reserved }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '5' }"
+                  @click="ppt"
+                >
+                  Pte. de PT ({{ filtersCounters.ppt }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '6' }"
+                  @click="vpt"
+                >
+                  Validar PT ({{ filtersCounters.vpt }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '7' }"
+                  @click="web"
+                >
+                  No web ({{ filtersCounters.no_web }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '8' }"
+                  @click="entrega"
+                >
+                  Entrega inmediata ({{ filtersCounters.inmediate_delivery }})
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  :class="{ 'tab-active font-bold !text-black': tab === '9' }"
+                  @click="vehicleStatus(10)"
+                >
+                  No disponible ({{ filtersCounters.not_available }})
+                </a>
+              </div>
+              <LoadingSpinner v-if="loading" class="loading-lg mt-24" />
+              <div v-else>
+                <CardMobile
                   v-for="(vehicle, index) in vehiclesFilter"
+                  @menu="vehicleMenu"
                   :key="index"
                   :vehicle="vehicle"
-                  @menu-btn2="vehicleWeb"
-                  @menu-btn5="deleteVehicle"
                 />
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="mt-4 flex min-h-[150vh] flex-col items-center justify-between xl:hidden"
-          :key="refresh"
-        >
-          <div class="flex h-full w-full flex-col items-center">
-            <div
-              role="tablist"
-              ref="tabContainer"
-              @wheel.prevent="horizontalScroll"
-              class="tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
-            >
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '0' }"
-                @click="all"
-              >
-                Todos ({{ filtersCounters.total }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '1' }"
-                @click="vehicleStatus(0)"
-              >
-                Recepción ({{ filtersCounters.receipt }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '2' }"
-                @click="vehicleStatus(3)"
-              >
-                Publicación ({{ filtersCounters.publication }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '3' }"
-                @click="vehicleStatus(4)"
-              >
-                En venta ({{ filtersCounters.on_sale }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '4' }"
-                @click="vehicleStatus(5)"
-              >
-                Reservados ({{ filtersCounters.reserved }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '5' }"
-                @click="ppt"
-              >
-                Pte. de PT ({{ filtersCounters.ppt }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '6' }"
-                @click="vpt"
-              >
-                Validar PT ({{ filtersCounters.vpt }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '7' }"
-                @click="web"
-              >
-                No web ({{ filtersCounters.no_web }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '8' }"
-                @click="entrega"
-              >
-                Entrega inmediata ({{ filtersCounters.inmediate_delivery }})
-              </a>
-              <a
-                role="tab"
-                class="tab"
-                :class="{ 'tab-active font-bold !text-black': tab === '9' }"
-                @click="vehicleStatus(10)"
-              >
-                No disponible ({{ filtersCounters.not_available }})
-              </a>
-            </div>
-            <LoadingSpinner v-if="loading" class="loading-lg mt-24" />
-            <div v-else>
-              <CardMobile
-                v-for="(vehicle, index) in vehiclesFilter"
-                @menu="vehicleMenu"
-                :key="index"
-                :vehicle="vehicle"
-              />
-            </div>
+          <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
+            <LoadingSpinner v-if="scrollNextUrl" class="loading-lg" />
           </div>
-        </div>
-        <div ref="vehicleNext" class="my-8 flex w-full items-center justify-center">
-          <LoadingSpinner v-if="scrollNextUrl" class="loading-lg" />
         </div>
       </template>
       <template #drawer>

@@ -30,19 +30,19 @@ const toggleDrawer = () => {
         <!-- Sidebar content here -->
         <DrawerLogo @toggle="toggleDrawer">
           <img
-            class="w-60 pb-4 active:!bg-white"
+            class="w-60 active:!bg-white"
             src="https://garageclub.es/static/img/logo_black.svg"
             alt="logo"
           />
         </DrawerLogo>
         <DrawerLink label="Vehículos" href="/vehiculos" :toggleDrawer="toggleDrawer">
-          <Icon icon="mdi:car" />
+          <Icon icon="mdi:car" width="24" />
         </DrawerLink>
         <DrawerLink label="Reservas" href="/reservas" :toggleDrawer="toggleDrawer">
-          <Icon icon="mdi:book" />
+          <Icon icon="mdi:book" width="24" />
         </DrawerLink>
         <DrawerLink label="Tasaciones" href="/tasaciones" :toggleDrawer="toggleDrawer">
-          <Icon icon="mdi:attach-money" />
+          <Icon icon="mdi:attach-money" width="24" />
         </DrawerLink>
       </div>
     </div>

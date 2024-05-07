@@ -1958,6 +1958,8 @@ const integrationsActive = () => {
   isEquip.value = false
 }
 
+const galleryTab = ref(0)
+
 onMounted(async () => {
   fetchingExtras()
   fetchingDiscounts()
@@ -2128,7 +2130,7 @@ onMounted(async () => {
               v-if="commentAlert"
               :message="commInternal"
               @btn="commentAlert = false"
-              class="xl:hidden"
+              class="my-5 xl:hidden"
             />
             <div
               v-if="vehicleTab === 'admin'"
@@ -2148,7 +2150,7 @@ onMounted(async () => {
             <div
               role="tablist"
               v-if="vehicleTab === 'equip'"
-              class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-base-100 px-4 py-2 xl:hidden"
+              class="no-scrollbar tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-base-100 px-4 py-2 xl:hidden"
             >
               <a ref="tab8" role="tab" class="tab tab-active" @click="tabEvent(8)">
                 Equip de serie
@@ -2175,7 +2177,7 @@ onMounted(async () => {
                   v-if="commentAlert"
                   :message="commInternal"
                   @btn="commentAlert = false"
-                  class="hidden xl:grid"
+                  class="mb-4 hidden xl:grid"
                 />
                 <div v-scroll-spy="{ offset: 120 }" class="flex w-full flex-col gap-8">
                   <template v-if="vehicleTab === 'admin'">
@@ -2829,21 +2831,50 @@ onMounted(async () => {
                     </VehicleTable>
                   </div>
                 </div>
+                <!-- Galeria Mobile -->
                 <div
                   v-if="vehicleTab === 'gallery'"
                   ref="gallery"
-                  class="flex flex-col gap-4 rounded bg-white p-4 xl:hidden"
+                  class="mx-auto flex w-full flex-col gap-4 rounded bg-white p-4 xl:hidden"
                 >
-                  <h2 class="text-xl font-medium">Galería Multimedia</h2>
-                  <input
-                    type="radio"
-                    name="galeria"
-                    role="tab"
-                    class="tab"
-                    aria-label="Fotos"
-                    checked
-                  />
-                  <div role="tabpanel" class="tab-content px-3 pt-0">
+                  <div role="tablist" class="tabs tabs-bordered [&_a]:text-base-200">
+                    <a
+                      role="tab"
+                      class="tab"
+                      :class="{ 'tab-active': galleryTab === 0 }"
+                      @click="galleryTab = 0"
+                      >Fotos</a
+                    >
+                    <a
+                      role="tab"
+                      class="tab"
+                      :class="{ 'tab-active': galleryTab === 1 }"
+                      @click="galleryTab = 1"
+                      >Desperfectos</a
+                    >
+                    <a
+                      role="tab"
+                      class="tab"
+                      :class="{ 'tab-active': galleryTab === 2 }"
+                      @click="galleryTab = 2"
+                      >Videos</a
+                    >
+                    <a
+                      role="tab"
+                      class="tab"
+                      :class="{ 'tab-active': galleryTab === 3 }"
+                      @click="galleryTab = 3"
+                      >360</a
+                    >
+                    <a
+                      role="tab"
+                      class="tab"
+                      :class="{ 'tab-active': galleryTab === 4 }"
+                      @click="galleryTab = 4"
+                      >Docs</a
+                    >
+                  </div>
+                  <template v-if="galleryTab === 0">
                     <div class="flex flex-col items-center">
                       <DraggableGallery
                         :url="galleryUrl"
@@ -2852,19 +2883,12 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
-                        class="grid grid-cols-3 gap-1 xl:grid-cols-3 xl:gap-4"
+                        class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-3 xl:gap-4"
                         mobile
                       />
                     </div>
-                  </div>
-                  <input
-                    type="radio"
-                    name="galeria"
-                    role="tab"
-                    class="tab"
-                    aria-label="Desperfectos"
-                  />
-                  <div role="tabpanel" class="tab-content px-3 pt-0">
+                  </template>
+                  <template v-if="galleryTab === 1">
                     <div class="flex flex-col items-center">
                       <DraggableGallery
                         :url="galleryFaultyUrl"
@@ -2874,13 +2898,12 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
-                        class="grid grid-cols-3 gap-1 xl:gap-4"
+                        class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:gap-4"
                         mobile
                       />
                     </div>
-                  </div>
-                  <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
-                  <div role="tabpanel" class="tab-content px-3 pt-0">
+                  </template>
+                  <template v-if="galleryTab === 2">
                     <div class="flex flex-col items-center">
                       <DropMobile
                         type="video"
@@ -2902,7 +2925,7 @@ onMounted(async () => {
                         :list="galleryVideo"
                         item-key="id"
                         :options="optionsDrag"
-                        class="grid grid-cols-3 gap-2"
+                        class="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5"
                         @sort="updateImages"
                       >
                         <template #item="{ element, index }">
@@ -2940,9 +2963,8 @@ onMounted(async () => {
                         </template>
                       </Sortable>
                     </div>
-                  </div>
-                  <input type="radio" name="galeria" role="tab" class="tab" aria-label="360" />
-                  <div role="tabpanel" class="tab-content px-3 pt-0">
+                  </template>
+                  <template v-if="galleryTab === 3">
                     <div class="flex flex-col items-center">
                       <DraggableGallery
                         :url="gallery360Url"
@@ -2951,18 +2973,11 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDelete360Url"
                         mobile
-                        class="grid grid-cols-3 gap-1 xl:grid-cols-3 xl:gap-4"
+                        class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-3 xl:gap-4"
                       />
                     </div>
-                  </div>
-                  <input
-                    type="radio"
-                    name="galeria"
-                    role="tab"
-                    class="tab"
-                    aria-label="Documentos"
-                  />
-                  <div role="tabpanel" class="tab-content pt-0">
+                  </template>
+                  <template v-if="galleryTab === 4">
                     <div class="flex flex-col items-center">
                       <DropMobile
                         format=""
@@ -2980,7 +2995,11 @@ onMounted(async () => {
                         <div class="card-body flex-row justify-between p-4">
                           <div class="flex gap-2">
                             <Icon icon="mdi:file-document" width="40" />
-                            <h2 class="card-title text-sm">{{ doc.file_name }}</h2>
+                            <h2
+                              class="card-title w-44 overflow-hidden text-ellipsis text-sm md:w-64"
+                            >
+                              {{ doc.file_name }}
+                            </h2>
                           </div>
                           <div class="self flex gap-2">
                             <a :href="doc.file" target="_blank" class="btn btn-square btn-sm">
@@ -2996,7 +3015,7 @@ onMounted(async () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </template>
                 </div>
                 <div
                   v-if="vehicleTab === 'integration'"
@@ -3004,7 +3023,7 @@ onMounted(async () => {
                   class="flex w-full scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                 >
                   <h1 class="text-xl font-medium">Integraciones</h1>
-                  <div class="mt-6 flex flex-col gap-4 xl:flex-row">
+                  <div class="mt-6 flex flex-col gap-4 lg:flex-row">
                     <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
                       <IntegrationCard
                         img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
@@ -3172,7 +3191,9 @@ onMounted(async () => {
                       <div class="card-body flex-row items-center justify-between p-4">
                         <div class="flex gap-2">
                           <Icon icon="mdi:file-document" width="24" />
-                          <h2 class="card-title w-44 overflow-hidden text-ellipsis text-sm">
+                          <h2
+                            class="card-title w-48 overflow-hidden text-ellipsis text-sm"
+                          >
                             {{ doc.file_name }}
                           </h2>
                         </div>
@@ -3216,7 +3237,7 @@ onMounted(async () => {
           </button>
           <button ref="navBtn2" @click="navEvent2">
             <Icon icon="mdi:webpack" width="30" />
-            <span class="btm-nav-label">Port Web</span>
+            <span class="btm-nav-label">Integraciones</span>
           </button>
           <button ref="navBtn3" @click="navEvent3">
             <Icon icon="mdi:bag-checked" width="30" />
