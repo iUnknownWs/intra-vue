@@ -2078,7 +2078,7 @@ onMounted(async () => {
     <div class="drawer-content">
       <HeaderMain>
         <div class="flex w-full flex-row pb-16">
-          <aside class="sticky top-[4rem] hidden h-min max-w-64 bg-white lg:block">
+          <aside class="sticky top-[4rem] hidden h-min max-w-64 bg-white xl:block">
             <ul
               v-scroll-spy-link="{ selector: 'ul>li>a.menu-item' }"
               v-scroll-spy-active="{ selector: 'ul>li>a.menu-item' }"
@@ -2123,32 +2123,21 @@ onMounted(async () => {
               <li><a class="font-bold text-black" @click="integrationsActive">Integraciones</a></li>
             </ul>
           </aside>
-          <div class="mx-auto w-full lg:p-6">
-            <header class="flex flex-col items-center justify-center lg:h-[250px]">
-              <LoadingSpinner v-if="loading" class="loading-lg" />
-              <VehicleCard
-                v-else
-                :vehicle="vehicle"
-                class="hidden lg:flex"
-                @status="updateStatus"
-                @reserve="reserveDrawer"
-                @delete="deleteConfirm"
-              />
-              <VehicleMobile
-                v-if="!loading"
-                :vehicle="vehicle"
-                class="lg:hidden"
-                @status="updateStatus"
-              />
-            </header>
+          <div class="mx-auto w-full xl:p-6">
+            <VehicleAlert
+              v-if="commentAlert"
+              :message="commInternal"
+              @btn="commentAlert = false"
+              class="xl:hidden"
+            />
             <div
               v-if="vehicleTab === 'admin'"
               role="tablist"
-              class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
+              class="no-scrollbar tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-base-100 px-4 py-2 xl:hidden [&_a]:text-base-200"
             >
-              <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent(1)"
-                >Información básica</a
-              >
+              <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent(1)">
+                Información básica
+              </a>
               <a ref="tab2" role="tab" class="tab" @click="tabEvent(2)">Compra y precio</a>
               <a ref="tab3" role="tab" class="tab" @click="tabEvent(3)">Comentarios</a>
               <a ref="tab4" role="tab" class="tab" @click="tabEvent(4)">Mantenimiento</a>
@@ -2159,32 +2148,47 @@ onMounted(async () => {
             <div
               role="tablist"
               v-if="vehicleTab === 'equip'"
-              class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-white px-4 py-2 lg:hidden"
+              class="tabs tabs-bordered sticky top-[4rem] z-10 overflow-x-scroll text-nowrap bg-base-100 px-4 py-2 xl:hidden"
             >
               <a ref="tab8" role="tab" class="tab tab-active" @click="tabEvent(8)">
                 Equip de serie
               </a>
               <a ref="tab9" role="tab" class="tab" @click="tabEvent(9)">Equip opcional</a>
             </div>
-            <main class="my-8 flex w-full flex-col gap-6 bg-base-100 lg:flex-row">
+            <header class="hidden flex-col items-center justify-center lg:flex xl:h-[250px]">
+              <LoadingSpinner v-if="loading" class="loading-lg" />
+              <VehicleCard
+                v-else
+                :vehicle="vehicle"
+                @status="updateStatus"
+                @reserve="reserveDrawer"
+                @delete="deleteConfirm"
+              />
+            </header>
+            <header class="flex flex-col items-center justify-center lg:hidden xl:h-[250px]">
+              <LoadingSpinner v-if="loading" class="loading-lg" />
+              <VehicleMobile v-if="!loading" :vehicle="vehicle" @status="updateStatus" />
+            </header>
+            <main class="my-8 flex w-full flex-col gap-6 bg-base-100 xl:flex-row">
               <section class="flex w-full flex-1 flex-col">
                 <VehicleAlert
                   v-if="commentAlert"
                   :message="commInternal"
                   @btn="commentAlert = false"
+                  class="hidden xl:grid"
                 />
                 <div v-scroll-spy="{ offset: 120 }" class="flex w-full flex-col gap-8">
                   <template v-if="vehicleTab === 'admin'">
                     <div
                       ref="basic"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <div class="flex flex-row justify-between">
                         <h1 class="text-xl font-medium">Información Básica</h1>
                         <DropdownBtn>
                           <template #btn>
-                            <button class="btn btn-outline btn-sm hidden lg:block">Acciones</button>
-                            <button class="btn btn-circle btn-ghost lg:hidden">
+                            <button class="btn btn-outline btn-sm hidden xl:block">Acciones</button>
+                            <button class="btn btn-circle btn-ghost xl:hidden">
                               <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
                             </button>
                           </template>
@@ -2196,7 +2200,7 @@ onMounted(async () => {
                           </template>
                         </DropdownBtn>
                       </div>
-                      <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <SelectInput
                           label="Categoria web:"
                           :options="options.categoria"
@@ -2272,7 +2276,7 @@ onMounted(async () => {
                     </div>
                     <div
                       ref="prices"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <template v-if="userStore.perms.includes('can_view_purchase_info')">
                         <div class="flex flex-row justify-between">
@@ -2290,7 +2294,7 @@ onMounted(async () => {
                           v-model="sellManage"
                           class="flex items-start"
                         />
-                        <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                        <div v-if="!sellManage" class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                           <SearchSelect
                             label="Proveedor:"
                             :options="providersOptions"
@@ -2310,7 +2314,7 @@ onMounted(async () => {
                             :initialValue="null"
                           />
                         </div>
-                        <div v-else class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                        <div v-else class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                           <TextInput label="Nombre Completo:" v-model="sellerName" />
                           <TextInput label="Importe de comisión:" v-model="commission" />
                           <DateInput label="Fecha de compra:" v-model="purchaseDate" />
@@ -2371,22 +2375,22 @@ onMounted(async () => {
                           <h1 class="text-xl font-medium">Configuración de precio</h1>
                           <div class="flex flex-row gap-4">
                             <button class="btn btn-primary btn-sm" @click="discountAutoDrawer">
-                              <span class="hidden lg:inline">Descuentos automáticos</span>
-                              <Icon icon="mdi:percent" width="24" class="lg:hidden" />
+                              <span class="hidden xl:inline">Descuentos automáticos</span>
+                              <Icon icon="mdi:percent" width="24" class="xl:hidden" />
                             </button>
                             <label
                               for="vehicle-drawer"
                               class="btn btn-outline btn-sm"
                               @click="drawerFinance"
                             >
-                              <span class="hidden lg:inline">Conf. Financiera</span>
-                              <Icon icon="mdi:cash" width="24" class="lg:hidden" />
+                              <span class="hidden xl:inline">Conf. Financiera</span>
+                              <Icon icon="mdi:cash" width="24" class="xl:hidden" />
                             </label>
                           </div>
                         </div>
                         <div class="divider m-0 p-0"></div>
                       </div>
-                      <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <TextInput label="Precio de venta:" v-model="price" />
                         <TextInput
                           label="Precio financiado:"
@@ -2401,7 +2405,7 @@ onMounted(async () => {
                     </div>
                     <div
                       ref="comments"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <div>
                         <h2 class="text-xl font-medium">Comentarios Internos</h2>
@@ -2416,10 +2420,10 @@ onMounted(async () => {
                     </div>
                     <div
                       ref="maintenance"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <h1 class="text-xl font-medium">Mantenimiento</h1>
-                      <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <TextInput label="Propietarios:" v-model="owners" />
                         <DateInput label="Vencimiento ITV:" v-model="itvExp" />
                       </div>
@@ -2428,7 +2432,7 @@ onMounted(async () => {
                     </div>
                     <div
                       ref="extras"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
                         <template #content>
@@ -2466,7 +2470,7 @@ onMounted(async () => {
                     </div>
                     <div
                       ref="discounts"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <VehicleTable title="Lista de Descuentos" @addBtn="discountDrawer" add>
                         <template #content>
@@ -2511,12 +2515,12 @@ onMounted(async () => {
                     </div>
                     <div
                       ref="technical"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <div class="flex flex-row justify-between">
                         <h1 class="text-xl font-medium">Más información</h1>
                       </div>
-                      <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <SelectInput
                           label="Tracción:"
                           :options="driveOptions"
@@ -2529,7 +2533,7 @@ onMounted(async () => {
                       </div>
                       <h2 class="mt-3 p-0 text-lg font-medium">Consumo y emisión</h2>
                       <div class="divider m-0 p-0"></div>
-                      <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <TextInput label="Consumo ambiente:" v-model="environment" />
                         <TextInput label="Consumo en carretera:" v-model="road" />
                         <TextInput label="En ciudad:" v-model="city" />
@@ -2537,7 +2541,7 @@ onMounted(async () => {
                       </div>
                       <h2 class="mt-3 p-0 text-lg font-medium">Dimensiones</h2>
                       <div class="divider m-0 p-0"></div>
-                      <div class="grid grid-cols-2 gap-x-4 lg:gap-x-10">
+                      <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <TextInput label="Longitud:" v-model="length" />
                         <TextInput label="Altura:" v-model="height" />
                         <TextInput label="Tara:" v-model="tare" />
@@ -2547,7 +2551,7 @@ onMounted(async () => {
                   <template v-else-if="vehicleTab === 'equip'">
                     <div
                       ref="serialEquip"
-                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                      class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <VehicleTable
                         title="Equipamiento de serie"
@@ -2606,7 +2610,7 @@ onMounted(async () => {
                     <div>
                       <div
                         ref="optionalEquip"
-                        class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                        class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                       >
                         <VehicleTable
                           title="Opcional sin coste"
@@ -2664,7 +2668,7 @@ onMounted(async () => {
                       </div>
                       <div
                         ref="paidEquip"
-                        class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                        class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                       >
                         <VehicleTable
                           title="Opcional con coste"
@@ -2725,7 +2729,7 @@ onMounted(async () => {
                 </div>
                 <div
                   v-if="vehicleTab === 'pt'"
-                  class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                  class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                 >
                   <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
                     <h2 class="text-xl font-medium">Performance Test</h2>
@@ -2744,7 +2748,7 @@ onMounted(async () => {
                         <h2 class="text-xl font-medium">Performance Test</h2>
                         <button class="btn btn-outline btn-sm mb-2 self-end" @click="ptDrawer(1)">
                           <Icon icon="mdi:plus" width="25" />
-                          <span class="hidden lg:inline"> Nuevo </span>
+                          <span class="hidden xl:inline"> Nuevo </span>
                         </button>
                       </div>
                       <div class="divider m-0 p-0"></div>
@@ -2828,7 +2832,7 @@ onMounted(async () => {
                 <div
                   v-if="vehicleTab === 'gallery'"
                   ref="gallery"
-                  class="flex flex-col gap-4 rounded bg-white p-4 lg:hidden"
+                  class="flex flex-col gap-4 rounded bg-white p-4 xl:hidden"
                 >
                   <h2 class="text-xl font-medium">Galería Multimedia</h2>
                   <input
@@ -2848,7 +2852,7 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
-                        class="grid grid-cols-3 gap-1 lg:grid-cols-3 lg:gap-4"
+                        class="grid grid-cols-3 gap-1 xl:grid-cols-3 xl:gap-4"
                         mobile
                       />
                     </div>
@@ -2870,7 +2874,7 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
-                        class="grid grid-cols-3 gap-1 lg:gap-4"
+                        class="grid grid-cols-3 gap-1 xl:gap-4"
                         mobile
                       />
                     </div>
@@ -2947,7 +2951,7 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDelete360Url"
                         mobile
-                        class="grid grid-cols-3 gap-1 lg:grid-cols-3 lg:gap-4"
+                        class="grid grid-cols-3 gap-1 xl:grid-cols-3 xl:gap-4"
                       />
                     </div>
                   </div>
@@ -2997,10 +3001,10 @@ onMounted(async () => {
                 <div
                   v-if="vehicleTab === 'integration'"
                   ref="portals"
-                  class="flex w-full scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                  class="flex w-full scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                 >
                   <h1 class="text-xl font-medium">Integraciones</h1>
-                  <div class="mt-6 flex flex-col gap-4 lg:flex-row">
+                  <div class="mt-6 flex flex-col gap-4 xl:flex-row">
                     <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
                       <IntegrationCard
                         img="https://garageclub-prod.s3.amazonaws.com/backend/media/imagen_2024-01-30_210822393.png"
@@ -3038,7 +3042,7 @@ onMounted(async () => {
                   </div>
                 </div>
               </section>
-              <aside class="hidden h-fit flex-col gap-4 rounded bg-white p-4 lg:flex">
+              <aside class="hidden h-fit flex-col gap-4 rounded bg-white p-4 xl:flex">
                 <h2 class="text-xl font-medium">Galería Multimedia</h2>
                 <div
                   role="tablist"
@@ -3061,7 +3065,7 @@ onMounted(async () => {
                       :updateUrl="updateGalleryUrl"
                       :deleteUrl="galleryDeleteUrl"
                       :updateFunction="fetch"
-                      class="grid grid-cols-2 gap-2 lg:grid-cols-3"
+                      class="grid grid-cols-2 gap-2 xl:grid-cols-3"
                     />
                   </div>
                   <input
@@ -3080,7 +3084,7 @@ onMounted(async () => {
                       :updateUrl="updateGalleryUrl"
                       :deleteUrl="galleryDeleteUrl"
                       :updateFunction="fetch"
-                      class="grid grid-cols-2 gap-2 lg:grid-cols-3"
+                      class="grid grid-cols-2 gap-2 xl:grid-cols-3"
                     />
                   </div>
                   <input type="radio" name="galeria" role="tab" class="tab" aria-label="Videos" />
@@ -3092,7 +3096,7 @@ onMounted(async () => {
                       format=".mp4"
                       :params="params"
                     />
-                    <div v-if="skeletonGallery" class="grid grid-cols-2 gap-2 lg:grid-cols-3">
+                    <div v-if="skeletonGallery" class="grid grid-cols-2 gap-2 xl:grid-cols-3">
                       <div class="skeleton h-28 w-28"></div>
                       <div class="skeleton h-28 w-28"></div>
                       <div class="skeleton h-28 w-28"></div>
@@ -3105,7 +3109,7 @@ onMounted(async () => {
                       :list="galleryVideo"
                       item-key="id"
                       :options="optionsDrag"
-                      class="grid grid-cols-2 gap-2 lg:grid-cols-3"
+                      class="grid grid-cols-2 gap-2 xl:grid-cols-3"
                       @sort="updateImages"
                     >
                       <template #item="{ element, index }">
@@ -3147,7 +3151,7 @@ onMounted(async () => {
                       :id="id"
                       :updateUrl="updateGalleryUrl"
                       :deleteUrl="galleryDelete360Url"
-                      class="grid grid-cols-2 gap-2 lg:grid-cols-3"
+                      class="grid grid-cols-2 gap-2 xl:grid-cols-3"
                     />
                   </div>
                   <input type="radio" name="galeria" role="tab" class="tab" aria-label="Docs" />
@@ -3197,7 +3201,7 @@ onMounted(async () => {
         </div>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50 bg-white">
-        <div class="btm-nav z-10 hidden bg-white lg:flex">
+        <div class="btm-nav z-10 hidden bg-white xl:flex">
           <div class="mr-4 flex flex-row justify-end">
             <button class="btn btn-primary max-w-24 text-white" @click="updateData">
               <LoadingSpinner v-if="loading" />
@@ -3205,7 +3209,7 @@ onMounted(async () => {
             </button>
           </div>
         </div>
-        <div v-show="scrollTop" class="btm-nav lg:hidden">
+        <div v-show="scrollTop" class="btm-nav xl:hidden">
           <button ref="navBtn1" @click="navEvent1" class="active">
             <Icon icon="mdi:car" width="30" />
             <span class="btm-nav-label">I. Admin</span>
@@ -3227,7 +3231,7 @@ onMounted(async () => {
             <span class="btm-nav-label">Galeria</span>
           </button>
         </div>
-        <div v-show="scrollDown" class="btm-nav lg:hidden">
+        <div v-show="scrollDown" class="btm-nav xl:hidden">
           <div>
             <label
               for="vehicle-drawer"
@@ -3250,7 +3254,7 @@ onMounted(async () => {
       <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
       <ul
         v-if="drawerSection === 'extra'"
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
@@ -3298,7 +3302,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'discount'"
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
@@ -3333,7 +3337,7 @@ onMounted(async () => {
           drawerSection === 'OPTIONAL_FREE_OF_CHARGE' ||
           drawerSection === 'SERIAL'
         "
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Equipamiento" @toggle="toggleDrawer" />
@@ -3353,7 +3357,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'docusign'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <form @submit.prevent="docusignDrawer(2)">
           <DrawerTitle title="Generar Contrato" @toggle="toggleDrawer" />
@@ -3368,7 +3372,7 @@ onMounted(async () => {
             <h2 class="text-xl font-semibold">Información del vendedor</h2>
             <SelectInput label="Tipo de documento:" :options="options.idTypes" v-model="idType" />
             <TextInput label="Numero de documento:" v-model="idNumber" required />
-            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+            <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
               <TextInput label="Nombre:" v-model="buyerName" />
               <TextInput label="Apellido:" v-model="buyerLastName" />
               <TextInput label="Email:" v-model="buyerEmail" required />
@@ -3394,7 +3398,7 @@ onMounted(async () => {
               <GMapAutocomplete @place_changed="setBuyerPlace" class="input input-bordered w-full">
               </GMapAutocomplete>
             </label>
-            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+            <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
               <TextInput label="Ciudad:" v-model="buyerCity" />
               <TextInput label="Provincia:" v-model="buyerProvince" />
               <TextInput label="País:" v-model="buyerCountry" />
@@ -3402,7 +3406,7 @@ onMounted(async () => {
             </div>
             <div v-if="enterpriseReserve">
               <h2 class="mt-4 text-xl font-semibold">Información de la empresa</h2>
-              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+              <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                 <TextInput label="VAT:" v-model="companyVat" />
                 <TextInput label="Nombre:" v-model="companyName" />
                 <TextInput label="Email:" v-model="companyEmail" />
@@ -3426,7 +3430,7 @@ onMounted(async () => {
                 >
                 </GMapAutocomplete>
               </label>
-              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+              <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                 <TextInput label="Ciudad:" v-model="companyCity" />
                 <TextInput label="Provincia:" v-model="companyProvince" />
                 <TextInput label="País:" v-model="companyCountry" />
@@ -3445,7 +3449,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'docusign2'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Generar contrato" @toggle="toggleDrawer" />
@@ -3473,7 +3477,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <form @submit.prevent="reserveDrawer(2)">
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3488,7 +3492,7 @@ onMounted(async () => {
             <h2 class="text-xl font-semibold">Información del comprador</h2>
             <SelectInput label="Tipo de documento:" :options="options.idTypes" v-model="idType" />
             <TextInput label="Numero de documento:" v-model="idNumber" required />
-            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+            <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
               <TextInput label="Nombre:" v-model="buyerName" />
               <TextInput label="Apellido:" v-model="buyerLastName" />
               <TextInput label="Email:" v-model="buyerEmail" required />
@@ -3514,7 +3518,7 @@ onMounted(async () => {
               <GMapAutocomplete @place_changed="setBuyerPlace" class="input input-bordered w-full">
               </GMapAutocomplete>
             </label>
-            <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+            <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
               <TextInput label="Ciudad:" v-model="buyerCity" />
               <TextInput label="Provincia:" v-model="buyerProvince" />
               <TextInput label="País:" v-model="buyerCountry" />
@@ -3522,7 +3526,7 @@ onMounted(async () => {
             </div>
             <div v-if="enterpriseReserve">
               <h2 class="mt-4 text-xl font-semibold">Información de la empresa</h2>
-              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+              <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                 <TextInput label="VAT:" v-model="companyVat" />
                 <TextInput label="Nombre:" v-model="companyName" />
                 <TextInput label="Email:" v-model="companyEmail" />
@@ -3546,7 +3550,7 @@ onMounted(async () => {
                 >
                 </GMapAutocomplete>
               </label>
-              <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+              <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                 <TextInput label="Ciudad:" v-model="companyCity" />
                 <TextInput label="Provincia:" v-model="companyProvince" />
                 <TextInput label="País:" v-model="companyCountry" />
@@ -3562,7 +3566,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve2'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3603,7 +3607,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve3'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3624,7 +3628,7 @@ onMounted(async () => {
               :initialValue="null"
             />
             <h3 class="mt-4 text-lg font-semibold">Gestión de extras</h3>
-            <div class="flex flex-col gap-3 lg:grid lg:grid-cols-3">
+            <div class="flex flex-col gap-3 xl:grid xl:grid-cols-3">
               <SelectInput
                 label="Tipo:"
                 :options="options.extraType"
@@ -3659,7 +3663,7 @@ onMounted(async () => {
               /></a>
             </div>
             <TextInput label="Precio de venta:" v-model="sellReserve" />
-            <div class="flex flex-col gap-3 lg:flex-row">
+            <div class="flex flex-col gap-3 xl:flex-row">
               <TextInput label="Importe de reserva:" v-model="priceReserve" />
               <SelectInput
                 label="Método de pago:"
@@ -3681,7 +3685,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'reserve4'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
@@ -3746,10 +3750,9 @@ onMounted(async () => {
           @click-primary="reserveDrawer(5)"
         />
       </ul>
-
       <ul
         v-if="drawerSection === 'finance'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Calcular Cuotas de Financiación" @toggle="toggleDrawer" />
@@ -3781,25 +3784,25 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'cochesnet'"
-        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content xl:w-1/3"
       >
         <CochesnetDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'wallapop'"
-        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content xl:w-1/3"
       >
         <WallapopDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'sumauto'"
-        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content xl:w-1/3"
       >
         <SumautoDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
       </ul>
       <ul
         v-if="drawerSection === 'pt'"
-        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content xl:w-1/3"
       >
         <PerformanceTest
           :url="ptUrl"
@@ -3813,7 +3816,7 @@ onMounted(async () => {
       </ul>
       <ul
         v-if="drawerSection === 'auto-discounts'"
-        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content lg:w-1/3"
+        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content xl:w-1/3"
       >
         <AutoDiscountDrawer :toggle="toggleDrawer" :id="id" />
       </ul>
@@ -3826,6 +3829,10 @@ onMounted(async () => {
   background-color: #dcdddf !important;
   color: black !important;
   font-weight: 600;
+}
+.tab-active {
+  font-weight: 700;
+  color: black;
 }
 .checked\:\[\&_input\]\:text-black input:checked {
   font-weight: 700;
