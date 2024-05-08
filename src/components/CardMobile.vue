@@ -51,7 +51,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
             <div class="flex w-fit flex-col">
               <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-sm font-bold">
                 {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
-                {{ vehicle.model.model_web.title }}
+                {{ vehicle.model.model_web?.title }}
               </RouterLink>
               <span class="text-sm font-medium text-base-200">{{ vehicle.version.title }}</span>
             </div>
@@ -59,7 +59,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
               <a @click="$emit('menu', vehicle.id, vehicle.slug)">
                 <Icon icon="mdi:dots-vertical" width="24" color="black" />
               </a>
-              <div class="flex h-full items-center justify-center [&_img]:mt-1 [&_img]:w-8">
+              <div v-if="vehicle.maintenance?.distinctive" class="flex h-full items-center justify-center [&_img]:mt-1 [&_img]:w-8">
                 <img
                   v-if="vehicle.maintenance.distinctive == 0"
                   src="/src/assets/img/etiqueta_0.png"

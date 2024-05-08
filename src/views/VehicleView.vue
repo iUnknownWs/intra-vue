@@ -2177,7 +2177,7 @@ onMounted(async () => {
                   v-if="commentAlert"
                   :message="commInternal"
                   @btn="commentAlert = false"
-                  class="mb-4 hidden xl:grid"
+                  class="mb-4 hidden xl:flex"
                 />
                 <div v-scroll-spy="{ offset: 120 }" class="flex w-full flex-col gap-8">
                   <template v-if="vehicleTab === 'admin'">
@@ -2883,6 +2883,7 @@ onMounted(async () => {
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
+                        :id="id"
                         class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-3 xl:gap-4"
                         mobile
                       />
@@ -3191,9 +3192,7 @@ onMounted(async () => {
                       <div class="card-body flex-row items-center justify-between p-4">
                         <div class="flex gap-2">
                           <Icon icon="mdi:file-document" width="24" />
-                          <h2
-                            class="card-title w-48 overflow-hidden text-ellipsis text-sm"
-                          >
+                          <h2 class="card-title w-48 overflow-hidden text-ellipsis text-sm">
                             {{ doc.file_name }}
                           </h2>
                         </div>
@@ -3230,7 +3229,7 @@ onMounted(async () => {
             </button>
           </div>
         </div>
-        <div v-show="scrollTop" class="btm-nav xl:hidden">
+        <div v-show="scrollTop" class="btm-nav xl:hidden [&_button]:text-base-200 [&_button]:text-xs h">
           <button ref="navBtn1" @click="navEvent1" class="active">
             <Icon icon="mdi:car" width="30" />
             <span class="btm-nav-label">I. Admin</span>
@@ -3248,7 +3247,7 @@ onMounted(async () => {
             <span class="btm-nav-label">PT</span>
           </button>
           <button ref="navBtn5" @click="navEvent5">
-            <Icon icon="mdi:image-multiple" width="30" />
+            <Icon icon="mdi:image" width="30" />
             <span class="btm-nav-label">Galeria</span>
           </button>
         </div>

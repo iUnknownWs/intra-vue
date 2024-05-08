@@ -707,6 +707,7 @@ onMounted(() => {
               <span class="text-xl font-bold">Filtros</span>
               <RangeSelect
                 label="Año:"
+                class="mt-4"
                 :from="options.reverseYears"
                 :to="options.years"
                 v-model:gte="yearGte"

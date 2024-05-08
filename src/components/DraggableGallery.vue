@@ -106,15 +106,6 @@ onMounted(() => {
 
 <template>
   <DragDrop
-    v-if="!mobile"
-    type="image"
-    :url="deleteUrl"
-    :fetch="fetchingGallery"
-    format=".jpg"
-    :params="imagesParams"
-  />
-  <DropMobile
-    v-else
     type="image"
     :url="deleteUrl"
     :fetch="fetchingGallery"
