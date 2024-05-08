@@ -28,9 +28,6 @@ const props = defineProps({
   params: {
     type: Object
   },
-  mobile: {
-    type: Boolean
-  },
   skeletons: {
     type: Number,
     default: 6

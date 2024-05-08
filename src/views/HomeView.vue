@@ -677,7 +677,7 @@ onMounted(() => {
                   @change="searchReact"
                   class="w-full"
                 />
-                <Icon icon="mdi:times" width="24" @click="searchReset" />
+                <Icon icon="mdi:times" width="24" @click="searchReset" class="cursor-pointer" />
               </label>
             </form>
             <div class="flex gap-2 xl:hidden">
@@ -932,7 +932,7 @@ onMounted(() => {
                 role="tablist"
                 ref="tabContainer"
                 @wheel.prevent="horizontalScroll"
-                class="tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
+                class="no-scrollbar tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
               >
                 <a
                   role="tab"

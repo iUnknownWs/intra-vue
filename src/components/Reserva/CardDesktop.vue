@@ -8,7 +8,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
 </script>
 
 <template>
-  <div class="card card-side mt-4 w-full flex-row gap-4 bg-white p-6">
+  <div class="card card-side mt-4 hidden w-full flex-row gap-4 bg-white p-6 xl:flex">
     <RouterLink :to="'/reservas/' + reserve.id">
       <div
         class="relative aspect-video h-52 rounded-lg bg-cover bg-center"
@@ -50,7 +50,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
             {{ reserve.vehicle.model.model_web?.title }}
           </RouterLink>
           <span class="text-base font-medium text-base-200">{{
-            reserve.vehicle.version.title
+            reserve.vehicle.version?.title
           }}</span>
         </div>
         <div class="flex flex-row items-center">

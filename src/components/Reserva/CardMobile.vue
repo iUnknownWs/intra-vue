@@ -15,7 +15,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card card-compact mt-3 w-full bg-white p-4 text-xs shadow-xl">
+  <div class="card card-compact w-full bg-white p-4 text-xs shadow-xl xl:hidden">
     <div class="flex flex-row gap-4">
       <div class="flex flex-col items-center justify-between gap-3">
         <RouterLink :to="'/reservas/' + reserve.id">
@@ -53,7 +53,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         </div>
       </div>
       <div class="flex w-full flex-row justify-between">
-        <div class="flex w-full flex-col justify-between">
+        <div class="flex w-full flex-col justify-around">
           <div class="flex flex-row justify-between gap-1">
             <div class="flex w-fit flex-col">
               <RouterLink :to="'/reservas/' + reserve.vehicle.id" class="text-sm font-bold">
@@ -61,7 +61,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
                 {{ reserve.vehicle.model.model_web?.title }}
               </RouterLink>
               <span class="text-sm font-medium text-base-200">{{
-                reserve.vehicle.version.title
+                reserve.vehicle.version?.title
               }}</span>
             </div>
             <div class="flex min-w-8 flex-col items-center">

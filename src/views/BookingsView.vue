@@ -178,7 +178,7 @@ onMounted(() => {
                     @change="searchReact"
                     class="w-full"
                   />
-                  <Icon icon="mdi:times" width="24" @click="searchReset" />
+                  <Icon class="cursor-pointer" icon="mdi:times" width="24" @click="searchReset" />
                 </label>
               </form>
               <button class="btn btn-square btn-outline lg:hidden" @click="filterDrawer">
@@ -187,7 +187,6 @@ onMounted(() => {
             </header>
             <section class="flex flex-col justify-between lg:p-4">
               <div class="hidden min-h-[150vh] flex-row xl:flex">
-                <div class="hidden flex-row items-start xl:flex"></div>
                 <div class="mb-8 hidden w-full xl:flex">
                   <div class="flex flex-col items-start">
                     <div
@@ -237,7 +236,7 @@ onMounted(() => {
                       />
                     </div>
                     <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
-                      <LoadingSpinner v-if="loading" class="loading-lg mt-4" />
+                      <LoadingSpinner v-if="loading" class="loading-lg mt-32" />
                       <div v-else>
                         <CardDesktop
                           v-for="(vehicle, index) in bookings"
@@ -305,7 +304,7 @@ onMounted(() => {
                     :reserve="vehicle"
                   />
                 </template>
-                <LoadingSpinner v-else class="loading-lg" />
+                <LoadingSpinner v-else class="loading-lg mt-32" />
               </div>
               <div ref="vehicleNext" class="self-center text-center">
                 <LoadingSpinner v-if="nextUrl" class="loading-lg" />

@@ -13,6 +13,7 @@ import PaymentsDrawer from '@/components/Reserva/PaymentsDrawer.vue'
 import CardMobile from '@/components/Reserva/CardMobile.vue'
 import DocumentDrawer from '@/components/Reserva/DocumentDrawer.vue'
 import DeliveryDrawer from '@/components/Reserva/DeliveryDrawer.vue'
+import CardDesktop from '@/components/Reserva/CardDesktop.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -531,30 +532,18 @@ onMounted(() => {
         </div>
       </dialog>
       <HeaderMain class="pb-16">
-        <header class="flex h-[250px] flex-col items-center justify-center">
-          <LoadingSpinner v-if="loading" class="loading-lg" />
-          <template v-else>
-            <CardDetails
-              :reserve="vehicle"
-              :getData="getVehicle"
-              @docuDrawer="docuDrawer"
-              @deliverBtn="deliDrawer"
-            />
-            <CardMobile :reserve="vehicle" />
-          </template>
-        </header>
         <div
           v-if="tab === 'details'"
           role="tablist"
-          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit text-nowrap bg-white py-4 lg:hidden"
+          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit text-nowrap bg-base-100 py-2 lg:hidden [&_a]:text-base-200"
         >
           <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent(1)">Info facturación</a>
           <a ref="tab2" role="tab" class="tab" @click="tabEvent(2)">Extras</a>
           <a ref="tab3" role="tab" class="tab" @click="tabEvent(3)">Más info</a>
         </div>
-        <section class="my-4 flex w-full flex-col gap-6 lg:flex-row">
-          <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-base-100 lg:block">
-            <ul class="menu menu-sm w-56 rounded-box bg-base-100">
+        <div class="flex flex-row gap-8">
+          <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-white lg:block">
+            <ul class="menu menu-sm w-56 rounded-box bg-white">
               <li>
                 <a class="font-bold" @click="tab = 'details'">Detalles</a>
                 <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a.menu-item' }">
@@ -578,573 +567,610 @@ onMounted(() => {
               <li><a class="font-bold" @click="tab = 'payments'">Pagos</a></li>
             </ul>
           </aside>
-          <section class="flex w-full flex-1 flex-col">
-            <div
-              v-scroll-spy="{ offset: 120 }"
-              v-if="tab === 'details'"
-              class="flex w-full flex-col gap-8"
-            >
-              <div
-                ref="billingDiv"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <h1 class="text-xl font-medium">Información de facturación</h1>
-                <SelectInput
-                  label="Vendedor:"
-                  :options="sellerOptions"
-                  :initialValue="null"
-                  optionLabel="name"
-                  v-model="seller"
-                />
-                <div>
-                  <ToggleInput
-                    label="Particular"
-                    option="Empresa"
-                    v-model="isCompany"
-                    class="my-4 w-fit"
-                  />
-                  <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+          <div class="flex w-full flex-col gap-6 xl:mx-auto xl:w-fit">
+            <header class="mt-3 flex flex-col items-center justify-center xl:h-[250px]">
+              <LoadingSpinner v-if="loading" class="loading-lg" />
+              <template v-else>
+                <!-- <CardDetails
+                  :reserve="vehicle"
+                  :getData="getVehicle"
+                  @docuDrawer="docuDrawer"
+                  @deliverBtn="deliDrawer"
+                /> -->
+                <CardDesktop :reserve="vehicle" />
+                <CardMobile :reserve="vehicle" />
+              </template>
+            </header>
+            <section class="mb-4 flex w-full flex-col gap-6 lg:flex-row">
+              <section class="flex w-full flex-1 flex-col">
+                <div
+                  v-scroll-spy="{ offset: 120 }"
+                  v-if="tab === 'details'"
+                  class="flex w-full flex-col gap-8"
+                >
+                  <div
+                    ref="billingDiv"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                  >
+                    <h1 class="text-xl font-medium">Información de facturación</h1>
                     <SelectInput
-                      label="Tipo de documento:"
-                      :options="options.idTypes"
-                      v-model="contactId"
+                      label="Vendedor:"
+                      :options="sellerOptions"
+                      :initialValue="null"
+                      optionLabel="name"
+                      v-model="seller"
                     />
-                    <TextInput label="Numero de documento:" v-model="contactIdNumber" required />
-                    <TextInput label="Nombre:" v-model="contactName" />
-                    <TextInput label="Apellido:" v-model="contactLastName" />
-                    <TextInput label="Email:" v-model="contactEmail" required />
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text font-medium">Teléfono:</span>
-                      </div>
-                      <div class="flex flex-row gap-2">
-                        <VueSelect
-                          v-model="contactPrefix"
-                          :reduce="(prefix) => prefix.id"
-                          :options="prefixOptions"
-                          class="w-60"
+                    <div>
+                      <ToggleInput
+                        label="Particular"
+                        option="Empresa"
+                        v-model="isCompany"
+                        class="my-4 w-fit"
+                      />
+                      <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                        <SelectInput
+                          label="Tipo de documento:"
+                          :options="options.idTypes"
+                          v-model="contactId"
                         />
-                        <input
-                          type="text"
-                          class="input input-bordered w-full"
-                          v-model="contactPhone"
+                        <TextInput
+                          label="Numero de documento:"
+                          v-model="contactIdNumber"
                           required
                         />
+                        <TextInput label="Nombre:" v-model="contactName" />
+                        <TextInput label="Apellido:" v-model="contactLastName" />
+                        <TextInput label="Email:" v-model="contactEmail" required />
+                        <label class="form-control w-full">
+                          <div class="label">
+                            <span class="label-text font-medium">Teléfono:</span>
+                          </div>
+                          <div class="flex flex-row gap-2">
+                            <VueSelect
+                              v-model="contactPrefix"
+                              :reduce="(prefix) => prefix.id"
+                              :options="prefixOptions"
+                              class="w-60"
+                            />
+                            <input
+                              type="text"
+                              class="input input-bordered w-full"
+                              v-model="contactPhone"
+                              required
+                            />
+                          </div>
+                        </label>
                       </div>
-                    </label>
-                  </div>
-                  <label class="form-control w-full">
-                    <div class="label">
-                      <span class="label-text font-medium">Dirección:</span>
-                    </div>
-                    <GMapAutocomplete
-                      @place_changed="setContactPlace"
-                      class="input input-bordered w-full"
-                    >
-                    </GMapAutocomplete>
-                  </label>
-                  <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-                    <TextInput label="Ciudad:" v-model="contactCity" />
-                    <TextInput label="Provincia:" v-model="contactRegion" />
-                    <TextInput label="País:" v-model="contactCountry" />
-                    <TextInput label="Código Postal:" v-model="contactZip" />
-                  </div>
-                  <div v-if="isCompany" class="mt-8">
-                    <h2 class="text-xl font-semibold">Información de la empresa</h2>
-                    <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-                      <TextInput label="VAT:" v-model="companyVat" />
-                      <TextInput label="Nombre:" v-model="companyName" />
-                      <TextInput label="Email:" v-model="companyEmail" />
                       <label class="form-control w-full">
                         <div class="label">
-                          <span class="label-text font-medium">Teléfono:</span>
+                          <span class="label-text font-medium">Dirección:</span>
                         </div>
-                        <div class="flex flex-row gap-2">
-                          <VueSelect
-                            v-model="companyPrefix"
-                            :options="prefixOptions"
-                            :reduce="(prefix) => prefix.id"
-                            class="w-60"
-                          />
-                          <input
-                            type="text"
-                            class="input input-bordered w-full"
-                            v-model="companyPhone"
-                          />
-                        </div>
+                        <GMapAutocomplete
+                          @place_changed="setContactPlace"
+                          class="input input-bordered w-full"
+                        >
+                        </GMapAutocomplete>
                       </label>
+                      <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                        <TextInput label="Ciudad:" v-model="contactCity" />
+                        <TextInput label="Provincia:" v-model="contactRegion" />
+                        <TextInput label="País:" v-model="contactCountry" />
+                        <TextInput label="Código Postal:" v-model="contactZip" />
+                      </div>
+                      <div v-if="isCompany" class="mt-8">
+                        <h2 class="text-xl font-semibold">Información de la empresa</h2>
+                        <div class="mt-4 flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                          <TextInput label="VAT:" v-model="companyVat" />
+                          <TextInput label="Nombre:" v-model="companyName" />
+                          <TextInput label="Email:" v-model="companyEmail" />
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text font-medium">Teléfono:</span>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                              <VueSelect
+                                v-model="companyPrefix"
+                                :options="prefixOptions"
+                                :reduce="(prefix) => prefix.id"
+                                class="w-60"
+                              />
+                              <input
+                                type="text"
+                                class="input input-bordered w-full"
+                                v-model="companyPhone"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                        <label class="form-control w-full">
+                          <div class="label">
+                            <span class="label-text font-medium">Dirección:</span>
+                          </div>
+                          <GMapAutocomplete
+                            @place_changed="setCompanyPlace"
+                            class="input input-bordered w-full"
+                          >
+                          </GMapAutocomplete>
+                        </label>
+                        <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                          <TextInput label="Ciudad:" v-model="companyCity" />
+                          <TextInput label="Provincia:" v-model="companyRegion" />
+                          <TextInput label="País:" v-model="companyCountry" />
+                          <TextInput label="Código Postal:" v-model="companyZip" />
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                  <div
+                    ref="extrasDiv"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                  >
+                    <VehicleTable title="Extras" add @addBtn="extraDrawer">
+                      <template #content>
+                        <EasyDataTable
+                          class="table-dark table-striped"
+                          table-class-name="z-0"
+                          header-class-name="z-0"
+                          hide-footer
+                          border-cell
+                          :headers="headersExtras"
+                          :items="vehicleExtras"
+                          v-model:server-options="serverOptions"
+                          :server-items-length="serverItemsLength"
+                          :loading="isFetchingExtras"
+                        >
+                          <template v-slot:item-files="{ files }">
+                            <div class="flex gap-2">
+                              <a
+                                v-for="(file, index) in files"
+                                :key="index"
+                                :href="file.file"
+                                target="_blank"
+                                class="btn btn-square btn-xs"
+                              >
+                                <Icon icon="mdi:download" />
+                              </a>
+                            </div>
+                          </template>
+                          <template v-slot:item-status="{ status }">
+                            <span class="badge badge-primary rounded-md px-3 py-1 text-white">
+                              {{ status.toUpperCase() }}
+                            </span>
+                          </template>
+                          <template v-slot:item-id="{ id }">
+                            <div class="w-14">
+                              <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
+                                <Icon icon="mdi:pencil" />
+                              </button>
+                              <button
+                                class="btn btn-square btn-error btn-xs"
+                                @click="removeExtra(id)"
+                              >
+                                <Icon icon="mdi:trash-can-outline" />
+                              </button>
+                            </div>
+                          </template>
+                        </EasyDataTable>
+                      </template>
+                    </VehicleTable>
+                  </div>
+                  <div
+                    ref="infoDiv"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                  >
+                    <h2 class="text-xl font-medium">Más información</h2>
+                    <AreaInput label="Comentarios Comerciales:" v-model="comments" />
                     <label class="form-control w-full">
                       <div class="label">
                         <span class="label-text font-medium">Dirección:</span>
                       </div>
                       <GMapAutocomplete
-                        @place_changed="setCompanyPlace"
+                        @place_changed="setDeliveryPlace"
                         class="input input-bordered w-full"
                       >
                       </GMapAutocomplete>
                     </label>
                     <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-                      <TextInput label="Ciudad:" v-model="companyCity" />
-                      <TextInput label="Provincia:" v-model="companyRegion" />
-                      <TextInput label="País:" v-model="companyCountry" />
-                      <TextInput label="Código Postal:" v-model="companyZip" />
+                      <TextInput label="Ciudad:" v-model="deliveryCity" />
+                      <TextInput label="Provincia:" v-model="deliveryRegion" />
+                      <TextInput label="País:" v-model="deliveryCountry" />
+                      <TextInput label="Código Postal:" v-model="deliveryZip" />
                     </div>
                   </div>
                 </div>
-              </div>
-              <div
-                ref="extrasDiv"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <VehicleTable title="Extras" add @addBtn="extraDrawer">
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersExtras"
-                      :items="vehicleExtras"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingExtras"
+                <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4">
+                  <div class="flex scroll-m-28 flex-col rounded bg-white p-4 lg:scroll-m-20">
+                    <h2 class="mb-4 text-xl font-medium">Forma de pago</h2>
+                    <SelectInput
+                      label="Método de Pago:"
+                      v-model="paymentType"
+                      :options="options.paymentType"
+                      :initialValue="null"
+                    />
+                    <div v-if="paymentType !== '0'" class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                      <TextInput label="Importe a financiar:" v-model="paymentAmount" />
+                      <TextInput label="Meses de financiación:" v-model="paymentMonths" />
+                      <TextInput label="Cuotas mensuales:" v-model="paymentDues" />
+                    </div>
+                    <button
+                      class="btn btn-primary mt-4 w-fit self-end text-white"
+                      @click="updatePayments"
                     >
-                      <template v-slot:item-files="{ files }">
-                        <div class="flex gap-2">
-                          <a
-                            v-for="(file, index) in files"
-                            :key="index"
-                            :href="file.file"
-                            target="_blank"
-                            class="btn btn-square btn-xs"
-                          >
-                            <Icon icon="mdi:download" />
-                          </a>
-                        </div>
-                      </template>
-                      <template v-slot:item-status="{ status }">
-                        <span class="badge badge-primary rounded-md px-3 py-1 text-white">
-                          {{ status.toUpperCase() }}
-                        </span>
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button class="btn btn-square btn-error btn-xs" @click="removeExtra(id)">
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-              <div
-                ref="infoDiv"
-                class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20"
-              >
-                <h2 class="text-xl font-medium">Más información</h2>
-                <AreaInput label="Comentarios Comerciales:" v-model="comments" />
-                <label class="form-control w-full">
-                  <div class="label">
-                    <span class="label-text font-medium">Dirección:</span>
-                  </div>
-                  <GMapAutocomplete
-                    @place_changed="setDeliveryPlace"
-                    class="input input-bordered w-full"
-                  >
-                  </GMapAutocomplete>
-                </label>
-                <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
-                  <TextInput label="Ciudad:" v-model="deliveryCity" />
-                  <TextInput label="Provincia:" v-model="deliveryRegion" />
-                  <TextInput label="País:" v-model="deliveryCountry" />
-                  <TextInput label="Código Postal:" v-model="deliveryZip" />
-                </div>
-              </div>
-            </div>
-            <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4">
-              <div class="flex scroll-m-28 flex-col rounded bg-base-100 p-4 lg:scroll-m-20">
-                <h2 class="mb-4 text-xl font-medium">Forma de pago</h2>
-                <SelectInput
-                  label="Método de Pago:"
-                  v-model="paymentType"
-                  :options="options.paymentType"
-                  :initialValue="null"
-                />
-                <div v-if="paymentType !== '0'" class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                  <TextInput label="Importe a financiar:" v-model="paymentAmount" />
-                  <TextInput label="Meses de financiación:" v-model="paymentMonths" />
-                  <TextInput label="Cuotas mensuales:" v-model="paymentDues" />
-                </div>
-                <button
-                  class="btn btn-primary mt-4 w-fit self-end text-white"
-                  @click="updatePayments"
-                >
-                  <LoadingSpinner v-if="loadingPayment" />
-                  <span v-else class="font-semibold text-white">Guardar</span>
-                </button>
-              </div>
-              <div class="flex scroll-m-28 flex-col gap-4 rounded bg-base-100 p-4 lg:scroll-m-20">
-                <VehicleTable add title="Pagos" @addBtn="drawerSection = 'payments'">
-                  <template #content>
-                    <EasyDataTable
-                      class="table-dark table-striped"
-                      table-class-name="z-0"
-                      header-class-name="z-0"
-                      hide-footer
-                      border-cell
-                      :headers="headersPayments"
-                      :items="payments"
-                      v-model:server-options="serverOptions"
-                      :server-items-length="serverItemsLength"
-                      :loading="isFetchingPayments"
-                    >
-                      <template v-slot:item-payment_type="{ payment_type }">
-                        <span v-if="payment_type == 'counted'"> Contado </span>
-                        <span v-else-if="payment_type == 'booking_pre_order_payment'">
-                          Pago reservado
-                        </span>
-                        <span v-else> Financiado </span>
-                      </template>
-                      <template v-slot:item-payment_method="{ payment_method }">
-                        <span v-if="payment_method == 'cash'"> Efectivo </span>
-                        <span v-if="payment_method == 'card'"> Tarjeta </span>
-                        <span v-if="payment_method == 'transfer'"> Transferencia </span>
-                        <span v-if="payment_method == 'vehicle_exchange'"> Vehículo a cambio </span>
-                      </template>
-                      <template v-slot:item-amount="{ amount }">
-                        <span> {{ amount }} € </span>
-                      </template>
-                      <template v-slot:item-id="{ id }">
-                        <div class="w-14">
-                          <button class="btn btn-square btn-xs mr-2" @click="paymentDrawer(id)">
-                            <Icon icon="mdi:pencil" />
-                          </button>
-                          <button
-                            class="btn btn-square btn-error btn-xs"
-                            @click="removePayment(id)"
-                          >
-                            <Icon icon="mdi:trash-can-outline" />
-                          </button>
-                        </div>
-                      </template>
-                    </EasyDataTable>
-                  </template>
-                </VehicleTable>
-              </div>
-            </div>
-            <div v-else-if="tab === 'summary'" class="flex w-full flex-col gap-4">
-              <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4">
-                <div>
-                  <h2 class="text-xl font-medium">Resumen de compra</h2>
-                  <div class="divider m-0"></div>
-                </div>
-                <div class="text-sm [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
-                  <div v-if="vehicle.form_of_payment_type === 1">
-                    <span> Precio de compra: </span>
-                    <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
-                    <span> Financiado </span>
-                  </div>
-                  <div v-else>
-                    <span> Precio de compra: </span>
-                    <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
-                    <span> Contado </span>
-                  </div>
-                  <div v-for="extra of vehicle.extras" :key="extra.id">
-                    <span> Extra: </span>
-                    <span class="mr-2 text-right"> {{ extra.price }} € </span>
-                    <span> {{ extra.title }} </span>
-                  </div>
-                  <div v-for="discount of vehicle.discounts" :key="discount.id">
-                    <span> Descuento: </span>
-                    <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
-                      {{ discount.amount_fix }} €
-                    </span>
-                    <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
-                      {{ discount.amount_percent }} %
-                    </span>
-                    <span> {{ discount.title }} </span>
-                  </div>
-                  <div>
-                    <span class="font-bold"> Precio final: </span>
-                    <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
-                    <span></span>
-                  </div>
-                </div>
-                <div class="divider m-0"></div>
-                <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
-                  <div v-for="payment of vehicle.payments" :key="payment.id">
-                    <span> Importe de reserva: </span>
-                    <span class="mr-2 text-right"> {{ payment.amount }} € </span>
-                    <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
-                    <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
-                    <span v-if="payment.payment_method === 'cash'"> Contado </span>
-                    <span v-if="payment.payment_method === 'vehicle_exchange'">
-                      Vehiculo a cambio
-                    </span>
-                  </div>
-                  <div>
-                    <span class="font-bold"> Importe pendiente: </span>
-                    <span class="mr-2 text-right font-bold">
-                      {{ vehicle.pending_booking_amount }} €
-                    </span>
-                    <span></span>
-                  </div>
-                </div>
-              </div>
-              <template v-for="payment of vehicle.payments" :key="payment.id">
-                <div
-                  v-if="
-                    payment.payment_method === 'vehicle_exchange' && payment.form_of_payment_vehicle
-                  "
-                  class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4"
-                >
-                  <div>
-                    <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
-                    <div class="divider m-0"></div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-4 text-base">
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Marca: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.brand_details }}
-                      </span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Modelo: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.model_details }}
-                      </span>
-                    </div>
-                    <!-- <div class="flex flex-col">
-                    <span class="font-bold"> Versión: </span>
-                    <span> falta en la api </span>
-                  </div> -->
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Bastidor: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.vin }}
-                      </span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Matricula: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.plate }}
-                      </span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Kms: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.kms }}
-                      </span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Cambios: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.gearbox_details }}
-                      </span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Combustible: </span>
-                      <span>
-                        {{ payment.form_of_payment_vehicle.fuel_details }}
-                      </span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="font-bold"> Valoración: </span>
-                      <span> {{ payment.form_of_payment_vehicle.price }} € </span>
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </div>
-            <div v-else class="flex w-full flex-col gap-4">
-              <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4">
-                <div>
-                  <h2 class="text-xl font-medium">Documentos</h2>
-                  <div class="divider m-0"></div>
-                </div>
-                <div
-                  v-for="doc in galleryDocs"
-                  :key="doc.id"
-                  class="card card-side bg-base-100 shadow-xl"
-                >
-                  <div class="card-body flex-row justify-between p-4">
-                    <div class="flex w-full flex-col gap-2 text-wrap lg:flex-row">
-                      <div class="flex flex-row gap-3">
-                        <span class="badge badge-primary capitalize">{{ doc.status }}</span>
-                        <span class="text-sm">{{ doc.date_parsed }}</span>
-                      </div>
-                      <span class="text-sm">{{ doc.sent_to }}</span>
-                    </div>
-                    <div class="self flex gap-2">
-                      <button class="btn btn-square btn-error btn-sm" @click="console.log(doc.id)">
-                        <Icon icon="mdi:delete" width="20" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <aside class="flex flex-col gap-8">
-            <div class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
-              <div>
-                <h2 class="text-xl font-medium">Resumen de compra</h2>
-                <div class="divider m-0"></div>
-              </div>
-              <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
-                <div v-if="vehicle.form_of_payment_type === 1">
-                  <span> Precio de compra: </span>
-                  <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
-                  <span> Financiado </span>
-                </div>
-                <div v-else>
-                  <span> Precio de compra: </span>
-                  <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
-                  <span> Contado </span>
-                </div>
-                <div v-for="extra of vehicle.extras" :key="extra.id">
-                  <span> Extra: </span>
-                  <span class="mr-2 text-right"> {{ extra.price }} € </span>
-                  <span> {{ extra.title }} </span>
-                </div>
-                <div v-for="discount of vehicle.discounts" :key="discount.id">
-                  <span> Descuento: </span>
-                  <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
-                    {{ discount.amount_fix }} €
-                  </span>
-                  <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
-                    {{ discount.amount_percent }} %
-                  </span>
-                  <span> {{ discount.title }} </span>
-                </div>
-                <div>
-                  <span class="font-bold"> Precio final: </span>
-                  <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
-                  <span></span>
-                </div>
-              </div>
-              <div class="divider m-0"></div>
-              <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
-                <div v-for="payment of vehicle.payments" :key="payment.id">
-                  <span> Importe de reserva: </span>
-                  <span class="mr-2 text-right"> {{ payment.amount }} € </span>
-                  <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
-                  <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
-                  <span v-if="payment.payment_method === 'cash'"> Contado </span>
-                  <span v-if="payment.payment_method === 'vehicle_exchange'">
-                    Vehiculo a cambio
-                  </span>
-                </div>
-                <div>
-                  <span class="font-bold"> Importe pendiente: </span>
-                  <span class="mr-2 text-right font-bold">
-                    {{ vehicle.pending_booking_amount }} €
-                  </span>
-                  <span></span>
-                </div>
-              </div>
-            </div>
-            <template v-for="payment of vehicle.payments" :key="payment.id">
-              <div
-                v-if="
-                  payment.payment_method === 'vehicle_exchange' && payment.form_of_payment_vehicle
-                "
-                class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex"
-              >
-                <div>
-                  <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
-                  <div class="divider m-0"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 text-base">
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Marca: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.brand_details }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Modelo: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.model_details }}
-                    </span>
-                  </div>
-                  <!-- <div class="flex flex-col">
-                    <span class="font-bold"> Versión: </span>
-                    <span> falta en la api </span>
-                  </div> -->
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Bastidor: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.vin }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Matricula: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.plate }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Kms: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.kms }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Cambios: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.gearbox_details }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Combustible: </span>
-                    <span>
-                      {{ payment.form_of_payment_vehicle.fuel_details }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-bold"> Valoración: </span>
-                    <span> {{ payment.form_of_payment_vehicle.price }} € </span>
-                  </div>
-                </div>
-              </div>
-            </template>
-            <div class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex">
-              <div>
-                <h2 class="text-xl font-medium">Documentos</h2>
-                <div class="divider m-0"></div>
-              </div>
-              <div
-                v-for="doc in galleryDocs"
-                :key="doc.id"
-                class="card card-side m-3 bg-base-100 shadow-xl"
-              >
-                <div class="card-body flex-row justify-between p-4">
-                  <div class="flex gap-2">
-                    <span class="badge badge-primary capitalize">{{ doc.status }}</span>
-                    <span class="text-sm">{{ doc.date_parsed }}</span>
-                    <span class="text-sm">{{ doc.sent_to }}</span>
-                  </div>
-                  <div class="self flex gap-2">
-                    <button class="btn btn-square btn-error btn-sm" @click="console.log(doc.id)">
-                      <Icon icon="mdi:delete" width="20" />
+                      <LoadingSpinner v-if="loadingPayment" />
+                      <span v-else class="font-semibold text-white">Guardar</span>
                     </button>
                   </div>
+                  <div class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20">
+                    <VehicleTable add title="Pagos" @addBtn="drawerSection = 'payments'">
+                      <template #content>
+                        <EasyDataTable
+                          class="table-dark table-striped"
+                          table-class-name="z-0"
+                          header-class-name="z-0"
+                          hide-footer
+                          border-cell
+                          :headers="headersPayments"
+                          :items="payments"
+                          v-model:server-options="serverOptions"
+                          :server-items-length="serverItemsLength"
+                          :loading="isFetchingPayments"
+                        >
+                          <template v-slot:item-payment_type="{ payment_type }">
+                            <span v-if="payment_type == 'counted'"> Contado </span>
+                            <span v-else-if="payment_type == 'booking_pre_order_payment'">
+                              Pago reservado
+                            </span>
+                            <span v-else> Financiado </span>
+                          </template>
+                          <template v-slot:item-payment_method="{ payment_method }">
+                            <span v-if="payment_method == 'cash'"> Efectivo </span>
+                            <span v-if="payment_method == 'card'"> Tarjeta </span>
+                            <span v-if="payment_method == 'transfer'"> Transferencia </span>
+                            <span v-if="payment_method == 'vehicle_exchange'">
+                              Vehículo a cambio
+                            </span>
+                          </template>
+                          <template v-slot:item-amount="{ amount }">
+                            <span> {{ amount }} € </span>
+                          </template>
+                          <template v-slot:item-id="{ id }">
+                            <div class="w-14">
+                              <button class="btn btn-square btn-xs mr-2" @click="paymentDrawer(id)">
+                                <Icon icon="mdi:pencil" />
+                              </button>
+                              <button
+                                class="btn btn-square btn-error btn-xs"
+                                @click="removePayment(id)"
+                              >
+                                <Icon icon="mdi:trash-can-outline" />
+                              </button>
+                            </div>
+                          </template>
+                        </EasyDataTable>
+                      </template>
+                    </VehicleTable>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </aside>
-        </section>
+                <div v-else-if="tab === 'summary'" class="flex w-full flex-col gap-4">
+                  <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-white p-4">
+                    <div>
+                      <h2 class="text-xl font-medium">Resumen de compra</h2>
+                      <div class="divider m-0"></div>
+                    </div>
+                    <div class="text-sm [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                      <div v-if="vehicle.form_of_payment_type === 1">
+                        <span> Precio de compra: </span>
+                        <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
+                        <span> Financiado </span>
+                      </div>
+                      <div v-else>
+                        <span> Precio de compra: </span>
+                        <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
+                        <span> Contado </span>
+                      </div>
+                      <div v-for="extra of vehicle.extras" :key="extra.id">
+                        <span> Extra: </span>
+                        <span class="mr-2 text-right"> {{ extra.price }} € </span>
+                        <span> {{ extra.title }} </span>
+                      </div>
+                      <div v-for="discount of vehicle.discounts" :key="discount.id">
+                        <span> Descuento: </span>
+                        <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
+                          {{ discount.amount_fix }} €
+                        </span>
+                        <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
+                          {{ discount.amount_percent }} %
+                        </span>
+                        <span> {{ discount.title }} </span>
+                      </div>
+                      <div>
+                        <span class="font-bold"> Precio final: </span>
+                        <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
+                        <span></span>
+                      </div>
+                    </div>
+                    <div class="divider m-0"></div>
+                    <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                      <div v-for="payment of vehicle.payments" :key="payment.id">
+                        <span> Importe de reserva: </span>
+                        <span class="mr-2 text-right"> {{ payment.amount }} € </span>
+                        <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
+                        <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
+                        <span v-if="payment.payment_method === 'cash'"> Contado </span>
+                        <span v-if="payment.payment_method === 'vehicle_exchange'">
+                          Vehiculo a cambio
+                        </span>
+                      </div>
+                      <div>
+                        <span class="font-bold"> Importe pendiente: </span>
+                        <span class="mr-2 text-right font-bold">
+                          {{ vehicle.pending_booking_amount }} €
+                        </span>
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <template v-for="payment of vehicle.payments" :key="payment.id">
+                    <div
+                      v-if="
+                        payment.payment_method === 'vehicle_exchange' &&
+                        payment.form_of_payment_vehicle
+                      "
+                      class="flex h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4"
+                    >
+                      <div>
+                        <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
+                        <div class="divider m-0"></div>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4 text-base">
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Marca: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.brand_details }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Modelo: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.model_details }}
+                          </span>
+                        </div>
+                        <!-- <div class="flex flex-col">
+                        <span class="font-bold"> Versión: </span>
+                        <span> falta en la api </span>
+                      </div> -->
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Bastidor: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.vin }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Matricula: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.plate }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Kms: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.kms }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Cambios: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.gearbox_details }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Combustible: </span>
+                          <span>
+                            {{ payment.form_of_payment_vehicle.fuel_details }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="font-bold"> Valoración: </span>
+                          <span> {{ payment.form_of_payment_vehicle.price }} € </span>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div v-else class="flex w-full flex-col gap-4">
+                  <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-white p-4">
+                    <div>
+                      <h2 class="text-xl font-medium">Documentos</h2>
+                      <div class="divider m-0"></div>
+                    </div>
+                    <div
+                      v-for="doc in galleryDocs"
+                      :key="doc.id"
+                      class="card card-side bg-base-100 shadow-xl"
+                    >
+                      <div class="card-body flex-row justify-between p-4">
+                        <div class="flex w-full flex-col gap-2 text-wrap lg:flex-row">
+                          <div class="flex flex-row gap-3">
+                            <span class="badge badge-primary capitalize">{{ doc.status }}</span>
+                            <span class="text-sm">{{ doc.date_parsed }}</span>
+                          </div>
+                          <span class="text-sm">{{ doc.sent_to }}</span>
+                        </div>
+                        <div class="self flex gap-2">
+                          <button
+                            class="btn btn-square btn-error btn-sm"
+                            @click="console.log(doc.id)"
+                          >
+                            <Icon icon="mdi:delete" width="20" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <aside class="flex flex-col gap-8">
+                <div class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-white p-4 lg:flex">
+                  <div>
+                    <h2 class="text-xl font-medium">Resumen de compra</h2>
+                    <div class="divider m-0"></div>
+                  </div>
+                  <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                    <div v-if="vehicle.form_of_payment_type === 1">
+                      <span> Precio de compra: </span>
+                      <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
+                      <span> Financiado </span>
+                    </div>
+                    <div v-else>
+                      <span> Precio de compra: </span>
+                      <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
+                      <span> Contado </span>
+                    </div>
+                    <div v-for="extra of vehicle.extras" :key="extra.id">
+                      <span> Extra: </span>
+                      <span class="mr-2 text-right"> {{ extra.price }} € </span>
+                      <span> {{ extra.title }} </span>
+                    </div>
+                    <div v-for="discount of vehicle.discounts" :key="discount.id">
+                      <span> Descuento: </span>
+                      <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
+                        {{ discount.amount_fix }} €
+                      </span>
+                      <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
+                        {{ discount.amount_percent }} %
+                      </span>
+                      <span> {{ discount.title }} </span>
+                    </div>
+                    <div>
+                      <span class="font-bold"> Precio final: </span>
+                      <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="divider m-0"></div>
+                  <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                    <div v-for="payment of vehicle.payments" :key="payment.id">
+                      <span> Importe de reserva: </span>
+                      <span class="mr-2 text-right"> {{ payment.amount }} € </span>
+                      <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
+                      <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
+                      <span v-if="payment.payment_method === 'cash'"> Contado </span>
+                      <span v-if="payment.payment_method === 'vehicle_exchange'">
+                        Vehiculo a cambio
+                      </span>
+                    </div>
+                    <div>
+                      <span class="font-bold"> Importe pendiente: </span>
+                      <span class="mr-2 text-right font-bold">
+                        {{ vehicle.pending_booking_amount }} €
+                      </span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+                <template v-for="payment of vehicle.payments" :key="payment.id">
+                  <div
+                    v-if="
+                      payment.payment_method === 'vehicle_exchange' &&
+                      payment.form_of_payment_vehicle
+                    "
+                    class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex"
+                  >
+                    <div>
+                      <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
+                      <div class="divider m-0"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-base">
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Marca: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.brand_details }}
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Modelo: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.model_details }}
+                        </span>
+                      </div>
+                      <!-- <div class="flex flex-col">
+                        <span class="font-bold"> Versión: </span>
+                        <span> falta en la api </span>
+                      </div> -->
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Bastidor: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.vin }}
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Matricula: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.plate }}
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Kms: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.kms }}
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Cambios: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.gearbox_details }}
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Combustible: </span>
+                        <span>
+                          {{ payment.form_of_payment_vehicle.fuel_details }}
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold"> Valoración: </span>
+                        <span> {{ payment.form_of_payment_vehicle.price }} € </span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <div
+                  v-if="galleryDocs?.length > 0"
+                  class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-white p-4 lg:flex"
+                >
+                  <div>
+                    <h2 class="text-xl font-medium">Documentos</h2>
+                    <div class="divider m-0"></div>
+                  </div>
+                  <div
+                    v-for="doc in galleryDocs"
+                    :key="doc.id"
+                    class="card card-side m-3 bg-base-100 shadow-xl"
+                  >
+                    <div class="card-body flex-row justify-between p-4">
+                      <div class="flex gap-2">
+                        <span class="badge badge-primary capitalize">{{ doc.status }}</span>
+                        <span class="text-sm">{{ doc.date_parsed }}</span>
+                        <span class="text-sm">{{ doc.sent_to }}</span>
+                      </div>
+                      <div class="self flex gap-2">
+                        <button
+                          class="btn btn-square btn-error btn-sm"
+                          @click="console.log(doc.id)"
+                        >
+                          <Icon icon="mdi:delete" width="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </section>
+          </div>
+        </div>
       </HeaderMain>
-      <footer class="fixed bottom-0 z-50">
-        <div class="btm-nav z-10 hidden lg:flex">
+      <footer class="fixed bottom-0 z-50 bg-white">
+        <div class="btm-nav z-10 hidden bg-white lg:flex">
           <div class="mr-4 flex flex-row justify-end">
             <button class="btn btn-primary max-w-24 text-white" @click="updateData">
               <LoadingSpinner v-if="loading" />
@@ -1152,7 +1178,7 @@ onMounted(() => {
             </button>
           </div>
         </div>
-        <div v-show="scrollTop" class="btm-nav lg:hidden">
+        <div v-show="scrollTop" class="btm-nav bg-white lg:hidden">
           <button ref="navBtn1" @click="navEvent(1)">
             <Icon icon="mdi:car" width="30" />
             <span class="btm-nav-label">Resumen</span>
@@ -1165,12 +1191,12 @@ onMounted(() => {
             <Icon icon="mdi:payment" width="30" />
             <span class="btm-nav-label">Pagos</span>
           </button>
-          <button ref="navBtn4" @click="navEvent(4)">
+          <button ref="navBtn4" :disabled="galleryDocs?.length === 0" @click="navEvent(4)">
             <Icon icon="mdi:file-document-edit" width="30" />
             <span class="btm-nav-label">Documentos</span>
           </button>
         </div>
-        <div v-show="scrollDown" class="btm-nav lg:hidden">
+        <div v-show="scrollDown" class="btm-nav bg-white lg:hidden">
           <div>
             <button class="btn btn-accent w-36 text-white">Entregar</button>
           </div>
@@ -1231,6 +1257,10 @@ onMounted(() => {
 .active {
   background-color: #dcdddf !important;
   color: black !important;
+  font-weight: 600;
+}
+.tab-active {
+  color: black;
   font-weight: 600;
 }
 </style>

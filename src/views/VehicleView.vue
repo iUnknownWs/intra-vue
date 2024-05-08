@@ -2885,7 +2885,6 @@ onMounted(async () => {
                         :updateFunction="fetch"
                         :id="id"
                         class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-3 xl:gap-4"
-                        mobile
                       />
                     </div>
                   </template>
@@ -2900,7 +2899,6 @@ onMounted(async () => {
                         :deleteUrl="galleryDeleteUrl"
                         :updateFunction="fetch"
                         class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:gap-4"
-                        mobile
                       />
                     </div>
                   </template>
@@ -2973,7 +2971,6 @@ onMounted(async () => {
                         dataKey="results"
                         :updateUrl="updateGalleryUrl"
                         :deleteUrl="galleryDelete360Url"
-                        mobile
                         class="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-3 xl:gap-4"
                       />
                     </div>
