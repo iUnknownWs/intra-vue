@@ -535,14 +535,14 @@ onMounted(() => {
         <div
           v-if="tab === 'details'"
           role="tablist"
-          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit text-nowrap bg-base-100 py-2 lg:hidden [&_a]:text-base-200"
+          class="tabs tabs-bordered sticky top-[4rem] z-10 h-fit text-nowrap bg-base-100 py-2 xl:hidden [&_a]:text-base-200"
         >
           <a ref="tab1" role="tab" class="tab tab-active" @click="tabEvent(1)">Info facturación</a>
           <a ref="tab2" role="tab" class="tab" @click="tabEvent(2)">Extras</a>
           <a ref="tab3" role="tab" class="tab" @click="tabEvent(3)">Más info</a>
         </div>
-        <div class="flex flex-row gap-8">
-          <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-white lg:block">
+        <div class="flex flex-row gap-8 p-3 xl:p-0">
+          <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-white xl:block">
             <ul class="menu menu-sm w-56 rounded-box bg-white">
               <li>
                 <a class="font-bold" @click="tab = 'details'">Detalles</a>
@@ -581,7 +581,7 @@ onMounted(() => {
                 <CardMobile :reserve="vehicle" />
               </template>
             </header>
-            <section class="mb-4 flex w-full flex-col gap-6 lg:flex-row">
+            <section class="mb-4 flex w-full flex-col gap-6 xl:flex-row">
               <section class="flex w-full flex-1 flex-col">
                 <div
                   v-scroll-spy="{ offset: 120 }"
@@ -590,7 +590,7 @@ onMounted(() => {
                 >
                   <div
                     ref="billingDiv"
-                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                   >
                     <h1 class="text-xl font-medium">Información de facturación</h1>
                     <SelectInput
@@ -607,7 +607,7 @@ onMounted(() => {
                         v-model="isCompany"
                         class="my-4 w-fit"
                       />
-                      <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                      <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                         <SelectInput
                           label="Tipo de documento:"
                           :options="options.idTypes"
@@ -651,7 +651,7 @@ onMounted(() => {
                         >
                         </GMapAutocomplete>
                       </label>
-                      <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                      <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                         <TextInput label="Ciudad:" v-model="contactCity" />
                         <TextInput label="Provincia:" v-model="contactRegion" />
                         <TextInput label="País:" v-model="contactCountry" />
@@ -659,7 +659,7 @@ onMounted(() => {
                       </div>
                       <div v-if="isCompany" class="mt-8">
                         <h2 class="text-xl font-semibold">Información de la empresa</h2>
-                        <div class="mt-4 flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                        <div class="mt-4 flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                           <TextInput label="VAT:" v-model="companyVat" />
                           <TextInput label="Nombre:" v-model="companyName" />
                           <TextInput label="Email:" v-model="companyEmail" />
@@ -692,7 +692,7 @@ onMounted(() => {
                           >
                           </GMapAutocomplete>
                         </label>
-                        <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                        <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                           <TextInput label="Ciudad:" v-model="companyCity" />
                           <TextInput label="Provincia:" v-model="companyRegion" />
                           <TextInput label="País:" v-model="companyCountry" />
@@ -703,7 +703,7 @@ onMounted(() => {
                   </div>
                   <div
                     ref="extrasDiv"
-                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                   >
                     <VehicleTable title="Extras" add @addBtn="extraDrawer">
                       <template #content>
@@ -756,7 +756,7 @@ onMounted(() => {
                   </div>
                   <div
                     ref="infoDiv"
-                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20"
+                    class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                   >
                     <h2 class="text-xl font-medium">Más información</h2>
                     <AreaInput label="Comentarios Comerciales:" v-model="comments" />
@@ -770,7 +770,7 @@ onMounted(() => {
                       >
                       </GMapAutocomplete>
                     </label>
-                    <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-4">
+                    <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                       <TextInput label="Ciudad:" v-model="deliveryCity" />
                       <TextInput label="Provincia:" v-model="deliveryRegion" />
                       <TextInput label="País:" v-model="deliveryCountry" />
@@ -779,7 +779,7 @@ onMounted(() => {
                   </div>
                 </div>
                 <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4">
-                  <div class="flex scroll-m-28 flex-col rounded bg-white p-4 lg:scroll-m-20">
+                  <div class="flex scroll-m-28 flex-col rounded bg-white p-4 xl:scroll-m-20">
                     <h2 class="mb-4 text-xl font-medium">Forma de pago</h2>
                     <SelectInput
                       label="Método de Pago:"
@@ -787,7 +787,7 @@ onMounted(() => {
                       :options="options.paymentType"
                       :initialValue="null"
                     />
-                    <div v-if="paymentType !== '0'" class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    <div v-if="paymentType !== '0'" class="grid grid-cols-1 gap-4 xl:grid-cols-3">
                       <TextInput label="Importe a financiar:" v-model="paymentAmount" />
                       <TextInput label="Meses de financiación:" v-model="paymentMonths" />
                       <TextInput label="Cuotas mensuales:" v-model="paymentDues" />
@@ -800,7 +800,7 @@ onMounted(() => {
                       <span v-else class="font-semibold text-white">Guardar</span>
                     </button>
                   </div>
-                  <div class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 lg:scroll-m-20">
+                  <div class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20">
                     <VehicleTable add title="Pagos" @addBtn="drawerSection = 'payments'">
                       <template #content>
                         <EasyDataTable
@@ -852,61 +852,82 @@ onMounted(() => {
                   </div>
                 </div>
                 <div v-else-if="tab === 'summary'" class="flex w-full flex-col gap-4">
-                  <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-white p-4">
+                  <div class="flex h-fit flex-col gap-2 rounded bg-white p-4">
                     <div>
-                      <h2 class="text-xl font-medium">Resumen de compra</h2>
+                      <h2 class="text-xl font-bold">Resumen de compra</h2>
                       <div class="divider m-0"></div>
                     </div>
-                    <div class="text-sm [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                    <div
+                      class="flex flex-col gap-2 text-base [&>div]:flex-row [&>div]:justify-between [&_div]:flex"
+                    >
                       <div v-if="vehicle.form_of_payment_type === 1">
-                        <span> Precio de compra: </span>
-                        <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
-                        <span> Financiado </span>
+                        <div class="flex-col">
+                          <span class="font-medium"> Precio de compra: </span>
+                          <span class="text-base-200"> Financiado </span>
+                        </div>
+                        <span class="font-medium"> {{ vehicle.price }} € </span>
                       </div>
                       <div v-else>
-                        <span> Precio de compra: </span>
-                        <span class="mr-2 text-right"> {{ vehicle.price }} € </span>
-                        <span> Contado </span>
+                        <div class="flex-col">
+                          <span class="font-medium"> Precio de compra: </span>
+                          <span class="text-base-200"> Contado </span>
+                        </div>
+                        <span class="font-medium"> {{ vehicle.price }} € </span>
                       </div>
                       <div v-for="extra of vehicle.extras" :key="extra.id">
-                        <span> Extra: </span>
-                        <span class="mr-2 text-right"> {{ extra.price }} € </span>
-                        <span> {{ extra.title }} </span>
+                        <div class="flex-col">
+                          <span class="font-medium"> Extra: </span>
+                          <span class="text-base-200"> {{ extra.title }} </span>
+                        </div>
+                        <span class="font-medium"> {{ extra.price }} € </span>
                       </div>
                       <div v-for="discount of vehicle.discounts" :key="discount.id">
-                        <span> Descuento: </span>
-                        <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
+                        <div class="flex-col">
+                          <span class="font-medium"> Descuento: </span>
+                          <span class="text-base-200"> {{ discount.title }} </span>
+                        </div>
+                        <span v-if="discount.amount_fix !== '0.00'" class="font-medium">
                           {{ discount.amount_fix }} €
                         </span>
-                        <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
+                        <span v-if="discount.amount_percent !== '0.00'" class="font-medium">
                           {{ discount.amount_percent }} %
                         </span>
-                        <span> {{ discount.title }} </span>
                       </div>
                       <div>
-                        <span class="font-bold"> Precio final: </span>
-                        <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
-                        <span></span>
+                        <span class="text-lg font-bold"> Precio final: </span>
+                        <span class="font-bold">{{ vehicle.final_price }} €</span>
                       </div>
                     </div>
                     <div class="divider m-0"></div>
-                    <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                    <div
+                      class="flex flex-col gap-2 text-base [&>div]:flex-row [&_div]:flex [&_div]:justify-between"
+                    >
                       <div v-for="payment of vehicle.payments" :key="payment.id">
-                        <span> Importe de reserva: </span>
-                        <span class="mr-2 text-right"> {{ payment.amount }} € </span>
-                        <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
-                        <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
-                        <span v-if="payment.payment_method === 'cash'"> Contado </span>
-                        <span v-if="payment.payment_method === 'vehicle_exchange'">
-                          Vehiculo a cambio
-                        </span>
+                        <div class="flex-col">
+                          <span class="font-medium"> Importe de reserva: </span>
+                          <span class="text-base-200" v-if="payment.payment_method === 'card'">
+                            Tarjeta
+                          </span>
+                          <span class="text-base-200" v-if="payment.payment_method === 'transfer'">
+                            Transferencia
+                          </span>
+                          <span class="text-base-200" v-if="payment.payment_method === 'cash'">
+                            Contado
+                          </span>
+                          <span
+                            class="text-base-200"
+                            v-if="payment.payment_method === 'vehicle_exchange'"
+                          >
+                            Vehiculo a cambio
+                          </span>
+                        </div>
+                        <span class="font-medium"> {{ payment.amount }} € </span>
                       </div>
                       <div>
                         <span class="font-bold"> Importe pendiente: </span>
                         <span class="mr-2 text-right font-bold">
                           {{ vehicle.pending_booking_amount }} €
                         </span>
-                        <span></span>
                       </div>
                     </div>
                   </div>
@@ -978,31 +999,36 @@ onMounted(() => {
                   </template>
                 </div>
                 <div v-else class="flex w-full flex-col gap-4">
-                  <div class="flex h-fit max-w-lg flex-col gap-4 rounded bg-white p-4">
+                  <div class="flex h-fit flex-col gap-4 rounded bg-white p-4">
                     <div>
                       <h2 class="text-xl font-medium">Documentos</h2>
                       <div class="divider m-0"></div>
                     </div>
-                    <div
-                      v-for="doc in galleryDocs"
-                      :key="doc.id"
-                      class="card card-side bg-base-100 shadow-xl"
-                    >
-                      <div class="card-body flex-row justify-between p-4">
-                        <div class="flex w-full flex-col gap-2 text-wrap lg:flex-row">
-                          <div class="flex flex-row gap-3">
-                            <span class="badge badge-primary capitalize">{{ doc.status }}</span>
-                            <span class="text-sm">{{ doc.date_parsed }}</span>
+                    <div class="mx-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <div
+                        v-for="doc in galleryDocs"
+                        :key="doc.id"
+                        class="card card-side max-w-lg bg-base-100 shadow-xl"
+                      >
+                        <div class="card-body flex-row items-center justify-between p-4">
+                          <div class="flex w-full flex-row gap-2 text-wrap xl:flex-row">
+                            <div class="flex flex-row items-center gap-3">
+                              <span
+                                class="badge badge-primary font-semibold capitalize text-white"
+                                >{{ doc.status }}</span
+                              >
+                              <span class="text-sm">{{ doc.date_parsed }}</span>
+                            </div>
+                            <span class="text-sm">{{ doc.sent_to }}</span>
                           </div>
-                          <span class="text-sm">{{ doc.sent_to }}</span>
-                        </div>
-                        <div class="self flex gap-2">
-                          <button
-                            class="btn btn-square btn-error btn-sm"
-                            @click="console.log(doc.id)"
-                          >
-                            <Icon icon="mdi:delete" width="20" />
-                          </button>
+                          <div>
+                            <button
+                              class="btn btn-square btn-error btn-sm"
+                              @click="console.log(doc.id)"
+                            >
+                              <Icon icon="mdi:delete" width="20" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1010,61 +1036,82 @@ onMounted(() => {
                 </div>
               </section>
               <aside class="flex flex-col gap-8">
-                <div class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-white p-4 lg:flex">
+                <div class="hidden h-fit max-w-lg flex-col gap-2 rounded bg-white p-4 xl:flex">
                   <div>
-                    <h2 class="text-xl font-medium">Resumen de compra</h2>
+                    <h2 class="text-xl font-bold">Resumen de compra</h2>
                     <div class="divider m-0"></div>
                   </div>
-                  <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                  <div
+                    class="flex flex-col gap-2 text-base [&>div]:flex-row [&>div]:justify-between [&_div]:flex"
+                  >
                     <div v-if="vehicle.form_of_payment_type === 1">
-                      <span> Precio de compra: </span>
-                      <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
-                      <span> Financiado </span>
+                      <div class="flex-col">
+                        <span class="font-medium"> Precio de compra: </span>
+                        <span class="text-base-200"> Financiado </span>
+                      </div>
+                      <span class="font-medium"> {{ vehicle.price }} € </span>
                     </div>
                     <div v-else>
-                      <span> Precio de compra: </span>
-                      <span class="mr-2 text-right"> {{ vehicle.price }} €</span>
-                      <span> Contado </span>
+                      <div class="flex-col">
+                        <span class="font-medium"> Precio de compra: </span>
+                        <span class="text-base-200"> Contado </span>
+                      </div>
+                      <span class="font-medium"> {{ vehicle.price }} € </span>
                     </div>
                     <div v-for="extra of vehicle.extras" :key="extra.id">
-                      <span> Extra: </span>
-                      <span class="mr-2 text-right"> {{ extra.price }} € </span>
-                      <span> {{ extra.title }} </span>
+                      <div class="flex-col">
+                        <span class="font-medium"> Extra: </span>
+                        <span class="text-base-200"> {{ extra.title }} </span>
+                      </div>
+                      <span class="font-medium"> {{ extra.price }} € </span>
                     </div>
                     <div v-for="discount of vehicle.discounts" :key="discount.id">
-                      <span> Descuento: </span>
-                      <span v-if="discount.amount_fix !== '0.00'" class="mr-2 text-right">
+                      <div class="flex-col">
+                        <span class="font-medium"> Descuento: </span>
+                        <span class="text-base-200"> {{ discount.title }} </span>
+                      </div>
+                      <span v-if="discount.amount_fix !== '0.00'" class="font-medium">
                         {{ discount.amount_fix }} €
                       </span>
-                      <span v-if="discount.amount_percent !== '0.00'" class="mr-2 text-right">
+                      <span v-if="discount.amount_percent !== '0.00'" class="font-medium">
                         {{ discount.amount_percent }} %
                       </span>
-                      <span> {{ discount.title }} </span>
                     </div>
                     <div>
-                      <span class="font-bold"> Precio final: </span>
-                      <span class="mr-2 text-right font-bold">{{ vehicle.final_price }} €</span>
-                      <span></span>
+                      <span class="text-lg font-bold"> Precio final: </span>
+                      <span class="font-bold">{{ vehicle.final_price }} €</span>
                     </div>
                   </div>
                   <div class="divider m-0"></div>
-                  <div class="text-base [&_div]:mt-1 [&_div]:grid [&_div]:grid-cols-3">
+                  <div
+                    class="flex flex-col gap-2 text-base [&>div]:flex-row [&_div]:flex [&_div]:justify-between"
+                  >
                     <div v-for="payment of vehicle.payments" :key="payment.id">
-                      <span> Importe de reserva: </span>
-                      <span class="mr-2 text-right"> {{ payment.amount }} € </span>
-                      <span v-if="payment.payment_method === 'card'"> Tarjeta </span>
-                      <span v-if="payment.payment_method === 'transfer'"> Transferencia </span>
-                      <span v-if="payment.payment_method === 'cash'"> Contado </span>
-                      <span v-if="payment.payment_method === 'vehicle_exchange'">
-                        Vehiculo a cambio
-                      </span>
+                      <div class="flex-col">
+                        <span class="font-medium"> Importe de reserva: </span>
+                        <span class="text-base-200" v-if="payment.payment_method === 'card'">
+                          Tarjeta
+                        </span>
+                        <span class="text-base-200" v-if="payment.payment_method === 'transfer'">
+                          Transferencia
+                        </span>
+                        <span class="text-base-200" v-if="payment.payment_method === 'cash'">
+                          Contado
+                        </span>
+                        <span
+                          class="text-base-200"
+                          v-if="payment.payment_method === 'vehicle_exchange'"
+                        >
+                          Vehiculo a cambio
+                        </span>
+                      </div>
+                      <span class="font-medium"> {{ payment.amount }} € </span>
                     </div>
                     <div>
                       <span class="font-bold"> Importe pendiente: </span>
                       <span class="mr-2 text-right font-bold">
                         {{ vehicle.pending_booking_amount }} €
                       </span>
-                      <span></span>
                     </div>
                   </div>
                 </div>
@@ -1074,7 +1121,7 @@ onMounted(() => {
                       payment.payment_method === 'vehicle_exchange' &&
                       payment.form_of_payment_vehicle
                     "
-                    class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 lg:flex"
+                    class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-base-100 p-4 xl:flex"
                   >
                     <div>
                       <h2 class="text-xl font-medium">Vehiculo a comprar</h2>
@@ -1136,7 +1183,7 @@ onMounted(() => {
                 </template>
                 <div
                   v-if="galleryDocs?.length > 0"
-                  class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-white p-4 lg:flex"
+                  class="hidden h-fit max-w-lg flex-col gap-4 rounded bg-white p-4 xl:flex"
                 >
                   <div>
                     <h2 class="text-xl font-medium">Documentos</h2>
@@ -1147,9 +1194,11 @@ onMounted(() => {
                     :key="doc.id"
                     class="card card-side m-3 bg-base-100 shadow-xl"
                   >
-                    <div class="card-body flex-row justify-between p-4">
+                    <div class="card-body flex-row items-center justify-between p-4">
                       <div class="flex gap-2">
-                        <span class="badge badge-primary capitalize">{{ doc.status }}</span>
+                        <span class="badge badge-primary font-medium capitalize text-white">
+                          {{ doc.status }}
+                        </span>
                         <span class="text-sm">{{ doc.date_parsed }}</span>
                         <span class="text-sm">{{ doc.sent_to }}</span>
                       </div>
@@ -1170,7 +1219,7 @@ onMounted(() => {
         </div>
       </HeaderMain>
       <footer class="fixed bottom-0 z-50 bg-white">
-        <div class="btm-nav z-10 hidden bg-white lg:flex">
+        <div class="btm-nav z-10 hidden bg-white xl:flex">
           <div class="mr-4 flex flex-row justify-end">
             <button class="btn btn-primary max-w-24 text-white" @click="updateData">
               <LoadingSpinner v-if="loading" />
@@ -1178,7 +1227,7 @@ onMounted(() => {
             </button>
           </div>
         </div>
-        <div v-show="scrollTop" class="btm-nav bg-white lg:hidden">
+        <div v-show="scrollTop" class="btm-nav bg-white xl:hidden">
           <button ref="navBtn1" @click="navEvent(1)">
             <Icon icon="mdi:car" width="30" />
             <span class="btm-nav-label">Resumen</span>
@@ -1196,7 +1245,7 @@ onMounted(() => {
             <span class="btm-nav-label">Documentos</span>
           </button>
         </div>
-        <div v-show="scrollDown" class="btm-nav bg-white lg:hidden">
+        <div v-show="scrollDown" class="btm-nav bg-white xl:hidden">
           <div>
             <button class="btn btn-accent w-36 text-white">Entregar</button>
           </div>
@@ -1211,7 +1260,7 @@ onMounted(() => {
     </div>
     <div class="drawer-side z-50 h-full w-full">
       <label for="reserve-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
-      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content lg:w-1/3">
+      <ul class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3">
         <ExtrasDrawer
           v-if="drawerSection === 'extras'"
           :toggle="toggleDrawer"
