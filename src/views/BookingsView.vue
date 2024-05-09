@@ -166,7 +166,7 @@ onMounted(() => {
               </button>
             </li>
           </aside>
-          <div class="mx-auto w-full xl:w-fit">
+          <div class="mx-auto w-full min-w-[910px] xl:w-fit">
             <header class="flex flex-row items-center justify-between gap-2 p-4 xl:max-w-[400px]">
               <form @submit.prevent="getVehiclesFilter" class="w-full">
                 <label class="input input-bordered flex items-center gap-2">
@@ -248,7 +248,7 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-              <div class="flex min-h-[150vh] flex-col items-center px-4 xl:hidden">
+              <div class="flex min-h-[150vh] w-full flex-col items-center px-4 xl:hidden">
                 <div
                   role="tablist"
                   ref="tabContainer"

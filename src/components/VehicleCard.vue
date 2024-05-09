@@ -15,7 +15,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 <template>
   <div class="card card-side mt-4 w-full flex-row gap-4 bg-white p-6">
     <div
-      class="relative aspect-video h-44 rounded-lg bg-cover bg-center"
+      class="relative aspect-video h-52 rounded-lg bg-cover bg-center"
       :style="{
         'background-image': `url(${vehicle.image || placeholder})`
       }"
@@ -121,7 +121,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         <span class="badge min-w-28 rounded-md font-semibold"> No Disponible </span>
       </template>
     </div>
-    <div class="flex w-full flex-col">
+    <div class="flex w-full flex-col justify-around">
       <div class="flex flex-row items-center justify-between">
         <div class="flex flex-col">
           <span class="text-xl font-bold">

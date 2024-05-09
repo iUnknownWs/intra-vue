@@ -12,7 +12,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
   <div class="card card-side mt-4 w-full flex-row gap-4 bg-white p-6">
     <RouterLink :to="'/vehiculos/' + vehicle.id">
       <div
-        class="relative aspect-video h-44 rounded-lg bg-cover bg-center"
+        class="relative aspect-video h-52 rounded-lg bg-cover bg-center"
         :style="{
           'background-image': `url(${vehicle.image || placeholder})`
         }"
@@ -44,11 +44,32 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
       </div>
     </RouterLink>
     <div class="flex w-full min-w-[350px] flex-col">
-      <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-xl font-bold">
-        {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
-        {{ vehicle.model.model_web?.title }}
-      </RouterLink>
-      <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
+      <div class="flex flex-row justify-between">
+        <div class="flex flex-col">
+          <RouterLink :to="'/vehiculos/' + vehicle.id" class="text-xl font-bold">
+            {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
+            {{ vehicle.model.model_web?.title }}
+          </RouterLink>
+          <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="dropdown dropdown-end menu-xs">
+            <div tabindex="0" role="button" class="btn btn-square btn-ghost">
+              <Icon icon="mdi:dots-vertical" width="30" />
+            </div>
+            <ul
+              tabindex="0"
+              class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-white p-2 text-xs shadow-lg"
+            >
+              <li><RouterLink :to="'/vehiculos/' + vehicle.id">Ver/Editar</RouterLink></li>
+              <li><a @click="$emit('menu-btn2', vehicle.slug)">Ver anuncio</a></li>
+              <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
+              <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
+              <li><a @click="$emit('menu-btn5', vehicle.id)">Eliminar</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="divider m-0"></div>
       <div class="flex flex-row justify-between gap-2">
         <div class="flex flex-row items-center gap-1">
@@ -74,12 +95,12 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
           <span class="font-semibold text-base-200">Contado:</span>
           <span class="font-bold">{{ vehicle.price?.price_with_discount || 0 }}€</span>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col leading-5">
           <span class="font-semibold text-base-200">Financiado:</span>
           <span class="font-bold">{{ vehicle.price?.financed_price || 0 }}€</span>
-          <span class="font-semibold text-base-200"
-            >Desde {{ vehicle.price?.financing_fee || 0 }}€</span
-          >
+          <span class="font-semibold text-base-200">
+            Desde {{ vehicle.price?.financing_fee || 0 }}€
+          </span>
         </div>
         <div class="flex flex-col">
           <span class="font-semibold text-base-200">Días stock:</span>
@@ -90,27 +111,10 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
           <span class="font-bold">{{ vehicle.leads || 0 }}</span>
         </div>
       </div>
-    </div>
-    <div class="flex flex-col gap-2">
-      <button class="btn btn-neutral btn-sm" disabled>Coches.net</button>
-      <button class="btn btn-neutral btn-sm">Wallapop</button>
-      <button class="btn btn-neutral btn-sm">Sumauto</button>
-    </div>
-    <div class="flex flex-col">
-      <div class="dropdown dropdown-end menu-xs">
-        <div tabindex="0" role="button" class="btn btn-square btn-ghost">
-          <Icon icon="mdi:dots-vertical" width="30" />
-        </div>
-        <ul
-          tabindex="0"
-          class="menu dropdown-content z-[1] mt-0 w-32 rounded-box bg-white p-2 text-xs shadow-lg"
-        >
-          <li><RouterLink :to="'/vehiculos/' + vehicle.id">Ver/Editar</RouterLink></li>
-          <li><a @click="$emit('menu-btn2', vehicle.slug)">Ver anuncio</a></li>
-          <li><a @click="$emit('menu-btn3')">Ejecutar PT</a></li>
-          <li><a @click="$emit('menu-btn4')">Imprimir</a></li>
-          <li><a @click="$emit('menu-btn5', vehicle.id)">Eliminar</a></li>
-        </ul>
+      <div class="mt-2 flex flex-row gap-2">
+        <button class="btn btn-neutral btn-sm" disabled>Coches.net</button>
+        <button class="btn btn-neutral btn-sm">Wallapop</button>
+        <button class="btn btn-neutral btn-sm">Sumauto</button>
       </div>
     </div>
   </div>

@@ -571,13 +571,12 @@ onMounted(() => {
             <header class="mt-3 flex flex-col items-center justify-center xl:h-[250px]">
               <LoadingSpinner v-if="loading" class="loading-lg" />
               <template v-else>
-                <!-- <CardDetails
+                <CardDetails
                   :reserve="vehicle"
                   :getData="getVehicle"
                   @docuDrawer="docuDrawer"
                   @deliverBtn="deliDrawer"
-                /> -->
-                <CardDesktop :reserve="vehicle" />
+                />
                 <CardMobile :reserve="vehicle" />
               </template>
             </header>
@@ -586,7 +585,7 @@ onMounted(() => {
                 <div
                   v-scroll-spy="{ offset: 120 }"
                   v-if="tab === 'details'"
-                  class="flex w-full flex-col gap-8"
+                  class="flex w-full flex-col gap-8 min-w-[980px]"
                 >
                   <div
                     ref="billingDiv"
@@ -778,7 +777,7 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-                <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4">
+                <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4 min-w-[980px]">
                   <div class="flex scroll-m-28 flex-col rounded bg-white p-4 xl:scroll-m-20">
                     <h2 class="mb-4 text-xl font-medium">Forma de pago</h2>
                     <SelectInput

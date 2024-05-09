@@ -143,6 +143,10 @@ th:last-child {
   border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
 }
 
+.btn > span {
+  font-weight: 600;
+}
+
 .btn-primary {
   color: white;
 }
@@ -151,15 +155,15 @@ th:last-child {
   color: #fff;
 }
 
+.btn-neutral {
+  color: #fff;
+}
+
 .btn-outline {
   --tw-border-opacity: 1;
   border-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.btn > span {
-  font-weight: 600;
 }
 
 .textcard {

@@ -665,8 +665,8 @@ onMounted(() => {
   <HeaderMain ref="header">
     <DrawerComponent id="filterDrawer" v-model="drawer">
       <template #content>
-        <div class="p-4 xl:p-0">
-          <header class="flex w-full flex-row items-center justify-between gap-2 xl:hidden">
+        <div class="p-4 lg:p-0">
+          <header class="flex w-full flex-row items-center justify-between gap-2 lg:hidden">
             <form @submit.prevent="search" class="w-full">
               <label class="input input-bordered flex items-center gap-2">
                 <Icon icon="mdi:magnify" width="24" />
@@ -680,9 +680,9 @@ onMounted(() => {
                 <Icon icon="mdi:times" width="24" @click="searchReset" class="cursor-pointer" />
               </label>
             </form>
-            <div class="flex gap-2 xl:hidden">
+            <div class="flex gap-2 lg:hidden">
               <label for="filterDrawer" @click="filterDrawer" class="text-black">
-                <div tabindex="0" role="button" class="btn btn-square btn-outline xl:hidden">
+                <div tabindex="0" role="button" class="btn btn-square btn-outline lg:hidden">
                   <Icon icon="heroicons:adjustments-vertical" width="24" />
                 </div>
               </label>
@@ -702,7 +702,7 @@ onMounted(() => {
               </DropdownBtn>
             </div>
           </header>
-          <div class="hidden w-full flex-row gap-8 xl:flex">
+          <div class="hidden w-full flex-row gap-8 lg:flex">
             <aside class="min-h-full w-96 bg-white p-8 text-base-content">
               <span class="text-xl font-bold">Filtros</span>
               <RangeSelect
@@ -774,7 +774,7 @@ onMounted(() => {
               </li>
             </aside>
             <div
-              class="mx-auto flex w-full max-w-6xl flex-shrink flex-col items-start justify-center rounded-md py-8"
+              class="mx-auto flex w-full max-w-6xl flex-shrink flex-col items-start justify-center rounded-md py-4"
             >
               <div class="flex w-full flex-row justify-between gap-2">
                 <form @submit.prevent="search">
@@ -790,8 +790,8 @@ onMounted(() => {
                     <Icon icon="mdi:times" width="24" @click="searchReset" />
                   </label>
                 </form>
-                <div class="flex flex-row gap-2">
-                  <button @click="discountDrawer" class="btn btn-secondary hidden xl:flex">
+                <div class="flex flex-row gap-2 lg:hidden">
+                  <button @click="discountDrawer" class="btn btn-secondary hidden lg:flex">
                     <Icon icon="mdi:discount" width="25" />
                     Descuentos
                   </button>
@@ -800,7 +800,7 @@ onMounted(() => {
                       <div
                         tabindex="0"
                         role="button"
-                        class="btn btn-primary hidden text-white xl:flex"
+                        class="btn btn-primary hidden text-white lg:flex"
                       >
                         <Icon icon="mdi:plus" width="25" />
                         Nuevo
@@ -826,7 +826,7 @@ onMounted(() => {
                 role="tablist"
                 ref="tabContainer"
                 @wheel.prevent="horizontalScroll"
-                class="no-scrollbar tabs tabs-bordered mt-7 w-[73vw] max-w-6xl overflow-x-scroll font-medium [&_a]:gap-2 [&_a]:text-nowrap [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
+                class="no-scrollbar tabs tabs-bordered mt-7 w-[66vw] xl:w-[73vw] max-w-6xl overflow-x-scroll font-medium [&_a]:gap-2 [&_a]:text-nowrap [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
               >
                 <a
                   role="tab"
@@ -909,7 +909,9 @@ onMounted(() => {
                   No disponible ({{ filtersCounters.not_available }})
                 </a>
               </div>
-              <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
+              <div
+                class="flex min-h-[150vh] w-full flex-col items-center justify-between lg:hidden xl:flex"
+              >
                 <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
                 <div v-else class="w-full">
                   <CardDesktop
@@ -921,10 +923,23 @@ onMounted(() => {
                   />
                 </div>
               </div>
+              <div
+                class="hidden min-h-[150vh] w-full px-4 flex-col items-center justify-between lg:flex xl:hidden"
+              >
+                <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
+                <div v-else class="w-full">
+                  <CardMobile
+                    v-for="(vehicle, index) in vehiclesFilter"
+                    @menu="vehicleMenu"
+                    :key="index"
+                    :vehicle="vehicle"
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div
-            class="mt-4 flex min-h-[150vh] flex-col items-center justify-between xl:hidden"
+            class="mt-4 flex min-h-[150vh] flex-col items-center justify-between lg:hidden"
             :key="refresh"
           >
             <div class="flex h-full w-full flex-col items-center">
@@ -1016,7 +1031,7 @@ onMounted(() => {
                 </a>
               </div>
               <LoadingSpinner v-if="loading" class="loading-lg mt-24" />
-              <div v-else>
+              <div class="w-full" v-else>
                 <CardMobile
                   v-for="(vehicle, index) in vehiclesFilter"
                   @menu="vehicleMenu"
