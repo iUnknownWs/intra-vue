@@ -349,7 +349,7 @@ onMounted(() => {
               :loading="loadingLogs"
             >
               <template v-slot:item-id="{ id }">
-                <button class="btn btn-primary btn-xs" @click="logDetails(id)">Ver Detalles</button>
+                <button class="btn btn-primary btn-xs" @click="logDetails(id)">Detalles</button>
               </template>
               <template v-slot:item-headers="{ headers }">
                 <p class="w-64 overflow-hidden text-ellipsis text-nowrap">{{ headers }}</p>

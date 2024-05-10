@@ -13,7 +13,6 @@ import PaymentsDrawer from '@/components/Reserva/PaymentsDrawer.vue'
 import CardMobile from '@/components/Reserva/CardMobile.vue'
 import DocumentDrawer from '@/components/Reserva/DocumentDrawer.vue'
 import DeliveryDrawer from '@/components/Reserva/DeliveryDrawer.vue'
-import CardDesktop from '@/components/Reserva/CardDesktop.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
