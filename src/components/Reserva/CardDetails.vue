@@ -140,11 +140,9 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             {{ reserve.vehicle.license_plate }} {{ reserve.vehicle.model.brand.title }}
             {{ reserve.vehicle.model.model_web?.title }}
           </RouterLink>
-          <span class="text-base font-medium text-base-200">{{
-            reserve.vehicle.version?.title
-          }}</span>
+          <span class="text-base text-base-200">{{ reserve.vehicle.version?.title }}</span>
         </div>
-        <div class="flex flex-row gap-4 items-center">
+        <div class="flex flex-row items-center gap-4">
           <span
             v-if="reserve.source === 'Manual'"
             class="badge border-[#809CFF] bg-[#DCE1FF] px-4 py-2 font-medium"
@@ -211,7 +209,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           <span class="font-semibold">{{ reserve.vehicle.days_in_reserve }} días</span>
         </div>
         <div class="flex flex-row gap-1">
-          <span class="text-base-200">Imp. pendiente</span>
+          <span class="text-base-200">Imp. pendiente:</span>
           <span class="font-bold">{{ reserve.pending_booking_amount }} €</span>
         </div>
       </div>
@@ -221,7 +219,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           <span class="font-semibold">
             {{ reserve.contact_first_name }} {{ reserve.contact_last_name }}
           </span>
-          <span class="font-semibold text-base-200"
+          <span class="text-base-200"
             >{{ reserve.contact_city }}, {{ reserve.contact_country }}</span
           >
         </div>
@@ -232,7 +230,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           <span class="text-end font-semibold">
             {{ reserve.contact_phone_prefix }} {{ reserve.contact_phone }}
           </span>
-          <span class="font-semibold text-base-200">{{ reserve.contact_email }}</span>
+          <span class="text-base-200">{{ reserve.contact_email }}</span>
         </div>
       </div>
     </div>

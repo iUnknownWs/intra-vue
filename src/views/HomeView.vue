@@ -826,7 +826,7 @@ onMounted(() => {
                 role="tablist"
                 ref="tabContainer"
                 @wheel.prevent="horizontalScroll"
-                class="no-scrollbar tabs tabs-bordered mt-7 w-[66vw] xl:w-[73vw] max-w-6xl overflow-x-scroll font-medium [&_a]:gap-2 [&_a]:text-nowrap [&_a]:text-xs [&_a]:text-base-200 [&_span]:text-[12px]"
+                class="no-scrollbar tabs tabs-bordered mt-7 w-[66vw] max-w-6xl overflow-x-scroll font-medium xl:w-[73vw] [&_a]:gap-2 [&_a]:text-nowrap [&_a]:text-xs [&_a]:font-semibold [&_a]:text-base-200 focus:[&_a]:font-semibold"
               >
                 <a
                   role="tab"
@@ -924,7 +924,7 @@ onMounted(() => {
                 </div>
               </div>
               <div
-                class="hidden min-h-[150vh] w-full px-4 flex-col items-center justify-between lg:flex xl:hidden"
+                class="hidden min-h-[150vh] w-full flex-col items-center justify-between px-4 lg:flex xl:hidden"
               >
                 <LoadingSpinner v-if="loading" class="loading-lg mt-8" />
                 <div v-else class="w-full">
@@ -947,7 +947,7 @@ onMounted(() => {
                 role="tablist"
                 ref="tabContainer"
                 @wheel.prevent="horizontalScroll"
-                class="no-scrollbar tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:text-base-200"
+                class="no-scrollbar tabs tabs-bordered mx-4 w-full overflow-x-scroll text-nowrap font-medium [&_a]:gap-2 [&_a]:text-[14px] [&_a]:font-semibold [&_a]:text-base-200"
               >
                 <a
                   role="tab"
@@ -1191,3 +1191,10 @@ onMounted(() => {
     </DrawerComponent>
   </HeaderMain>
 </template>
+
+<style scoped>
+.tab-active {
+  color: black;
+  font-weight: 600;
+}
+</style>

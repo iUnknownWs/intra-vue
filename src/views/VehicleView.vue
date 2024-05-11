@@ -1493,7 +1493,6 @@ const discountDrawer = () => {
   })
 }
 
-const discountAuto = ref({})
 const discountAutoDrawer = () => {
   drawerSection.value = 'auto-discounts'
   toggleDrawer()
@@ -2080,11 +2079,11 @@ onMounted(async () => {
     <div class="drawer-content">
       <HeaderMain>
         <div class="flex w-full flex-row pb-16">
-          <aside class="sticky top-[4rem] hidden h-min max-w-64 bg-white xl:block">
+          <aside class="sticky top-[4rem] hidden h-min max-w-96 bg-white xl:block">
             <ul
               v-scroll-spy-link="{ selector: 'ul>li>a.menu-item' }"
               v-scroll-spy-active="{ selector: 'ul>li>a.menu-item' }"
-              class="menu menu-sm w-56 rounded-box bg-white p-6 text-base-200"
+              class="menu menu-sm w-80 rounded-box bg-white p-6 text-base-200"
             >
               <li>
                 <a @click="adminActive" class="font-bold text-black">Admin</a>
@@ -2125,7 +2124,7 @@ onMounted(async () => {
               <li><a class="font-bold text-black" @click="integrationsActive">Integraciones</a></li>
             </ul>
           </aside>
-          <div class="mx-auto w-full xl:p-6">
+          <div class="mx-auto w-full max-w-[1200px] xl:p-6">
             <VehicleAlert
               v-if="commentAlert"
               :message="commInternal"
@@ -2186,7 +2185,7 @@ onMounted(async () => {
                       class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <div class="flex flex-row justify-between">
-                        <h1 class="text-xl font-medium">Información Básica</h1>
+                        <h1 class="text-xl font-bold">Información Básica</h1>
                         <DropdownBtn>
                           <template #btn>
                             <button class="btn btn-outline btn-sm hidden xl:block">Acciones</button>
@@ -2282,7 +2281,7 @@ onMounted(async () => {
                     >
                       <template v-if="userStore.perms.includes('can_view_purchase_info')">
                         <div class="flex flex-row justify-between">
-                          <h1 class="text-xl font-medium">Información de compra</h1>
+                          <h1 class="text-xl font-bold">Información de compra</h1>
                           <label
                             v-if="addContract"
                             for="vehicle-drawer"
@@ -2410,12 +2409,12 @@ onMounted(async () => {
                       class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <div>
-                        <h2 class="text-xl font-medium">Comentarios Internos</h2>
+                        <h2 class="text-xl font-bold">Comentarios Internos</h2>
                         <div class="divider m-0 p-0"></div>
                       </div>
                       <AreaInput v-model="commInternal" />
                       <div class="mt-8">
-                        <h2 class="text-xl font-medium">Comentarios Externos</h2>
+                        <h2 class="text-xl font-bold">Comentarios Externos</h2>
                         <div class="divider m-0 p-0"></div>
                       </div>
                       <AreaInput v-model="commExternal" />
@@ -2424,7 +2423,7 @@ onMounted(async () => {
                       ref="maintenance"
                       class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
-                      <h1 class="text-xl font-medium">Mantenimiento</h1>
+                      <h1 class="text-xl font-bold">Mantenimiento</h1>
                       <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <TextInput label="Propietarios:" v-model="owners" />
                         <DateInput label="Vencimiento ITV:" v-model="itvExp" />
@@ -2520,7 +2519,7 @@ onMounted(async () => {
                       class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                     >
                       <div class="flex flex-row justify-between">
-                        <h1 class="text-xl font-medium">Más información</h1>
+                        <h1 class="text-xl font-bold">Más información</h1>
                       </div>
                       <div class="grid grid-cols-2 gap-x-4 xl:gap-x-10">
                         <SelectInput
@@ -2734,7 +2733,7 @@ onMounted(async () => {
                   class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                 >
                   <div v-if="!performanceTests[0]" class="flex flex-col items-center gap-4">
-                    <h2 class="text-xl font-medium">Performance Test</h2>
+                    <h2 class="text-xl font-bold">Performance Test</h2>
                     <h3 class="text-center text-base font-medium">
                       No se ha realizado ningún performance test a este vehículo hasta el momento
                     </h3>
@@ -3020,7 +3019,7 @@ onMounted(async () => {
                   ref="portals"
                   class="flex w-full scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                 >
-                  <h1 class="text-xl font-medium">Integraciones</h1>
+                  <h1 class="text-xl font-bold">Integraciones</h1>
                   <div class="mt-6 flex flex-col gap-4 lg:flex-row">
                     <template v-if="userStore.perms.includes('can_edit_cochesnet_vehicle')">
                       <IntegrationCard
@@ -3060,7 +3059,7 @@ onMounted(async () => {
                 </div>
               </section>
               <aside class="hidden h-fit flex-col gap-4 rounded bg-white p-4 xl:flex">
-                <h2 class="text-xl font-medium">Galería Multimedia</h2>
+                <h2 class="text-xl font-bold">Galería Multimedia</h2>
                 <div
                   role="tablist"
                   class="!checked:[&_input]:font-bold tabs tabs-bordered [&_input]:text-base-200 checked:[&_input]:text-black"
@@ -3848,10 +3847,10 @@ onMounted(async () => {
   font-weight: 600;
 }
 .tab-active {
-  font-weight: 700;
+  font-weight: 600;
   color: black;
 }
 .checked\:\[\&_input\]\:text-black input:checked {
-  font-weight: 700;
+  font-weight: 600;
 }
 </style>

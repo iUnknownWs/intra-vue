@@ -579,18 +579,18 @@ onMounted(() => {
                 <CardMobile :reserve="vehicle" />
               </template>
             </header>
-            <section class="mb-4 flex w-full flex-col gap-6 xl:flex-row">
-              <section class="flex w-full flex-1 flex-col">
+            <div class="mb-4 flex flex-col  gap-6 xl:flex-row">
+              <section class="flex w-[700px] flex-1 flex-col">
                 <div
                   v-scroll-spy="{ offset: 120 }"
                   v-if="tab === 'details'"
-                  class="flex w-full flex-col gap-8 min-w-[980px]"
+                  class="flex w-fit flex-col gap-8"
                 >
                   <div
                     ref="billingDiv"
                     class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                   >
-                    <h1 class="text-xl font-medium">Información de facturación</h1>
+                    <h1 class="text-xl font-bold">Información de facturación</h1>
                     <SelectInput
                       label="Vendedor:"
                       :options="sellerOptions"
@@ -656,7 +656,7 @@ onMounted(() => {
                         <TextInput label="Código Postal:" v-model="contactZip" />
                       </div>
                       <div v-if="isCompany" class="mt-8">
-                        <h2 class="text-xl font-semibold">Información de la empresa</h2>
+                        <h2 class="text-xl font-bold">Información de la empresa</h2>
                         <div class="mt-4 flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
                           <TextInput label="VAT:" v-model="companyVat" />
                           <TextInput label="Nombre:" v-model="companyName" />
@@ -756,7 +756,7 @@ onMounted(() => {
                     ref="infoDiv"
                     class="flex scroll-m-28 flex-col gap-4 rounded bg-white p-4 xl:scroll-m-20"
                   >
-                    <h2 class="text-xl font-medium">Más información</h2>
+                    <h2 class="text-xl font-bold">Más información</h2>
                     <AreaInput label="Comentarios Comerciales:" v-model="comments" />
                     <label class="form-control w-full">
                       <div class="label">
@@ -776,9 +776,12 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-                <div v-else-if="tab === 'payments'" class="flex w-full flex-col gap-4 min-w-[980px]">
+                <div
+                  v-else-if="tab === 'payments'"
+                  class="flex w-full min-w-[980px] flex-col gap-4"
+                >
                   <div class="flex scroll-m-28 flex-col rounded bg-white p-4 xl:scroll-m-20">
-                    <h2 class="mb-4 text-xl font-medium">Forma de pago</h2>
+                    <h2 class="mb-4 text-xl font-bold">Forma de pago</h2>
                     <SelectInput
                       label="Método de Pago:"
                       v-model="paymentType"
@@ -884,10 +887,10 @@ onMounted(() => {
                           <span class="font-medium"> Descuento: </span>
                           <span class="text-base-200"> {{ discount.title }} </span>
                         </div>
-                        <span v-if="discount.amount_fix !== '0.00'" class="font-medium">
+                        <span v-if="discount?.amount_fix" class="font-medium">
                           {{ discount.amount_fix }} €
                         </span>
-                        <span v-if="discount.amount_percent !== '0.00'" class="font-medium">
+                        <span v-if="discount?.amount_percent" class="font-medium">
                           {{ discount.amount_percent }} %
                         </span>
                       </div>
@@ -1033,8 +1036,8 @@ onMounted(() => {
                   </div>
                 </div>
               </section>
-              <aside class="flex flex-col gap-8">
-                <div class="hidden h-fit max-w-lg flex-col gap-2 rounded bg-white p-4 xl:flex">
+              <aside class="flex w-[520px] max-w-xl flex-col gap-8">
+                <div class="hidden h-fit w-full flex-col gap-2 rounded bg-white p-4 xl:flex">
                   <div>
                     <h2 class="text-xl font-bold">Resumen de compra</h2>
                     <div class="divider m-0"></div>
@@ -1068,11 +1071,11 @@ onMounted(() => {
                         <span class="font-medium"> Descuento: </span>
                         <span class="text-base-200"> {{ discount.title }} </span>
                       </div>
-                      <span v-if="discount.amount_fix !== '0.00'" class="font-medium">
-                        {{ discount.amount_fix }} €
+                      <span v-if="discount.amount_fix" class="font-medium">
+                        {{ discount.amount_fix }}€
                       </span>
-                      <span v-if="discount.amount_percent !== '0.00'" class="font-medium">
-                        {{ discount.amount_percent }} %
+                      <span v-if="discount.amount_percent" class="font-medium">
+                        {{ discount.amount_percent }}%
                       </span>
                     </div>
                     <div>
@@ -1212,7 +1215,7 @@ onMounted(() => {
                   </div>
                 </div>
               </aside>
-            </section>
+            </div>
           </div>
         </div>
       </HeaderMain>

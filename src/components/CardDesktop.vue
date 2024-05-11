@@ -12,7 +12,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
   <div class="card card-side mt-4 w-full flex-row gap-4 bg-white p-6">
     <RouterLink :to="'/vehiculos/' + vehicle.id">
       <div
-        class="relative aspect-video h-52 rounded-lg bg-cover bg-center"
+        class="relative aspect-[58/47] h-52 rounded-lg bg-cover bg-center"
         :style="{
           'background-image': `url(${vehicle.image || placeholder})`
         }"
@@ -50,7 +50,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
             {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
             {{ vehicle.model.model_web?.title }}
           </RouterLink>
-          <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
+          <span class="text-base text-base-200">{{ vehicle.version.title }}</span>
         </div>
         <div class="flex flex-col">
           <div class="dropdown dropdown-end menu-xs">
@@ -92,29 +92,33 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
       <div class="divider m-0"></div>
       <div class="flex flex-row justify-between gap-4">
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Contado:</span>
+          <span class="text-base-200">Contado:</span>
           <span class="font-bold">{{ vehicle.price?.price_with_discount || 0 }}€</span>
         </div>
         <div class="flex flex-col leading-5">
-          <span class="font-semibold text-base-200">Financiado:</span>
+          <span class="text-base-200">Financiado:</span>
           <span class="font-bold">{{ vehicle.price?.financed_price || 0 }}€</span>
-          <span class="font-semibold text-base-200">
-            Desde {{ vehicle.price?.financing_fee || 0 }}€
-          </span>
+          <span class="text-base-200"> Desde {{ vehicle.price?.financing_fee || 0 }}€ </span>
         </div>
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Días stock:</span>
+          <span class="text-base-200">Días stock:</span>
           <span class="font-bold">{{ vehicle.days_in_stock }} Días</span>
         </div>
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Leads:</span>
+          <span class="text-base-200">Leads:</span>
           <span class="font-bold">{{ vehicle.leads || 0 }}</span>
         </div>
       </div>
       <div class="mt-2 flex flex-row gap-2">
-        <button class="btn btn-neutral btn-sm" disabled>Coches.net</button>
-        <button class="btn btn-neutral btn-sm">Wallapop</button>
-        <button class="btn btn-neutral btn-sm">Sumauto</button>
+        <button class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
+          Coches.net
+        </button>
+        <button class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
+          Wallapop
+        </button>
+        <button class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
+          Sumauto
+        </button>
       </div>
     </div>
   </div>

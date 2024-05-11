@@ -10,6 +10,7 @@ axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('
 
 let url = `${import.meta.env.VITE_SALES}/bookings/`
 const loading = ref(null)
+const tab = ref(0)
 const drawer = ref(false)
 const drawerSection = ref(false)
 const vehicleNext = ref(false)
@@ -21,6 +22,7 @@ const toggleDrawer = () => {
 const bookings = ref([])
 
 const getVehicles = () => {
+  tab.value = 0
   loading.value = true
   if (filterParams.status || filterParams.status === 0) {
     delete filterParams.status
@@ -100,6 +102,7 @@ const reset = () => {
 const getVehiclesTabs = (status) => {
   loading.value = true
   filterParams.status = status
+  tab.value = status + 1
   axios.get(url, { params: filterParams }).then((response) => {
     bookings.value = response.data.results
     nextUrl.value = response.data.next
@@ -166,7 +169,7 @@ onMounted(() => {
               </button>
             </li>
           </aside>
-          <div class="mx-auto w-full min-w-[910px] xl:w-fit">
+          <div class="mx-auto w-full min-w-[1000px] xl:w-fit">
             <header class="flex flex-row items-center justify-between gap-2 p-4 xl:max-w-[400px]">
               <form @submit.prevent="getVehiclesFilter" class="w-full">
                 <label class="input input-bordered flex items-center gap-2">
@@ -191,49 +194,50 @@ onMounted(() => {
                   <div class="flex flex-col items-start">
                     <div
                       role="tablist"
-                      class="no-scrollbar tabs tabs-bordered hidden justify-items-start font-medium xl:grid [&_input]:text-base-200 focus:[&_input]:text-black"
+                      ref="tabContainer"
+                      @wheel.prevent="horizontalScroll"
+                      class="no-scrollbar tabs tabs-bordered mx-4 hidden overflow-x-scroll text-nowrap font-medium xl:grid [&_a]:gap-2 [&_a]:text-[14px] [&_a]:font-semibold [&_a]:text-base-200"
                     >
-                      <input
-                        type="radio"
-                        name="tabs-desktop"
+                      <a
                         role="tab"
                         class="tab"
-                        aria-label="Todas"
-                        checked
-                        @change="getVehicles"
-                      />
-                      <input
-                        type="radio"
-                        name="tabs-desktop"
+                        :class="{ 'tab-active font-bold !text-black': tab === 0 }"
+                        @click="getVehicles"
+                      >
+                        Todas
+                      </a>
+                      <a
                         role="tab"
                         class="tab"
-                        aria-label="Pendientes"
-                        @change="getVehiclesTabs(0)"
-                      />
-                      <input
-                        type="radio"
-                        name="tabs-desktop"
+                        :class="{ 'tab-active font-bold !text-black': tab === 1 }"
+                        @click="getVehiclesTabs(0)"
+                      >
+                        Pendientes
+                      </a>
+                      <a
                         role="tab"
                         class="tab"
-                        aria-label="Confirmadas"
-                        @change="getVehiclesTabs(1)"
-                      />
-                      <input
-                        type="radio"
-                        name="tabs-desktop"
+                        :class="{ 'tab-active font-bold !text-black': tab === 2 }"
+                        @click="getVehiclesTabs(1)"
+                      >
+                        Confirmadas
+                      </a>
+                      <a
                         role="tab"
                         class="tab"
-                        aria-label="Canceladas"
-                        @change="getVehiclesTabs(2)"
-                      />
-                      <input
-                        type="radio"
-                        name="tabs-desktop"
+                        :class="{ 'tab-active font-bold !text-black': tab === 3 }"
+                        @click="getVehiclesTabs(2)"
+                      >
+                        Canceladas
+                      </a>
+                      <a
                         role="tab"
                         class="tab"
-                        aria-label="Entregadas"
-                        @change="getVehiclesTabs(3)"
-                      />
+                        :class="{ 'tab-active font-bold !text-black': tab === 4 }"
+                        @click="getVehiclesTabs(3)"
+                      >
+                        Entregadas
+                      </a>
                     </div>
                     <div class="flex min-h-[150vh] w-full flex-col items-center justify-between">
                       <LoadingSpinner v-if="loading" class="loading-lg mt-32" />

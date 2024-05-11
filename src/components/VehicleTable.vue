@@ -12,7 +12,7 @@ defineEmits(['addBtn'])
     <div class="flex flex-row items-center justify-between">
       <div class="flex w-full flex-col">
         <div class="text-b flex flex-row items-center justify-between">
-          <span class="text-base font-medium lg:text-xl">{{ title }}</span>
+          <span class="text-base font-bold lg:text-xl">{{ title }}</span>
           <label
             v-if="add"
             for="vehicle-drawer"

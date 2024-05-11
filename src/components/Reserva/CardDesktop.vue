@@ -11,7 +11,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
   <div class="card card-side mt-4 hidden w-full flex-row gap-4 bg-white p-6 xl:flex">
     <RouterLink :to="'/reservas/' + reserve.id">
       <div
-        class="relative aspect-video h-52 rounded-lg bg-cover bg-center"
+        class="relative aspect-[58/47] h-52 rounded-lg bg-cover bg-center"
         :style="{
           'background-image': `url(${reserve.vehicle.image || placeholder})`
         }"
@@ -49,7 +49,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
             {{ reserve.vehicle.license_plate }} {{ reserve.vehicle.model.brand.title }}
             {{ reserve.vehicle.model.model_web?.title }}
           </RouterLink>
-          <span class="text-base font-medium text-base-200">{{
+          <span class="text-base text-base-200">{{
             reserve.vehicle.version?.title
           }}</span>
         </div>
@@ -120,7 +120,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
           <span class="font-semibold">
             {{ reserve.contact_first_name }} {{ reserve.contact_last_name }}
           </span>
-          <span class="font-semibold text-base-200"
+          <span class="text-base-200"
             >{{ reserve.contact_city }}, {{ reserve.contact_country }}</span
           >
         </div>
@@ -131,7 +131,7 @@ defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-b
           <span class="text-end font-semibold">
             {{ reserve.contact_phone_prefix }} {{ reserve.contact_phone }}
           </span>
-          <span class="font-semibold text-base-200">{{ reserve.contact_email }}</span>
+          <span class="text-base-200">{{ reserve.contact_email }}</span>
         </div>
       </div>
     </div>
