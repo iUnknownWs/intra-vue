@@ -172,7 +172,6 @@ const reset = () => {
       <template #content>
         <EasyDataTable
           class="table-dark table-striped"
-          border-cell
           buttons-pagination
           :headers="headers"
           :items="items"
@@ -189,7 +188,7 @@ const reset = () => {
           </template>
           <template v-slot:item-id="{ id }">
             <div class="w-20">
-              <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+              <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
                 <Icon icon="mdi:pencil" />
               </button>
               <button class="btn btn-square btn-error btn-xs" @click="remove(id)">

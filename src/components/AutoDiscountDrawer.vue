@@ -119,7 +119,6 @@ onMounted(() => {
           table-class-name="z-0"
           header-class-name="z-0"
           hide-footer
-          border-cell
           :items="discounts"
           :headers="headersDiscounts"
           :loading="loading"

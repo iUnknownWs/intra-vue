@@ -300,7 +300,6 @@ onMounted(() => {
                 table-class-name="z-0"
                 header-class-name="z-0"
                 hide-footer
-                border-cell
                 :headers="headersCampaigns"
                 :items="campaigns"
                 v-model:server-options="serverOptions"
@@ -308,7 +307,10 @@ onMounted(() => {
               >
                 <template v-slot:item-id="{ id }">
                   <div class="w-14">
-                    <button class="btn btn-square btn-xs mr-2" @click="editCampaign(id)">
+                    <button
+                      class="btn btn-square btn-secondary btn-xs mr-2"
+                      @click="editCampaign(id)"
+                    >
                       <Icon icon="mdi:pencil" />
                     </button>
                     <button class="btn btn-square btn-error btn-xs" @click="removeCampaign(id)">
@@ -388,7 +390,6 @@ onMounted(() => {
               table-class-name="z-0"
               header-class-name="z-0"
               hide-footer
-              border-cell
               :headers="headersLogs"
               :items="logs"
               :loading="loadingLogs"

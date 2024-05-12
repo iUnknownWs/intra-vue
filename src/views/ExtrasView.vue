@@ -131,7 +131,7 @@ const addExtra = () => {
 <template>
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
-      <form method="dialog flex flex-col" @submit.prevent="edit.close(); reset()">
+      <form method="dialog flex flex-col" @submit.prevent="edit.close(), reset()">
         <button class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
       </form>
       <h3 class="text-lg font-bold">Editar Tipo de Entrega</h3>
@@ -158,7 +158,6 @@ const addExtra = () => {
       <template #content>
         <EasyDataTable
           class="table-dark table-striped"
-          border-cell
           buttons-pagination
           :headers="headers"
           :items="items"
@@ -169,7 +168,7 @@ const addExtra = () => {
         >
           <template v-slot:item-id="{ id }">
             <div class="w-20">
-              <button class="btn btn-square btn-xs mr-2" @click="editModal(id)">
+              <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
                 <Icon icon="mdi:pencil" />
               </button>
               <button class="btn btn-square btn-error btn-xs" @click="remove(id)">

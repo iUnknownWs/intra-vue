@@ -85,25 +85,44 @@ th:last-child {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+
+.header-text {
+  color: #4f5765;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+table {
+  border-collapse: space;
+}
+
+.vue3-easy-data-table {
+  border-radius: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #D1D5DB;
+  overflow: hidden;
+}
+
 .customize-table {
   z-index: 0;
   background: #fff;
   background-color: #fff;
-  --easy-table-border: 1px solid #fff;
-  --easy-table-row-border: 1px solid #000;
-
-  --easy-table-header-font-size: 14px;
+  --easy-table-border-radius: 12px;
+  --easy-table-row-border: 1px solid #D1D5DB;
+  --easy-table-body-border: 1px solid #D1D5DB;
+  
+  --easy-table-header-font-size: 16px;
+  --easy-table-header-font-weight: 500;
   --easy-table-header-height: 50px;
-  --easy-table-header-font-color: #fff;
-  --easy-table-header-background-color: #000;
-  --easy-table-header-border-radius: 10px;
+  --easy-table-header-font-color: #000;
+  --easy-table-header-background-color: #fff;
 
   --easy-table-body-row-font-color: #000;
   --easy-table-body-row-background-color: #fff;
   --easy-table-body-row-height: 50px;
   --easy-table-body-row-font-size: 14px;
 
-  --easy-table-body-row-hover-font-color: #2d3a4f;
   --easy-table-body-row-hover-background-color: #eee;
 
   --easy-table-footer-background-color: #000;
@@ -114,13 +133,6 @@ th:last-child {
   --easy-table-rows-per-page-selector-width: 70px;
   --easy-table-rows-per-page-selector-option-padding: 10px;
   --easy-table-rows-per-page-selector-z-index: 1;
-
-  --easy-table-scrollbar-track-color: #2d3a4f;
-  --easy-table-scrollbar-color: #2d3a4f;
-  --easy-table-scrollbar-thumb-color: #4c5d7a;
-  --easy-table-scrollbar-corner-color: #2d3a4f;
-
-  --easy-table-loading-mask-background-color: #2d3a4f;
 }
 
 .input {

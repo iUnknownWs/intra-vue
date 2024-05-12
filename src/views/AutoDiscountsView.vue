@@ -97,11 +97,13 @@ const editDrawer = (id) => {
   drawerSection.value = 'edit'
   drawer.value = true
   discountId.value = id
-  axios.get(`${import.meta.env.VITE_SALES}/discounts/${id}/?automated=true&ruleid=1`).then((response) => {
-    title.value = response.data.title
-    amount.value = response.data.amount_fix
-    createIn.value = response.data.vehicle_automatic_discount.create_in
-  })
+  axios
+    .get(`${import.meta.env.VITE_SALES}/discounts/${id}/?automated=true&ruleid=1`)
+    .then((response) => {
+      title.value = response.data.title
+      amount.value = response.data.amount_fix
+      createIn.value = response.data.vehicle_automatic_discount.create_in
+    })
 }
 
 const editDiscount = () => {
@@ -187,7 +189,6 @@ const reset = () => {
               table-class-name="z-0"
               header-class-name="z-0"
               hide-footer
-              border-cell
               :items="discounts"
               :headers="headersDiscounts"
               :loading="loading"
@@ -197,7 +198,7 @@ const reset = () => {
               </template>
               <template v-slot:item-id="{ id }">
                 <div class="w-14">
-                  <button class="btn btn-square btn-xs mr-2" @click="editDrawer(id)">
+                  <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editDrawer(id)">
                     <Icon icon="mdi:pencil" />
                   </button>
                   <button class="btn btn-square btn-error btn-xs" @click="removeDiscount(id)">

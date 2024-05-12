@@ -579,7 +579,7 @@ onMounted(() => {
                 <CardMobile :reserve="vehicle" />
               </template>
             </header>
-            <div class="mb-4 flex flex-col  gap-6 xl:flex-row">
+            <div class="mb-4 flex flex-col gap-6 xl:flex-row">
               <section class="flex w-[700px] flex-1 flex-col">
                 <div
                   v-scroll-spy="{ offset: 120 }"
@@ -710,7 +710,6 @@ onMounted(() => {
                           table-class-name="z-0"
                           header-class-name="z-0"
                           hide-footer
-                          border-cell
                           :headers="headersExtras"
                           :items="vehicleExtras"
                           v-model:server-options="serverOptions"
@@ -737,7 +736,10 @@ onMounted(() => {
                           </template>
                           <template v-slot:item-id="{ id }">
                             <div class="w-14">
-                              <button class="btn btn-square btn-xs mr-2" @click="editModal(id, 0)">
+                              <button
+                                class="btn btn-square btn-secondary btn-xs mr-2"
+                                @click="editModal(id, 0)"
+                              >
                                 <Icon icon="mdi:pencil" />
                               </button>
                               <button
@@ -778,7 +780,7 @@ onMounted(() => {
                 </div>
                 <div
                   v-else-if="tab === 'payments'"
-                  class="flex w-full min-w-[980px] flex-col gap-4"
+                  class="flex w-full flex-col gap-4"
                 >
                   <div class="flex scroll-m-28 flex-col rounded bg-white p-4 xl:scroll-m-20">
                     <h2 class="mb-4 text-xl font-bold">Forma de pago</h2>
@@ -809,7 +811,6 @@ onMounted(() => {
                           table-class-name="z-0"
                           header-class-name="z-0"
                           hide-footer
-                          border-cell
                           :headers="headersPayments"
                           :items="payments"
                           v-model:server-options="serverOptions"
@@ -836,7 +837,10 @@ onMounted(() => {
                           </template>
                           <template v-slot:item-id="{ id }">
                             <div class="w-14">
-                              <button class="btn btn-square btn-xs mr-2" @click="paymentDrawer(id)">
+                              <button
+                                class="btn btn-square btn-secondary btn-xs mr-2"
+                                @click="paymentDrawer(id)"
+                              >
                                 <Icon icon="mdi:pencil" />
                               </button>
                               <button

@@ -37,8 +37,6 @@ const onSale = ref(null)
 const pending_publication = ref(null)
 const pending_shipping = ref(null)
 const reserved = ref(null)
-const appointment = ref(false)
-const appointmentLead = ref(false)
 
 const modalDefaults = (value) => {
   defaults.value = value
@@ -70,8 +68,6 @@ const getData = () => {
       dealer.value = integration.value.integration.data.dealer_id
       appId.value = integration.value.integration.data.app_id
       url.value = integration.value.integration.data.url
-      appointment.value = integration.value.integration.data.create_appointment
-      appointmentLead.value = integration.value.integration.data.create_appointment_lead
       vehicleType.value = integration.value.vehicle_type
       urlVideo.value = integration.value.additional_config_data.url_video_required
       urlBackOffice.value = integration.value.additional_config_data.url_backoffice_required
@@ -126,60 +122,6 @@ const saveData = () => {
     })
     .finally(() => {
       loading.value = false
-    })
-}
-
-const updateAppointment = (value) => {
-  axios
-    .post(
-      `${import.meta.env.VITE_INTEGRATIONS}/integrations/${props.id}/create_or_update_config/`,
-      {
-        integration: 'crm',
-        app_id: appId.value,
-        dealer_id: dealer.value,
-        secret: secret.value,
-        delivered: delivered.value,
-        reserved: reserved.value,
-        on_sale: onSale.value,
-        pending_publication: pending_publication.value,
-        pending_shipping: pending_shipping.value,
-        create_appointment_lead: appointmentLead.value,
-        create_appointment: value
-      }
-    )
-    .then(() => {
-      getData()
-      modalTitle.value = 'Integración actualizada'
-      modalMessage.value = 'Las configuraciones se han actualizado correctamente'
-      info.value.modal.showModal()
-    }).catch((err) => {
-      modalTitle.value = 'Error'
-      modalMessage.value = 'No se pudo actualizar la configuración'
-      info.value.modal.showModal()
-      console.error(err)
-    })
-}
-
-const updateAppointmentLead = (value) => {
-  axios
-    .post(
-      `${import.meta.env.VITE_INTEGRATIONS}/integrations/${props.id}/create_or_update_config/`,
-      {
-        integration: 'crm',
-        app_id: appId.value,
-        dealer_id: dealer.value,
-        secret: secret.value,
-        delivered: delivered.value,
-        reserved: reserved.value,
-        on_sale: onSale.value,
-        pending_publication: pending_publication.value,
-        pending_shipping: pending_shipping.value,
-        create_appointment: appointment.value,
-        create_appointment_lead: value
-      }
-    )
-    .then(() => {
-      getData()
     })
 }
 
@@ -339,24 +281,6 @@ onMounted(() => {
           </button>
         </div>
       </div>
-      <div class="mx-auto w-full max-w-3xl rounded-md bg-white p-4">
-        <div class="flex items-center">
-          <h3 class="text-xl font-medium">Citas</h3>
-        </div>
-        <div class="divider m-0"></div>
-        <div class="flex flex-row p-4">
-          <ToggleInput
-            label="Añadir lead al crear cita"
-            v-model="appointmentLead"
-            @changed="updateAppointmentLead(appointmentLead)"
-          />
-          <ToggleInput
-            label="Sincronizar cita con walcu"
-            v-model="appointment"
-            @changed="updateAppointment(appointment)"
-          />
-        </div>
-      </div>
     </div>
     <div v-else class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
       <VehicleTable title="Logs">
@@ -366,7 +290,6 @@ onMounted(() => {
             table-class-name="z-0"
             header-class-name="z-0"
             hide-footer
-            border-cell
             :items="logs"
             :headers="headersLogs"
             :loading="loadingLogs"

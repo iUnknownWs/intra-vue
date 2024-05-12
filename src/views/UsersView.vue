@@ -117,7 +117,6 @@ const reset = () => {
         <EasyDataTable
           class="z-0"
           table-class-name="z-0"
-          border-cell
           buttons-pagination
           :headers="headers"
           :items="items"

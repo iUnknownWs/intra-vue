@@ -120,7 +120,6 @@ onMounted(() => {
             table-class-name="z-0"
             header-class-name="z-0"
             hide-footer
-            border-cell
             :items="discounts"
             :headers="headersDiscounts"
             :loading="loading"
@@ -130,7 +129,7 @@ onMounted(() => {
             </template>
             <template v-slot:item-id="{ id }">
               <div class="w-14">
-                <button class="btn btn-square btn-xs mr-2" @click="editDrawer(id)">
+                <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editDrawer(id)">
                   <Icon icon="mdi:pencil" />
                 </button>
                 <button class="btn btn-square btn-error btn-xs" @click="removeDiscount(id)">

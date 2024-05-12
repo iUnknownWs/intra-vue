@@ -393,16 +393,17 @@ const toggleDrawer = () => {
 const ptDrawer = (step, id) => {
   ptStep.value = step
   ptTestId.value = id
-  drawerSection.value = 'pt'
+  openDrawer('pt')
   drawer.value = !drawer.value
 }
 
 const ptConfirm = (id) => {
+  confirmValue.value = 1
   ptTestId.value = id
   modalTitle.value = 'Editar Performance Test'
   message.value =
     '¿Seguro que quieres editar el Performance Test?, esto eliminara el progreso actual'
-  confirmPT.value.modal.showModal()
+  confirm.value.modal.showModal()
 }
 
 const ptStatus = (status) => {
@@ -413,17 +414,17 @@ const ptStatus = (status) => {
 
 const cochesnetDrawer = () => {
   drawer.value = !drawer.value
-  drawerSection.value = 'cochesnet'
+  openDrawer('cochesnet')
 }
 
 const wallapopDrawer = () => {
   drawer.value = !drawer.value
-  drawerSection.value = 'wallapop'
+  openDrawer('wallapop')
 }
 
 const sumautoDrawer = () => {
   drawer.value = !drawer.value
-  drawerSection.value = 'sumauto'
+  openDrawer('sumauto')
 }
 
 const updateData = () => {
@@ -566,9 +567,10 @@ const updateData = () => {
 }
 
 const deleteConfirm = () => {
+  confirmValue.value = 2
   modalTitle.value = 'Eliminar Vehículo'
   message.value = '¿Seguro que quieres eliminar el vehículo?'
-  confirmDelete.value.modal.showModal()
+  confirm.value.modal.showModal()
 }
 
 const deleteVehicle = () => {
@@ -1233,6 +1235,7 @@ const headersDocusign = [
 ]
 
 const contractConfirm = (id) => {
+  confirmValue.value = 0
   contractId.value = id
   modalTitle.value = 'Cancelar contrato'
   message.value = '¿Seguro que quieres cancelar el contrato?'
@@ -1429,7 +1432,7 @@ const resetExtra = () => {
 }
 
 const extraDrawer = () => {
-  drawerSection.value = 'extra'
+  openDrawer('extra')
   axios.get(warrantyUrl).then((response) => {
     for (let option of response.data.results) {
       warrantyOptions.value.push({
@@ -1482,7 +1485,7 @@ const extraSelected = () => {
 }
 
 const discountDrawer = () => {
-  drawerSection.value = 'discount'
+  openDrawer('discount')
   axios.get(discountListUrl).then((response) => {
     for (let option of response.data.results) {
       discountOptions.value.push({
@@ -1493,21 +1496,16 @@ const discountDrawer = () => {
   })
 }
 
-const discountAutoDrawer = () => {
-  drawerSection.value = 'auto-discounts'
-  toggleDrawer()
-}
-
 const loadingBooking = ref(false)
 const reserveDrawer = (step) => {
   if (!step) {
-    drawerSection.value = 'reserve'
+    openDrawer('reserve')
     userPicked.value = true
     walcuId.value = null
   }
 
   if (step === 2) {
-    drawerSection.value = 'reserve' + step
+    openDrawer('reserve' + step)
     walcu.value = 'loading'
     axios
       .get(
@@ -1531,7 +1529,7 @@ const reserveDrawer = (step) => {
   }
 
   if (step === 3) {
-    drawerSection.value = 'reserve' + step
+    openDrawer('reserve' + step)
     walcuVehicleOptions.value = []
     axios
       .get(walcuVehicleUrl + '?plate_number=' + plate.value + '&body_number=' + chassis.value)
@@ -1548,7 +1546,7 @@ const reserveDrawer = (step) => {
   }
 
   if (step === 4) {
-    drawerSection.value = 'reserve' + step
+    openDrawer('reserve' + step)
     return
   }
 
@@ -1752,7 +1750,7 @@ const toggleReserve = () => {
 
 const docusignDrawer = (step) => {
   if (!step) {
-    drawerSection.value = 'docusign'
+    openDrawer('docusign')
     docusignTemplate.value = null
     docusignDis.value = true
   }
@@ -1763,7 +1761,7 @@ const docusignDrawer = (step) => {
     axios.get(docusignTemplatesUrl).then((response) => {
       docusignTemplates.value = response.data.envelope_templates
       loadingTemplates.value = false
-      drawerSection.value = 'docusign2'
+      openDrawer('docusign2')
     })
   }
 
@@ -1840,7 +1838,7 @@ const docusignDrawer = (step) => {
 }
 
 const drawerFinance = () => {
-  drawerSection.value = 'finance'
+  openDrawer('finance')
 
   axios.get(finProdUrl).then((response) => {
     finProdOptions.value = response.data.results
@@ -1976,6 +1974,24 @@ onMounted(async () => {
     prev = current
   })
 })
+
+const openDrawer = (section) => {
+  drawerSection.value = section
+  drawer.value = true
+}
+
+const confirmValue = ref(null)
+const modalConfirmed = () => {
+  if (confirmValue.value === 0) {
+    voidContract()
+  }
+  if (confirmValue.value === 1) {
+    ptStatus(3)
+  }
+  if (confirmValue.value === 2) {
+    deleteVehicle()
+  }
+}
 </script>
 
 <template>
@@ -1991,21 +2007,7 @@ onMounted(async () => {
     ref="confirm"
     :title="modalTitle"
     :message="message"
-    @confirm="voidContract"
-  />
-  <ModalConfirm
-    class="w-full"
-    ref="confirmPT"
-    :title="modalTitle"
-    :message="message"
-    @confirm="ptStatus(3)"
-  />
-  <ModalConfirm
-    class="w-full"
-    ref="confirmDelete"
-    :title="modalTitle"
-    :message="message"
-    @confirm="deleteVehicle"
+    @confirm="modalConfirmed"
   />
   <dialog ref="edit" id="edit" class="modal">
     <div class="modal-box flex flex-col">
@@ -2074,9 +2076,8 @@ onMounted(async () => {
       </div>
     </div>
   </dialog>
-  <div class="drawer drawer-end">
-    <input id="vehicle-drawer" type="checkbox" class="drawer-toggle" v-model="drawer" />
-    <div class="drawer-content">
+  <DrawerComponent v-model="drawer">
+    <template #content>
       <HeaderMain>
         <div class="flex w-full flex-row pb-16">
           <aside class="sticky top-[4rem] hidden h-min max-w-96 bg-white xl:block">
@@ -2094,12 +2095,16 @@ onMounted(async () => {
                   <li>
                     <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Compra y precio</a>
                   </li>
-                  <li><a :class="{ 'menu-item': isAdmin }" @click="adminActive">Comentarios</a></li>
+                  <li>
+                    <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Comentarios</a>
+                  </li>
                   <li>
                     <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Mantenimiento</a>
                   </li>
                   <li><a :class="{ 'menu-item': isAdmin }" @click="adminActive">Extras</a></li>
-                  <li><a :class="{ 'menu-item': isAdmin }" @click="adminActive">Descuentos</a></li>
+                  <li>
+                    <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Descuentos</a>
+                  </li>
                   <li>
                     <a :class="{ 'menu-item': isAdmin }" @click="adminActive">Mas información</a>
                   </li>
@@ -2121,7 +2126,9 @@ onMounted(async () => {
                 </ul>
               </li>
               <li><a class="font-bold text-black" @click="ptActive">PT</a></li>
-              <li><a class="font-bold text-black" @click="integrationsActive">Integraciones</a></li>
+              <li>
+                <a class="font-bold text-black" @click="integrationsActive">Integraciones</a>
+              </li>
             </ul>
           </aside>
           <div class="mx-auto w-full max-w-[1200px] xl:p-6">
@@ -2195,7 +2202,9 @@ onMounted(async () => {
                           </template>
                           <template #content>
                             <ul>
-                              <li><a @click="recalculateDistinctive">Recalcular etiqueta</a></li>
+                              <li>
+                                <a @click="recalculateDistinctive">Recalcular etiqueta</a>
+                              </li>
                               <li><a @click="unlinkKey">Liberar llave</a></li>
                             </ul>
                           </template>
@@ -2330,7 +2339,6 @@ onMounted(async () => {
                                 table-class-name="z-0"
                                 header-class-name="z-0"
                                 hide-footer
-                                border-cell
                                 :headers="headersDocusign"
                                 :items="docusignContracts"
                                 v-model:server-options="serverOptions"
@@ -2375,7 +2383,10 @@ onMounted(async () => {
                         <div class="flex flex-row justify-between">
                           <h1 class="text-xl font-medium">Configuración de precio</h1>
                           <div class="flex flex-row gap-4">
-                            <button class="btn btn-primary btn-sm" @click="discountAutoDrawer">
+                            <button
+                              class="btn btn-primary btn-sm"
+                              @click="openDrawer('auto-discounts')"
+                            >
                               <span class="hidden xl:inline">Descuentos automáticos</span>
                               <Icon icon="mdi:percent" width="24" class="xl:hidden" />
                             </button>
@@ -2438,21 +2449,19 @@ onMounted(async () => {
                       <VehicleTable title="Lista de Extras" @addBtn="extraDrawer" add>
                         <template #content>
                           <EasyDataTable
-                            class="table-dark table-striped"
-                            table-class-name="z-0"
-                            header-class-name="z-0"
+                            table-class-name="customize-table"
+                            header-class-name="font-bold"
                             hide-footer
-                            border-cell
-                            :headers="headersExtra"
-                            :items="itemsExtra"
                             v-model:server-options="serverOptions"
                             :server-items-length="serverItemsLength"
+                            :headers="headersExtra"
+                            :items="itemsExtra"
                             :loading="isFetchingExtras"
                           >
                             <template v-slot:item-id="{ id }">
                               <div class="w-14">
                                 <button
-                                  class="btn btn-square btn-xs mr-2"
+                                  class="btn btn-square btn-secondary btn-xs mr-2"
                                   @click="editModal(id, 0)"
                                 >
                                   <Icon icon="mdi:pencil" />
@@ -2480,7 +2489,6 @@ onMounted(async () => {
                             table-class-name="z-0"
                             header-class-name="z-0"
                             hide-footer
-                            border-cell
                             buttons-pagination
                             :headers="headersDiscounts"
                             :items="itemsDiscount"
@@ -2556,7 +2564,7 @@ onMounted(async () => {
                     >
                       <VehicleTable
                         title="Equipamiento de serie"
-                        @addBtn="drawerSection = 'SERIAL'"
+                        @addBtn="openDrawer('SERIAL')"
                         add
                       >
                         <template #content>
@@ -2565,7 +2573,6 @@ onMounted(async () => {
                             table-class-name="z-0"
                             header-class-name="z-0"
                             hide-footer
-                            border-cell
                             :headers="headersEquip"
                             :items="serialEquipItems"
                             v-model:server-options="serverOptions"
@@ -2591,7 +2598,7 @@ onMounted(async () => {
                             <template v-slot:item-id="{ id }">
                               <div class="w-14">
                                 <button
-                                  class="btn btn-square btn-xs mr-2"
+                                  class="btn btn-square btn-secondary btn-xs mr-2"
                                   @click="editModal(id, 2)"
                                 >
                                   <Icon icon="mdi:pencil" />
@@ -2615,7 +2622,7 @@ onMounted(async () => {
                       >
                         <VehicleTable
                           title="Opcional sin coste"
-                          @addBtn="drawerSection = 'OPTIONAL_FREE_OF_CHARGE'"
+                          @addBtn="openDrawer('OPTIONAL_FREE_OF_CHARGE')"
                           add
                         >
                           <template #content>
@@ -2624,7 +2631,6 @@ onMounted(async () => {
                               table-class-name="z-0"
                               header-class-name="z-0"
                               hide-footer
-                              border-cell
                               :headers="headersEquip"
                               :items="freeEquipItems"
                               v-model:server-options="serverOptions"
@@ -2650,7 +2656,7 @@ onMounted(async () => {
                               <template v-slot:item-id="{ id }">
                                 <div class="w-14">
                                   <button
-                                    class="btn btn-square btn-xs mr-2"
+                                    class="btn btn-square btn-secondary btn-xs mr-2"
                                     @click="editModal(id, 2)"
                                   >
                                     <Icon icon="mdi:pencil" />
@@ -2673,7 +2679,7 @@ onMounted(async () => {
                       >
                         <VehicleTable
                           title="Opcional con coste"
-                          @addBtn="drawerSection = 'OPTIONAL_AT_EXTRA_CHARGE'"
+                          @addBtn="openDrawer('OPTIONAL_AT_EXTRA_CHARGE')"
                           add
                         >
                           <template #content>
@@ -2682,7 +2688,6 @@ onMounted(async () => {
                               table-class-name="z-0"
                               header-class-name="z-0"
                               hide-footer
-                              border-cell
                               :headers="headersEquip"
                               :items="paidEquipItems"
                               v-model:server-options="serverOptions"
@@ -2708,7 +2713,7 @@ onMounted(async () => {
                               <template v-slot:item-id="{ id }">
                                 <div class="w-14">
                                   <button
-                                    class="btn btn-square btn-xs mr-2"
+                                    class="btn btn-square btn-secondary btn-xs mr-2"
                                     @click="editModal(id, 2)"
                                   >
                                     <Icon icon="mdi:pencil" />
@@ -2761,7 +2766,6 @@ onMounted(async () => {
                           table-class-name="z-0"
                           header-class-name="z-0"
                           hide-footer
-                          border-cell
                           :headers="headersPT"
                           :items="performanceTests"
                           v-model:server-options="serverOptions"
@@ -2807,7 +2811,10 @@ onMounted(async () => {
                               </button>
                             </div>
                             <div v-if="status === 1" class="w-14">
-                              <button class="btn btn-square btn-xs mr-2" @click="ptConfirm(id)">
+                              <button
+                                class="btn btn-square btn-secondary btn-xs mr-2"
+                                @click="ptConfirm(id)"
+                              >
                                 <Icon icon="mdi:pencil" />
                               </button>
                               <button class="btn btn-square btn-xs" @click="ptDrawer(3, id)">
@@ -3225,7 +3232,10 @@ onMounted(async () => {
             </button>
           </div>
         </div>
-        <div v-show="scrollTop" class="btm-nav xl:hidden [&_button]:text-base-200 [&_button]:text-xs h">
+        <div
+          v-show="scrollTop"
+          class="h btm-nav xl:hidden [&_button]:text-xs [&_button]:text-base-200"
+        >
           <button ref="navBtn1" @click="navEvent1" class="active">
             <Icon icon="mdi:car" width="30" />
             <span class="btm-nav-label">I. Admin</span>
@@ -3253,7 +3263,7 @@ onMounted(async () => {
               for="vehicle-drawer"
               class="btn btn-warning w-36"
               ref="navBtn6"
-              @click="drawerSection = 'reserve'"
+              @click="openDrawer('reserve')"
             >
               <span class="btm-nav-label font-medium">Reservar</span>
             </label>
@@ -3265,13 +3275,9 @@ onMounted(async () => {
           </div>
         </div>
       </footer>
-    </div>
-    <div class="drawer-side z-50 h-full w-full">
-      <label for="vehicle-drawer" aria-label="close sidebar" class="drawer-overlay w-full"></label>
-      <ul
-        v-if="drawerSection === 'extra'"
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+    </template>
+    <template #drawer>
+      <template v-if="drawerSection === 'extra'">
         <div>
           <DrawerTitle title="Añadir Extra" @toggle="toggleDrawer" />
           <ToggleInput label="Auto / Manual" v-model="extraMode" />
@@ -3315,11 +3321,8 @@ onMounted(async () => {
           @click-secondary="toggleDrawer"
           @click-primary="addExtra"
         />
-      </ul>
-      <ul
-        v-if="drawerSection === 'discount'"
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+      </template>
+      <template v-if="drawerSection === 'discount'">
         <div>
           <DrawerTitle title="Añadir Descuento" @toggle="toggleDrawer" />
           <!-- <ToggleInput label="Auto / Manual" v-model="discountMode" /> -->
@@ -3346,22 +3349,21 @@ onMounted(async () => {
           @click-secondary="toggleDrawer"
           @click-primary="addDiscount"
         />
-      </ul>
-      <ul
+      </template>
+      <template
         v-if="
           drawerSection === 'OPTIONAL_AT_EXTRA_CHARGE' ||
           drawerSection === 'OPTIONAL_FREE_OF_CHARGE' ||
           drawerSection === 'SERIAL'
         "
-        class="menu min-h-full w-screen flex-col justify-between bg-white p-4 text-base-content xl:w-1/3"
       >
         <div>
           <DrawerTitle title="Añadir Equipamiento" @toggle="toggleDrawer" />
           <TextInput label="Nombre:" v-model="equipTitle" />
           <TextInput label="Descripción:" v-model="equipDescription" />
           <SelectInput label="Grupo:" :options="equipmentsGroup" v-model="equipGroup" />
-          <CheckInput label="Mostrar en pagina web:" v-model="equipWeb" />
-          <CheckInput label="Mostrar como destacado:" v-model="equipFeatured" />
+          <CheckInput label="Mostrar en pagina web:" class="mt-2 w-fit" v-model="equipWeb" />
+          <CheckInput label="Mostrar como destacado:" class="w-fit" v-model="equipFeatured" />
         </div>
         <DrawerActions
           class="self-end"
@@ -3370,14 +3372,11 @@ onMounted(async () => {
           @click-secondary="toggleDrawer"
           @click-primary="addEquip"
         />
-      </ul>
-      <ul
-        v-if="drawerSection === 'docusign'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
-        <form @submit.prevent="docusignDrawer(2)">
-          <DrawerTitle title="Generar Contrato" @toggle="toggleDrawer" />
+      </template>
+      <template v-if="drawerSection === 'docusign'">
+        <form @submit.prevent="docusignDrawer(2)" class="flex h-[95vh] flex-col justify-between">
           <div>
+            <DrawerTitle title="Generar Contrato" @toggle="toggleDrawer" />
             <ToggleInput
               label="Particular"
               option="Empresa"
@@ -3454,19 +3453,16 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-          <li class="mt-8 flex flex-row justify-end gap-4">
-            <button @click="toggleDrawer" class="btn btn-outline w-28">Cancelar</button>
-            <button type="submit" class="btn btn-primary w-24">
-              <LoadingSpinner v-if="loadingTemplates" />
-              <span class="font-semibold text-white" v-else>Siguiente</span>
+          <li class="mt-6 grid grid-cols-2 gap-2">
+            <button @click="toggleDrawer" class="btn btn-outline w-full">Cancelar</button>
+            <button type="submit" class="btn btn-primary w-full text-white">
+              <LoadingSpinner v-if="loading" />
+              <span v-else class="font-semibold text-white">Siguiente</span>
             </button>
           </li>
         </form>
-      </ul>
-      <ul
-        v-if="drawerSection === 'docusign2'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+      </template>
+      <template v-if="drawerSection === 'docusign2'">
         <div>
           <DrawerTitle title="Generar contrato" @toggle="toggleDrawer" />
           <TextInput label="Email del firmante:" v-model="docusignEmail" />
@@ -3490,14 +3486,11 @@ onMounted(async () => {
           :loading="loadingTemplates"
           :disabled="docusignDis"
         />
-      </ul>
-      <ul
-        v-if="drawerSection === 'reserve'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
-        <form @submit.prevent="reserveDrawer(2)">
-          <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
+      </template>
+      <template v-if="drawerSection === 'reserve'">
+        <form @submit.prevent="reserveDrawer(2)" class="flex h-[95vh] flex-col justify-between">
           <div>
+            <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
             <ToggleInput
               label="Particular"
               option="Empresa"
@@ -3574,16 +3567,16 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-          <li class="mt-8 flex flex-row justify-end gap-4">
-            <button @click="toggleDrawer" class="btn btn-outline w-28">Cancelar</button>
-            <button type="submit" class="btn btn-primary w-24 text-white">Siguiente</button>
+          <li class="mt-6 grid grid-cols-2 gap-2">
+            <button @click="toggleDrawer" class="btn btn-outline w-full">Cancelar</button>
+            <button type="submit" class="btn btn-primary w-full text-white">
+              <LoadingSpinner v-if="loading" />
+              <span v-else class="font-semibold text-white">Siguiente</span>
+            </button>
           </li>
         </form>
-      </ul>
-      <ul
-        v-if="drawerSection === 'reserve2'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+      </template>
+      <template v-if="drawerSection === 'reserve2'">
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
           <LoadingSpinner v-if="walcu === 'loading'" />
@@ -3620,11 +3613,8 @@ onMounted(async () => {
           @click-primary="reserveDrawer(3)"
           :disabled="!(walcuId === 'create_new' || !userPicked)"
         />
-      </ul>
-      <ul
-        v-if="drawerSection === 'reserve3'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+      </template>
+      <template v-if="drawerSection === 'reserve3'">
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
           <div>
@@ -3698,11 +3688,8 @@ onMounted(async () => {
           @click-primary="reserveDrawer(4)"
           :disabled="paymentPicked"
         />
-      </ul>
-      <ul
-        v-if="drawerSection === 'reserve4'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+      </template>
+      <template v-if="drawerSection === 'reserve4'">
         <div>
           <DrawerTitle title="Reservar Vehiculo" @toggle="toggleDrawer" />
           <div>
@@ -3765,11 +3752,8 @@ onMounted(async () => {
           @click-secondary="reserveDrawer(3)"
           @click-primary="reserveDrawer(5)"
         />
-      </ul>
-      <ul
-        v-if="drawerSection === 'finance'"
-        class="menu min-h-full w-screen justify-between bg-white p-4 text-base-content xl:w-1/3"
-      >
+      </template>
+      <template v-if="drawerSection === 'finance'">
         <div>
           <DrawerTitle title="Calcular Cuotas de Financiación" @toggle="toggleDrawer" />
           <SelectInput
@@ -3797,47 +3781,42 @@ onMounted(async () => {
           @click-primary="calculateFinance"
           :disabled="finRate === null || finProduct === null"
         />
-      </ul>
-      <ul
+      </template>
+      <CochesnetDrawer
         v-if="drawerSection === 'cochesnet'"
-        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content xl:w-1/3"
-      >
-        <CochesnetDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
-      </ul>
-      <ul
+        :id="id"
+        :toggle="toggleDrawer"
+        @published="fetch"
+      />
+      <WallapopDrawer
         v-if="drawerSection === 'wallapop'"
-        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content xl:w-1/3"
-      >
-        <WallapopDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
-      </ul>
-      <ul
+        :id="id"
+        :toggle="toggleDrawer"
+        @published="fetch"
+      />
+      <SumautoDrawer
         v-if="drawerSection === 'sumauto'"
-        class="menu min-h-full w-screen bg-white px-6 py-4 text-base-content xl:w-1/3"
-      >
-        <SumautoDrawer :id="id" :toggle="toggleDrawer" @published="fetch" />
-      </ul>
-      <ul
+        :id="id"
+        :toggle="toggleDrawer"
+        @published="fetch"
+      />
+      <PerformanceTest
         v-if="drawerSection === 'pt'"
-        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content xl:w-1/3"
-      >
-        <PerformanceTest
-          :url="ptUrl"
-          :toggle="toggleDrawer"
-          :id="id"
-          :step="ptStep"
-          :testId="ptTestId"
-          @created="fetch"
-          @validate="fetchPT"
-        />
-      </ul>
-      <ul
+        :url="ptUrl"
+        :toggle="toggleDrawer"
+        :id="id"
+        :step="ptStep"
+        :testId="ptTestId"
+        @created="fetch"
+        @validate="fetchPT"
+      />
+      <AutoDiscountDrawer
         v-if="drawerSection === 'auto-discounts'"
-        class="menu min-h-full w-screen justify-between bg-white px-6 py-4 text-base-content xl:w-1/3"
-      >
-        <AutoDiscountDrawer :toggle="toggleDrawer" :id="id" />
-      </ul>
-    </div>
-  </div>
+        :toggle="toggleDrawer"
+        :id="id"
+      />
+    </template>
+  </DrawerComponent>
 </template>
 
 <style scoped>
