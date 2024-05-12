@@ -8,6 +8,9 @@ import CardMobile from '@/components/CardMobile.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useUserStore } from '@/stores/user'
 import AutoDiscountDrawer from '@/components/AutoDiscountDrawer.vue'
+import CochesnetDrawer from '@/components/CochesnetDrawer.vue'
+import WallapopDrawer from '@/components/WallapopDrawer.vue'
+import SumautoDrawer from '@/components/SumautoDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -623,6 +626,11 @@ const horizontalScroll = (evt) => {
   tabContainer.value.scrollLeft += evt.deltaY * 1
 }
 
+const openDrawer = (section) => {
+  drawer.value = true
+  drawerSection.value = section
+}
+
 onMounted(() => {
   axios.get(userUrl).then((response) => {
     userStore.id = response.data.id
@@ -918,6 +926,9 @@ onMounted(() => {
                     v-for="(vehicle, index) in vehiclesFilter"
                     :key="index"
                     :vehicle="vehicle"
+                    @cochesnet-btn="(id = parseInt(vehicle.id)), openDrawer('cochesnet')"
+                    @wallapop-btn="(id = parseInt(vehicle.id)), openDrawer('wallapop')"
+                    @sumauto-btn="(id = parseInt(vehicle.id)), openDrawer('sumauto')"
                     @menu-btn2="vehicleWeb"
                     @menu-btn5="deleteVehicle"
                   />
@@ -1187,6 +1198,24 @@ onMounted(() => {
         <template v-if="drawerSection === 'discount'">
           <AutoDiscountDrawer :toggle="toggle" />
         </template>
+        <CochesnetDrawer
+          v-if="drawerSection === 'cochesnet'"
+          :id="id"
+          :toggle="toggle"
+          @published="all"
+        />
+        <WallapopDrawer
+          v-if="drawerSection === 'wallapop'"
+          :id="id"
+          :toggle="toggle"
+          @published="all"
+        />
+        <SumautoDrawer
+          v-if="drawerSection === 'sumauto'"
+          :id="id"
+          :toggle="toggle"
+          @published="all"
+        />
       </template>
     </DrawerComponent>
   </HeaderMain>

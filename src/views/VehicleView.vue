@@ -289,7 +289,6 @@ const ptTestId = ref(null)
 const modalTitle = ref('')
 const confirm = ref(null)
 const contractId = ref(null)
-const confirmPT = ref(null)
 const wallapop = ref(null)
 const sumauto = ref(null)
 const cochesnet = ref(null)
@@ -298,7 +297,9 @@ const wallapopStats = ref({})
 const cochesnetLoading = ref(false)
 const wallapopLoading = ref(false)
 const sumautoLoading = ref(false)
-const confirmDelete = ref(null)
+const web = ref(false)
+const fastDelivery = ref(false)
+
 const params = [
   {
     key: 'vehicle',
@@ -443,6 +444,7 @@ const updateData = () => {
     fuel: fuel?.value,
     gear_box: gearBox?.value,
     heigth: height?.value,
+    inmediate_delivery: fastDelivery?.value,
     internal_comments: commInternal?.value,
     kms: kms?.value,
     length: length?.value,
@@ -452,6 +454,7 @@ const updateData = () => {
       keys_quantity: keysQ?.value
     },
     max_speed: speed?.value,
+    no_web: web.value,
     number_gears: gears?.value,
     original_license_plate: licenseOG?.value,
     power: power?.value,
@@ -651,6 +654,8 @@ const fetch = () => {
       purchaseDate.value = vehicle.value.purchase?.purchase_date
       commExternal.value = vehicle.value?.external_comments
       commInternal.value = vehicle.value?.internal_comments
+      web.value = vehicle.value?.no_web
+      fastDelivery.value = vehicle.value?.inmediate_delivery
       if (commInternal.value) commentAlert.value = true
       paidEquipItems.value = []
       freeEquipItems.value = []
@@ -2076,7 +2081,7 @@ const modalConfirmed = () => {
       </div>
     </div>
   </dialog>
-  <DrawerComponent v-model="drawer">
+  <DrawerComponent id="vehicle-drawer" v-model="drawer">
     <template #content>
       <HeaderMain>
         <div class="flex w-full flex-row pb-16">
@@ -2282,6 +2287,12 @@ const modalConfirmed = () => {
                           :initialValue="null"
                         />
                         <TextInput label="Nº llaves:" v-model="keysQ" />
+                        <ToggleInput class="mt-4" label="No Web" v-model="web" />
+                        <ToggleInput
+                          class="mt-4"
+                          label="Entrega Inmediata"
+                          v-model="fastDelivery"
+                        />
                       </div>
                     </div>
                     <div

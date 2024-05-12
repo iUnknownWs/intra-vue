@@ -4,7 +4,7 @@ defineProps({
   vehicle: { type: Object, required: true }
 })
 
-defineEmits(['menu-btn1'], ['menu-btn2'], ['menu-btn3'], ['menu-btn4'], ['menu-btn5'])
+defineEmits(['menu-btn2', 'menu-btn3', 'menu-btn4', 'menu-btn5', 'cochesnet-btn', 'wallapop-btn', 'sumauto-btn'])
 const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favicon.png'
 </script>
 
@@ -110,13 +110,13 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
         </div>
       </div>
       <div class="mt-2 flex flex-row gap-2">
-        <button class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
+        <button @click="$emit('cochesnet-btn')" class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
           Coches.net
         </button>
-        <button class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
+        <button @click="$emit('wallapop-btn')" class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
           Wallapop
         </button>
-        <button class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
+        <button @click="$emit('sumauto-btn')" class="hover:!border-bg-base-200 btn btn-neutral btn-sm hover:bg-base-200">
           Sumauto
         </button>
       </div>

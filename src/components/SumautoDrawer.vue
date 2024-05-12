@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
 const props = defineProps({
-  id: { type: String, required: true },
+  id: { type: [String, Number], required: true },
   toggle: { type: Function, required: true }
 })
 
@@ -180,7 +180,7 @@ onMounted(() => {
 <template>
   <div class="flex min-h-[95vh] w-full flex-col justify-between">
     <div class="flex flex-1 flex-col">
-      <DrawerTitle title="Configuración CochesNet" @toggle="toggle" />
+      <DrawerTitle title="Configuración Sumauto" @toggle="toggle" />
       <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
       <DraggableGallery
         :url="sumautoUrl"

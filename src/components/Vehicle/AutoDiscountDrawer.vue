@@ -25,7 +25,10 @@ const headersDiscounts = [
 
 const getData = () => {
   axios.get(`${import.meta.env.VITE_API}/price_rule/?vehicle=${props.id}`).then((response) => {
-    console.log(response.data.results)
+    if (!response.data.results.length) {
+      loading.value = false
+      return
+    }
     marginPrice.value = response.data.results[0].security_margin_price
     isActive.value = response.data.results[0].is_active
     ruleId.value = response.data.results[0].id
@@ -35,6 +38,7 @@ const getData = () => {
       )
       .then((response) => {
         discounts.value = response.data.results
+        loading.value = false
       })
       .finally(() => {
         loading.value = false

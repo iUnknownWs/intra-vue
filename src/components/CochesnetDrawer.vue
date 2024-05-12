@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue'
 import options from '@/js/filterOptions.js'
 
 const props = defineProps({
-  id: { type: String, required: true },
+  id: { type: [String, Number], required: true },
   toggle: { type: Function, required: true }
 })
 
@@ -273,6 +273,7 @@ onMounted(() => {
       cochesnetYear.value = response.data.years
     })
     .then(() => {
+      if (!cochesnetBrand.value) return
       axios
         .post(cochesnetIntegrationUrl + 'models/', {
           brand: cochesnetBrand.value,
