@@ -3,10 +3,7 @@ import { ref, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import router from '@/router'
 import axios from 'axios'
-import HeaderMain from '@/components/HeaderMain.vue'
 import SettingTable from '@/components/SettingTable.vue'
-import TextInput from '@/components/TextInput.vue'
-import CheckInput from '@/components/CheckInput.vue'
 
 const url = `${import.meta.env.VITE_SALES}/delivery-types/`
 const items = ref([])
@@ -148,41 +145,43 @@ const editData = () => {
     </div>
   </dialog>
   <HeaderMain>
-    <SettingTable
-      title="Lista de tipos de entregas"
-      :add="false"
-      drawerTitle="Añadir Nuevo Tipo de Entrega"
-    >
-      <template #content>
-        <div class="mt-3">
-          <EasyDataTable
-            class="table-dark table-striped"
-            buttons-pagination
-            :headers="headers"
-            :items="items"
-            v-model:server-options="serverOptions"
-            :server-items-length="serverItemsLength"
-            :loading="loading"
-            rows-per-page-message="Filas por pestaña"
-          >
-            <template v-slot:item-id="{ id }">
-              <div class="w-20">
-                <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
-                  <Icon icon="mdi:pencil" />
-                </button>
-                <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
-                  <Icon icon="mdi:trash-can-outline" />
-                </button>
-              </div>
-            </template>
-            <template v-slot:item-is_home_delivery="{ is_home_delivery }">
-              <Icon icon="mdi:check" v-if="is_home_delivery" color="green" width="30" />
-              <Icon icon="mdi:close" v-if="!is_home_delivery" color="red" width="30" />
-            </template>
-          </EasyDataTable>
-        </div>
-      </template>
-      <template #drawer> </template>
-    </SettingTable>
+    <div class="mx-auto my-8 max-w-5xl rounded-lg bg-white p-4 sm:p-6 lg:p-8">
+      <SettingTable
+        title="Lista de tipos de entregas"
+        :add="false"
+        drawerTitle="Añadir Nuevo Tipo de Entrega"
+      >
+        <template #content>
+          <div class="mt-3">
+            <EasyDataTable
+              class="table-dark table-striped"
+              buttons-pagination
+              :headers="headers"
+              :items="items"
+              v-model:server-options="serverOptions"
+              :server-items-length="serverItemsLength"
+              :loading="loading"
+              rows-per-page-message="Filas por pestaña"
+            >
+              <template v-slot:item-id="{ id }">
+                <div class="w-20">
+                  <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
+                    <Icon icon="mdi:pencil" />
+                  </button>
+                  <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                    <Icon icon="mdi:trash-can-outline" />
+                  </button>
+                </div>
+              </template>
+              <template v-slot:item-is_home_delivery="{ is_home_delivery }">
+                <Icon icon="mdi:check" v-if="is_home_delivery" color="green" width="30" />
+                <Icon icon="mdi:close" v-if="!is_home_delivery" color="red" width="30" />
+              </template>
+            </EasyDataTable>
+          </div>
+        </template>
+        <template #drawer> </template>
+      </SettingTable>
+    </div>
   </HeaderMain>
 </template>

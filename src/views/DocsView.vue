@@ -148,45 +148,47 @@ const addDocs = () => {
     </div>
   </dialog>
   <HeaderMain>
-    <SettingTable
-      title="Gestión de documentos"
-      :add="true"
-      drawerTitle="Añadir Gestión de Documentos"
-      @toggle="addDocs"
-    >
-      <template #content>
-        <EasyDataTable
-          class="table-dark table-striped"
-          buttons-pagination
-          :headers="headers"
-          :items="items"
-          v-model:server-options="serverOptions"
-          :server-items-length="serverItemsLength"
-          :loading="loading"
-          rows-per-page-message="Filas por pestaña"
-        >
-          <template v-slot:item-id="{ id }">
-            <div class="w-20">
-              <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
-                <Icon icon="mdi:pencil" />
-              </button>
-              <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
-                <Icon icon="mdi:trash-can-outline" />
-              </button>
-            </div>
-          </template>
-          <template v-slot:item-is_home_delivery="{ is_home_delivery }">
-            <Icon icon="mdi:check" v-if="is_home_delivery" color="green" width="30" />
-            <Icon icon="mdi:close" v-if="!is_home_delivery" color="red" width="30" />
-          </template>
-        </EasyDataTable>
-      </template>
-      <template #drawer>
-        <TextInput label="Título" placeholder="Introducir" v-model="title" />
-        <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
-        <NumberInput label="Precio" placeholder="Introducir" v-model="price" :max="200000" />
-        <CheckInput label="¿Agregar al vehículo automáticamente?" class="mt-3" v-model="auto" />
-      </template>
-    </SettingTable>
+    <div class="mx-auto my-8 max-w-5xl rounded-lg bg-white p-4 sm:p-6 lg:p-8">
+      <SettingTable
+        title="Gestión de documentos"
+        :add="true"
+        drawerTitle="Añadir Gestión de Documentos"
+        @toggle="addDocs"
+      >
+        <template #content>
+          <EasyDataTable
+            class="table-dark table-striped"
+            buttons-pagination
+            :headers="headers"
+            :items="items"
+            v-model:server-options="serverOptions"
+            :server-items-length="serverItemsLength"
+            :loading="loading"
+            rows-per-page-message="Filas por pestaña"
+          >
+            <template v-slot:item-id="{ id }">
+              <div class="w-20">
+                <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
+                  <Icon icon="mdi:pencil" />
+                </button>
+                <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                  <Icon icon="mdi:trash-can-outline" />
+                </button>
+              </div>
+            </template>
+            <template v-slot:item-is_home_delivery="{ is_home_delivery }">
+              <Icon icon="mdi:check" v-if="is_home_delivery" color="green" width="30" />
+              <Icon icon="mdi:close" v-if="!is_home_delivery" color="red" width="30" />
+            </template>
+          </EasyDataTable>
+        </template>
+        <template #drawer>
+          <TextInput label="Título" placeholder="Introducir" v-model="title" />
+          <TextInput label="Descripción" placeholder="Introducir" v-model="description" />
+          <NumberInput label="Precio" placeholder="Introducir" v-model="price" :max="200000" />
+          <CheckInput label="¿Agregar al vehículo automáticamente?" class="mt-3" v-model="auto" />
+        </template>
+      </SettingTable>
+    </div>
   </HeaderMain>
 </template>

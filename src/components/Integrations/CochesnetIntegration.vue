@@ -217,7 +217,7 @@ onMounted(() => {
     <input id="drawer-cochesnet" type="checkbox" class="drawer-toggle" v-model="drawer" />
     <div class="drawer-content">
       <div v-if="tab === 'settings'" class="flex flex-col gap-8">
-        <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
+        <div class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
           <div class="flex items-center">
             <button class="btn btn-square btn-ghost mr-2" @click="$emit('return')">
               <Icon icon="mdi:arrow-left" width="25" />
@@ -247,7 +247,7 @@ onMounted(() => {
             </button>
           </div>
         </div>
-        <div class="mx-auto w-full max-w-3xl rounded-md bg-base-100 p-4">
+        <div class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
           <VehicleTable title="Campañas" @addBtn="addCampaign" add>
             <template #content>
               <EasyDataTable
@@ -291,7 +291,7 @@ onMounted(() => {
             </template>
           </VehicleTable>
         </div>
-        <div class="mx-auto mb-4 w-full max-w-3xl rounded-md bg-base-100 p-4">
+        <div class="mx-auto mb-4 w-full max-w-5xl rounded-md bg-base-100 p-4">
           <div class="flex items-center">
             <h2 class="text-xl font-medium">Automatismos</h2>
           </div>

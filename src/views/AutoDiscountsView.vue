@@ -162,81 +162,86 @@ const reset = () => {
 
 <template>
   <HeaderMain>
-    <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
-    <DrawerComponent id="auto-discounts-drawer" v-model="drawer">
-      <template #content>
-        <h1 class="text-2xl font-semibold">Descuentos Automáticos</h1>
-        <div role="tablist" class="tabs-boxed tabs my-6 [&>a]:font-bold">
-          <a
-            v-for="rule in priceRules"
-            :key="rule.id"
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active': tab === rule.id }"
-            @click="discountsTab(rule.id, rule.security_margin_price)"
-          >
-            &lt;{{ rule.end_interval }}
-          </a>
-        </div>
-        <div class="mb-8 flex flex-row items-end justify-between px-8">
-          <TextInput label="Margen de seguridad:" class="max-w-64" v-model="marginPrice" />
-          <button class="btn btn-primary btn-sm" @click="addDrawer">Nuevo Descuento</button>
-        </div>
-        <VehicleTable class="px-8">
-          <template #content>
-            <EasyDataTable
-              class="table-dark table-striped"
-              table-class-name="z-0"
-              header-class-name="z-0"
-              hide-footer
-              :items="discounts"
-              :headers="headersDiscounts"
-              :loading="loading"
+    <div class="mx-auto my-8 max-w-5xl rounded-lg bg-white p-4 sm:p-6 lg:p-8">
+      <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" />
+      <DrawerComponent id="auto-discounts-drawer" v-model="drawer">
+        <template #content>
+          <h1 class="text-2xl font-semibold">Descuentos Automáticos</h1>
+          <div role="tablist" class="tabs-boxed bg-base-100 tabs my-6 [&>a]:font-bold">
+            <a
+              v-for="rule in priceRules"
+              :key="rule.id"
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active': tab === rule.id }"
+              @click="discountsTab(rule.id, rule.security_margin_price)"
             >
-              <template v-slot:item-from_date="{ from_date }">
-                {{ new Date(from_date).toLocaleString('en-GB') }}
-              </template>
-              <template v-slot:item-id="{ id }">
-                <div class="w-14">
-                  <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editDrawer(id)">
-                    <Icon icon="mdi:pencil" />
-                  </button>
-                  <button class="btn btn-square btn-error btn-xs" @click="removeDiscount(id)">
-                    <Icon icon="mdi:trash-can-outline" />
-                  </button>
-                </div>
-              </template>
-            </EasyDataTable>
+              &lt;{{ rule.end_interval }}
+            </a>
+          </div>
+          <div class="mb-8 flex flex-row items-end justify-between px-8">
+            <TextInput label="Margen de seguridad:" class="max-w-64" v-model="marginPrice" />
+            <button class="btn btn-primary btn-sm" @click="addDrawer">Nuevo Descuento</button>
+          </div>
+          <VehicleTable class="px-8">
+            <template #content>
+              <EasyDataTable
+                class="table-dark table-striped"
+                table-class-name="z-0"
+                header-class-name="z-0"
+                hide-footer
+                :items="discounts"
+                :headers="headersDiscounts"
+                :loading="loading"
+              >
+                <template v-slot:item-from_date="{ from_date }">
+                  {{ new Date(from_date).toLocaleString('en-GB') }}
+                </template>
+                <template v-slot:item-id="{ id }">
+                  <div class="w-14">
+                    <button
+                      class="btn btn-square btn-secondary btn-xs mr-2"
+                      @click="editDrawer(id)"
+                    >
+                      <Icon icon="mdi:pencil" />
+                    </button>
+                    <button class="btn btn-square btn-error btn-xs" @click="removeDiscount(id)">
+                      <Icon icon="mdi:trash-can-outline" />
+                    </button>
+                  </div>
+                </template>
+              </EasyDataTable>
+            </template>
+          </VehicleTable>
+        </template>
+        <template #drawer>
+          <div>
+            <DrawerTitle title="Añadir Nuevo Descuento" @toggle="toggle" />
+            <TextInput label="Título:" v-model="title" />
+            <TextInput label="Valor:" type="number" v-model="amount" />
+            <TextInput label="Días para iniciar:" type="number" v-model="createIn" />
+          </div>
+          <template v-if="drawerSection === 'add'">
+            <DrawerActions
+              secondary="Cancelar"
+              primary="Guardar"
+              :loading="loading"
+              @click-secondary="toggle"
+              @click-primary="addDiscount"
+            />
           </template>
-        </VehicleTable>
-      </template>
-      <template #drawer>
-        <div>
-          <DrawerTitle title="Añadir Nuevo Descuento" @toggle="toggle" />
-          <TextInput label="Título:" v-model="title" />
-          <TextInput label="Valor:" type="number" v-model="amount" />
-          <TextInput label="Días para iniciar:" type="number" v-model="createIn" />
-        </div>
-        <template v-if="drawerSection === 'add'">
-          <DrawerActions
-            secondary="Cancelar"
-            primary="Guardar"
-            :loading="loading"
-            @click-secondary="toggle"
-            @click-primary="addDiscount"
-          />
+          <template v-if="drawerSection === 'edit'">
+            <DrawerActions
+              secondary="Cancelar"
+              primary="Guardar"
+              :loading="loading"
+              @click-secondary="toggle"
+              @click-primary="editDiscount"
+            />
+          </template>
         </template>
-        <template v-if="drawerSection === 'edit'">
-          <DrawerActions
-            secondary="Cancelar"
-            primary="Guardar"
-            :loading="loading"
-            @click-secondary="toggle"
-            @click-primary="editDiscount"
-          />
-        </template>
-      </template>
-    </DrawerComponent>
+      </DrawerComponent>
+    </div>
   </HeaderMain>
 </template>
 

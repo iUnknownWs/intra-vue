@@ -199,7 +199,7 @@ onMounted(() => {
   />
   <div class="flex flex-col gap-8">
     <div v-if="tab === 'settings'" class="mb-16 flex flex-col gap-8">
-      <div class="mx-auto w-full max-w-3xl rounded-md bg-white p-4">
+      <div class="mx-auto w-full max-w-5xl rounded-md bg-base-100 p-4">
         <div class="flex items-center">
           <button class="btn btn-square btn-ghost mr-2" @click="$emit('return')">
             <Icon icon="mdi:arrow-left" width="24" />

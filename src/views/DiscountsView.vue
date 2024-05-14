@@ -163,52 +163,54 @@ const reset = () => {
     </div>
   </dialog>
   <HeaderMain>
-    <SettingTable
-      title="Lista de Descuentos"
-      :add="true"
-      drawerTitle="Añadir Nuevo descuento"
-      @toggle="addDiscount"
-    >
-      <template #content>
-        <EasyDataTable
-          class="table-dark table-striped"
-          buttons-pagination
-          :headers="headers"
-          :items="items"
-          v-model:server-options="serverOptions"
-          :server-items-length="serverItemsLength"
-          :loading="loading"
-          rows-per-page-message="Filas por pestaña"
-        >
-          <template v-slot:item-to_date="{ to_date }">
-            {{ new Date(to_date).toLocaleString('en-GB') }}
-          </template>
-          <template v-slot:item-from_date="{ from_date }">
-            {{ new Date(from_date).toLocaleString('en-GB') }}
-          </template>
-          <template v-slot:item-id="{ id }">
-            <div class="w-20">
-              <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
-                <Icon icon="mdi:pencil" />
-              </button>
-              <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
-                <Icon icon="mdi:trash-can-outline" />
-              </button>
-            </div>
-          </template>
-        </EasyDataTable>
-      </template>
-      <template #drawer>
-        <TextInput label="Título" placeholder="Introducir" v-model="title" />
-        <DateInput label="Inicio" v-model="from_date" />
-        <DateInput label="Fin" v-model="to_date" />
-        <label class="form-control w-full">
-          <NumberInput :label="'Valor Fijo'" :max="200000" v-model="amount_fix" />
-        </label>
-        <label class="form-control w-full">
-          <NumberInput :label="'Valor (%)'" :max="100" v-model="amount_percent" />
-        </label>
-      </template>
-    </SettingTable>
+    <div class="mx-auto my-8 max-w-5xl rounded-lg bg-white p-4 sm:p-6 lg:p-8">
+      <SettingTable
+        title="Lista de Descuentos"
+        :add="true"
+        drawerTitle="Añadir Nuevo descuento"
+        @toggle="addDiscount"
+      >
+        <template #content>
+          <EasyDataTable
+            class="table-dark table-striped"
+            buttons-pagination
+            :headers="headers"
+            :items="items"
+            v-model:server-options="serverOptions"
+            :server-items-length="serverItemsLength"
+            :loading="loading"
+            rows-per-page-message="Filas por pestaña"
+          >
+            <template v-slot:item-to_date="{ to_date }">
+              {{ new Date(to_date).toLocaleString('en-GB') }}
+            </template>
+            <template v-slot:item-from_date="{ from_date }">
+              {{ new Date(from_date).toLocaleString('en-GB') }}
+            </template>
+            <template v-slot:item-id="{ id }">
+              <div class="w-20">
+                <button class="btn btn-square btn-secondary btn-xs mr-2" @click="editModal(id)">
+                  <Icon icon="mdi:pencil" />
+                </button>
+                <button class="btn btn-square btn-error btn-xs" @click="remove(id)">
+                  <Icon icon="mdi:trash-can-outline" />
+                </button>
+              </div>
+            </template>
+          </EasyDataTable>
+        </template>
+        <template #drawer>
+          <TextInput label="Título" placeholder="Introducir" v-model="title" />
+          <DateInput label="Inicio" v-model="from_date" />
+          <DateInput label="Fin" v-model="to_date" />
+          <label class="form-control w-full">
+            <NumberInput :label="'Valor Fijo'" :max="200000" v-model="amount_fix" />
+          </label>
+          <label class="form-control w-full">
+            <NumberInput :label="'Valor (%)'" :max="100" v-model="amount_percent" />
+          </label>
+        </template>
+      </SettingTable>
+    </div>
   </HeaderMain>
 </template>
