@@ -10,10 +10,12 @@ const price = ref(0)
 const inputs = ref(0)
 const imported = ref(0)
 
-const financingFilter = ref(null)
+const financingFilter = ref(0)
 const interestFilter = ref(null)
 const productFilter = ref(null)
 const timeFilter = ref(null)
+
+const financiers = ref([{ id: 0, title: 'Cofidis' }])
 </script>
 
 <template>
@@ -30,11 +32,26 @@ const timeFilter = ref(null)
       <span class="text-lg font-semibold">Filtros</span>
       <div class="divider m-0"></div>
     </div>
-    <SelectInput label="Financiera:" v-model="financingFilter" :options="options.financieras" :initialValue="null" />
+    <SelectInput label="Financiera:" v-model="financingFilter" :options="financiers" :initialValue="null" />
     <div class="flex flex-row gap-4">
-      <SelectInput label="Interés:" v-model="interestFilter" :options="options.intereses" :initialValue="null" />
-      <SelectInput label="Producto:" v-model="productFilter" :options="options.productos" :initialValue="null" />
+      <SelectInput
+        label="Interés:"
+        v-model="interestFilter"
+        :options="options.intereses"
+        :initialValue="null"
+      />
+      <SelectInput
+        label="Producto:"
+        v-model="productFilter"
+        :options="options.productos"
+        :initialValue="null"
+      />
     </div>
-    <SelectInput label="Plazos:" v-model="timeFilter" :options="options.plazos" :initialValue="null" />
+    <SelectInput
+      label="Plazos:"
+      v-model="timeFilter"
+      :options="options.plazos"
+      :initialValue="null"
+    />
   </div>
 </template>
