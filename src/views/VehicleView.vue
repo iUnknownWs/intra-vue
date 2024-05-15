@@ -14,6 +14,7 @@ import CochesnetDrawer from '@/components/CochesnetDrawer.vue'
 import WallapopDrawer from '@/components/WallapopDrawer.vue'
 import SumautoDrawer from '@/components/SumautoDrawer.vue'
 import AutoDiscountDrawer from '@/components/Vehicle/AutoDiscountDrawer.vue'
+import CalculatorDrawer from '@/components/Vehicle/CalculatorDrawer.vue'
 
 axios.defaults.headers.common['Authorization'] = `Token ${localStorage.getItem('token')}`
 
@@ -2400,10 +2401,24 @@ const modalConfirmed = () => {
                               <span class="hidden xl:inline">Descuentos automáticos</span>
                               <Icon icon="mdi:percent" width="24" class="xl:hidden" />
                             </button>
-                            <button class="btn btn-outline btn-sm" @click="drawerFinance">
-                              <span class="hidden xl:inline">Conf. Financiera</span>
-                              <Icon icon="mdi:cash" width="24" class="xl:hidden" />
-                            </button>
+                            <DropdownBtn>
+                              <template #btn>
+                                <button class="btn btn-outline btn-sm hidden xl:block">
+                                  Acciones
+                                </button>
+                                <button class="btn btn-circle btn-ghost xl:hidden">
+                                  <Icon icon="mdi:dots-vertical" width="30" class="text-primary" />
+                                </button>
+                              </template>
+                              <template #content>
+                                <ul>
+                                  <li>
+                                    <a @click="drawerFinance">Conf. Financiera</a>
+                                  </li>
+                                  <li><a @click="openDrawer('calculator')">Calculadora</a></li>
+                                </ul>
+                              </template>
+                            </DropdownBtn>
                           </div>
                         </div>
                         <div class="divider m-0 p-0"></div>
@@ -3816,6 +3831,7 @@ const modalConfirmed = () => {
         :toggle="toggleDrawer"
         :id="id"
       />
+      <CalculatorDrawer v-if="drawerSection === 'calculator'" :toggle="toggleDrawer" />
     </template>
   </DrawerComponent>
 </template>
