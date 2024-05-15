@@ -100,7 +100,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
     :loading="modalLoading"
     @close="modalClosed"
   />
-  <div class="card card-side mt-4 hidden w-full flex-row gap-4 bg-white p-6 xl:flex">
+  <div class="card card-side mt-4 hidden w-full flex-row gap-4 bg-white p-6 lg:flex">
     <RouterLink :to="'/reservas/' + reserve.id">
       <div
         class="relative aspect-video h-52 rounded-lg bg-cover bg-center"

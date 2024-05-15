@@ -18,8 +18,8 @@ defineExpose({ modal })
       <p class="py-4">{{ message }}</p>
       <div class="modal-action mt-1">
         <form method="dialog">
-          <button class="btn btn-sm mr-2">Cancelar</button>
-          <button class="btn btn-sm" @click="$emit('confirm')">Confirmar</button>
+          <button class="btn btn-secondary btn-sm mr-2">Cancelar</button>
+          <button class="btn btn-secondary btn-sm" @click="$emit('confirm')">Confirmar</button>
         </form>
       </div>
     </div>

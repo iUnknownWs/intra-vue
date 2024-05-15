@@ -169,7 +169,7 @@ onMounted(() => {
               </button>
             </li>
           </aside>
-          <div class="mx-auto w-full min-w-[1000px] xl:w-fit">
+          <div class="mx-auto w-full lg:min-w-[1000px] xl:w-fit">
             <header class="flex flex-row items-center justify-between gap-2 p-4 xl:max-w-[400px]">
               <form @submit.prevent="getVehiclesFilter" class="w-full">
                 <label class="input input-bordered flex items-center gap-2">

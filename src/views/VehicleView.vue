@@ -395,7 +395,6 @@ const ptDrawer = (step, id) => {
   ptStep.value = step
   ptTestId.value = id
   openDrawer('pt')
-  drawer.value = !drawer.value
 }
 
 const ptConfirm = (id) => {
@@ -2085,11 +2084,11 @@ const modalConfirmed = () => {
     <template #content>
       <HeaderMain>
         <div class="flex w-full flex-row pb-16">
-          <aside class="sticky top-[4rem] hidden h-min max-w-96 bg-white xl:block">
+          <aside class="sticky top-[4rem] hidden h-min max-w-96 rounded-lg bg-white xl:block">
             <ul
               v-scroll-spy-link="{ selector: 'ul>li>a.menu-item' }"
               v-scroll-spy-active="{ selector: 'ul>li>a.menu-item' }"
-              class="menu menu-sm w-80 rounded-box bg-white p-6 text-base-200"
+              class="menu menu-sm w-80 rounded-lg bg-white p-6 text-base-200"
             >
               <li>
                 <a @click="adminActive" class="font-bold text-black">Admin</a>
@@ -2302,13 +2301,13 @@ const modalConfirmed = () => {
                       <template v-if="userStore.perms.includes('can_view_purchase_info')">
                         <div class="flex flex-row justify-between">
                           <h1 class="text-xl font-bold">Información de compra</h1>
-                          <label
+                          <button
                             v-if="addContract"
-                            for="vehicle-drawer"
                             class="btn btn-outline btn-sm mb-2"
                             @click="docusignDrawer()"
-                            >Generar contrato</label
                           >
+                            Generar contrato
+                          </button>
                         </div>
                         <CheckInput
                           label="Gestión de venta:"
@@ -2401,14 +2400,10 @@ const modalConfirmed = () => {
                               <span class="hidden xl:inline">Descuentos automáticos</span>
                               <Icon icon="mdi:percent" width="24" class="xl:hidden" />
                             </button>
-                            <label
-                              for="vehicle-drawer"
-                              class="btn btn-outline btn-sm"
-                              @click="drawerFinance"
-                            >
+                            <button class="btn btn-outline btn-sm" @click="drawerFinance">
                               <span class="hidden xl:inline">Conf. Financiera</span>
                               <Icon icon="mdi:cash" width="24" class="xl:hidden" />
-                            </label>
+                            </button>
                           </div>
                         </div>
                         <div class="divider m-0 p-0"></div>
@@ -3270,14 +3265,9 @@ const modalConfirmed = () => {
         </div>
         <div v-show="scrollDown" class="btm-nav xl:hidden">
           <div>
-            <label
-              for="vehicle-drawer"
-              class="btn btn-warning w-36"
-              ref="navBtn6"
-              @click="openDrawer('reserve')"
-            >
-              <span class="btm-nav-label font-medium">Reservar</span>
-            </label>
+            <button class="btn btn-warning w-36" ref="navBtn6" @click="openDrawer('reserve')">
+              <span class="btm-nav-button font-medium">Reservar</span>
+            </button>
           </div>
           <div>
             <button class="btn btn-primary w-36 text-white" ref="navBtn6" @click="updateData">

@@ -1,6 +1,7 @@
 <script setup>
 defineProps({
-  id: { type: String, required: true }
+  id: { type: String, required: true },
+  width: { type: String, default: 'w-screen lg:w-1/3' }
 })
 
 const drawer = defineModel()
@@ -15,7 +16,8 @@ const drawer = defineModel()
     <div class="drawer-side z-50">
       <label :for="id" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul
-        class="menu min-h-full w-screen justify-between bg-white px-8 py-4 text-base-content lg:w-1/3"
+        class="menu min-h-full justify-between bg-white px-8 py-4 text-base-content"
+        :class="width"
       >
         <slot name="drawer" />
       </ul>

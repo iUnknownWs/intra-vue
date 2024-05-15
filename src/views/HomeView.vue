@@ -671,7 +671,7 @@ onMounted(() => {
   </ModalDialog>
   <ModalInfo ref="info" :title="modalTitle" :message="modalMessage" :loading="loadingInfo" />
   <HeaderMain ref="header">
-    <DrawerComponent id="filterDrawer" v-model="drawer">
+    <DrawerComponent id="filterDrawer" v-model="drawer" width="w-screen lg:w-1/2">
       <template #content>
         <div class="p-4 lg:p-0">
           <header class="flex w-full flex-row items-center justify-between gap-2 lg:hidden">

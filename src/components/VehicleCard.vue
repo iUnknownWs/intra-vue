@@ -132,13 +132,13 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         </div>
         <div class="flex gap-4">
           <button class="btn btn-ghost" @click="$emit('delete')">Eliminar</button>
-          <label
+          <button
             v-if="vehicle.status == 4"
-            for="vehicle-drawer"
             class="btn btn-warning"
             @click="$emit('reserve')"
-            >Reservar</label
           >
+            Reservar
+          </button>
         </div>
       </div>
       <div class="divider m-0"></div>
@@ -172,12 +172,17 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
         <div class="flex flex-col">
           <span class="font-semibold text-base-200">Matricula:</span>
           <span class="font-bold">{{ vehicle.license_plate }}</span>
-          <span class="font-semibold text-base-200"> Desde {{ vehicle.chassis_number }} </span>
         </div>
         <div class="flex flex-col">
           <span class="font-semibold text-base-200">Matriculación:</span>
           <span class="font-bold">
-            {{ new Date(vehicle.registration_date).toLocaleString('en-GB', { year: 'numeric', month: 'numeric', day: 'numeric' }) }}
+            {{
+              new Date(vehicle.registration_date).toLocaleString('en-GB', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+              })
+            }}
           </span>
         </div>
         <div class="flex flex-col">

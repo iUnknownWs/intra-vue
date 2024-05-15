@@ -15,7 +15,7 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
 </script>
 
 <template>
-  <div class="card card-compact w-full bg-white mt-3 p-4 text-xs shadow-xl xl:hidden">
+  <div class="card card-compact w-full bg-white mt-3 p-4 text-xs shadow-xl lg:hidden">
     <div class="flex flex-row gap-4">
       <div class="flex flex-col items-center justify-between gap-3">
         <RouterLink :to="'/reservas/' + reserve.id">

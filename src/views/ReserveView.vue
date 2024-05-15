@@ -542,7 +542,7 @@ onMounted(() => {
         </div>
         <div class="flex flex-row gap-8 p-3 xl:p-0">
           <aside class="sticky top-[4rem] hidden h-min max-w-64 rounded bg-white xl:block">
-            <ul class="menu menu-sm w-56 rounded-box bg-white">
+            <ul class="menu menu-sm w-56 rounded-lg py-8 bg-white">
               <li>
                 <a class="font-bold" @click="tab = 'details'">Detalles</a>
                 <ul v-scroll-spy-link v-scroll-spy-active="{ selector: 'li>a.menu-item' }">
@@ -580,11 +580,11 @@ onMounted(() => {
               </template>
             </header>
             <div class="mb-4 flex flex-col gap-6 xl:flex-row">
-              <section class="flex w-[700px] flex-1 flex-col">
+              <section class="flex mx-auto w-full xl:w-fit xl:max-w-[650px] 2xl:max-w-full flex-1 flex-col">
                 <div
                   v-scroll-spy="{ offset: 120 }"
                   v-if="tab === 'details'"
-                  class="flex w-fit flex-col gap-8"
+                  class="flex w-full flex-col gap-8"
                 >
                   <div
                     ref="billingDiv"
@@ -605,7 +605,7 @@ onMounted(() => {
                         v-model="isCompany"
                         class="my-4 w-fit"
                       />
-                      <div class="flex flex-col xl:grid xl:grid-cols-2 xl:gap-x-4">
+                      <div class="flex flex-col xl:grid 2xl:grid-cols-2 xl:gap-x-4">
                         <SelectInput
                           label="Tipo de documento:"
                           :options="options.idTypes"
@@ -1040,7 +1040,7 @@ onMounted(() => {
                   </div>
                 </div>
               </section>
-              <aside class="flex w-[520px] max-w-xl flex-col gap-8">
+              <aside class="flex w-full xl:max-w-[400px] 2xl:max-w-[520px] flex-col gap-8">
                 <div class="hidden h-fit w-full flex-col gap-2 rounded bg-white p-4 xl:flex">
                   <div>
                     <h2 class="text-xl font-bold">Resumen de compra</h2>
