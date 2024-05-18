@@ -1200,18 +1200,21 @@ onMounted(() => {
         </template>
         <CochesnetDrawer
           v-if="drawerSection === 'cochesnet'"
+          :key="id"
           :id="id"
           :toggle="toggle"
           @published="all"
         />
         <WallapopDrawer
           v-if="drawerSection === 'wallapop'"
+          :key="id"
           :id="id"
           :toggle="toggle"
           @published="all"
         />
         <SumautoDrawer
           v-if="drawerSection === 'sumauto'"
+          :key="id"
           :id="id"
           :toggle="toggle"
           @published="all"

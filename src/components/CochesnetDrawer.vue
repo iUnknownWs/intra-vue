@@ -303,115 +303,119 @@ onMounted(() => {
 </script>
 
 <template>
-  <DrawerTitle title="Configuración CochesNet" @toggle="toggle" />
-  <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
-  <DraggableGallery
-    :url="cochesnetUrl"
-    dataKey="images"
-    :updateUrl="updateUrl"
-    :deleteUrl="deleteUrl"
-    :id="id"
-    class="my-4 grid h-min grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-4"
-    :skeletons="20"
-    :mobile="isMobile"
-  />
-  <a @click="getData" class="link">Actualizar descripción</a>
-  <span v-if="limitWarning" class="block text-error"
-    >Limite de caracteres alcanzado la descripción de tener menos de 3.000</span
-  >
-  <AreaInput label="Descripción:" v-model="cochesnetDescription" @input="limitText" />
-  <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
-  <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
-    <SelectInput
-      label="Categoria"
-      :options="options.cochesnetCategory"
-      v-model="cochesnetCategory"
-      @selected="getBrands"
-    />
-    <TextInput label="Año:" v-model="cochesnetYear" />
-    <SelectInput label="Combustible" :options="options.combustible" v-model="cochesnetFuel" />
-    <TextInput label="Puertas:" v-model="cochesnetDoors" />
-    <SelectInput
-      label="Color"
-      :options="cochesnetColorsOptions"
-      v-model="cochesnetColor"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      @selected="color = false"
-    />
-    <SearchSelect
-      label="Marca"
-      :options="cochesnetBrandsOptions"
-      v-model="cochesnetBrand"
-      optionLabel="value"
-      optionValue="key"
-      @selected="getModels"
-    />
-    <SelectInput
-      label="Modelo"
-      :options="cochesnetModelsOptions"
-      v-model="cochesnetModel"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      @selected="getVersions"
-    />
-    <SelectInput
-      label="Carrocería"
-      :options="cochesnetBodyOptions"
-      v-model="cochesnetBody"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      @selected="getVersions"
-    />
-    <SelectInput
-      label="Version"
-      :options="cochesnetVersionOptions"
-      v-model="cochesnetVersion"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      @selected="getFabrication"
-    />
-    <SelectInput
-      label="Fabricación"
-      :options="cochesnetFabricationOptions"
-      v-model="cochesnetFabrication"
-      optionLabel="value"
-      optionValue="key"
-      :initialValue="null"
-      :disabled="version"
-      @selected="fabrication = false"
+  <div class="flex min-h-[95vh] w-full flex-col justify-between">
+    <div class="flex flex-1 flex-col">
+      <DrawerTitle title="Configuración CochesNet" @toggle="toggle" />
+      <h2 class="my-4 text-lg font-semibold">Galería de fotos</h2>
+      <DraggableGallery
+        :url="cochesnetUrl"
+        dataKey="images"
+        :updateUrl="updateUrl"
+        :deleteUrl="deleteUrl"
+        :id="id"
+        class="my-4 grid h-min grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-4"
+        :skeletons="20"
+        :mobile="isMobile"
+      />
+      <a @click="getData" class="link">Actualizar descripción</a>
+      <span v-if="limitWarning" class="block text-error"
+        >Limite de caracteres alcanzado la descripción de tener menos de 3.000</span
+      >
+      <AreaInput label="Descripción:" v-model="cochesnetDescription" @input="limitText" />
+      <h2 class="my-4 text-lg font-semibold">Identificación en coches.net</h2>
+      <div class="my-4 flex grid-cols-2 flex-col gap-3 lg:grid">
+        <SelectInput
+          label="Categoria"
+          :options="options.cochesnetCategory"
+          v-model="cochesnetCategory"
+          @selected="getBrands"
+        />
+        <TextInput label="Año:" v-model="cochesnetYear" />
+        <SelectInput label="Combustible" :options="options.combustible" v-model="cochesnetFuel" />
+        <TextInput label="Puertas:" v-model="cochesnetDoors" />
+        <SelectInput
+          label="Color"
+          :options="cochesnetColorsOptions"
+          v-model="cochesnetColor"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          @selected="color = false"
+        />
+        <SearchSelect
+          label="Marca"
+          :options="cochesnetBrandsOptions"
+          v-model="cochesnetBrand"
+          optionLabel="value"
+          optionValue="key"
+          @selected="getModels"
+        />
+        <SelectInput
+          label="Modelo"
+          :options="cochesnetModelsOptions"
+          v-model="cochesnetModel"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          @selected="getVersions"
+        />
+        <SelectInput
+          label="Carrocería"
+          :options="cochesnetBodyOptions"
+          v-model="cochesnetBody"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          @selected="getVersions"
+        />
+        <SelectInput
+          label="Version"
+          :options="cochesnetVersionOptions"
+          v-model="cochesnetVersion"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          @selected="getFabrication"
+        />
+        <SelectInput
+          label="Fabricación"
+          :options="cochesnetFabricationOptions"
+          v-model="cochesnetFabrication"
+          optionLabel="value"
+          optionValue="key"
+          :initialValue="null"
+          :disabled="version"
+          @selected="fabrication = false"
+        />
+      </div>
+      <h2 class="my-4 text-lg font-semibold">Extras</h2>
+      <CheckInput label="Metalizado" v-model="cochesnetMetalized" class="w-fit" />
+      <SelectInput
+        label="Tipo de anuncio"
+        :options="cochesnetTypeOptions"
+        v-model="cochesnetType"
+        optionLabel="value"
+        optionValue="key"
+        :initialValue="null"
+        @selected="offer_type = false"
+      />
+      <SelectInput
+        label="Garantia"
+        :options="cochesnetWarrantyOptions"
+        v-model="cochesnetWarranty"
+        optionLabel="value"
+        optionValue="key"
+        :initialValue="null"
+      />
+      <TextInput label="Link de YouTube" v-model="cochesnetYoutube" />
+    </div>
+    <DrawerActions
+      secondary="Cancelar"
+      primary="Guardar"
+      :loading="loading"
+      :disabled="color || fabrication || !cochesnetType || limitWarning"
+      @click-secondary="toggle"
+      @click-primary="publish"
     />
   </div>
-  <h2 class="my-4 text-lg font-semibold">Extras</h2>
-  <CheckInput label="Metalizado" v-model="cochesnetMetalized" class="w-fit" />
-  <SelectInput
-    label="Tipo de anuncio"
-    :options="cochesnetTypeOptions"
-    v-model="cochesnetType"
-    optionLabel="value"
-    optionValue="key"
-    :initialValue="null"
-    @selected="offer_type = false"
-  />
-  <SelectInput
-    label="Garantia"
-    :options="cochesnetWarrantyOptions"
-    v-model="cochesnetWarranty"
-    optionLabel="value"
-    optionValue="key"
-    :initialValue="null"
-  />
-  <TextInput label="Link de YouTube" v-model="cochesnetYoutube" />
-  <DrawerActions
-    secondary="Cancelar"
-    primary="Guardar"
-    :loading="loading"
-    :disabled="color || fabrication || !cochesnetType || limitWarning"
-    @click-secondary="toggle"
-    @click-primary="publish"
-  />
 </template>

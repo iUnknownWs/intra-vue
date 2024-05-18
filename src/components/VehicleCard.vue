@@ -2,7 +2,9 @@
 import { useUserStore } from '@/stores/user'
 import { Icon } from '@iconify/vue'
 import { ref } from 'vue'
-defineProps({
+import axios from 'axios'
+
+const props = defineProps({
   vehicle: { type: Object, required: true }
 })
 
@@ -10,6 +12,13 @@ defineEmits(['status', 'reserve', 'delete'])
 
 const userStore = useUserStore()
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
+const walcuUrl = ref(null)
+
+axios
+  .get(`${import.meta.env.VITE_API}/vehicles/${props.vehicle.id}/walcu_url/`)
+  .then((response) => {
+    walcuUrl.value = response.data.url
+  })
 </script>
 
 <template>
@@ -128,15 +137,11 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
             {{ vehicle.license_plate }} {{ vehicle.model.brand.title }}
             {{ vehicle.model.model_web?.title }}
           </span>
-          <span class="text-base font-medium text-base-200">{{ vehicle.version.title }}</span>
+          <span class="text-base text-base-200">{{ vehicle.version.title }}</span>
         </div>
         <div class="flex gap-4">
           <button class="btn btn-ghost" @click="$emit('delete')">Eliminar</button>
-          <button
-            v-if="vehicle.status == 4"
-            class="btn btn-warning"
-            @click="$emit('reserve')"
-          >
+          <button v-if="vehicle.status == 4" class="btn btn-warning" @click="$emit('reserve')">
             Reservar
           </button>
         </div>
@@ -163,18 +168,16 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
       <div class="divider m-0"></div>
       <div class="flex flex-row justify-between gap-4">
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Precio:</span>
+          <span class="text-base-200">Precio:</span>
           <span class="font-bold">{{ vehicle.price?.financed_price || 0 }}€</span>
-          <span class="font-semibold text-base-200">
-            Desde {{ vehicle.price?.financing_fee || 0 }}€
-          </span>
+          <span class="text-base-200"> Desde {{ vehicle.price?.financing_fee || 0 }}€ </span>
         </div>
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Matricula:</span>
+          <span class="text-base-200">Matricula:</span>
           <span class="font-bold">{{ vehicle.license_plate }}</span>
         </div>
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Matriculación:</span>
+          <span class="text-base-200">Matriculación:</span>
           <span class="font-bold">
             {{
               new Date(vehicle.registration_date).toLocaleString('en-GB', {
@@ -186,8 +189,13 @@ const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/
           </span>
         </div>
         <div class="flex flex-col">
-          <span class="font-semibold text-base-200">Días stock:</span>
+          <span class="text-base-200">Días stock:</span>
           <span class="font-bold">{{ vehicle.days_in_stock }} Días</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-base-200">Links:</span>
+          <a class="link font-bold" :href="walcuUrl" target="_blank">Walcu</a>
+          <a class="link font-bold" :href="vehicle.teamwork_url" target="_blank">Teamwork</a>
         </div>
       </div>
     </div>

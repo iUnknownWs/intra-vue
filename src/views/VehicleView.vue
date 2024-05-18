@@ -1842,18 +1842,6 @@ const docusignDrawer = (step) => {
   }
 }
 
-const drawerFinance = () => {
-  openDrawer('finance')
-
-  axios.get(finProdUrl).then((response) => {
-    finProdOptions.value = response.data.results
-  })
-
-  axios.get(finRatesUrl).then((response) => {
-    finRateOptions.value = response.data.results
-  })
-}
-
 const calculateFinance = () => {
   const payload = {
     product: finProduct.value,
@@ -1997,6 +1985,14 @@ const modalConfirmed = () => {
     deleteVehicle()
   }
 }
+
+axios.get(finProdUrl).then((response) => {
+  finProdOptions.value = response.data.results
+})
+
+axios.get(finRatesUrl).then((response) => {
+  finRateOptions.value = response.data.results
+})
 </script>
 
 <template>
@@ -2413,7 +2409,7 @@ const modalConfirmed = () => {
                               <template #content>
                                 <ul>
                                   <li>
-                                    <a @click="drawerFinance">Conf. Financiera</a>
+                                    <a @click="openDrawer('finance')">Conf. Financiera</a>
                                   </li>
                                   <li><a @click="openDrawer('calculator')">Calculadora</a></li>
                                 </ul>
@@ -3831,7 +3827,14 @@ const modalConfirmed = () => {
         :toggle="toggleDrawer"
         :id="id"
       />
-      <CalculatorDrawer v-if="drawerSection === 'calculator'" :toggle="toggleDrawer" />
+      <CalculatorDrawer
+        v-if="drawerSection === 'calculator'"
+        :id="id"
+        :toggle="toggleDrawer"
+        :financed="financed"
+        :products="finProdOptions"
+        :rates="finRateOptions"
+      />
     </template>
   </DrawerComponent>
 </template>
