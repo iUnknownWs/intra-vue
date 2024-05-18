@@ -41,13 +41,36 @@ const headers = [
 
 const tableItems = ref([])
 
+let filters = {}
+
+const selectedRate = () => {
+  filters.rate = ratesFilter.value
+  getData()
+}
+
+const selectedProduct = () => {
+  filters.product = productFilter.value
+  getData()
+}
+
+const selectedMonths = () => {
+  filters.months = timeFilter.value
+  getData()
+}
+
 const getData = () => {
   loading.value = true
   imported.value = price.value - inputs.value
   axios
-    .post(`${import.meta.env.VITE_VEHICLES}/${props.id}/financing_table/`, {
-      financing_amount: imported.value
-    })
+    .post(
+      `${import.meta.env.VITE_VEHICLES}/${props.id}/financing_table/`,
+      {
+        financing_amount: imported.value
+      },
+      {
+        params: filters
+      }
+    )
     .then((response) => {
       tableItems.value = response.data
     })
@@ -64,14 +87,14 @@ onMounted(() => {
 <template>
   <div>
     <DrawerTitle title="Calculadora financiación" @toggle="toggle" />
-    <div class="mb-2">
+    <div class="mb-1">
       <span class="text-lg font-semibold">Parámetros</span>
       <div class="divider m-0"></div>
     </div>
     <TextInput label="Precio financiado:" v-model="price" />
     <TextInput label="Entrada:" v-model="inputs" @change="getData()" />
     <TextInput label="Importe financiado:" v-model="imported" />
-    <div class="mb-2 mt-8">
+    <div class="mb-1 mt-4">
       <span class="text-lg font-semibold">Filtros</span>
       <div class="divider m-0"></div>
     </div>
@@ -88,6 +111,7 @@ onMounted(() => {
         :options="rates"
         :initialValue="null"
         optionLabel="label"
+        @selected="selectedRate"
       />
       <SelectInput
         label="Producto:"
@@ -95,6 +119,7 @@ onMounted(() => {
         :options="products"
         :initialValue="null"
         optionLabel="label"
+        @selected="selectedProduct"
       />
     </div>
     <SelectInput
@@ -102,9 +127,12 @@ onMounted(() => {
       v-model="timeFilter"
       :options="options.financingMonths"
       :initialValue="null"
+      @selected="selectedMonths"
     />
-    <span class="mt-8 text-lg font-semibold">Opciones</span>
-    <div class="divider m-0"></div>
+    <div class="mb-1 mt-4">
+      <span class="text-lg font-semibold">Opciones</span>
+      <div class="divider m-0"></div>
+    </div>
     <VehicleTable>
       <template #content>
         <EasyDataTable
