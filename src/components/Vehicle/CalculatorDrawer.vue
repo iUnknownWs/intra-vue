@@ -19,6 +19,7 @@ const imported = ref(0)
 
 const financingFilter = ref(0)
 const ratesFilter = ref(null)
+const ratesOptions = ref([])
 const productFilter = ref(null)
 const timeFilter = ref('')
 
@@ -72,11 +73,20 @@ const getData = () => {
       }
     )
     .then((response) => {
-      tableItems.value = response.data
+      tableItems.value = response.data.table
+      ratesOptions.value = response.data.rates
     })
     .finally(() => {
       loading.value = false
     })
+}
+
+const resetFilters = () => {
+  filters = {}
+  ratesFilter.value = null
+  productFilter.value = null
+  timeFilter.value = ''
+  getData()
 }
 
 onMounted(() => {
@@ -111,7 +121,7 @@ onMounted(() => {
           <SelectInput
             label="Interés:"
             v-model="ratesFilter"
-            :options="rates"
+            :options="ratesOptions"
             :initialValue="null"
             optionLabel="label"
             @selected="selectedRate"
@@ -132,6 +142,7 @@ onMounted(() => {
           :initialValue="null"
           @selected="selectedMonths"
         />
+        <button class="btn btn-primary btn-sm w-full mt-4" @click="resetFilters">Limpiar filtros</button>
       </div>
     </div>
     <div class="mb-1 mt-4">

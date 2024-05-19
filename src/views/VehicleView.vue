@@ -22,7 +22,7 @@ const userStore = useUserStore()
 
 const route = useRoute()
 const id = ref(route.params.id)
-const url = `${import.meta.env.VITE_VEHICLES}/${id.value}`
+const url = `${import.meta.env.VITE_VEHICLES}/${id.value}/`
 const statusUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/status/`
 const docusignUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/generate_buy_contract/`
 const refreshDistinctiveUrl = `${import.meta.env.VITE_VEHICLES}/${id.value}/recalculate_env_label/`
