@@ -94,41 +94,46 @@ onMounted(() => {
     <TextInput label="Precio financiado:" v-model="price" />
     <TextInput label="Entrada:" v-model="inputs" @change="getData()" />
     <TextInput label="Importe financiado:" v-model="imported" />
-    <div class="mb-1 mt-4">
-      <span class="text-lg font-semibold">Filtros</span>
-      <div class="divider m-0"></div>
+    <div class="collapse mb-1 mt-4">
+      <input type="checkbox" />
+      <div class="collapse-title p-0 text-xl font-medium">
+        <span class="text-lg font-semibold">Filtros</span>
+        <div class="divider m-0"></div>
+      </div>
+      <div class="collapse-content p-0">
+        <SelectInput
+          label="Financiera:"
+          v-model="financingFilter"
+          :options="financiers"
+          :initialValue="null"
+        />
+        <div class="flex flex-row gap-4">
+          <SelectInput
+            label="Interés:"
+            v-model="ratesFilter"
+            :options="rates"
+            :initialValue="null"
+            optionLabel="label"
+            @selected="selectedRate"
+          />
+          <SelectInput
+            label="Producto:"
+            v-model="productFilter"
+            :options="products"
+            :initialValue="null"
+            optionLabel="label"
+            @selected="selectedProduct"
+          />
+        </div>
+        <SelectInput
+          label="Meses:"
+          v-model="timeFilter"
+          :options="options.financingMonths"
+          :initialValue="null"
+          @selected="selectedMonths"
+        />
+      </div>
     </div>
-    <SelectInput
-      label="Financiera:"
-      v-model="financingFilter"
-      :options="financiers"
-      :initialValue="null"
-    />
-    <div class="flex flex-row gap-4">
-      <SelectInput
-        label="Interés:"
-        v-model="ratesFilter"
-        :options="rates"
-        :initialValue="null"
-        optionLabel="label"
-        @selected="selectedRate"
-      />
-      <SelectInput
-        label="Producto:"
-        v-model="productFilter"
-        :options="products"
-        :initialValue="null"
-        optionLabel="label"
-        @selected="selectedProduct"
-      />
-    </div>
-    <SelectInput
-      label="Meses:"
-      v-model="timeFilter"
-      :options="options.financingMonths"
-      :initialValue="null"
-      @selected="selectedMonths"
-    />
     <div class="mb-1 mt-4">
       <span class="text-lg font-semibold">Opciones</span>
       <div class="divider m-0"></div>
