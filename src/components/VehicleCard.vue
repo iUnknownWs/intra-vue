@@ -14,10 +14,15 @@ const userStore = useUserStore()
 const placeholder = ref('https://intranet-pre.garageclub.es/static/images/brand/favicon.png')
 const walcuUrl = ref(null)
 
+axios.get(`${import.meta.env.VITE_VEHICLES}/${props.vehicle.id}/walcu_url/`).then((response) => {
+  walcuUrl.value = response.data.url
+})
+
+const leads = ref(0)
 axios
-  .get(`${import.meta.env.VITE_API}/vehicles/${props.vehicle.id}/walcu_url/`)
+  .get(`${import.meta.env.VITE_VEHICLES}/${props.vehicle.id}/leads_comparsion/?period=recent`)
   .then((response) => {
-    walcuUrl.value = response.data.url
+    leads.value = response.data.f_query_lead_count || 0
   })
 </script>
 
@@ -194,8 +199,10 @@ axios
         </div>
         <div class="flex flex-col">
           <span class="text-base-200">Links:</span>
-          <a class="link font-bold" :href="walcuUrl" target="_blank">Walcu</a>
-          <a class="link font-bold" :href="vehicle.teamwork_url" target="_blank">Teamwork</a>
+          <a class="link font-bold" :href="walcuUrl" target="_blank"> {{ leads }} Leads</a>
+          <a class="link font-bold" :href="vehicle.teamwork_url" target="_blank"
+            >{{ vehicle.teamwork_subtasks }} Tasks</a
+          >
         </div>
       </div>
     </div>

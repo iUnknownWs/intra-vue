@@ -14,7 +14,7 @@ const validation = ref(null)
 
 const login = () => {
   axios
-    .post(import.meta.env.VITE_LOGIN, {
+    .post(`${import.meta.env.VITE_LOGIN}`, {
       email: email.value,
       password: password.value
     })

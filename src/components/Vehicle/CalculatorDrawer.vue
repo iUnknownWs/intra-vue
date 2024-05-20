@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import options from '@/js/filterOptions.js'
 import axios from 'axios'
+import { Icon } from '@iconify/vue'
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -89,6 +90,8 @@ const resetFilters = () => {
   getData()
 }
 
+const state = ref(false)
+
 onMounted(() => {
   getData()
 })
@@ -104,10 +107,16 @@ onMounted(() => {
     <TextInput label="Precio financiado:" v-model="price" />
     <TextInput label="Entrada:" v-model="inputs" @change="getData()" />
     <TextInput label="Importe financiado:" v-model="imported" />
-    <div class="collapse mb-1 mt-4">
+    <div class="collapse mb-1 mt-4" @click="state = !state">
       <input type="checkbox" />
       <div class="collapse-title p-0 text-xl font-medium">
-        <span class="text-lg font-semibold">Filtros</span>
+        <div class="flex flex-row justify-between">
+          <span class="text-lg font-semibold">Filtros</span>
+          <label class="swap text-6xl" :class="state ? 'swap-active' : ''">
+            <Icon class="swap-on" icon="mdi:chevron-down" width="24" />
+            <Icon class="swap-off" icon="mdi:chevron-up" width="24" />
+          </label>
+        </div>
         <div class="divider m-0"></div>
       </div>
       <div class="collapse-content p-0">
@@ -142,7 +151,9 @@ onMounted(() => {
           :initialValue="null"
           @selected="selectedMonths"
         />
-        <button class="btn btn-primary btn-sm w-full mt-4" @click="resetFilters">Limpiar filtros</button>
+        <button class="btn btn-primary btn-sm mt-4 w-full" @click="resetFilters">
+          Limpiar filtros
+        </button>
       </div>
     </div>
     <div class="mb-1 mt-4">

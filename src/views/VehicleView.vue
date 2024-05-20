@@ -1842,19 +1842,34 @@ const docusignDrawer = (step) => {
   }
 }
 
-const calculateFinance = () => {
+const calculateFinance = (drawer) => {
   const payload = {
     product: finProduct.value,
     rate: finRate.value,
     vehicle: id.value
   }
 
-  if (finMonths.value !== '') payload.months = finMonths.value
+  if (!drawer && financingMonths.value !== '') payload.months = financingMonths.value
+  if (drawer && finMonths.value !== '') payload.months = finMonths.value
 
-  axios.post(finCalculateUrl, payload).then(() => {
-    toggleDrawer()
-    fetch()
-  })
+  loadingInfo.value = true
+  infoModal.value.modal.showModal()
+  axios
+    .post(finCalculateUrl, payload)
+    .then(() => {
+      modalTitle.value = 'Calculo de Financiación'
+      message.value = 'El calculo se ha realizado correctamente'
+      fetch()
+      if (drawer) toggleDrawer()
+    })
+    .catch((e) => {
+      toggleDrawer()
+      modalTitle.value = 'Error'
+      message.value = e.message
+    })
+    .finally(() => {
+      loadingInfo.value = false
+    })
 }
 
 const cochesnetRemove = () => {
@@ -1988,10 +2003,12 @@ const modalConfirmed = () => {
 
 axios.get(finProdUrl).then((response) => {
   finProdOptions.value = response.data.results
+  finProduct.value = finProdOptions.value[0].id
 })
 
 axios.get(finRatesUrl).then((response) => {
   finRateOptions.value = response.data.results
+  finRate.value = finRateOptions.value[0].id
 })
 </script>
 
@@ -2426,7 +2443,13 @@ axios.get(finRatesUrl).then((response) => {
                           v-model="financed"
                           @focus="financed = price"
                         />
-                        <TextInput label="Meses de financiación:" v-model="financingMonths" />
+                        <SelectInput
+                          label="Meses de Financiación:"
+                          v-model="financingMonths"
+                          :options="options.financingMonths"
+                          :initialValue="null"
+                          @selected="calculateFinance"
+                        />
                         <TextInput label="Cuota financiación:" v-model="financingQ" />
                         <TextInput label="Reserva:" v-model="reserve" />
                         <CheckInput label="IVA deducible:" v-model="iva" class="flex items-start" />
@@ -3790,7 +3813,7 @@ axios.get(finRatesUrl).then((response) => {
           secondary="Cancelar"
           primary="Calcular"
           @click-secondary="toggleDrawer"
-          @click-primary="calculateFinance"
+          @click-primary="calculateFinance(true)"
           :disabled="finRate === null || finProduct === null"
         />
       </template>
