@@ -18,13 +18,11 @@ const price = ref(props.financed)
 const inputs = ref(0)
 const imported = ref(0)
 
-const financingFilter = ref(0)
+const financialFilter = ref('')
 const ratesFilter = ref(null)
 const ratesOptions = ref([])
 const productFilter = ref(null)
 const timeFilter = ref('')
-
-const financiers = ref([{ id: 0, title: 'Cofidis' }])
 
 const serverItemsLength = ref(0)
 
@@ -34,7 +32,7 @@ const serverOptions = ref({
 })
 
 const headers = [
-  { text: 'Financiera', value: 'financing_company' },
+  { text: 'Financiera', value: 'financial' },
   { text: 'Interes', value: 'rate' },
   { text: 'Producto', value: 'product' },
   { text: 'Meses', value: 'months' },
@@ -44,6 +42,11 @@ const headers = [
 const tableItems = ref([])
 
 let filters = {}
+
+const selectedFinancial = () => {
+  filters.financial = financialFilter.value
+  getData()
+}
 
 const selectedRate = () => {
   filters.rate = ratesFilter.value
@@ -119,12 +122,13 @@ onMounted(() => {
         </div>
         <div class="divider m-0"></div>
       </div>
-      <div class="collapse-content p-0">
+      <div class="collapse-content px-1 py-0">
         <SelectInput
           label="Financiera:"
-          v-model="financingFilter"
-          :options="financiers"
+          v-model="financialFilter"
+          :options="options.financial"
           :initialValue="null"
+          @selected="selectedFinancial"
         />
         <div class="flex flex-row gap-4">
           <SelectInput

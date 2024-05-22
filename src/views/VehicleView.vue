@@ -281,6 +281,7 @@ const docusignDis = ref(true)
 const finProdOptions = ref([])
 const finRateOptions = ref([])
 const finProduct = ref(null)
+const financial = ref('')
 const finRate = ref(null)
 const finMonths = ref('')
 const commentAlert = ref(false)
@@ -1851,6 +1852,7 @@ const calculateFinance = (drawer) => {
 
   if (!drawer && financingMonths.value !== '') payload.months = financingMonths.value
   if (drawer && finMonths.value !== '') payload.months = finMonths.value
+  if (financial.value !== '') payload.financial = financial.value
 
   loadingInfo.value = true
   infoModal.value.modal.showModal()
@@ -3791,6 +3793,7 @@ axios.get(finRatesUrl).then((response) => {
       <template v-if="drawerSection === 'finance'">
         <div>
           <DrawerTitle title="Calcular Cuotas de Financiación" @toggle="toggleDrawer" />
+          <SelectInput label="Financiera:" :options="options.financial" v-model="financial" />
           <SelectInput
             label="Interes:"
             :options="finRateOptions"

@@ -208,6 +208,21 @@ const paymentType = [
     }
 ]
 
+const financial = [
+    {
+        id: '',
+        title: 'Todas'
+    },
+    {
+        id: 'cofidis',
+        title: 'Cofidis'
+    },
+    {
+        id: 'lendrock',
+        title: 'Lendrock'
+    }
+]
+
 const financingMonths = [
     {
         id: '',
@@ -466,6 +481,7 @@ const options = {
     paymentMethods,
     paymentMethods2,
     paymentType,
+    financial,
     financingMonths,
     cochesnetCategory,
     sources,
