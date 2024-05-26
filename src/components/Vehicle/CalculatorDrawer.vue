@@ -36,7 +36,8 @@ const headers = [
   { text: 'Interes', value: 'rate' },
   { text: 'Producto', value: 'product' },
   { text: 'Meses', value: 'months' },
-  { text: 'Cuotas', value: 'price' }
+  { text: 'Cuotas', value: 'price' },
+  { text: 'Comisión', value: 'comission' }
 ]
 
 const tableItems = ref([])
@@ -116,8 +117,8 @@ onMounted(() => {
         <div class="flex flex-row justify-between">
           <span class="text-lg font-semibold">Filtros</span>
           <label class="swap text-6xl" :class="state ? 'swap-active' : ''">
-            <Icon class="swap-on" icon="mdi:chevron-down" width="24" />
-            <Icon class="swap-off" icon="mdi:chevron-up" width="24" />
+            <Icon class="swap-off" icon="mdi:chevron-down" width="24" />
+            <Icon class="swap-on" icon="mdi:chevron-up" width="24" />
           </label>
         </div>
         <div class="divider m-0"></div>
