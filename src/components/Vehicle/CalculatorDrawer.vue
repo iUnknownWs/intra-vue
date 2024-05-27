@@ -9,7 +9,6 @@ const props = defineProps({
   toggle: { type: Function, required: true },
   financed: { type: String, required: true },
   products: { type: Array, required: true },
-  rates: { type: Array, required: true }
 })
 
 const loading = ref(false)
@@ -21,6 +20,7 @@ const imported = ref(0)
 const financialFilter = ref('')
 const ratesFilter = ref(null)
 const ratesOptions = ref([])
+const productsOptions = ref([])
 const productFilter = ref(null)
 const timeFilter = ref('')
 
@@ -80,6 +80,7 @@ const getData = () => {
     .then((response) => {
       tableItems.value = response.data.table
       ratesOptions.value = response.data.rates
+      productsOptions.value = response.data.products
     })
     .finally(() => {
       loading.value = false
@@ -88,6 +89,7 @@ const getData = () => {
 
 const resetFilters = () => {
   filters = {}
+  financialFilter.value = ''
   ratesFilter.value = null
   productFilter.value = null
   timeFilter.value = ''
@@ -143,7 +145,7 @@ onMounted(() => {
           <SelectInput
             label="Producto:"
             v-model="productFilter"
-            :options="products"
+            :options="productsOptions"
             :initialValue="null"
             optionLabel="label"
             @selected="selectedProduct"
@@ -178,6 +180,21 @@ onMounted(() => {
           :server-items-length="serverItemsLength"
           :loading="loading"
         >
+          <template #item-financial="{ financial }">
+            <span class="capitalize">{{ financial }}</span>
+          </template>
+          <template #item-rate="{ rate }">
+            {{ rate }}%
+          </template>
+          <template #item-price="{ price  }">
+            {{ price }}€
+          </template>
+          <template #item-product="{ product }">
+            {{ product }}
+          </template>
+          <template #item-comission="{ comission }">
+            {{ comission }}€
+          </template>
         </EasyDataTable>
       </template>
     </VehicleTable>

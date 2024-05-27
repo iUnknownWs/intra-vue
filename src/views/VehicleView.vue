@@ -3859,7 +3859,6 @@ axios.get(finRatesUrl).then((response) => {
         :toggle="toggleDrawer"
         :financed="financed"
         :products="finProdOptions"
-        :rates="finRateOptions"
       />
     </template>
   </DrawerComponent>
