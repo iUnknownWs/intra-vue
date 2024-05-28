@@ -93,7 +93,7 @@ const placeholder = 'https://intranet-pre.garageclub.es/static/images/brand/favi
       <div class="flex flex-row justify-between gap-4">
         <div class="flex flex-col">
           <span class="text-base-200">Contado:</span>
-          <span class="font-bold">{{ vehicle.price?.price_with_discount || 0 }}€</span>
+          <span class="font-bold">{{ vehicle.price?.sale_price || 0 }}€</span>
         </div>
         <div class="flex flex-col leading-5">
           <span class="text-base-200">Financiado:</span>
